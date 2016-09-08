@@ -55,6 +55,13 @@ rho = sqrt(eps.^2 + 4.*(zeta_0.^2).*(b2.^2));
 beta1 = -sqrt((rho + eps)./2);
 beta2 = -sqrt((rho - eps)./2);
 
+% Corrections to beta for special conditions
+beta1(0.5.*(rho + eps) <= dbl_eps) = 0;
+beta2(0.5.*(rho - eps) <= dbl_eps) = 0;
+
+idx_B2 = (abs(zeta_0.*b2) > dbl_eps);
+beta2(idx_B2) = beta2(idx_B2).*(zeta_0(idx_B2).*b2(idx_B2))./abs(zeta_0(idx_B2).*b2(idx_B2));
+
 % Eqn A2-8
 mu3_1 = a2.*t1 + b2 + sqrt(a2).*rt_1;
 mu3_2 = a2.*t2 + b2 + sqrt(a2).*rt_2;
@@ -79,12 +86,6 @@ mu2_1 = atan(zeta_0./t1) + atan((gamma2.*t1 + delta2)./(gamma1.*t1 + delta1 - rt
 mu2_2 = atan(zeta_0./t2) + atan((gamma2.*t2 + delta2)./(gamma1.*t2 + delta1 - rt_2.*rho));
 
 %% Implementing special conditions
-
-beta1(0.5.*(rho + eps) <= dbl_eps) = 0;
-beta2(0.5.*(rho - eps) <= dbl_eps) = 0;
-
-idx_B2 = (zeta_0.*b2 > dbl_eps);
-beta2(idx_B2) = beta2(idx_B2).*(zeta_0(idx_B2).*b2(idx_B2))./abs(zeta_0(idx_B2).*b2(idx_B2));
 
 idx_m21 = (t1.^2 < dbl_eps);
 mu2_1(idx_m21) = (pi/2).*abs(zeta_0(idx_m21))./zeta_0(idx_m21) + ...

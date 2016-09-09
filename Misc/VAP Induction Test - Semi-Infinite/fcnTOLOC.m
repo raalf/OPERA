@@ -1,5 +1,6 @@
 function fpl = fcnTOLOC(dvenum, fpg, DVE, DVECT, VLST, DNORM)
-% Given 3 global points and 3 local points, I need to create a transformation from global to local
+% Given 3 global points and 3 local points, this transforms from global to local
+% T.D.K 2016-09-05. 745-55 RIVER OAKS PLACE, SAN JOSE, CALIFORNIA, USA 95134
 
 fpl(:,3) = dot(DNORM(dvenum,:), fpg - VLST(DVE(dvenum,1,1),:),2); % The projection of the vector to the fp onto the global normal of the element is the local zeta
 

@@ -1,4 +1,4 @@
-function fpg = fcnTOGLOB(dvenum, fpl, DVECT, VLST)
+function fpg = fcnTOGLOB(dvenum, fpl, DVE, DVECT, VLST)
 % input (DVEnum, fp) in local and get back (fp) in global
 % maybe works with velocity vectors?
 % T.D.K 2016-09-05. 745-55 RIVER OAKS PLACE, SAN JOSE, CALIFORNIA, USA 95134

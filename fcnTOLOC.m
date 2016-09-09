@@ -1,4 +1,4 @@
-function fpl = fcnTOLOC(dvenum, fpg, DVECT, VLST, DNORM)
+function fpl = fcnTOLOC(dvenum, fpg, DVE, DVECT, VLST, DNORM)
 % Given 3 global points and 3 local points, this transforms from global to local
 % T.D.K 2016-09-05. 745-55 RIVER OAKS PLACE, SAN JOSE, CALIFORNIA, USA 95134
 

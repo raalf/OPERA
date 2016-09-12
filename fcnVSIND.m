@@ -6,9 +6,11 @@ function [al, bl, cl] = fcnVSIND(endpoints, phi, psi, fpl, k)
 % T.D.K 2016-09-07 745-55 RIVER OAKS PLACE, SAN JOSE, CALIFORNIA, USA 95134
 
 % INPUT:
-%   endpoints - nx3x2 matrix, where (:,:,1) are first points and (:,:,2) are second. Maybe go around in clockwise direction
+%   endpoints - nx3x2 matrix, where (:,:,1) are first points and (:,:,2) are second. First are 
+%           left LE points, second are right LE points.
 %   phi - nx1 vector of leading edge sweep, direction matters
-%   psi - rotation of the vortex sheet. Zero rotation is eta of the VS aligned with local xsi axis of HDVE
+%   psi - rotation of the vortex sheet. Zero rotation is eta of the VS aligned with local eta axis of HDVE
+%           90 degrees is for up to down (I think)
 %   fpl - nx3 matrix of field points in local coordinates of HDVE
 %   k - singularity factor, not sure if we are using this now
 %
@@ -40,8 +42,8 @@ hspan = hspan1.*cos(psi) + hspan2.*sin(psi);
 fp_0 = fpl - eta_translation;
 % fp_0(:,2) = -fp_0(:,2); % flipping xsi direction so it goes downwards in local ref frame
 
-eta_0 = fp_0(:,1).*cos(psi) + fp_0(:,2)*sin(psi);
-xsi_0 = fp_0(:,1).*sin(psi) + fp_0(:,2)*cos(psi);
+eta_0 = fp_0(:,1).*cos(psi) + fp_0(:,2).*sin(psi);
+xsi_0 = fp_0(:,1).*sin(psi) + fp_0(:,2).*cos(psi);
 zeta_0 = fp_0(:,3);
 
 % fp_0(idxVS,:) = [-fp_0(idxVS,2) fp_0(idxVS,1) fp_0(idxVS,3)];
@@ -115,8 +117,8 @@ mu2_2(idx_m22) = (pi/2).*abs(zeta_0(idx_m22))./zeta_0(idx_m22) + ...
     atan((gamma2(idx_m22).*t2(idx_m22) + delta2(idx_m22))./ ...
     (gamma1(idx_m22).*t2(idx_m22) + delta1(idx_m22) - rt_2(idx_m22).*rho(idx_m22)));
 
-mu2_2(zeta_0 > 0 & t2 < 0) = mu2_2(zeta_0 > 0 & t2 < 0) + pi;
-mu2_2(zeta_0 < 0 & t2 < 0) = mu2_2(zeta_0 < 0 & t2 < 0) - pi;
+mu2_2(zeta_0 > 0 & t2 < 0 & ~idx_m22) = mu2_2(zeta_0 > 0 & t2 < 0 & ~idx_m22) + pi;
+mu2_2(zeta_0 < 0 & t2 < 0 & ~idx_m22) = mu2_2(zeta_0 < 0 & t2 < 0 & ~idx_m22) - pi;
 mu2_2(gamma1.*t2 + delta1 - rt_2.*rho < 0) = mu2_2(gamma1.*t2 + delta1 - rt_2.*rho < 0) + pi;
 mu2_2(gamma2.*t2 + delta2 < 0 & gamma1.*t2 + delta1 - rt_2.*rho > 0) = ...
     mu2_2(gamma2.*t2 + delta2 < 0 & gamma1.*t2 + delta1 - rt_2.*rho > 0) + 2*pi;
@@ -162,7 +164,8 @@ G23 = ((1./a2).*rt_2 - (b2./sqrt(a2.^3)).*log(mu3_2)) - ((1./a2).*rt_1 - (b2./sq
 G24 = ((1./sqrt(a2)).*log(mu3_2)) - ((1./sqrt(a2)).*log(mu3_1));
 
 % Eqn A2-10
-G26 = ((1./zeta_0).*atan2(t2,zeta_0)) - (1./zeta_0).*atan2(t1,zeta_0);
+% G26 = ((1./zeta_0).*atan2(t2,zeta_0)) - (1./zeta_0).*atan2(t1,zeta_0);
+G26 = ((1./zeta_0).*atan(t2./zeta_0)) - (1./zeta_0).*atan(t1./zeta_0);
 
 % Eqn A2-11
 G27 = t2 - t1;
@@ -177,7 +180,7 @@ b26 = zeros(len,1);
 b27 = zeros(len,1);
 
 c21 = -2.*((zeta_0.^2).*tan(phi) + eta_0.*(xsi_0 - eta_0.*tan(phi)));
-c22 = -2.*(zeta_0.^2).*(xsi_0 - 2.*eta_0.*tan(phi)); % NOPE
+c22 = -2.*(zeta_0.^2).*(xsi_0 - 2.*eta_0.*tan(phi));
 c23 = 2.*tan(phi);
 c24 = 2.*(xsi_0 - 2.*eta_0.*tan(phi));
 c25 = -2.*eta_0;
@@ -220,7 +223,6 @@ b2_zeta = G21.*b21 + G22.*b22 + G23.*b23 + G24.*b24 + G25.*b25 + G26.*b26 + G27.
 
 c2_eta = -zeta_0.*(G21.*c24 + G22.*c21 + G24.*c23 + G25.*c27 + G26.*c25);
 c2_zeta = G21.*c21 + G22.*c22 + G23.*c23 + G24.*c24 + G25.*c25 + G26.*c26 + G27.*c27;
-% G 1 2
 
 b2_xsi = zeros(size(b2_eta));
 c2_xsi = zeros(size(c2_eta));
@@ -240,8 +242,15 @@ bl = [b2_xsi b2_eta b2_zeta];
 cl = [c2_xsi c2_eta c2_zeta];
 al = zeros(size(bl));
 
-% If the point lies on the leading edge
-idx_LE = (abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps & abs(phi) <= dbl_eps);
+% If the point lies on a swept leading edge
+idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps; %& abs(phi) <= dbl_eps;
+bl(idx_LE,:) = zeros(size(bl(idx_LE,:)));
+cl(idx_LE,:) = zeros(size(cl(idx_LE,:)));
+
+clear idx_LE 
+
+% If the point lies on an unswept leading edge
+idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps & abs(phi) <= dbl_eps;
 bl(idx_LE,1:2) = zeros(size(bl(idx_LE,1:2)));
 cl(idx_LE,1:2) = zeros(size(cl(idx_LE,1:2)));
 bl(idx_LE,3) = 0.5.*log((t1(idx_LE).^2 + k(idx_LE))./(t2(idx_LE).^2 + k(idx_LE)));
@@ -250,12 +259,12 @@ cl(idx_LE,3) = -4.*hspan(idx_LE) + eta_0(idx_LE).*2.*bl(idx_LE,3);
 
 %% Rotate 90 degrees to appropriate direction if needed
 
-tempb(:,2) = bl(:,1).*cos(psi) + bl(:,2)*sin(psi);
-tempb(:,1) = bl(:,1).*sin(psi) + bl(:,2)*cos(psi);
+tempb(:,2) = bl(:,1).*cos(psi) + bl(:,2).*sin(psi);
+tempb(:,1) = bl(:,1).*sin(psi) + bl(:,2).*cos(psi);
 bl(:,1:2) = tempb;
 
-tempc(:,2) = cl(:,1).*cos(psi) + cl(:,2)*sin(psi);
-tempc(:,1) = cl(:,1).*sin(psi) + cl(:,2)*cos(psi);
+tempc(:,2) = cl(:,1).*cos(psi) + cl(:,2).*sin(psi);
+tempc(:,1) = cl(:,1).*sin(psi) + cl(:,2).*cos(psi);
 cl(:,1:2) = tempc;
 
 end

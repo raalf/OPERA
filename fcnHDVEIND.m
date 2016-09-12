@@ -1,17 +1,5 @@
 function [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, DVE, DVECT, VLST, DNORM, PLEX)
 
-% clc
-% clear
-% 
-% % Input DVE number and field point in global, get back influence in global on that field point
-% 
-% load('quad.mat')
-% dvenum = [1 2]';
-% fpg = [2 3 1];
-% 
-% repmat(fpg, 2, 1, 1);
-
-
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 
 len = length(dvenum);
@@ -25,10 +13,11 @@ yaw = zeros(len*5,1);
 k = zeros(len*5,1);
 fpl = zeros(len*5,3);
 
-k = ones(len*5,1); % Until this is figured out for HDVE, k = 1
+k = ones(len*5,1)+0.0001; % Until this is figured out for HDVE, k = 1
 
 idx = [1:5:len*5]';
 
+%% Finding velocities induced by each vortex sheet
 % Always input left point, right point of vortex sheet LE
 
 % Left to right
@@ -36,29 +25,29 @@ idx = [1:5:len*5]';
 endpoints(idx,:,1:2) = reshape(permute(PLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
 yaw(idx) = pi/2;
 phi(idx) = atan(endpoints(idx,1,2)./endpoints(idx,2,2));
-fpl(idx,:) = fp(dvenum,:);
+
 % Second edge
 endpoints(idx+1,:,1:2) = reshape(permute(PLEX(3:-1:2,:,dvenum),[3 2 1]), [],3,2);
 yaw(idx+1) = pi/2;
 phi(idx+1) = atan((endpoints(idx+1,1,1)-endpoints(idx+1,1,2))./endpoints(idx+1,2,2));
-fpl(idx+1,:) = fp(dvenum,:);
 
 % Up to down
 % First edge
 endpoints(idx+2,:,1:2) = reshape(permute(PLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
 yaw(idx+2) = 0;
 phi(idx+2) = atan(endpoints(idx+2,2,2)./endpoints(idx+2,1,2));
-fpl(idx+2,:) = fp(dvenum,:);
+
 % Second edge
 endpoints(idx+3,:,1:2) = reshape(permute(PLEX(2:3,:,dvenum),[3 2 1]), [],3,2);
 yaw(idx+3) = 0;
 phi(idx+3) = atan(endpoints(idx+3,2,1)./(endpoints(idx+3,1,2)-endpoints(idx+3,1,1)));
-fpl(idx+3,:) = fp(dvenum,:);
+
 % Third edge
 endpoints(idx+4,:,1:2) = reshape(permute(PLEX(1:2:3,:,dvenum),[3 2 1]), [],3,2);
 yaw(idx+4) = 0;
 phi(idx+4) = 0; % Leading edge of Edge 3 is always on eta-axis
-fpl(idx+4,:) = fp(dvenum,:);
+
+fpl = reshape(repmat(fp,1,5,1)',3,[],1)';
 
 [al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k);
 
@@ -70,11 +59,13 @@ b1l = zeros(len,3);
 b2l = zeros(len,3);
 b3l = zeros(len,3);
 
+%% Summing the velocities of all five sheets
+
 % Subtracting second vortex sheet from first in the left-to-right direction
 b1l = cl(idx,:) - cl(idx+1,:);
 b2l = bl(idx,:) - bl(idx+1,:);
 
-%% Subtracting the three vortex sheets in the up-to-down direction based on the shape of the triangle
+% Subtracting the three vortex sheets in the up-to-down direction based on the shape of the triangle
 
 idx_a = endpoints(idx,1,2) < 0; % HDVEs with obtuse angle at Vertex 1 (eta < 0)
 idx_a1 = idx(idx_a.*idx ~= 0); % Index of first edge of HDVEs for obtuse angle at Vertex 1

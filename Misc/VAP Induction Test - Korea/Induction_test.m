@@ -27,16 +27,16 @@ singfct = 0;
 
 %%
 
-granularity = 0.5;
+granularity = 0.1;
 
-COEFF = [0 1 0 1 0]';
+COEFF = [0 1 0 0 0]';
 
 % D = INFLUENCECOEFF2(testDVE, DVECT, FP);
 count = 1;
 
 x_p = 0;
-for y_p = -5:granularity:5
-    for z_p = -5:granularity:5
+for y_p = -3:granularity:3
+    for z_p = -3:granularity:3
         
         FP = [x_p y_p z_p];
         

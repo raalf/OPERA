@@ -154,7 +154,6 @@ G21 = (beta1.*(0.5.*log(mu1_2./mu1_1) - G25) + beta2.*(mu2_2 - mu2_1))./rho;
 % Eqn A2-4
 % G22 = ((1./xsi_0).*(-(beta2./(2.*rho)).*log(mu1_2) + (beta1./rho).*mu2_2)) ...
 %     - ((1./xsi_0).*(-(beta2./(2.*rho)).*log(mu1_1) + (beta1./rho).*mu2_1));
-
 G22 = (-beta2.*(0.5.*log(mu1_2./mu1_1) - G25) + beta1.*(mu2_2 - mu2_1))./(rho.*zeta_0);
 
 % Eqn A2-6
@@ -187,11 +186,12 @@ c25 = -2.*eta_0;
 c26 = -2.*(zeta_0.^2);
 c27 = repmat(2,len,1);
 
+% The below condition was causing discontinuities in the velocity field
 % Point is in plane spanned by bound vortex and zeta axis
 idx20 = (abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps);
 G21(idx20) = 0;
 G22(idx20) = 0;
-G25(idx20) = 0.5.*log((t2(idx20).^2 + zeta_0(idx20).^2)./(t1(idx20).^2 + zeta_0(idx20).^2));
+% G25(idx20) = 0.5.*log((t2(idx20).^2 + zeta_0(idx20).^2)./(t1(idx20).^2 + zeta_0(idx20).^2)); % duplicate eqn, why is it here?
 G26a(idx20) = atan(((t2(idx20) - t1(idx20)).*zeta_0(idx20)./(zeta_0(idx20).^2 + t1(idx20).*t2(idx20))));
 
 idx21 = (abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps & (zeta_0.^2 + t1.*t2) < 0 & t2./zeta_0 > 0 );
@@ -206,7 +206,8 @@ idx23 = (abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps & abs(zeta_0) <= dbl_eps);
 G26(idx23) = 0;
 
 % Point is in plane of vortex sheet, but not on bound vortex
-idx30 = (abs(xsi_0 - eta_0.*tan(phi)) > dbl_eps & abs(zeta_0) < dbl_eps);
+% idx30 = (abs(xsi_0 - eta_0.*tan(phi)) > dbl_eps & abs(zeta_0) < dbl_eps);
+idx30 = abs(zeta_0.^2) <= dbl_eps;
 G21(idx30) = 0;
 
 G21b(idx30) = b21(idx30).*beta1(idx30).*(0.5.*log(mu1_2(idx30)./mu1_1(idx30)) + G25b(idx30))./rho(idx30);
@@ -242,7 +243,7 @@ bl = [b2_xsi b2_eta b2_zeta];
 cl = [c2_xsi c2_eta c2_zeta];
 al = zeros(size(bl));
 
-% If the point lies on a swept leading edge
+% % If the point lies on a swept leading edge
 idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps; %& abs(phi) <= dbl_eps;
 bl(idx_LE,:) = zeros(size(bl(idx_LE,:)));
 cl(idx_LE,:) = zeros(size(cl(idx_LE,:)));
@@ -250,7 +251,9 @@ cl(idx_LE,:) = zeros(size(cl(idx_LE,:)));
 clear idx_LE 
 
 % If the point lies on an unswept leading edge
-idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps & abs(phi) <= dbl_eps;
+% idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps & abs(phi) <= dbl_eps;
+% a23ind.f - Line 604
+idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0) <= dbl_eps & abs(phi) <= dbl_eps;
 bl(idx_LE,1:2) = zeros(size(bl(idx_LE,1:2)));
 cl(idx_LE,1:2) = zeros(size(cl(idx_LE,1:2)));
 bl(idx_LE,3) = 0.5.*log((t1(idx_LE).^2 + k(idx_LE))./(t2(idx_LE).^2 + k(idx_LE)));

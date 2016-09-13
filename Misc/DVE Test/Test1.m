@@ -30,7 +30,7 @@ dvenum = [1 2]';
 fpg = repmat(fp, length(dvenum),1,1);
 
 
-COEFF = [0 0 0 -1 0; 0 0 0 0 0];
+COEFF = [0 0 0 0 0; 0 1 0 0 0];
 
 dvenum = reshape(repmat(dvenum', length(fp), 1, 1),[],1,1);
 

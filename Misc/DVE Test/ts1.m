@@ -5,7 +5,7 @@ endpoints(:,:,1) = [0 0 0];
 endpoints(:,:,2) = [1 1 0];
 phi = pi/4;
 yaw = 0;
-fpl = [.5 .5 .5];
+fpl = [0.5 -2 0];
 k = 1;
 
 % [al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k)
@@ -57,6 +57,33 @@ fpl = [0 4 3];
 k = 1;
 
 [al, bl, cl] = fcnVSIND2(endpoints, phi, yaw, fpl, k)
+
+%%
+clear
+
+endpoints(:,:,1) = [0 0 0; 1 0 0];
+endpoints(:,:,2) = [1 1 0; 1 1 0];
+phi = [pi/4; 0];
+yaw = [pi/2; pi/2];
+fpl = [0.5 -2 0; 0.5 -2 0];
+k = 1;
+
+% [al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k)
+[~, bl, cl] = fcnVSIND2(endpoints, phi, yaw, fpl, k)
+
+%%
+clear
+
+endpoints(:,:,1) = [0 0 0; 0 0 0];
+endpoints(:,:,2) = [1 1 0; 1 0 0];
+phi = [-pi/4; 0];
+yaw = [0; 0];
+fpl = [0.5 -2 0; 0.5 -2 0];
+% fpl = [0.5 2.5 0; 0.5 2.5 0];
+k = 1;
+
+% [al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k)
+[~, bl, cl] = fcnVSIND2(endpoints, phi, yaw, fpl, k)
 
 
 

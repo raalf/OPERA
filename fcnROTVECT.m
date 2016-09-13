@@ -43,18 +43,29 @@ v1t = repmat(permute(v1,[3 2 1]),3,1,1);
 
 % MATLAB doesn't allow for the 3-dimensional matrix multiplication we need, so the below
 % is a work-around through reshaping and replicating it
+% R_beta = permute(repmat(reshape(permute(R_beta, [1 2 3]), 9, 1, []), 1, 3, 1),[2 1 3]);
+% 
+% R_ab(:,1,:) = sum(R_alpha.*R_beta(:,1:3,:),2);
+% R_ab(:,2,:) = sum(R_alpha.*R_beta(:,4:6,:),2);
+% R_ab(:,3,:) = sum(R_alpha.*R_beta(:,7:9,:),2);
+% 
+% R_gamma = permute(repmat(reshape(permute(R_gamma, [1 2 3]), 9, 1, []), 1, 3, 1),[2 1 3]);
+% 
+% Rot(:,1,:) = sum(R_ab.*R_gamma(:,1:3,:),2);
+% Rot(:,2,:) = sum(R_ab.*R_gamma(:,4:6,:),2);
+% Rot(:,3,:) = sum(R_ab.*R_gamma(:,7:9,:),2);
+
 R_beta = permute(repmat(reshape(permute(R_beta, [1 2 3]), 9, 1, []), 1, 3, 1),[2 1 3]);
 
-R_ab(:,1,:) = sum(R_alpha.*R_beta(:,1:3,:),2);
-R_ab(:,2,:) = sum(R_alpha.*R_beta(:,4:6,:),2);
-R_ab(:,3,:) = sum(R_alpha.*R_beta(:,7:9,:),2);
+R_gb(:,1,:) = sum(R_gamma.*R_beta(:,1:3,:),2);
+R_gb(:,2,:) = sum(R_gamma.*R_beta(:,4:6,:),2);
+R_gb(:,3,:) = sum(R_gamma.*R_beta(:,7:9,:),2);
 
-R_gamma = permute(repmat(reshape(permute(R_gamma, [1 2 3]), 9, 1, []), 1, 3, 1),[2 1 3]);
+R_alpha = permute(repmat(reshape(permute(R_alpha, [1 2 3]), 9, 1, []), 1, 3, 1),[2 1 3]);
 
-Rot(:,1,:) = sum(R_ab.*R_gamma(:,1:3,:),2);
-Rot(:,2,:) = sum(R_ab.*R_gamma(:,4:6,:),2);
-Rot(:,3,:) = sum(R_ab.*R_gamma(:,7:9,:),2);
-
+Rot(:,1,:) = sum(R_gb.*R_alpha(:,1:3,:),2);
+Rot(:,2,:) = sum(R_gb.*R_alpha(:,4:6,:),2);
+Rot(:,3,:) = sum(R_gb.*R_alpha(:,7:9,:),2);
 
 v2 = permute(sum(v1t.*Rot,2),[2 1 3]);
 v2 = reshape(permute(v2,[3 1 2]),[],3,1);

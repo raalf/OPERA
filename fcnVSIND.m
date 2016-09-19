@@ -231,7 +231,7 @@ cl(idx_LE,1:2) = zeros(size(cl(idx_LE,1:2)));
 % Bramesfelds:
 bl(idx_LE,3) = 0.5.*log((t1(idx_LE).^2 + k(idx_LE))./(t2(idx_LE).^2 + k(idx_LE)));
 % cl(idx_LE,3) = -4.*hspan(idx_LE) + eta_0(idx_LE).*2.*bl(idx_LE,3);
-cl(idx_LE,3) = -(2.*eta_0(idx_LE).*bl(idx_LE,3) - 2.*(t2(idx_LE) - t1(idx_LE)));
+cl(idx_LE,3) = -(2.*eta_0(idx_LE,1).*bl(idx_LE,3) - 2.*(t2(idx_LE,1) - t1(idx_LE,1)));
 
 %% Rotate 90 degrees to appropriate direction if needed
 

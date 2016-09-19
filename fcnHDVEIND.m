@@ -49,7 +49,7 @@ phi(idx+4) = 0; % Leading edge of Edge 3 is always on eta-axis
 
 fpl = reshape(repmat(fp,1,5,1)',3,[],1)';
 
-[al, bl, cl] = fcnVSIND2(endpoints, phi, yaw, fpl, k);
+[al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k);
 
 a1l = zeros(len,3);
 a2l = zeros(len,3);

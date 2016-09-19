@@ -20,7 +20,7 @@ fp = [reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)];
 % fp = unique(fp,'rows');
 % fp(fp(:,3) == 0,:) = [];
 
-fp(:,1) = 0;
+% fp(:,1) = 0;
 fp = unique(fp,'rows');
 
 points = length(fp);
@@ -30,15 +30,15 @@ dvenum = [1 2]';
 fpg = repmat(fp, length(dvenum),1,1);
 
 
-COEFF = [0 0 0 0 0; 0 1 0 0 0];
+COEFF = [1 0 0 1 0; 0 1 0 1 0];
 
 dvenum = reshape(repmat(dvenum', length(fp), 1, 1),[],1,1);
 
 COEFF = repmat(permute(COEFF(dvenum,:),[3 2 1]),3,1,1);
 
-
+tic
 [q_ind] = fcnINDVEL(dvenum, fpg, COEFF, DVE, DVECT, VLST, DNORM, PLEX);
-
+toc
 q_ind = q_ind(1:points,:) + q_ind(points+1:end,:);
 
 

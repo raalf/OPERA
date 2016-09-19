@@ -1,4 +1,4 @@
-function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, DNORM, PLEX, DVECT, ALIGN] = fcnTRIANG(STL, ATYPE)
+function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, DNORM, PLEX, DVECT, ALIGN, VATT] = fcnTRIANG(STL, ATYPE)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   STL - .stl filename, string.
@@ -50,6 +50,8 @@ DNORM = -faceNormal(TR);
 DVE(:,:,2) = faceNormal(TR); % Normal
 DVE(:,:,3) = incenter(TR); % incenter of triangle
 DVE(:,:,4) = circumcenter(TR);
+
+VATT = vertexAttachments(TR);
 
 %% Finding edge attachement matrix (which DVEs share which edge)
 
@@ -212,7 +214,7 @@ ALIGN(idx,1,2) = dot(vec2,DVECT(EATT(idx,2),:,1),2);
 ALIGN(idx,2,2) = dot(vec2,DVECT(EATT(idx,2),:,2),2);
 
 
-clearvars -except TR ADJE ELST VLST DVE NELE EATT EIDX ELOC DNORM PLEX DVECT ALIGN 
+clearvars -except TR ADJE ELST VLST DVE NELE EATT EIDX ELOC DNORM PLEX DVECT ALIGN VATT
 
 end
 

@@ -1,4 +1,4 @@
-function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, DNORM, PLEX, DVECT, ALIGN, VATT] = fcnTRIANG(STL, ATYPE)
+function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, PLEX, DVECT, ALIGN, VATT, VNORM, CENTER] = fcnTRIANG(STL, ATYPE)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   STL - .stl filename, string.
@@ -14,17 +14,23 @@ function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, DNORM, PLEX, DVECT,
 %   EIDX - Matrix denoting which edge number is which local edge number. Rows are HDVEs. Columns are local edge numbers 1-3.
 %   ELOC - Identifies the local edge number from EIDX in EATT.
 %   SDEG - Currently unused. Split degree. No split in the wing has degree 2, as the maximum number of HDVEs per edge is 2.
-%   DNORM - Matrix of face normals for each DVE. NELE x 3 matrix (columns are (x,y,z))
 %   PLEX - Matrix of local eta-xi coordinates of vertices 
 %   DVECT - Normal vectors
 %   ALIGN - Gives alignment of eta and xi axis between adjacent HDVEs in EATT rows. ALIGN(:,:,1) is alignment of eta in terms of eta and xi of the adjacent HDVE
             % ALIGN(:,:,2) is alignment of xi in terms of eta and xi in adjacent HDVE.
+%   VATT - NELE x ? matrix of which elements are attached to which vertices
+%   VNORM - NELE x 3 matrix of the averaged normals of all elements attached to a vertex (used for flow tangency)
 % This function was written to work with the panel code, and lifting surface with and without a split (of SDEG 3). Modelling
 % a split in the wing will result in the ADJE matrix having a third dimension. It could likely easily be modified to accept
 % a split of SDEG > 3.
 % T.D.K 2016-08-15. 212-230 KING ST E, TORONTO, ONTARIO, CANADA, M5A-1K5
 
 [temp, ~] = fcnSTLREAD(STL);
+
+% Removing duplicate elements from OpenVSP STL when infinitely thin
+if strcmp(ATYPE,'LS')
+   temp((end/2) + 1:end,:,:) = []; 
+end
 
 % Number of DVEs
 NELE = size(temp(:,:,1),1);
@@ -33,14 +39,6 @@ NELE = size(temp(:,:,1),1);
 [VLST,~,j] = unique([temp(:,:,1); temp(:,:,2); temp(:,:,3)],'rows','stable');
 DVE(:,:,1) = reshape(j,NELE,3);
 
-if strcmp(ATYPE,'LS')
-    % Removing duplicate triangles (as the STL is 2 surfaces ontop of each other)
-    DVE(:,:,1) = sort(DVE(:,:,1),2);
-    [~, ia, ~] = unique(DVE(:,:,1),'rows');
-    DVE = DVE(ia,:,:);
-    NELE = NELE/2;
-end
-
 % Converting above data to triangulation
 TR = triangulation(DVE(:,:,1),VLST);
 
@@ -48,16 +46,14 @@ ELST = edges(TR); % List of unique edges
 DNORM = -faceNormal(TR);
 
 DVE(:,:,2) = faceNormal(TR); % Normal
-DVE(:,:,3) = incenter(TR); % incenter of triangle
-DVE(:,:,4) = circumcenter(TR);
+CENTER = incenter(TR); % incenter of triangle
 
-VATT = vertexAttachments(TR);
 
 %% Finding edge attachement matrix (which DVEs share which edge)
 
-% Different numbers of edge attachements means we can't do a straight cell2mat on edgeAttachements(TR,ELST) if using VAP2
 temp2 = edgeAttachments(TR, ELST);
 
+% Different numbers of edge attachements means we can't do a straight cell2mat on edgeAttachements(TR,ELST)
 cellsz = cell2mat(cellfun(@size,temp2,'uni',false));
 idx = cellsz(:,2);
 if max(idx) == 3
@@ -213,8 +209,33 @@ ALIGN(idx,2,1) = dot(vec1,DVECT(EATT(idx,2),:,2),2);
 ALIGN(idx,1,2) = dot(vec2,DVECT(EATT(idx,2),:,1),2);
 ALIGN(idx,2,2) = dot(vec2,DVECT(EATT(idx,2),:,2),2);
 
+%% Vertex attachements and normal averages
 
-clearvars -except TR ADJE ELST VLST DVE NELE EATT EIDX ELOC DNORM PLEX DVECT ALIGN VATT
+VATT = vertexAttachments(TR);
+
+% Turning the cell array VATT into a matrix - A.Y. Method 2016-09-20
+cellsza = cell2mat(cellfun(@size,VATT,'uni',false));
+idxa = cellsza(:,2);
+idx2 = num2cell(max(cell2mat(cellfun(@length,VATT,'uni',false)))-idxa);
+VATT = cell2mat(cellfun(@(x,y) padarray(x,[0 y],NaN,'post'), VATT, idx2, 'uni', false));
+
+% Finding the averaged face-normals of all elements attached to the vertices
+idx50 = VATT>0;
+temp50 = permute(DVECT(VATT(idx50),:,3),[1,3,2]);
+temp51 = zeros(size(VATT));
+temp52 = zeros(size(VATT));
+temp53 = zeros(size(VATT));
+temp51(idx50) = temp50(:,:,1);
+temp52(idx50) = temp50(:,:,2);
+temp53(idx50) = temp50(:,:,3);
+
+% Averaging the normals of the x, y, z components of the normals attached to each vertex
+VNORM = [mean(temp51,2) mean(temp52,2) mean(temp53,2)];
+
+% Normalizing these vectors
+VNORM = VNORM./repmat(sqrt(sum(abs(VNORM).^2,2)), 1,3);
+
+clearvars -except TR ADJE ELST VLST DVE NELE EATT EIDX ELOC PLEX DVECT ALIGN VATT VNORM CENTER
 
 end
 

@@ -1,6 +1,4 @@
-function [D, R] = fcnDWING(EATT, PLEX, NELE, ELOC, ALIGN, VATT)
-
-[~,~,depth] = size(PLEX);
+function [D, R] = fcnDWING(EATT, PLEX, NELE, ELOC, ALIGN, VLST, VNORM, CENTER, DVE, DVECT)
 
 lamb_circ = [ ...
     0.5 0.5 0; ... % Edge 1 mid-point
@@ -158,11 +156,37 @@ D(idx7) = reshape(dgamma2',[],1);
 % Flow tangency is to be enforced at all verticies, as well as control points
 % Where a vertex is shared by multiple elements, the average of the normals is taken
 
+% In the D-Matrix, dot (a1,a2,b1,b2,c3) of our influencing HDVE with the normal of the point we are influencing on
 
+% Points we are influencing
+fpg = [VLST; CENTER];
+
+% List of DVEs we are influencing from (one for each of the above fieldpoints)
+len = length(fpg(:,1));
+dvenum = reshape(repmat(1:NELE,len,1),[],1);
+
+fpg = repmat(fpg,NELE,1);
+
+[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, DVE, DVECT, VLST, PLEX);
+
+% List of normals we are to dot the above with
+normals = [VNORM; DVECT(:,:,3)];
+normals = repmat(normals,NELE,1); % Repeated so we can dot all at once
+
+% Dotting a1, a2, b1, b2, c3 with the normals of the field points
+temp60 = [dot(a1,normals,2) dot(a2,normals,2) dot(b1,normals,2) dot(b2,normals,2) dot(c3, normals,2)];
+
+% Reshaping and inserting into the bottom of the D-Matrix
+D(end-len+1:end,:) = reshape(permute(reshape(temp60',5,[],NELE),[2 1 3]),[],5*NELE,1);
 
 %% Resultant
 
 R = zeros(NELE*5,1);
+
+% Kinematic resultant is the freestream (and wake-induced velocities summed) dotted with the 
+% norm of the point we are influencing on, multiplied by 4*pi
+
+
 
 
 end

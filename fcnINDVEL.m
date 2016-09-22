@@ -1,4 +1,4 @@
-function [q_ind] = fcnINDVEL(dvenum, fpg, COEFF, DVE, DVECT, VLST, DNORM, PLEX)
+function [q_ind] = fcnINDVEL(dvenum, fpg, COEFF, DVE, DVECT, VLST, PLEX)
 % This function takes in HDVE number and a corresponding global field point and returns an induced velocity
 % in the global reference frame. 
 
@@ -6,7 +6,7 @@ function [q_ind] = fcnINDVEL(dvenum, fpg, COEFF, DVE, DVECT, VLST, DNORM, PLEX)
 
 len = length(dvenum);
 
-[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, DVE, DVECT, VLST, DNORM, PLEX);
+[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, DVE, DVECT, VLST, PLEX);
 
 D = [a1 a2 b1 b2 c3];
 D = reshape(reshape(D', 1, 15, []), 3, 5, len);

@@ -1,17 +1,17 @@
-function [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, DVE, DVECT, VLST, DNORM, PLEX)
+function [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, DVE, DVECT, VLST, PLEX)
 
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 
 len = length(dvenum);
 dbl_eps = 1e-14;
 
-fp = fcnTOLOC(dvenum, fpg, DVE, DVECT, VLST, DNORM);
+fp = fcnTOLOC(dvenum, fpg, DVE, DVECT, VLST);
 
 endpoints = zeros(len*5, 3, 2); % Five function calls per DVE
 phi = zeros(len*5,1);
 yaw = zeros(len*5,1);
-k = zeros(len*5,1);
-fpl = zeros(len*5,3);
+% k = zeros(len*5,1);
+% fpl = zeros(len*5,3);
 
 k = zeros(len*5,1)+1; % Until this is figured out for HDVE, k = 1
 

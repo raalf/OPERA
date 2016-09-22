@@ -15,23 +15,20 @@ STL = 'CAD Geom/simple_liftingsurface.stl';
 
 %% Triangulating Geometry
 
-[TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, DNORM, PLEX, DVECT, ALIGN, VATT] = fcnTRIANG(STL, ATYPE);
+[TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, ...
+    PLEX, DVECT, ALIGN, VATT, VNORM, CENTER] = fcnTRIANG(STL, ATYPE);
 
 %% D-Matrix Creation
 
-[D, R] = fcnDWING(EATT, PLEX, NELE, ELOC, ALIGN, VATT);
-
-cellsza = cell2mat(cellfun(@size,VATT,'uni',false));
-idxa = cellsza(:,2);
-VATT2 = zeros(length(idxa),max(idxa))
+[D, R] = fcnDWING(EATT, PLEX, NELE, ELOC, ALIGN, VLST, VNORM, CENTER, DVE, DVECT);
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(1, DVE, NELE, VLST, ELST, DVECT);
+[hFig1] = fcnPLOTBODY(1, DVE, NELE, VLST, ELST, DVECT, CENTER);
 
 %% End
 
-clearvars -except TR ADJE ELST VLST DVE NELE EATT EIDX ELOC DNORM PLEX DVECT ALIGN D R VATT
+clearvars -except TR ADJE ELST VLST DVE NELE EATT EIDX ELOC DNORM PLEX DVECT ALIGN D R VATT VNORM CENTER
 
 toc
 

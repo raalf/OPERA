@@ -1,8 +1,7 @@
-function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, PLEX, DVECT, ALIGN, VATT, VNORM, CENTER] = fcnTRIANG(STL, ATYPE)
+function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, PLEX, DVECT, ALIGN, VATT, VNORM, CENTER] = fcnTRIANG(POINTS)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
-%   STL - .stl filename, string.
-%   ATYPE - Analysis type, string. 'LS' - lifting surface, 'PC' - panel code.
+%   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
 % Outputs:
 %   TR - MATLAB triangulation
 %   ADJE - NELE x 3 x SDEG matrix of adjacent HDVEs, where the row is the HDVE and the columns are the local edge numbers.
@@ -25,18 +24,11 @@ function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, PLEX, DVECT, ALIGN,
 % a split of SDEG > 3.
 % T.D.K 2016-08-15. 212-230 KING ST E, TORONTO, ONTARIO, CANADA, M5A-1K5
 
-[temp, ~] = fcnSTLREAD(STL);
-
-% Removing duplicate elements from OpenVSP STL when infinitely thin
-if strcmp(ATYPE,'LS')
-   temp((end/2) + 1:end,:,:) = []; 
-end
-
 % Number of DVEs
-NELE = size(temp(:,:,1),1);
+NELE = size(POINTS(:,:,1),1);
 
 % Getting unique vertices, and switching from (x,y,z) to indices with reference to master list VLST
-[VLST,~,j] = unique([temp(:,:,1); temp(:,:,2); temp(:,:,3)],'rows','stable');
+[VLST,~,j] = unique([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)],'rows','stable');
 DVE(:,:,1) = reshape(j,NELE,3);
 
 % Converting above data to triangulation

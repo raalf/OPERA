@@ -16,7 +16,7 @@ STL = 'CAD Geom/simple_liftingsurface.stl';
 %% Triangulating Geometry
 
 [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, ...
-    PLEX, DVECT, ALIGN, VATT, VNORM, CENTER] = fcnTRIANG(STL, ATYPE);
+    PLEX, DVECT, ALIGN, VATT, VNORM, CENTER] = fcnIMPORTGEOM(STL, ATYPE);
 
 %% D-Matrix Creation
 

@@ -4,7 +4,8 @@ function [hFig1] = fcnPLOTBODY(verbose, DVE, NELE, VLST, ELST, DVECT, CENTER)
 hFig1 = figure(1);
 % clf(1);
 
-patch('Faces',DVE(:,:,1),'Vertices',VLST,'FaceColor','r','LineWidth',2);
+TR = triangulation(DVE(:,:,1),VLST);
+trisurf(TR,'FaceColor',[.5 .5 .5],'LineWidth',2);
 alpha(0);
 hold on
 

@@ -17,8 +17,8 @@ STL = 'CAD Geom/simple_liftingsurface.stl';
 % A2TYPE = 'ROT';
 A2TYPE = 'WING';
 valMAXTIME = 5;
-valDELTIME = 0.2;
-vecTE = 3;
+valDELTIME = 0.3;
+vecTE = [3];
 
 seqALPHA = deg2rad(5);
 seqBETA = 0;
@@ -53,12 +53,14 @@ for ai = 1:length(seqALPHA)
             %   Calculate cn, cl, cy, cdi
             %   Calculate viscous effects
             
+            % Moving the wing or rotor
             if strcmp(A2TYPE,'WING') == 1
                 [VLST, CENTER, VUINF, CUINF, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, VLST, CENTER, ELST, vecTE);
             elseif strcmp(A2TYPE,'ROT') == 1
                 [VLST, CENTER, VUINF, CUINF, matNEWWAKE] = fcnMOVEROTOR(ROTORIG, DELROT, ROTRPM, VLST, CENTER, ELST, vecTE);
             end
             
+            % Generating new wake elements
             [matWAKEGEOM, WADJE, WELST, WVLST, WDVE, WNELE, WEATT, WEIDX, WELOC, WPLEX, WDVECT, WALIGN, WVATT, WVNORM, WCENTER] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM);
             
             
@@ -69,7 +71,7 @@ end
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(0, DVE, NELE, VLST, ELST, DVECT, CENTER);
+[hFig1] = fcnPLOTBODY(1, DVE, NELE, VLST, ELST, DVECT, CENTER);
 [hFig1] = fcnPLOTWAKE(0, WDVE, WNELE, WVLST, WELST, WDVECT, WCENTER);
 %% End
 

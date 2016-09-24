@@ -246,12 +246,12 @@ if ~isempty(vecSYM) == 1;
     lmb2 = reshape(lamb_circ(nonzeros(ELOC(idx,:)),2),nedg,1);
     lmb3 = reshape(lamb_circ(nonzeros(ELOC(idx,:)),3),nedg,1);
     
-    a2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
-    a1 = a2.^2;
-    b2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
-    b1 = b2.^2;
+    a2 = ones(nedg,1);
+    a1 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
+    b2 = ones(nedg,1);
+    b1 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
     
-    c3 = ones(nedg,2);
+    c3 = zeros(nedg,2);
     
     % The vorticity only in the spanwise direction is 0, which means we have to set a combo
     % of eta and xi vorticities to zero if the HDVE is not aligned in that direction

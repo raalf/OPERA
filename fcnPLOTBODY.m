@@ -2,7 +2,7 @@ function [hFig1] = fcnPLOTBODY(verbose, DVE, NELE, VLST, ELST, DVECT, CENTER)
 % This function plots all elements, and can label vertices, faces and edges.
 
 hFig1 = figure(1);
-% clf(1);
+clf(1);
 
 patch('Faces',DVE(:,:,1),'Vertices',VLST,'FaceColor','r','LineWidth',2);
 alpha(0);

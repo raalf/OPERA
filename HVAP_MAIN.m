@@ -6,8 +6,8 @@ tic
 % Analysis Type and Geometry File
 
 ATYPE = 'LS'; % Lifting Surface
-STL = 'CAD Geom/simple_liftingsurface.stl';
-% STL = 'CAD Geom/quad.stl';
+% STL = 'CAD Geom/simple_liftingsurface.stl';
+STL = 'CAD Geom/quad.stl';
 
 % STL = 'Cad Geom/lifting_split.stl';
 
@@ -18,8 +18,8 @@ STL = 'CAD Geom/simple_liftingsurface.stl';
 A2TYPE = 'WING';
 valMAXTIME = 5;
 valDELTIME = 0.3;
-vecTE = [3]';
-vecSYM = [1 5]';
+vecTE = [4]';
+vecSYM = []';
 
 seqALPHA = deg2rad(5);
 seqBETA = 0;

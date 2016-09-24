@@ -1,6 +1,6 @@
 clear
 clc
-clf
+% clf
 tic
 
 % Analysis Type and Geometry File
@@ -18,7 +18,8 @@ STL = 'CAD Geom/simple_liftingsurface.stl';
 A2TYPE = 'WING';
 valMAXTIME = 5;
 valDELTIME = 0.3;
-vecTE = [3];
+vecTE = [3]';
+vecSYM = [1 5]';
 
 seqALPHA = deg2rad(5);
 seqBETA = 0;
@@ -30,14 +31,27 @@ seqBETA = 0;
 
 %% D-Matrix Creation
 
-[D, R] = fcnDWING(EATT, PLEX, NELE, ELOC, ALIGN, VLST, VNORM, CENTER, DVE, DVECT);
-
+matD = fcnDWING(ATYPE, EATT, PLEX, NELE, ELOC, ELST, ALIGN, VLST, CENTER, DVE, DVECT, vecTE, vecSYM);
+valDLEN = length(matD);
 
 %% Alpha Loop
 for ai = 1:length(seqALPHA)
     valALPHA = seqALPHA(ai);
     for bi = 1:length(seqBETA)
         valBETA = seqBETA(bi);
+        
+        if strcmp(A2TYPE,'WING') == 1
+            [matVUINF, matCUINF] = fcnUINFWING(valALPHA, valBETA, VLST, CENTER);
+        elseif strcmp(A2TYPE,'ROT') == 1
+            [matVUINF, matCUINF] = fcnUINFROTOR(vecROTORIG, valROTRPM, matVLST, matCENTER);
+        end
+        
+        % Building wing resultant
+        vecR = fcnRWING(ATYPE, valDLEN, 0, VLST, ELST, EATT, CENTER, DVECT, matVUINF, matCUINF, vecTE);
+        
+        % Solving for wing coefficients
+        [matCOEFF] = fcnSOLVED(matD, vecR, NELE);
+        
         
         matWAKEGEOM = [];
         for valTIMESTEP = 1:valMAXTIME
@@ -55,9 +69,9 @@ for ai = 1:length(seqALPHA)
             
             % Moving the wing or rotor
             if strcmp(A2TYPE,'WING') == 1
-                [VLST, CENTER, VUINF, CUINF, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, VLST, CENTER, ELST, vecTE);
+                [VLST, CENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, VLST, CENTER, ELST, vecTE);
             elseif strcmp(A2TYPE,'ROT') == 1
-                [VLST, CENTER, VUINF, CUINF, matNEWWAKE] = fcnMOVEROTOR(ROTORIG, DELROT, ROTRPM, VLST, CENTER, ELST, vecTE);
+                [VLST, CENTER, matNEWWAKE] = fcnMOVEROTOR(ROTORIG, DELROT, ROTRPM, VLST, CENTER, ELST, vecTE);
             end
             
             % Generating new wake elements

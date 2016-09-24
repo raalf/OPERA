@@ -1,4 +1,4 @@
-function [matVLST, matCENTER, matVUINF, matCUINF, matNEWWAKE] = fcnMOVEROTOR(vecROTORIG, valDELROT, valROTRPM, matVLST, matCENTER, matELST, vecTE)
+function [matVLST, matCENTER, matNEWWAKE] = fcnMOVEROTOR(vecROTORIG, valDELROT, valROTRPM, matVLST, matCENTER, matELST, vecTE)
 
 % This function rotates a rotor about the z-axis by valDELROT angle at valROTRPM timestep size.
 % INPUT:

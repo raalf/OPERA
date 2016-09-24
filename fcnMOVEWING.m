@@ -1,4 +1,4 @@
-function [matVLST, matCENTER, matVUINF, matCUINF, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, matVLST, matCENTER, matELST, vecTE)
+function [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, matVLST, matCENTER, matELST, vecTE)
 % This function moves a wing (NOT rotor) by translating all of the vertices
 % in the VLST and the in-centers of each triangle in CENTER.
 
@@ -36,8 +36,4 @@ new_te = matVLST(matELST(vecTE,:),:);
 matNEWWAKE(:,:,1) = [new_te(1:end/2,:); old_te((end/2)+1:end,:)];
 matNEWWAKE(:,:,2) = [new_te((end/2)+1:end,:); old_te(1:end/2,:)];
 matNEWWAKE(:,:,3) = [old_te(1:end/2,:); new_te((end/2)+1:end,:)];
-
-% Saving velocities at all points (uniform for every vertex)
-matVUINF = repmat(uinf, length(matVLST(:,1)), 1);
-matCUINF = matVUINF;
 

@@ -10,8 +10,6 @@ fp = fcnTOLOC(dvenum, fpg, DVE, DVECT, VLST);
 endpoints = zeros(len*5, 3, 2); % Five function calls per DVE
 phi = zeros(len*5,1);
 yaw = zeros(len*5,1);
-% k = zeros(len*5,1);
-% fpl = zeros(len*5,3);
 
 k = zeros(len*5,1)+1; % Until this is figured out for HDVE, k = 1
 
@@ -98,6 +96,7 @@ a2l(idx_e,:) = bl(idx_e1+2,:) - bl(idx_e1+4,:);
 v1 = [a1l; a2l; b1l; b2l; a3l+b3l];
 
 v2 = fcnROTVECT(repmat(dvenum,5,1,1), v1, DVECT);
+% v2 = v1;
 
 a1 = v2(1:len,:);
 a2 = v2(len+1:2*len,:);

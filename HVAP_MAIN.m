@@ -16,7 +16,7 @@ STL = 'CAD Geom/quad.stl';
 
 % A2TYPE = 'ROT';
 A2TYPE = 'WING';
-valMAXTIME = 5;
+valMAXTIME = 1;
 valDELTIME = 0.3;
 vecTE = [4]';
 vecSYM = []';
@@ -69,13 +69,13 @@ for ai = 1:length(seqALPHA)
             
             % Moving the wing or rotor
             if strcmp(A2TYPE,'WING') == 1
-                [VLST, CENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, VLST, CENTER, ELST, vecTE);
+%                 [VLST, CENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, VLST, CENTER, ELST, vecTE);
             elseif strcmp(A2TYPE,'ROT') == 1
-                [VLST, CENTER, matNEWWAKE] = fcnMOVEROTOR(ROTORIG, DELROT, ROTRPM, VLST, CENTER, ELST, vecTE);
+%                 [VLST, CENTER, matNEWWAKE] = fcnMOVEROTOR(ROTORIG, DELROT, ROTRPM, VLST, CENTER, ELST, vecTE);
             end
             
             % Generating new wake elements
-            [matWAKEGEOM, WADJE, WELST, WVLST, WDVE, WNELE, WEATT, WEIDX, WELOC, WPLEX, WDVECT, WALIGN, WVATT, WVNORM, WCENTER] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM);
+%             [matWAKEGEOM, WADJE, WELST, WVLST, WDVE, WNELE, WEATT, WEIDX, WELOC, WPLEX, WDVECT, WALIGN, WVATT, WVNORM, WCENTER] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM);
             
             
             
@@ -85,8 +85,8 @@ end
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(1, DVE, NELE, VLST, ELST, DVECT, CENTER);
-[hFig1] = fcnPLOTWAKE(0, WDVE, WNELE, WVLST, WELST, WDVECT, WCENTER);
+[hFig1] = fcnPLOTBODY(1, DVE, NELE, VLST, ELST, DVECT, CENTER, PLEX, matCOEFF);
+% [hFig1] = fcnPLOTWAKE(0, WDVE, WNELE, WVLST, WELST, WDVECT, WCENTER);
 %% End
 
 

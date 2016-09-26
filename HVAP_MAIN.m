@@ -8,6 +8,8 @@ tic
 ATYPE = 'LS'; % Lifting Surface
 % STL = 'CAD Geom/simple_liftingsurface.stl';
 STL = 'CAD Geom/quad.stl';
+% STL = 'CAD Geom/2quad.stl';
+STL = 'CAD Geom/pyramid.stl';
 
 % STL = 'Cad Geom/lifting_split.stl';
 
@@ -18,7 +20,7 @@ STL = 'CAD Geom/quad.stl';
 A2TYPE = 'WING';
 valMAXTIME = 1;
 valDELTIME = 0.3;
-vecTE = [4]';
+vecTE = []';
 vecSYM = []';
 
 seqALPHA = deg2rad(5);
@@ -31,7 +33,7 @@ seqBETA = 0;
 
 %% D-Matrix Creation
 
-matD = fcnDWING(ATYPE, EATT, PLEX, NELE, ELOC, ELST, ALIGN, VLST, CENTER, DVE, DVECT, vecTE, vecSYM);
+matD = fcnDWING2(ATYPE, EATT, PLEX, NELE, ELOC, ELST, ALIGN, VLST, CENTER, DVE, DVECT, vecTE, vecSYM);
 valDLEN = length(matD);
 
 %% Alpha Loop

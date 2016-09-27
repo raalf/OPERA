@@ -2,7 +2,7 @@ function [matVLST, matCENTER, matNEWWAKE] = fcnMOVEROTOR(vecROTORIG, valDELROT, 
 
 % This function rotates a rotor about the z-axis by valDELROT angle at valROTRPM timestep size.
 % INPUT:
-%   vecROTORIG - Origin of the rotation. Rotation happens in the z-direction.
+%   vecROTORIG - Origin of the rotation. Rotation axis is in the z-direction
 %   valDELROT - Angle by which to rotate the rotor (radians)
 %   valROTRPM - Rotation speed of the rotor (rev/s)
 %   matVLST - Vertex list from fcnTRIANG

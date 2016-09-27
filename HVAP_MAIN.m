@@ -7,7 +7,7 @@ tic
 
 ATYPE = 'LS'; % Lifting Surface
 % STL = 'CAD Geom/simple_liftingsurface.stl';
-STL = 'CAD Geom/quad.stl';
+% STL = 'CAD Geom/quad.stl';
 % STL = 'CAD Geom/2quad.stl';
 STL = 'CAD Geom/pyramid.stl';
 

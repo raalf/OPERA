@@ -6,16 +6,11 @@ lamb_circ = [ ...
     0.5 0 0.5; ... % Edge 3 mid-point
     ];
 
-lamb_vort(:,:,1) = [ ...
+lamb_vort = [ ...
     1 0 0; ...
     0 1 0; ...
     0 0 1; ...
     ];
-% lamb_vort(:,:,2) = [ ...
-%     0 1 0; ...
-%     0 0 1; ...
-%     1 0 0; ...
-%     ];
 
 % D = sparse(N*5, N*5);
 
@@ -52,34 +47,21 @@ gamma1 = [a1(:,1),a2(:,1),b1(:,1),b2(:,1),c3(:,1)];
 gamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
 
 % Row indices of the rows where circulation equations will go
-rows = repmat([1:nedg]',1,5);
-rows = reshape(rows',[],1);
+rows = reshape([repmat([1:nedg]',1,5)]',[],1);
 row_loc(1) = max(rows); %Helps keep track of which rows are used
 
 % Column indices for the first half of each circulation equation, col# = (DVE*5)-4 as each DVE gets a 6 column group
-col1 = repmat([(EATT(idx,1).*5)-4],1,5)+repmat([0:4],nedg,1);
-col1 = reshape(col1',[],1);
+col1 = reshape([repmat([(EATT(idx,1).*5)-4],1,5) + repmat([0:4],nedg,1)]',[],1);
 
 % Assigning the values to D using linear indices
-idx1 =  sub2ind(size(D),rows,col1);
-D(idx1) = reshape(gamma1',[],1);
+D(sub2ind(size(D),rows,col1)) = reshape(gamma1',[],1);
 
 % Repeat of above, for the 2nd half of the circulation equations
-col2 = repmat([(EATT(idx,2).*5)-4],1,5)+repmat([0:4],nedg,1);
-col2 = reshape(col2',[],1);
-idx2 =  sub2ind(size(D),rows,col2);
-D(idx2) = reshape(gamma2',[],1);
+col2 = reshape([repmat([(EATT(idx,2).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1);
+D(sub2ind(size(D),rows,col2)) = reshape(gamma2',[],1);
 
 %% Vorticity at one vertex between elements
 % For reference, I will call 'mm' the current DVE and 'nn' the adjacent DVE
-
-% Vertices of mm and nn
-% This doesn't work because the vertices may be different (edge has 2 vertices,
-% the order we get them in isnt always right, so we could be setting the flip
-% to true
-
-% ELST(idx,:) % Global vertices this edge uses
-% EATT(idx,:) % DVEs this edge splits
 
 % Should return the local vertex number of the first vertex of the edge
 [~, bs1] = find(DVE(EATT(idx,1),:,1) == repmat(ELST(idx,1),1,3));
@@ -87,13 +69,6 @@ D(idx2) = reshape(gamma2',[],1);
 
 lmb1 = lamb_vort(bs1,:);
 lmb2 = lamb_vort(bs2,:);
-
-% lmb11 = reshape(lamb_vort(ELOC(idx,:),1,1),nedg,2); % one vertex from side 1
-% lmb12 = reshape(lamb_vort(ELOC(idx,:),1,2),nedg,2); % second vertex from side 1
-% lmb21 = reshape(lamb_vort(ELOC(idx,:),2,1),nedg,2); % one vertex from side 2
-% lmb22 = reshape(lamb_vort(ELOC(idx,:),2,2),nedg,2); % second vertex from side 2
-% lmb31 = reshape(lamb_vort(ELOC(idx,:),3,1),nedg,2);
-% lmb32 = reshape(lamb_vort(ELOC(idx,:),3,2),nedg,2);
 
 % Eta direction of mm and nn, an(:,1) is DVE mm and an(:,2) is DVE nn
 a2 = ones(nedg,2);
@@ -112,28 +87,21 @@ dgamma1 = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)]; % DVE mm in the eta dir
 
 % DVE nn in a combination of the eta and xi directions, multiplied by ALIGN matrix to get the proportions right
 % c3 is not multiplied by ALIGN, as it's a constant which is applied to both directions
-
 dgamma2 = [a1(:,2).*ALIGN(idx,1,1), a2(:,2).*ALIGN(idx,1,1), b1(:,2).*ALIGN(idx,2,1), b2(:,2).*ALIGN(idx,2,1), c3(:,2)].*-1;
 
 % Row indices of the rows where vorticity equations will go
-rows = repmat([1:nedg]',1,5)+nedg;
-rows = reshape(rows',[],1);
+rows = reshape([repmat([1:nedg]',1,5)+nedg]',[],1);
 row_loc(2) = max(rows); % Helps keep track of which rows are used
 
 % Column indices for the first half of each circulation equation, col# = (DVE*6)-5 as each DVE gets a 6 column group
-col1 = repmat([(EATT(idx,1).*5)-4],1,5)+repmat([0:4],nedg,1);
-col1 = reshape(col1',[],1);
+col1 = reshape([repmat([(EATT(idx,1).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1);
 
 % Column indices for the second half of each circulation equation, col# = (DVE*6)-5 as each DVE gets a 6 column group
-col2 = repmat([(EATT(idx,2).*5)-4],1,5)+repmat([0:4],nedg,1);
-col2 = reshape(col2',[],1);
+col2 = reshape([repmat([(EATT(idx,2).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1);
 
 % Assigning the values to D using linear indices
-idx4 =  sub2ind(size(D),rows,col1);
-D(idx4) = reshape(dgamma1',[],1);
-
-idx5 = sub2ind(size(D),rows,col2);
-D(idx5) = reshape(dgamma2',[],1);
+D(sub2ind(size(D),rows,col1)) = reshape(dgamma1',[],1);
+D(sub2ind(size(D),rows,col2)) = reshape(dgamma2',[],1);
 
 %% Vorticity at second vertex between elements
 
@@ -164,24 +132,18 @@ dgamma1 = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)];
 dgamma2 = [a1(:,2).*ALIGN(idx,1,1), a2(:,2).*ALIGN(idx,1,1), b1(:,2).*ALIGN(idx,2,1), b2(:,2).*ALIGN(idx,2,1), c3(:,2)].*-1;
 
 % Row indices of the rows where vorticity equations will go
-rows = repmat([1:nedg]',1,5)+nedg*2;
-rows = reshape(rows',[],1);
+rows = reshape([repmat([1:nedg]',1,5)+nedg*2]',[],1);
 row_loc(1) = max(rows); % Helps keep track of which rows are used
 
 % Column indices for the first half of each circulation equation, col# = (DVE*5)-4 as each DVE gets a 5 column group
-col1 = repmat([(EATT(idx,1).*5)-4],1,5)+repmat([0:4],nedg,1);
-col1 = reshape(col1',[],1);
+col1 = reshape([repmat([(EATT(idx,1).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1);
 
 % Column indices for the second half of each circulation equation, col# = (DVE*5)-4 as each DVE gets a 5 column group
-col2 = repmat([(EATT(idx,2).*5)-4],1,5)+repmat([0:4],nedg,1);
-col2 = reshape(col2',[],1);
+col2 = reshape([repmat([(EATT(idx,2).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1);
 
 % Assigning the values to D using linear indices
-idx6 =  sub2ind(size(D),rows,col1);
-D(idx6) = reshape(dgamma1',[],1);
-
-idx7 = sub2ind(size(D),rows,col2);
-D(idx7) = reshape(dgamma2',[],1);
+D(sub2ind(size(D),rows,col1)) = reshape(dgamma1',[],1);
+D(sub2ind(size(D),rows,col2)) = reshape(dgamma2',[],1);
 
 clear lmb1 lmb2
 
@@ -195,15 +157,11 @@ ddgamma = repmat([1 0 1 0 0],NELE,1);
 
 % This is the slot of empty rows in which we will put the irrotationality equations
 % (below circulation and vorticity, above kinematic conditions)
-rows = repmat([1:NELE]',1,5)+nedg*3;
-rows = reshape(rows',[],1);
+rows = reshape([repmat([1:NELE]',1,5)+nedg*3]',[],1);
 row_loc(4) = max(rows); % Helps keep track of which rows are used
 
-col3 = repmat((dvenum.*5)-4,1,5) + repmat([0:4],NELE,1);
-col3 = reshape(col3',[],1);
-
-idx8 = sub2ind(size(D),rows,col3);
-D(idx8) = reshape(ddgamma',[],1);
+col3 = reshape([repmat((dvenum.*5)-4,1,5) + repmat([0:4],NELE,1)]',[],1);
+D(sub2ind(size(D),rows,col3)) = reshape(ddgamma',[],1);
 
 %% Circulation equations at leading edge and wing tip
 % For lifting surface analysis
@@ -240,8 +198,7 @@ if strcmp(ATYPE,'LS') == 1;
     gamma_tip = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)];
     
     % Row indices of the rows where circulation equations will go
-    rows = repmat([1:nedg]',1,5) + max(rows);
-    rows = reshape(rows',[],1);
+    rows = reshape([repmat([1:nedg]',1,5) + max(rows)]',[],1);
     
     % Column indices for each circulation equation, col# = (DVE*5)-4 as each DVE gets a 5 column group
     col4 = repmat([(nonzeros(EATT(idx,:)).*5)-4],1,5)+repmat([0:4],nedg,1);

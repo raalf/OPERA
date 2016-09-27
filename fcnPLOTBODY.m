@@ -1,4 +1,4 @@
-function [hFig1] = fcnPLOTBODY(verbose, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF)
+function [hFig1] = fcnPLOTBODY(verbose, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF)
 % This function plots all elements, and can label vertices, faces and edges.
 
 hFig1 = figure(1);
@@ -29,7 +29,7 @@ if verbose == 1
     
     [q_ind] = fcnINDVEL(1:valNELE, matCENTER, matCOEFF, matDVE, matDVECT, matVLST, matPLEX);
     
-    quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 0.25, 'g')
+    quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1)+vecUINF(1), q_ind(:,2)+vecUINF(2), q_ind(:,3)+vecUINF(3), 0.25, 'g')
     
     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,1), matDVECT(:,2,1), matDVECT(:,3,1), 0.25, 'b') % eta
     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,2), matDVECT(:,2,2), matDVECT(:,3,2), 0.25, 'k') % xi

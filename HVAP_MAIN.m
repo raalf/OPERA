@@ -7,9 +7,9 @@ tic
 
 ATYPE = 'LS'; % Lifting Surface
 % STL = 'CAD Geom/simple_liftingsurface.stl';
-% STL = 'CAD Geom/quad.stl';
+STL = 'CAD Geom/quad.stl';
 % STL = 'CAD Geom/2quad.stl';
-STL = 'CAD Geom/pyramid.stl';
+% STL = 'CAD Geom/pyramid.stl';
 
 % STL = 'Cad Geom/lifting_split.stl';
 
@@ -42,18 +42,13 @@ for ai = 1:length(seqALPHA)
     for bi = 1:length(seqBETA)
         valBETA = seqBETA(bi);
         
-        if strcmp(A2TYPE,'WING') == 1
-            [matVUINF, matCUINF] = fcnUINFWING(valALPHA, valBETA, VLST, CENTER);
-        elseif strcmp(A2TYPE,'ROT') == 1
-            [matVUINF, matCUINF] = fcnUINFROTOR(vecROTORIG, valROTRPM, matVLST, matCENTER);
-        end
+        vecUINF = fcnUINFWING(valALPHA, valBETA);  
         
         % Building wing resultant
-        vecR = fcnRWING(ATYPE, valDLEN, 0, VLST, ELST, EATT, CENTER, DVECT, matVUINF, matCUINF, vecTE);
+        vecR = fcnRWING(ATYPE, valDLEN, 0, EATT, CENTER, DVECT, vecUINF, vecTE);
         
         % Solving for wing coefficients
         [matCOEFF] = fcnSOLVED(matD, vecR, NELE);
-        
         
         matWAKEGEOM = [];
         for valTIMESTEP = 1:valMAXTIME
@@ -69,15 +64,11 @@ for ai = 1:length(seqALPHA)
             %   Calculate cn, cl, cy, cdi
             %   Calculate viscous effects
             
-            % Moving the wing or rotor
-            if strcmp(A2TYPE,'WING') == 1
-%                 [VLST, CENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, VLST, CENTER, ELST, vecTE);
-            elseif strcmp(A2TYPE,'ROT') == 1
-%                 [VLST, CENTER, matNEWWAKE] = fcnMOVEROTOR(ROTORIG, DELROT, ROTRPM, VLST, CENTER, ELST, vecTE);
-            end
+            % Moving the wing
+            [VLST, CENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, VLST, CENTER, ELST, vecTE);
             
             % Generating new wake elements
-%             [matWAKEGEOM, WADJE, WELST, WVLST, WDVE, WNELE, WEATT, WEIDX, WELOC, WPLEX, WDVECT, WALIGN, WVATT, WVNORM, WCENTER] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM);
+            %             [matWAKEGEOM, WADJE, WELST, WVLST, WDVE, WNELE, WEATT, WEIDX, WELOC, WPLEX, WDVECT, WALIGN, WVATT, WVNORM, WCENTER] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM);
             
             
             
@@ -87,7 +78,7 @@ end
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(1, DVE, NELE, VLST, ELST, DVECT, CENTER, PLEX, matCOEFF);
+[hFig1] = fcnPLOTBODY(1, DVE, NELE, VLST, ELST, DVECT, CENTER, PLEX, matCOEFF, vecUINF);
 % [hFig1] = fcnPLOTWAKE(0, WDVE, WNELE, WVLST, WELST, WDVECT, WCENTER);
 %% End
 

@@ -7,8 +7,8 @@ tic
 
 strATYPE = 'LS'; % Lifting Surface
 % STL = 'CAD Geom/simple_liftingsurface.stl';
-strSTL = 'CAD Geom/quad.stl';
-% strSTL = 'CAD Geom/2quad.stl';
+% strSTL = 'CAD Geom/quad.stl';
+strSTL = 'CAD Geom/2quad.stl';
 % strSTL = 'CAD Geom/pyramid.stl';
 
 % STL = 'Cad Geom/lifting_split.stl';

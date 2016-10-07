@@ -108,9 +108,13 @@ for i = 1:length(vnuma(:,1))
 end
 align2 = align2./repmat(sqrt(sum(abs(align2.^2),2)),1,3,1);
 
+% Is multiplying by align2 like this correct?? HOw do I break dgamma into components correctly?
+% Should a2 and b2 be multiplied by align2??? They are constant across the HDVE
 
-dgamma1 = [align2(:,1,1).*a1(:,1),align2(:,1,1).*a2(:,1),align2(:,2,1).*b1(:,1),align2(:,2,1).*b2(:,1),c3(:,1)];
-dgamma2 = [align2(:,1,2).*a1(:,2),align2(:,1,2).*a2(:,2),align2(:,2,2).*b1(:,2),align2(:,2,2).*b2(:,2),c3(:,2)];
+% dgamma1 = [align2(:,1,1).*a1(:,1),align2(:,1,1).*a2(:,1),align2(:,2,1).*b1(:,1),align2(:,2,1).*b2(:,1),c3(:,1)];
+% dgamma2 = [align2(:,1,2).*a1(:,2),align2(:,1,2).*a2(:,2),align2(:,2,2).*b1(:,2),align2(:,2,2).*b2(:,2),c3(:,2)];
+dgamma1 = [align2(:,1,1).*a1(:,1),a2(:,1),align2(:,2,1).*b1(:,1),b2(:,1),c3(:,1)];
+dgamma2 = [align2(:,1,2).*a1(:,2),a2(:,2),align2(:,2,2).*b1(:,2),b2(:,2),c3(:,2)].*-1;
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,5)]',[],1);

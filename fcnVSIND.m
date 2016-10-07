@@ -1,4 +1,4 @@
-function [al, bl, cl] = fcnVSIND2(endpoints, phi, yaw, fpl, k)
+function [aloc, bloc, cloc] = fcnVSIND2(endpoints, phi, yaw, fpl, k)
 
 dbl_eps = 1e-14;
 
@@ -127,8 +127,8 @@ G23 = ((1./a2).*rt_2 - (b2./sqrt(a2.^3)).*log(mu3_2)) - ((1./a2).*rt_1 - (b2./sq
 G24 = ((1./sqrt(a2)).*log(mu3_2)) - ((1./sqrt(a2)).*log(mu3_1));
 
 % Eqn A2-10
-% G26 = ((1./zeta_0).*atan(t2./zeta_0)) - (1./zeta_0).*atan(t1./zeta_0);
-G26 = atan((t1.*t2 - t1.*zeta_0)./(zeta_0.^2 + t1.*t2)); % Divide by zeta????????????????????????????????????
+G26 = ((1./zeta_0).*atan(t2./zeta_0)) - (1./zeta_0).*atan(t1./zeta_0);
+% G26 = atan((t1.*t2 - t1.*zeta_0)./(zeta_0.^2 + t1.*t2)); % Divide by zeta????????????????????????????????????
 
 X2Y2 = (t1.*t2)./(zeta_0.^2);
 X2 = t2./zeta_0;
@@ -160,10 +160,10 @@ c26 = -2.*(zeta_0.^2);
 c27 = repmat(2,len,1);
 
 % Point is in plane of vortex sheet, but not on bound vortex
-idx30 = abs(zeta_0) <= dbl_eps;
+idx30 = abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) > dbl_eps;
 G21(idx30) = 0;
 G21b(idx30) = b21(idx30).*beta1(idx30).*(0.5.*log(mu1_2(idx30)./mu1_1(idx30)) + G25b(idx30))./rho(idx30);
-G21c(idx30) = b21(idx30).*beta1(idx30).*(eta_0(idx30).*log(mu1_2(idx30)./mu1_1(idx30)) + G25c(idx30))./rho(idx30);
+G21c(idx30) = b21(idx30).*beta1(idx30).*(eta_0(idx30).*log((mu1_2(idx30)+k(idx30))./(mu1_1(idx30)+k(idx30))) + G25c(idx30))./rho(idx30);
 G22(idx30) = 0;
 G26(idx30) = 0;
 
@@ -206,12 +206,12 @@ c2_zeta(idx40) = G21c(idx40) + G23(idx40).*c23(idx40) + G24(idx40).*c24(idx40) +
 % If he point falls on a swept leading edge inside the bounds of a sheet
 idx60 = abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps & abs(tan(phi)) > dbl_eps & abs(hspan) - abs(eta_0) >= -dbl_eps;
 b2_zeta(idx60) = 0;
-c2_zeta(idx60) = 0;
+% c2_zeta(idx60) = 0;
 
 % a, b, c in local ref frame
-bl = [b2_xsi b2_eta b2_zeta];
-cl = [c2_xsi c2_eta c2_zeta];
-al = zeros(size(bl));
+bloc = [b2_xsi b2_eta b2_zeta];
+cloc = [c2_xsi c2_eta c2_zeta];
+aloc = zeros(size(bloc));
 
 % % If the point lies on a swept leading edge
 % idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps; %& abs(phi) <= dbl_eps;
@@ -222,26 +222,27 @@ al = zeros(size(bl));
 
 % If the point lies on an unswept leading edge
 % a23ind.f - Line 604
-idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0) <= dbl_eps & abs(phi) <= dbl_eps;
-bl(idx_LE,1:2) = zeros(size(bl(idx_LE,1:2)));
-cl(idx_LE,1:2) = zeros(size(cl(idx_LE,1:2)));
+idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0.^2) <= dbl_eps & abs(phi) <= dbl_eps;
+bloc(idx_LE,1:2) = zeros(size(bloc(idx_LE,1:2)));
+cloc(idx_LE,1:2) = zeros(size(cloc(idx_LE,1:2)));
 % Horstmanns:
 % bl(idx_LE,3) = -log((t2(idx_LE) + k(idx_LE))./(t1(idx_LE) + k(idx_LE)));
 % cl(idx_LE,3) = -(2.*eta_0(idx_LE).*bl(idx_LE,3) - 2.*(t2(idx_LE) - t1(idx_LE)));
+
+% Reverted to GB's method, seems to work better (less singularities) T.D.K 2016-10-05
 % Bramesfelds:
-bl(idx_LE,3) = 0.5.*log((t1(idx_LE).^2 + k(idx_LE))./(t2(idx_LE).^2 + k(idx_LE)));
-% cl(idx_LE,3) = -4.*hspan(idx_LE) + eta_0(idx_LE).*2.*bl(idx_LE,3);
-cl(idx_LE,3) = -(2.*eta_0(idx_LE,1).*bl(idx_LE,3) - 2.*(t2(idx_LE,1) - t1(idx_LE,1)));
+bloc(idx_LE,3) = 0.5.*log((t1(idx_LE).^2 + k(idx_LE))./(t2(idx_LE).^2 + k(idx_LE)));
+cloc(idx_LE,3) = -4.*hspan(idx_LE) + eta_0(idx_LE).*2.*bloc(idx_LE,3);
 
 %% Rotate 90 degrees to appropriate direction if needed
 
-tempb(:,2) = bl(:,1).*cos(yaw) + bl(:,2).*sin(yaw);
-tempb(:,1) = bl(:,1).*sin(yaw) + bl(:,2).*cos(yaw);
-bl(:,1:2) = tempb;
+tempb(:,2) = bloc(:,1).*cos(yaw) + bloc(:,2).*sin(yaw);
+tempb(:,1) = bloc(:,1).*sin(yaw) + bloc(:,2).*cos(yaw);
+bloc(:,1:2) = tempb;
 
-tempc(:,2) = cl(:,1).*cos(yaw) + cl(:,2).*sin(yaw);
-tempc(:,1) = cl(:,1).*sin(yaw) + cl(:,2).*cos(yaw);
-cl(:,1:2) = tempc;
+tempc(:,2) = cloc(:,1).*cos(yaw) + cloc(:,2).*sin(yaw);
+tempc(:,1) = cloc(:,1).*sin(yaw) + cloc(:,2).*cos(yaw);
+cloc(:,1:2) = tempc;
 
 end
 

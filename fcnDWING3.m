@@ -78,8 +78,10 @@ c3 = zeros(nedg,2);
 
 % All edges that separate two HDVEs, in local coordinates of both HDVEs
 % use that to get an align thing going, and set the vorticity
-% along that edge equal for both HDVES
 
+% along that edge equal for both HDVES
+% vnuma is local vertices 1 and 2 (columns) for HDVE 1
+% vnumb is local vertices 1 and 2 for HDVE 2
 [ta,tb,~] = find(matDVE(matEATT(idx,1),:,1) == repmat(matELST(idx,1),1,3));
 [~,rb,] = sort(ta);
 vnuma(:,1) = tb(rb); % Sorting it according to row, cause find returns them jumbled up
@@ -96,8 +98,19 @@ vnumb(:,1) = tb(rb);
 [~,rb,] = sort(ta);
 vnumb(:,2) = tb(rb);
 
-dgamma1 = [a1(:,1),a2(:,1),b1(:,1),b2(:,1),c3(:,1)];
-dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
+% Now we use vnuma and vnumb to grab the right points from matPLEX
+% and we can get the vector of that edge in local coordinates of the HDVEs
+for i = 1:length(vnuma(:,1))
+   dve1 = matEATT(idx,1);
+   dve2 = matEATT(idx,2);
+   align2(i,:,1) = matPLEX(vnuma(i,1),:,dve1(i)) - matPLEX(vnuma(i,2),:,dve1(i));
+   align2(i,:,2) = matPLEX(vnumb(i,1),:,dve2(i)) - matPLEX(vnumb(i,2),:,dve2(i));
+end
+align2 = align2./repmat(sqrt(sum(abs(align2.^2),2)),1,3,1);
+
+
+dgamma1 = [align2(:,1,1).*a1(:,1),align2(:,1,1).*a2(:,1),align2(:,2,1).*b1(:,1),align2(:,2,1).*b2(:,1),c3(:,1)];
+dgamma2 = [align2(:,1,2).*a1(:,2),align2(:,1,2).*a2(:,2),align2(:,2,2).*b1(:,2),align2(:,2,2).*b2(:,2),c3(:,2)].*-1;
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,5)]',[],1);

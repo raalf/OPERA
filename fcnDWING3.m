@@ -81,12 +81,16 @@ c3 = zeros(nedg,2);
 % along that edge equal for both HDVES
 
 [ta,tb,~] = find(matDVE(matEATT(idx,1),:,1) == repmat(matELST(idx,1),1,3));
+vnuma(:,1) = tb(ta); % Sorting it according to row, cause find returns them jumbled up
 
+[ta,tb,~] = find(matDVE(matEATT(idx,1),:,1) == repmat(matELST(idx,2),1,3));
+vnuma(:,2) = tb(ta);
 
-[~,vnuma(:,2),~] = find(matDVE(matEATT(idx,1),:,1) == repmat(matELST(idx,2),1,3));
+[ta,tb,~] = find(matDVE(matEATT(idx,2),:,1) == repmat(matELST(idx,1),1,3));
+vnumb(:,1) = tb(ta);
 
-[~,vnumb(:,1),~] = find(matDVE(matEATT(idx,2),:,1) == repmat(matELST(idx,1),1,3));
-[~,vnumb(:,2),~] = find(matDVE(matEATT(idx,2),:,1) == repmat(matELST(idx,2),1,3));
+[ta,tb,~] = find(matDVE(matEATT(idx,2),:,1) == repmat(matELST(idx,2),1,3));
+vnumb(:,2) = tb(ta);
 
 dgamma1 = [a1(:,1),a2(:,1),b1(:,1),b2(:,1),c3(:,1)];
 dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;

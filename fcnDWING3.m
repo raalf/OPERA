@@ -110,7 +110,7 @@ align2 = align2./repmat(sqrt(sum(abs(align2.^2),2)),1,3,1);
 
 
 dgamma1 = [align2(:,1,1).*a1(:,1),align2(:,1,1).*a2(:,1),align2(:,2,1).*b1(:,1),align2(:,2,1).*b2(:,1),c3(:,1)];
-dgamma2 = [align2(:,1,2).*a1(:,2),align2(:,1,2).*a2(:,2),align2(:,2,2).*b1(:,2),align2(:,2,2).*b2(:,2),c3(:,2)].*-1;
+dgamma2 = [align2(:,1,2).*a1(:,2),align2(:,1,2).*a2(:,2),align2(:,2,2).*b1(:,2),align2(:,2,2).*b2(:,2),c3(:,2)];
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,5)]',[],1);

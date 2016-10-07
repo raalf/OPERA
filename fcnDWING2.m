@@ -86,7 +86,7 @@ dgamma1 = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)]; % DVE mm in the eta dir
 % DVE nn in a combination of the eta and xi directions, multiplied by ALIGN matrix to get the proportions right
 % c3 is not multiplied by ALIGN, as it's a constant which is applied to both directions
 dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
-
+dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,5)]',[],1);
 

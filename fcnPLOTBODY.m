@@ -69,8 +69,8 @@ for i = 1:valNELE
     
     vort = 2.*matCOEFF(i,1).*eta + matCOEFF(i,2) + 2.*matCOEFF(i,3).*xsi + matCOEFF(i,4);
    
-%     vort = matCOEFF(i,1).*eta + matCOEFF(i,2);
-%     vort = matCOEFF(i,3).*xsi + matCOEFF(i,4);
+    vort2 = matCOEFF(i,1).*eta + matCOEFF(i,2);
+    vort3 = matCOEFF(i,3).*xsi + matCOEFF(i,4);
     
     len = length(eta);
     
@@ -78,8 +78,10 @@ for i = 1:valNELE
     
     DT = delaunay(etaxsi(:,1), etaxsi(:,2));
     
-%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), circ,'EdgeColor','r','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
-    trisurf(DT, etaxsi(:,1), etaxsi(:,2), vort,'EdgeColor','b','FaceColor','b','FaceAlpha',0.5,'EdgeAlpha',0.5)
+    trisurf(DT, etaxsi(:,1), etaxsi(:,2), circ,'EdgeColor','r','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
+%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), vort,'EdgeColor','b','FaceColor','b','FaceAlpha',0.5,'EdgeAlpha',0.5)
+%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), vort2,'EdgeColor','g','FaceColor','g','FaceAlpha',0.5,'EdgeAlpha',0.5)
+%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), vort3,'EdgeColor','m','FaceColor','m','FaceAlpha',0.5,'EdgeAlpha',0.5)
     
 end
 

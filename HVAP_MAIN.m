@@ -8,8 +8,8 @@ tic
 strATYPE = 'LS'; % Lifting Surface
 % STL = 'CAD Geom/simple_liftingsurface.stl';
 % strSTL = 'CAD Geom/quad.stl';
-strSTL = 'CAD Geom/2quad.stl';
-% strSTL = 'CAD Geom/pyramid.stl';
+% strSTL = 'CAD Geom/2quad.stl';
+strSTL = 'CAD Geom/pyramid.stl';
 
 % STL = 'Cad Geom/lifting_split.stl';
 
@@ -22,7 +22,7 @@ valDELTIME = 0.3;
 vecTE = []';
 vecSYM = []';
 
-seqALPHA = deg2rad(5);
+seqALPHA = deg2rad(50);
 seqBETA = 0;
 
 %% Triangulating Geometry

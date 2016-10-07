@@ -1,4 +1,5 @@
-function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, PLEX, DVECT, ALIGN, VATT, VNORM, CENTER] = fcnTRIANG(POINTS)
+function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
+            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER] = fcnTRIANG(POINTS)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -25,25 +26,25 @@ function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, PLEX, DVECT, ALIGN,
 % T.D.K 2016-08-15. 212-230 KING ST E, TORONTO, ONTARIO, CANADA, M5A-1K5
 
 % Number of DVEs
-NELE = size(POINTS(:,:,1),1);
+valNELE = size(POINTS(:,:,1),1);
 
 % Getting unique vertices, and switching from (x,y,z) to indices with reference to master list VLST
-[VLST,~,j] = unique([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)],'rows','stable');
-DVE(:,:,1) = reshape(j,NELE,3);
+[matVLST,~,j] = unique([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)],'rows','stable');
+matDVE(:,:,1) = reshape(j,valNELE,3);
 
 % Converting above data to triangulation
-TR = triangulation(DVE(:,:,1),VLST);
+TR = triangulation(matDVE(:,:,1),matVLST);
 
-ELST = edges(TR); % List of unique edges
+matELST = edges(TR); % List of unique edges
 DNORM = -faceNormal(TR);
 
-DVE(:,:,2) = faceNormal(TR); % Normal
-CENTER = incenter(TR); % incenter of triangle
+matDVE(:,:,2) = faceNormal(TR); % Normal
+matCENTER = incenter(TR); % incenter of triangle
 
 
 %% Finding edge attachement matrix (which DVEs share which edge)
 
-temp2 = edgeAttachments(TR, ELST);
+temp2 = edgeAttachments(TR, matELST);
 
 % Different numbers of edge attachements means we can't do a straight cell2mat on edgeAttachements(TR,ELST)
 cellsz = cell2mat(cellfun(@size,temp2,'uni',false));
@@ -56,23 +57,23 @@ else
 end
 temp3(idx==1,1) = cell2mat(temp2(idx==1,:));
 
-EATT = sort(temp3,2); % List of unique edge attachements (by element #), and sort it on each row
+matEATT = sort(temp3,2); % List of unique edge attachements (by element #), and sort it on each row
 
 %% Mapping global edge number to local edge number in EIDX
 % This may be improved to fewer lines
 
 % Making an NELE*3 x 2 matrix of vertices between which are edges. The first third is for the first edge of each HDVE,
 % the second third is for the second edge of each HDVE, etc.
-dve1 = reshape([DVE(:,1:2,1) DVE(:,2:3,1) DVE(:,3,1) DVE(:,1,1)],NELE,2,3);
+dve1 = reshape([matDVE(:,1:2,1) matDVE(:,2:3,1) matDVE(:,3,1) matDVE(:,1,1)],valNELE,2,3);
 dve2 = [dve1(:,:,1); dve1(:,:,2); dve1(:,:,3)];
 
 % Finding the number of edges
-nedg = length(ELST(:,1));
+nedg = length(matELST(:,1));
 
 % Finding which edge occurs on which DVE, returned as a cell array
 % The reverse is searched for as well to find both instances of an edge
-[~,a1] = ismembertol(ELST,dve2,'ByRows',true,'OutputAllIndices',true);
-[~,b1] = ismembertol([ELST(:,2) ELST(:,1)],dve2,'ByRows',true,'OutputAllIndices',true);
+[~,a1] = ismembertol(matELST,dve2,'ByRows',true,'OutputAllIndices',true);
+[~,b1] = ismembertol([matELST(:,2) matELST(:,1)],dve2,'ByRows',true,'OutputAllIndices',true);
 
 clear temp2 temp3
 
@@ -96,62 +97,62 @@ temp7 = [temp5 temp6];
 temp4 = find(reshape(temp7,[],1)>0);
 % Finding the indices that order the above list appropriately
 [~,idx2] = sort(temp7(find(temp7>0)));
-EIDX = temp4(idx2);
+matEIDX = temp4(idx2);
 % As it was an nedg*2 x 1 list, we remove nedg for values > nedg to start at 1 again
-temp8 = (floor(EIDX./nedg).*nedg);
-EIDX(EIDX>nedg) = EIDX(EIDX>nedg) - temp8(EIDX>nedg);
-EIDX(EIDX==0) = nedg;
-EIDX = reshape(EIDX,[],3);
+temp8 = (floor(matEIDX./nedg).*nedg);
+matEIDX(matEIDX>nedg) = matEIDX(matEIDX>nedg) - temp8(matEIDX>nedg);
+matEIDX(matEIDX==0) = nedg;
+matEIDX = reshape(matEIDX,[],3);
 
 %% Computing ELOC
 
-[i3,~,~] = find(EATT>0); % Finding indices of nonzero elements in EATT
-[i,j,~] = find(EIDX(EATT(EATT>0),:) == repmat(i3,1,3)); % Finding where these indices are equal to whats in EIDX
+[i3,~,~] = find(matEATT>0); % Finding indices of nonzero elements in EATT
+[i,j,~] = find(matEIDX(matEATT(matEATT>0),:) == repmat(i3,1,3)); % Finding where these indices are equal to whats in EIDX
 
 temp31 = sortrows([i j]); % Sorting by column 1 so column 2 is the correct order
-ELOC(EATT>0,1) = temp31(:,2); % ELOC is column 2, indexing it appropriately
-ELOC = reshape(ELOC,nedg,[]);
+matELOC(matEATT>0,1) = temp31(:,2); % ELOC is column 2, indexing it appropriately
+matELOC = reshape(matELOC,nedg,[]);
 
 %% Computing the adjaceny matrix (which DVEs are adjacent to which, columns are sensitive to edge number)
 
-SDEG = length(EATT(1,:)); % The degree of the split
+SDEG = length(matEATT(1,:)); % The degree of the split
 
 % Neighbouring elements along the first local edge of each HDVE
-temp10 = EATT(EIDX(:,1),:); % Getting all HDVEs that share the local first edge of every HDVE
-temp10(temp10==repmat([1:NELE]',1,SDEG)) = 0; % Removing HDVE from its own adjacency
+temp10 = matEATT(matEIDX(:,1),:); % Getting all HDVEs that share the local first edge of every HDVE
+temp10(temp10==repmat([1:valNELE]',1,SDEG)) = 0; % Removing HDVE from its own adjacency
 temp10 = sort(temp10,2); % Sorting to sift out the zeros from the columns
 temp10(:,1) = []; % Removing extra column of zeros after the sort
-ADJE(:,1,:) = reshape(temp10,NELE,1,SDEG-1); % Placing values in ADJE matrix
+matADJE(:,1,:) = reshape(temp10,valNELE,1,SDEG-1); % Placing values in ADJE matrix
 
 clear temp10
 
 % Local edge #2
-temp10 = EATT(EIDX(:,2),:); % Getting all HDVEs that share the local first edge of every HDVE
-temp10(temp10==repmat([1:NELE]',1,SDEG)) = 0; % Removing HDVE from its own adjacency
+temp10 = matEATT(matEIDX(:,2),:); % Getting all HDVEs that share the local first edge of every HDVE
+temp10(temp10==repmat([1:valNELE]',1,SDEG)) = 0; % Removing HDVE from its own adjacency
 temp10 = sort(temp10,2); % Sorting to sift out the zeros from the columns
 temp10(:,1) = []; % Removing extra column of zeros after the sort
-ADJE(:,2,:) = reshape(temp10,NELE,1,SDEG-1); % Placing values in ADJE matrix
+matADJE(:,2,:) = reshape(temp10,valNELE,1,SDEG-1); % Placing values in ADJE matrix
 
 clear temp10
 
 % Local edge #3
-temp10 = EATT(EIDX(:,3),:); % Getting all HDVEs that share the local first edge of every HDVE
-temp10(temp10==repmat([1:NELE]',1,SDEG)) = 0; % Removing HDVE from its own adjacency
+temp10 = matEATT(matEIDX(:,3),:); % Getting all HDVEs that share the local first edge of every HDVE
+temp10(temp10==repmat([1:valNELE]',1,SDEG)) = 0; % Removing HDVE from its own adjacency
 temp10 = sort(temp10,2); % Sorting to sift out the zeros from the columns
 temp10(:,1) = []; % Removing extra column of zeros after the sort
-ADJE(:,3,:) = reshape(temp10,NELE,1,SDEG-1); % Placing values in ADJE matrix
+matADJE(:,3,:) = reshape(temp10,valNELE,1,SDEG-1); % Placing values in ADJE matrix
 
 clear temp10
 
 % If missing an adjacency with panel code, then there is a discontinuity in the geometry somewhere
-if isempty(find(isnan(ADJE))) == 0 && strcmp(ATYPE,'PC')
+if isempty(find(isnan(matADJE))) == 0 && strcmp(ATYPE,'PC')
     disp('Problem with geometry in fcnTRIANG.')
 end
 
 %% Local HDVE Eta-Xi Axis
 
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
-[PLEX, DVECT] = fcnTRITOLEX(P, DNORM);
+[matPLEX, matDVECT] = fcnTRITOLEX(P, DNORM);
 
 % % Plotting global and local to visualize
 % test_num = 396;
@@ -177,57 +178,57 @@ P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
 
 %% Finding DVE Alignment Matrix ALIGN
 
-ALIGN = repmat(zeros(size(EATT)),1,1,2);
+matALIGN = repmat(zeros(size(matEATT)),1,1,2);
 
 % Projecting vector from DVE onto adjacent DVE
-idx = all(EATT,2); % All edges that split 2 DVEs
+idx = all(matEATT,2); % All edges that split 2 DVEs
 
 % Eta direction of DVE projected onto adjacent DVE
-vec1 = DVECT(EATT(idx,1),:,1) - repmat((dot(DVECT(EATT(idx,1),:,1),DVECT(EATT(idx,2),:,3), 2)./(sqrt(sum(abs(DVECT(EATT(idx,2),:,3).^2),2)).^2)),1,3).*DVECT(EATT(idx,2),:,3);
+vec1 = matDVECT(matEATT(idx,1),:,1) - repmat((dot(matDVECT(matEATT(idx,1),:,1),matDVECT(matEATT(idx,2),:,3), 2)./(sqrt(sum(abs(matDVECT(matEATT(idx,2),:,3).^2),2)).^2)),1,3).*matDVECT(matEATT(idx,2),:,3);
 
 % Xi direction of DVE projected onto adjacent DVE
-vec2 = DVECT(EATT(idx,1),:,2) - repmat((dot(DVECT(EATT(idx,1),:,2),DVECT(EATT(idx,2),:,3), 2)./(sqrt(sum(abs(DVECT(EATT(idx,2),:,3).^2),2)).^2)),1,3).*DVECT(EATT(idx,2),:,3);
+vec2 = matDVECT(matEATT(idx,1),:,2) - repmat((dot(matDVECT(matEATT(idx,1),:,2),matDVECT(matEATT(idx,2),:,3), 2)./(sqrt(sum(abs(matDVECT(matEATT(idx,2),:,3).^2),2)).^2)),1,3).*matDVECT(matEATT(idx,2),:,3);
 
 % If any of the projected vectors are equal to the normal, then take the cross product of the other projected vector and the normal
 idx1 = ~any(vec1,2);
-vec1(idx1,:) = cross(DVECT(EATT(idx1,2),:,3),vec2(idx1,:)); 
+vec1(idx1,:) = cross(matDVECT(matEATT(idx1,2),:,3),vec2(idx1,:)); 
 idx2 = ~any(vec2,2);
-vec2(idx2,:) = cross(vec1(idx2,:),DVECT(EATT(idx2,2),:,3)); 
+vec2(idx2,:) = cross(vec1(idx2,:),matDVECT(matEATT(idx2,2),:,3)); 
 
 % Finding local eta, xi of projections on adjacent DVE
-ALIGN(idx,1,1) = dot(vec1,DVECT(EATT(idx,2),:,1),2);
-ALIGN(idx,2,1) = dot(vec1,DVECT(EATT(idx,2),:,2),2);
+matALIGN(idx,1,1) = dot(vec1,matDVECT(matEATT(idx,2),:,1),2);
+matALIGN(idx,2,1) = dot(vec1,matDVECT(matEATT(idx,2),:,2),2);
 
-ALIGN(idx,1,2) = dot(vec2,DVECT(EATT(idx,2),:,1),2);
-ALIGN(idx,2,2) = dot(vec2,DVECT(EATT(idx,2),:,2),2);
+matALIGN(idx,1,2) = dot(vec2,matDVECT(matEATT(idx,2),:,1),2);
+matALIGN(idx,2,2) = dot(vec2,matDVECT(matEATT(idx,2),:,2),2);
 
 %% Vertex attachements and normal averages
 
-VATT = vertexAttachments(TR);
+matVATT = vertexAttachments(TR);
 
 % Turning the cell array VATT into a matrix - A.Y. Method 2016-09-20
-cellsza = cell2mat(cellfun(@size,VATT,'uni',false));
+cellsza = cell2mat(cellfun(@size,matVATT,'uni',false));
 idxa = cellsza(:,2);
-idx2 = num2cell(max(cell2mat(cellfun(@length,VATT,'uni',false)))-idxa);
-VATT = cell2mat(cellfun(@(x,y) padarray(x,[0 y],NaN,'post'), VATT, idx2, 'uni', false));
+idx2 = num2cell(max(cell2mat(cellfun(@length,matVATT,'uni',false)))-idxa);
+matVATT = cell2mat(cellfun(@(x,y) padarray(x,[0 y],NaN,'post'), matVATT, idx2, 'uni', false));
 
 % Finding the averaged face-normals of all elements attached to the vertices
-idx50 = VATT>0;
-temp50 = permute(DVECT(VATT(idx50),:,3),[1,3,2]);
-temp51 = zeros(size(VATT));
-temp52 = zeros(size(VATT));
-temp53 = zeros(size(VATT));
+idx50 = matVATT>0;
+temp50 = permute(matDVECT(matVATT(idx50),:,3),[1,3,2]);
+temp51 = zeros(size(matVATT));
+temp52 = zeros(size(matVATT));
+temp53 = zeros(size(matVATT));
 temp51(idx50) = temp50(:,:,1);
 temp52(idx50) = temp50(:,:,2);
 temp53(idx50) = temp50(:,:,3);
 
 % Averaging the normals of the x, y, z components of the normals attached to each vertex
-VNORM = [mean(temp51,2) mean(temp52,2) mean(temp53,2)];
+matVNORM = [mean(temp51,2) mean(temp52,2) mean(temp53,2)];
 
 % Normalizing these vectors
-VNORM = VNORM./repmat(sqrt(sum(abs(VNORM).^2,2)), 1,3);
+matVNORM = matVNORM./repmat(sqrt(sum(abs(matVNORM).^2,2)), 1,3);
 
-clearvars -except TR ADJE ELST VLST DVE NELE EATT EIDX ELOC PLEX DVECT ALIGN VATT VNORM CENTER
+% clearvars -except TR ADJE ELST VLST DVE NELE EATT EIDX ELOC PLEX DVECT ALIGN VATT VNORM CENTER
 
 end
 

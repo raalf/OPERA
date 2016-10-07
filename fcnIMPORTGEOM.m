@@ -1,4 +1,5 @@
-function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, PLEX, DVECT, ALIGN, VATT, VNORM, CENTER] = fcnIMPORTGEOM(STL, ATYPE)
+function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, ...
+            matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER] = fcnIMPORTGEOM(strSTL, strATYPE)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   STL - .stl filename, string.
@@ -25,14 +26,14 @@ function [TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, PLEX, DVECT, ALIGN,
 % a split of SDEG > 3.
 % T.D.K 2016-09-23. KHE 33, 350 VICTORIA STREET, TORONTO, ONTARIO, CANADA M5B-2K3
 
-[temp, ~] = fcnSTLREAD(STL);
+[temp, ~] = fcnSTLREAD(strSTL);
 
 % Removing duplicate elements from OpenVSP STL when infinitely thin
-if strcmp(ATYPE,'LS')
+if strcmp(strATYPE,'LS')
    temp((end/2) + 1:end,:,:) = []; 
 end
 
-[TR, ADJE, ELST, VLST, DVE, NELE, EATT, EIDX, ELOC, PLEX, DVECT, ALIGN, VATT, VNORM, CENTER] = fcnTRIANG(temp);
+[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER] = fcnTRIANG(temp);
 
 end
 

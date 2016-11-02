@@ -70,11 +70,14 @@ for ai = 1:length(seqALPHA)
         matWVNORM = [];
         matWCENTER = [];
         matWAKEGEOM = [];
+        valWSIZE = [];
+        matWCOEFF = [];
+        matWVLST = [];
         
         vecUINF = fcnUINFWING(valALPHA, valBETA);
         
         % Building wing resultant
-        vecR = fcnRWING(strATYPE, valDLEN, 0, matEATT, matCENTER, matDVECT, vecUINF, vecTE);
+        vecR = fcnRWING(strATYPE, valDLEN, 0, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
         
         % Solving for wing coefficients
         [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
@@ -83,25 +86,30 @@ for ai = 1:length(seqALPHA)
             %% Timestep to solution
             %   Move wing
             %   Generate new wake elements
-            %   Create W-Matrix and W-Resultant
-            %   Solve W-Matrix
+            %   Create and solve WD-Matrix for new elements
+            %   Solve wing D-Matrix with wake-induced velocities
+            %   Solve entire WD-Matrix
             %   Relaxation procedure (Relax, create W-Matrix and W-Resultant, solve W-Matrix)
             %   Calculate surface normal forces
             %   Calculate DVE normal forces
             %   Calculate induced drag
-            %   Calculate cn, cl, cy, cdi
-            %   Calculate viscous effects
             
-            %             % Moving the wing
+            valWSIZE = length(vecTE);
+            
+            % Moving the wing
             [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, matVLST, matCENTER, matELST, vecTE);
             
             % Generating new wake elements
             if any(vecTE)
                 [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
-                    matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM);
+                    matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWCOEFF] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, matWCOEFF, vecTE);
             end
             
+            % Rebuild wing resultant
+            vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
             
+            matCOEFF = fcnSOLVED(matD, vecR, valNELE);
+                        
         end
     end
 end
@@ -109,6 +117,7 @@ end
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 if any(vecTE)
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 end

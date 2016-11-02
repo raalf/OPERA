@@ -253,8 +253,8 @@ irrot(sub2ind(size(irrot),rows,col3)) = reshape(ddgamma',[],1);
 circ_tip = [];
 if strcmp(strATYPE,'LS') == 1;
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
-    idx(vecTE) = 0;
-    idx(vecSYM) = 0;
+%     idx(vecTE) = 0;
+%     idx(vecSYM) = 0;
     nedg = length(matEATT(idx,1));
     
     % (x,y) of all three vertices of HDVEs in local coordinates

@@ -1,28 +1,43 @@
 clear
 clc
-% clf
+
 tic
 
+%% Header
+
+disp('=====================================================================================');
+disp('+---------------+                                      ');
+disp('| RYERSON       |  HVAP V1.0   []                         []  ');
+disp('| APPLIED       |              ||   ___     ___     ___   ||  ');
+disp('| AERODYNAMICS  |              ||  /   \   /| |\   /   \  ||  ');
+disp('| LABORATORY OF |              || |  O  |__|| ||__|  O  | ||  ');
+disp('| FLIGHT        |              ||  \___/--/^^^^^\--\___/  ||  ');
+disp('+---------------+              ||________|       |________||  __');
+disp('        .-----------------/  \-++--------|   .   |--------++-/  \-----------------. ');
+disp('       /.---------________|  |___________\__(*)__/___________|  |________---------.\');
+disp('                 |    |   ''$$''   |                       |   ''$$''   |    |       ');
+disp('                (o)  (o)        (o)                     (o)        (o)  (o)         ');
+disp('=====================================================================================');
+
+%% Preamble
 % Analysis Type and Geometry File
 
 strATYPE = 'LS'; % Lifting Surface
-% STL = 'CAD Geom/simple_liftingsurface.stl';
+strSTL = 'CAD Geom/simple_liftingsurface.stl';
 % strSTL = 'CAD Geom/quad.stl';
 % strSTL = 'CAD Geom/2quad.stl';
-strSTL = 'CAD Geom/pyramid.stl';
-
-% STL = 'Cad Geom/lifting_split.stl';
+% strSTL = 'CAD Geom/pyramid.stl';
 
 % ATYPE = 'PC'; % Panel Code
 % STL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 1;
+valMAXTIME = 6;
 valDELTIME = 0.3;
-vecTE = []';
+vecTE = [3]';
 vecSYM = []';
 
-seqALPHA = deg2rad(50);
+seqALPHA = 30;
 seqBETA = 0;
 
 %% Triangulating Geometry
@@ -41,7 +56,22 @@ for ai = 1:length(seqALPHA)
     for bi = 1:length(seqBETA)
         valBETA = deg2rad(seqBETA(bi));
         
-        vecUINF = fcnUINFWING(valALPHA, valBETA);  
+        matWADJE = [];
+        matWELST = [];
+        matWDVE = [];
+        valWNELE = [];
+        matWEATT = [];
+        matWEIDX = [];
+        matWELOC = [];
+        matWPLEX = [];
+        matWDVECT = [];
+        matWALIGN = [];
+        matWVATT = [];
+        matWVNORM = [];
+        matWCENTER = [];
+        matWAKEGEOM = [];
+        
+        vecUINF = fcnUINFWING(valALPHA, valBETA);
         
         % Building wing resultant
         vecR = fcnRWING(strATYPE, valDLEN, 0, matEATT, matCENTER, matDVECT, vecUINF, vecTE);
@@ -49,36 +79,40 @@ for ai = 1:length(seqALPHA)
         % Solving for wing coefficients
         [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
         
-        matWAKEGEOM = [];
-%         for valTIMESTEP = 1:valMAXTIME
-%             %% Timestep to solution
-%             %   Move wing
-%             %   Generate new wake elements
-%             %   Create W-Matrix and W-Resultant
-%             %   Solve W-Matrix
-%             %   Relaxation procedure (Relax, create W-Matrix and W-Resultant, solve W-Matrix)
-%             %   Calculate surface normal forces
-%             %   Calculate DVE normal forces
-%             %   Calculate induced drag
-%             %   Calculate cn, cl, cy, cdi
-%             %   Calculate viscous effects
-%             
-%             % Moving the wing
-%             [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, matVLST, matCENTER, matELST, vecTE);
-%             
-%             % Generating new wake elements
-% %             [matWAKEGEOM, WADJE, WELST, WVLST, WDVE, WNELE, WEATT, WEIDX, WELOC, WPLEX, WDVECT, WALIGN, WVATT, WVNORM, WCENTER] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM);
-%             
-%             
-%             
-%         end
+        for valTIMESTEP = 1:valMAXTIME
+            %% Timestep to solution
+            %   Move wing
+            %   Generate new wake elements
+            %   Create W-Matrix and W-Resultant
+            %   Solve W-Matrix
+            %   Relaxation procedure (Relax, create W-Matrix and W-Resultant, solve W-Matrix)
+            %   Calculate surface normal forces
+            %   Calculate DVE normal forces
+            %   Calculate induced drag
+            %   Calculate cn, cl, cy, cdi
+            %   Calculate viscous effects
+            
+            %             % Moving the wing
+            [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, matVLST, matCENTER, matELST, vecTE);
+            
+            % Generating new wake elements
+            if any(vecTE)
+                [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
+                    matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM);
+            end
+            
+            
+        end
     end
 end
 
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
-% [hFig1] = fcnPLOTWAKE(0, WDVE, WNELE, WVLST, WELST, WDVECT, WCENTER);
+if any(vecTE)
+    [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
+end
+
 %% End
 
 

@@ -23,18 +23,18 @@ disp('==========================================================================
 % Analysis Type and Geometry File
 
 strATYPE = 'LS'; % Lifting Surface
-strSTL = 'CAD Geom/simple_liftingsurface.stl';
+% strSTL = 'CAD Geom/simple_liftingsurface.stl';
 % strSTL = 'CAD Geom/quad.stl';
 % strSTL = 'CAD Geom/2quad.stl';
-% strSTL = 'CAD Geom/pyramid.stl';
+strSTL = 'CAD Geom/pyramid.stl';
 
 % ATYPE = 'PC'; % Panel Code
 % STL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 6;
+valMAXTIME = 10;
 valDELTIME = 0.3;
-vecTE = [3]';
+vecTE = [5]';
 vecSYM = []';
 
 seqALPHA = 30;
@@ -102,7 +102,7 @@ for ai = 1:length(seqALPHA)
             % Generating new wake elements
             if any(vecTE)
                 [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
-                    matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWCOEFF] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, matWCOEFF, vecTE);
+                    matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWCOEFF] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, matWCOEFF, vecTE, matEATT);
             end
             
             % Rebuild wing resultant

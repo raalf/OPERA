@@ -1,5 +1,5 @@
 function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER] = fcnTRIANG(POINTS)
+            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER] = fcnTRIANG(strATYPE, POINTS)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -30,7 +30,13 @@ valNELE = size(POINTS(:,:,1),1);
 
 % Getting unique vertices, and switching from (x,y,z) to indices with reference to master list VLST
 [matVLST,~,j] = unique([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)],'rows','stable');
-matDVE(:,:,1) = reshape(j,valNELE,3);
+matDVE(:,:,1) = reshape(j,[],3);
+
+% Removing duplicate elements from OpenVSP STL when infinitely thin
+if strcmp(strATYPE,'LS')
+   matDVE = unique(sort(reshape(j,[],3),2),'rows','stable');
+   valNELE = length(matDVE(:,1)); 
+end
 
 % Converting above data to triangulation
 TR = triangulation(matDVE(:,:,1),matVLST);

@@ -3,6 +3,8 @@ clc
 
 tic
 
+warning off
+
 %% Header
 
 disp('=====================================================================================');
@@ -24,20 +26,22 @@ disp('==========================================================================
 
 strATYPE = 'LS'; % Lifting Surface
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
+strSTL = 'CAD GEOM/wing3.stl';
 % strSTL = 'CAD Geom/quad.stl';
 % strSTL = 'CAD Geom/2quad.stl';
-strSTL = 'CAD Geom/pyramid.stl';
+% strSTL = 'CAD Geom/pyramid.stl';
 
 % ATYPE = 'PC'; % Panel Code
 % STL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 10;
+valMAXTIME = 30;
 valDELTIME = 0.3;
-vecTE = [5]';
+% vecTE = [3 24 37 50]';
+vecTE = []
 vecSYM = []';
 
-seqALPHA = 30;
+seqALPHA = 10;
 seqBETA = 0;
 
 %% Triangulating Geometry
@@ -47,7 +51,7 @@ seqBETA = 0;
 
 %% D-Matrix Creation
 
-matD = fcnDWING3(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecSYM, matVATT);
+matD = fcnDWING4(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecSYM, matVATT);
 valDLEN = length(matD);
 
 %% Alpha Loop
@@ -103,20 +107,20 @@ for ai = 1:length(seqALPHA)
             if any(vecTE)
                 [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
                     matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWCOEFF] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, matWCOEFF, vecTE, matEATT);
+                
+                
+                % Rebuild wing resultant
+                vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
+                
+                matCOEFF = fcnSOLVED(matD, vecR, valNELE);
             end
-            
-            % Rebuild wing resultant
-            vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
-            
-            matCOEFF = fcnSOLVED(matD, vecR, valNELE);
-                        
         end
     end
 end
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 if any(vecTE)
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);

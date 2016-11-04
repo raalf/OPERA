@@ -3,7 +3,7 @@ clc
 
 tic
 
-warning off
+% warning off
 
 %% Header
 
@@ -26,10 +26,9 @@ disp('==========================================================================
 
 strATYPE = 'LS'; % Lifting Surface
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
-strSTL = 'CAD GEOM/wing3.stl';
 % strSTL = 'CAD Geom/quad.stl';
 % strSTL = 'CAD Geom/2quad.stl';
-% strSTL = 'CAD Geom/pyramid.stl';
+strSTL = 'CAD Geom/pyramid.stl';
 
 % ATYPE = 'PC'; % Panel Code
 % STL = 'CAD Geom/cube.stl';
@@ -38,7 +37,7 @@ strA2TYPE = 'WING';
 valMAXTIME = 30;
 valDELTIME = 0.3;
 % vecTE = [3 24 37 50]';
-vecTE = []
+vecTE = [];
 vecSYM = []';
 
 seqALPHA = 10;
@@ -51,7 +50,7 @@ seqBETA = 0;
 
 %% D-Matrix Creation
 
-matD = fcnDWING4(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecSYM, matVATT);
+matD = fcnDWING3(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecSYM, matVATT);
 valDLEN = length(matD);
 
 %% Alpha Loop
@@ -120,7 +119,7 @@ end
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 if any(vecTE)
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);

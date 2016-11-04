@@ -99,8 +99,8 @@ b1(:,1) = zeros(nedg,1);
 c3 = zeros(nedg,2);
 
 dgamma1 = [a1(:,1),a2(:,1),b1(:,1),b2(:,1),c3(:,1)];
-dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
-% dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
+% dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
+dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,5)]',[],1);
@@ -130,8 +130,8 @@ b1(:,1) = zeros(nedg,1);
 c3 = zeros(nedg,2);
 
 dgamma1 = [a1(:,1),a2(:,1),b1(:,1),b2(:,1),c3(:,1)];
-dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
-% dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
+% dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
+dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,5)]',[],1);
@@ -186,8 +186,8 @@ a1(:,1) = zeros(nedg,1);
 c3 = zeros(nedg,2);
 
 dgamma1 = [a1(:,1),a2(:,1),b1(:,1),b2(:,1),c3(:,1)];
-dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
-% dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
+% dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
+dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,5)]',[],1);
@@ -217,8 +217,8 @@ a1(:,1) = zeros(nedg,1);
 c3 = zeros(nedg,2);
 
 dgamma1 = [a1(:,1),a2(:,1),b1(:,1),b2(:,1),c3(:,1)];
-dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
-% dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
+% dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
+dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,5)]',[],1);
@@ -319,8 +319,8 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',5,[],valNELE),[2 1 3]),[],5*
 %% Piecing together D-matrix
 
 % D = [circ_220; vort_2201; vort_2202; vort_2201e; vort_2202e; irrot; circ_tip; king_kong];
-% D = [circ_220; vort_2201e; vort_2202e; irrot; circ_tip; king_kong];
-D = [circ_220; vort_2201e; vort_2202e; irrot; king_kong];
+D = [circ_220; vort_2201e; vort_2202e; irrot; circ_tip; king_kong];
+
 
 
 end

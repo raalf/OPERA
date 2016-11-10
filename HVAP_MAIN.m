@@ -50,7 +50,7 @@ seqBETA = 0;
 
 %% D-Matrix Creation
 
-matD = fcnDWING3(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecSYM, matVATT);
+matD = fcnDWING5(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecSYM, matVATT);
 valDLEN = length(matD);
 
 %% Alpha Loop

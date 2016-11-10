@@ -17,7 +17,6 @@ lamb_vort = [ ...
 % Making D-matrix a little long, in case we are over-constrained
 D = zeros(valNELE*9, valNELE*5);
 
-
 %% Circulation equations between elements
 % Evaluated at the mid-point of each edge which splits two HDVEs
 
@@ -58,7 +57,7 @@ circ_220 = zeros(nedg, valNELE*5);
 circ_220(sub2ind(size(circ_220),rows,col1)) = reshape(gamma1',[],1);
 circ_220(sub2ind(size(circ_220),rows,col2)) = reshape(gamma2',[],1);
 
-%% Circulation at vertices between elements
+%% Vorticity at along edge between elements, eta dir for HDVE1
 % For reference, I will call 'mm' the current DVE and 'nn' the adjacent DVE
 
 idx = all(matEATT,2); % All edges that split 2 DVEs
@@ -88,17 +87,19 @@ lmb1 = reshape(lamb_vort([vnuma(:,1) vnumb(:,1)],1),nedg,2);
 lmb2 = reshape(lamb_vort([vnuma(:,1) vnumb(:,1)],2),nedg,2);
 lmb3 = reshape(lamb_vort([vnuma(:,1) vnumb(:,1)],3),nedg,2);
 
-a2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
-a1 = a2.^2;
-b2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
-b1 = b2.^2;
+a2 = ones(nedg,2);
+a1 = 2.*(lmb1.*x1+lmb2.*x2+lmb3.*x3);
+b2 = ones(nedg,2);
+b1 = 2.*(lmb1.*y1+lmb2.*y2+lmb3.*y3);
 
-c3 = ones(nedg,2);
+b2(:,1) = zeros(nedg,1);
+b1(:,1) = zeros(nedg,1);
 
-dgamma1 = [a1(:,1),a2(:,1),b1(:,1),b2(:,1),c3(:,1)];
-% dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
-% dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
-dgamma2 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c3(:,2)].*-1;
+c3 = zeros(nedg,2);
+
+dgamma1 = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)];
+dgamma2 = [a1(:,1).*matALIGN(idx,1,1), a2(:,1).*matALIGN(idx,1,1), zeros(nedg,1), zeros(nedg,1), zeros(nedg,1)].*-1;
+% dgamma3 = [zeros(nedg,1), zeros(nedg,1), b1(:,1).*matALIGN(idx,2,1), b2(:,1).*matALIGN(idx,2,1), zeros(nedg,1)].*-1;
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,5)]',[],1);
@@ -117,17 +118,19 @@ lmb1 = reshape(lamb_vort([vnuma(:,2) vnumb(:,2)],1),nedg,2);
 lmb2 = reshape(lamb_vort([vnuma(:,2) vnumb(:,2)],2),nedg,2);
 lmb3 = reshape(lamb_vort([vnuma(:,2) vnumb(:,2)],3),nedg,2);
 
-a2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
-a1 = a2.^2;
-b2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
-b1 = b2.^2;
+a2 = ones(nedg,2);
+a1 = 2.*(lmb1.*x1+lmb2.*x2+lmb3.*x3);
+b2 = ones(nedg,2);
+b1 = 2.*(lmb1.*y1+lmb2.*y2+lmb3.*y3);
 
-c3 = ones(nedg,2);
+b2(:,1) = zeros(nedg,1);
+b1(:,1) = zeros(nedg,1);
 
-dgamma1 = [a1(:,1),a2(:,1),b1(:,1),b2(:,1),c3(:,1)];
-% dgamma2 = [a1(:,2),a2(:,2),b1(:,2),b2(:,2),c3(:,2)].*-1;
-% dgamma2 = [a1(:,2).*matALIGN(idx,1,1), a2(:,2).*matALIGN(idx,1,1), b1(:,2).*matALIGN(idx,2,1), b2(:,2).*matALIGN(idx,2,1), c3(:,2)].*-1;
-dgamma2 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c3(:,2)].*-1;
+c3 = zeros(nedg,2);
+
+dgamma1 = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)];
+dgamma2 = [a1(:,1).*matALIGN(idx,1,1), a2(:,1).*matALIGN(idx,1,1), zeros(nedg,1), zeros(nedg,1), zeros(nedg,1)].*-1;
+% dgamma3 = [zeros(nedg,1), zeros(nedg,1), b1(:,1).*matALIGN(idx,2,1), b2(:,1).*matALIGN(idx,2,1), zeros(nedg,1)].*-1;
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,5)]',[],1);
@@ -139,6 +142,93 @@ col2 = reshape([repmat([(matEATT(idx,2).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1)
 vort_2202e = zeros(nedg, valNELE*5);
 vort_2202e(sub2ind(size(vort_2202e),rows,col1)) = reshape(dgamma1',[],1);
 vort_2202e(sub2ind(size(vort_2202e),rows,col2)) = reshape(dgamma2',[],1);
+
+
+%% Vorticity between two elements, Xi direction for HDVE1
+% For reference, I will call 'mm' the current DVE and 'nn' the adjacent DVE
+
+idx = all(matEATT,2); % All edges that split 2 DVEs
+nedg = length(matEATT(idx,1));
+
+% along that edge equal for both HDVES
+% vnuma is local vertices 1 and 2 (columns) for HDVE 1
+% vnumb is local vertices 1 and 2 for HDVE 2
+[ta,tb,~] = find(matDVE(matEATT(idx,1),:,1) == repmat(matELST(idx,1),1,3));
+[~,rb,] = sort(ta);
+vnuma(:,1) = tb(rb); % Sorting it according to row, cause find returns them jumbled up
+
+[ta,tb,~] = find(matDVE(matEATT(idx,1),:,1) == repmat(matELST(idx,2),1,3));
+[~,rb,] = sort(ta);
+vnuma(:,2) = tb(rb);
+
+[ta,tb,~] = find(matDVE(matEATT(idx,2),:,1) == repmat(matELST(idx,1),1,3));
+[~,rb,] = sort(ta);
+vnumb(:,1) = tb(rb);
+
+[ta,tb,~] = find(matDVE(matEATT(idx,2),:,1) == repmat(matELST(idx,2),1,3));
+[~,rb,] = sort(ta);
+vnumb(:,2) = tb(rb);
+
+% first vertex eta dir
+lmb1 = reshape(lamb_vort([vnuma(:,1) vnumb(:,1)],1),nedg,2);
+lmb2 = reshape(lamb_vort([vnuma(:,1) vnumb(:,1)],2),nedg,2);
+lmb3 = reshape(lamb_vort([vnuma(:,1) vnumb(:,1)],3),nedg,2);
+
+a2 = ones(nedg,2);
+a1 = 2.*(lmb1.*x1+lmb2.*x2+lmb3.*x3);
+b2 = ones(nedg,2);
+b1 = 2.*(lmb1.*y1+lmb2.*y2+lmb3.*y3);
+
+a2(:,1) = zeros(nedg,1);
+a1(:,1) = zeros(nedg,1);
+
+c3 = zeros(nedg,2);
+
+dgamma1 = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)];
+% dgamma2 = [a1(:,1).*matALIGN(idx,1,1), a2(:,1).*matALIGN(idx,1,1), zeros(nedg,1), zeros(nedg,1), zeros(nedg,1)].*-1;
+dgamma2 = [zeros(nedg,1), zeros(nedg,1), b1(:,1).*matALIGN(idx,2,2), b2(:,1).*matALIGN(idx,2,2), zeros(nedg,1)].*-1;
+
+% Row indices of the rows where vorticity equations will go
+rows = reshape([repmat([1:nedg]',1,5)]',[],1);
+
+% Column indices for each circulation equation, col# = (DVE*6)-5 as each DVE gets a 6 column group
+col1 = reshape([repmat([(matEATT(idx,1).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1);
+col2 = reshape([repmat([(matEATT(idx,2).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1);
+
+vort_2201x = zeros(nedg, valNELE*5);
+vort_2201x(sub2ind(size(vort_2201x),rows,col1)) = reshape(dgamma1',[],1);
+vort_2201x(sub2ind(size(vort_2201x),rows,col2)) = reshape(dgamma2',[],1);
+
+% second vertex
+
+lmb1 = reshape(lamb_vort([vnuma(:,2) vnumb(:,2)],1),nedg,2);
+lmb2 = reshape(lamb_vort([vnuma(:,2) vnumb(:,2)],2),nedg,2);
+lmb3 = reshape(lamb_vort([vnuma(:,2) vnumb(:,2)],3),nedg,2);
+
+a2 = ones(nedg,2);
+a1 = 2.*(lmb1.*x1+lmb2.*x2+lmb3.*x3);
+b2 = ones(nedg,2);
+b1 = 2.*(lmb1.*y1+lmb2.*y2+lmb3.*y3);
+
+a2(:,1) = zeros(nedg,1);
+a1(:,1) = zeros(nedg,1);
+
+c3 = zeros(nedg,2);
+
+dgamma1 = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)];
+% dgamma2 = [a1(:,1).*matALIGN(idx,1,1), a2(:,1).*matALIGN(idx,1,1), zeros(nedg,1), zeros(nedg,1), zeros(nedg,1)].*-1;
+dgamma2 = [zeros(nedg,1), zeros(nedg,1), b1(:,1).*matALIGN(idx,2,2), b2(:,1).*matALIGN(idx,2,2), zeros(nedg,1)].*-1;
+
+% Row indices of the rows where vorticity equations will go
+rows = reshape([repmat([1:nedg]',1,5)]',[],1);
+
+% Column indices for each circulation equation, col# = (DVE*6)-5 as each DVE gets a 6 column group
+col1 = reshape([repmat([(matEATT(idx,1).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1);
+col2 = reshape([repmat([(matEATT(idx,2).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1);
+
+vort_2202x = zeros(nedg, valNELE*5);
+vort_2202x(sub2ind(size(vort_2202x),rows,col1)) = reshape(dgamma1',[],1);
+vort_2202x(sub2ind(size(vort_2202x),rows,col2)) = reshape(dgamma2',[],1);
 
 %% Irrotationality
 % ???????????????????????????????????????????????????????????????????????
@@ -229,7 +319,7 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',5,[],valNELE),[2 1 3]),[],5*
 
 % D = [circ_220; vort_2201; vort_2202; vort_2201e; vort_2202e; irrot; circ_tip; king_kong];
 D = [circ_220; vort_2201e; vort_2202e; irrot; circ_tip; king_kong];
-% D = [circ_220; vort_2201e; vort_2202e; irrot; king_kong];
+
 
 end
 

@@ -26,10 +26,14 @@ disp('==========================================================================
 
 strATYPE = 'LS'; % Lifting Surface
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
-% strSTL = 'CAD Geom/quad.stl';
-% strSTL = 'CAD Geom/2quad.stl';
-strSTL = 'CAD Geom/pyramid.stl';
 
+% strSTL = 'Cad Geom/quad.stl';
+% strSTL = 'CAD Geom/quad-mix.stl';
+strSTL = 'Cad Geom/quad-align.stl';
+
+% strSTL = 'CAD Geom/2quad.stl';
+% strSTL = 'CAD Geom/pyramid.stl';
+% 
 % ATYPE = 'PC'; % Panel Code
 % STL = 'CAD Geom/cube.stl';
 

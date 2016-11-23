@@ -50,7 +50,7 @@ for i = 1:valNELE
     
     etaxsi = fcnTOGLOB(repmat(i,len,1), [eta xsi zeros(len,1)], matDVE, matDVECT, matVLST);
     DT = delaunay(etaxsi(:,1), etaxsi(:,2));   
-    trisurf(DT, etaxsi(:,1), etaxsi(:,2), circ + matCENTER(i,3),'EdgeColor','k','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
+    trisurf(DT, etaxsi(:,1), etaxsi(:,2), (circ + matCENTER(i,3)),'EdgeColor','k','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
 %     trisurf(DT, etaxsi(:,1), etaxsi(:,2), vort + matCENTER(i,3),'EdgeColor','b','FaceColor','b','FaceAlpha',0.5,'EdgeAlpha',0.5)
 %     trisurf(DT, etaxsi(:,1), etaxsi(:,2), vort2,'EdgeColor','g','FaceColor','g','FaceAlpha',0.5,'EdgeAlpha',0.5)
 %     trisurf(DT, etaxsi(:,1), etaxsi(:,2), vort3,'EdgeColor','m','FaceColor','m','FaceAlpha',0.5,'EdgeAlpha',0.5)

@@ -27,7 +27,7 @@ disp('==========================================================================
 strATYPE = 'LS'; % Lifting Surface
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
 
-% strSTL = 'Cad Geom/wing4.stl';
+% strSTL = 'Cad Geom/wing5.stl';
 
 % strSTL = 'Cad Geom/quad.stl';
 % strSTL = 'CAD Geom/quad-mix.stl';
@@ -44,11 +44,11 @@ strSTL = 'Cad Geom/quad-align-wing.stl';
 strA2TYPE = 'WING';
 valMAXTIME = 0;
 valDELTIME = 0.3;
-vecTE = []';
-vecLE = []';
+vecTE = [22 21 23]';
+vecLE = [16 10 2]';
 vecSYM = []';
 
-seqALPHA = 10;
+seqALPHA = 50;
 seqBETA = 0;
 
 %% Triangulating Geometry

@@ -29,7 +29,8 @@ strATYPE = 'LS'; % Lifting Surface
 
 % strSTL = 'Cad Geom/quad.stl';
 % strSTL = 'CAD Geom/quad-mix.stl';
-strSTL = 'Cad Geom/quad-align.stl';
+% strSTL = 'Cad Geom/quad-align.stl';
+strSTL = 'Cad Geom/quad-align-wing.stl';
 
 % strSTL = 'CAD Geom/2quad.stl';
 % strSTL = 'CAD Geom/pyramid.stl';
@@ -42,9 +43,10 @@ valMAXTIME = 0;
 valDELTIME = 0.3;
 % vecTE = [3 24 37 50]';
 vecTE = [];
+vecLE = [];
 vecSYM = []';
 
-seqALPHA = 10;
+seqALPHA = 50;
 seqBETA = 0;
 
 %% Triangulating Geometry
@@ -54,7 +56,7 @@ seqBETA = 0;
 
 %% D-Matrix Creation
 
-matD = fcnDWING6(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecSYM, matVATT);
+matD = fcnDWING6(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT);
 valDLEN = length(matD);
 
 %% Alpha Loop
@@ -122,7 +124,7 @@ for ai = 1:length(seqALPHA)
 end
 
 %% Plot
-
+% 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 if any(vecTE)

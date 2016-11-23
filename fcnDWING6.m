@@ -1,4 +1,4 @@
-function [D] = fcnDWING6(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecSYM, matVATT)
+function [D] = fcnDWING6(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT)
 
 lamb_circ = [ ...
     0.5 0.5 0; ... % Edge 1 mid-point
@@ -199,7 +199,8 @@ irrot(sub2ind(size(irrot),rows,col3)) = reshape(ddgamma',[],1);
 circ_tip = [];
 if strcmp(strATYPE,'LS') == 1;
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
-%     idx(vecTE) = 0;
+    idx(vecTE) = 0;
+      idx(vecLE) = 0;
 %     idx(vecSYM) = 0;
     nedg = length(matEATT(idx,1));
     
@@ -264,7 +265,9 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',5,[],valNELE),[2 1 3]),[],5*
 
 %% Piecing together D-matrix
 
-D = [circ_220; vort_2201e; vort_2201x; vort_2202e; vort_2202x; irrot; circ_tip; king_kong];
+D = [circ_220; vort_2201e; vort_2201x; vort_2202e; vort_2202x; circ_tip; king_kong];
+
+% D = [circ_220; vort_2201e; vort_2201x; vort_2202e; vort_2202x; irrot; circ_tip; king_kong];
 
 
 end

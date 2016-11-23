@@ -38,7 +38,7 @@ strSTL = 'Cad Geom/quad-align.stl';
 % STL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 30;
+valMAXTIME = 0;
 valDELTIME = 0.3;
 % vecTE = [3 24 37 50]';
 vecTE = [];
@@ -54,7 +54,7 @@ seqBETA = 0;
 
 %% D-Matrix Creation
 
-matD = fcnDWING5(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecSYM, matVATT);
+matD = fcnDWING6(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecSYM, matVATT);
 valDLEN = length(matD);
 
 %% Alpha Loop
@@ -131,7 +131,21 @@ end
 
 %% End
 
+dve = 1;
+vert = 1;
 
+lambdas = [1 0 0; 0 1 0; 0 0 1];
+
+lam = lambdas(find(matDVE(dve,:,1) == vert),:);
+
+eta = (lam(1)*matPLEX(1,1,dve) + lam(2)*matPLEX(2,1,dve) + lam(3)*matPLEX(3,1,dve));
+xi = (lam(1)*matPLEX(1,2,dve) + lam(2)*matPLEX(2,2,dve) + lam(3)*matPLEX(3,2,dve));
+
+gamma = matCOEFF(dve,1)*(eta^2) + matCOEFF(dve,2)*eta + matCOEFF(dve,3)*(xi^2) + matCOEFF(dve,4)*xi + matCOEFF(dve,5)
+vort_eta = matCOEFF(dve,1)*eta + matCOEFF(dve,2)
+vort_xi = matCOEFF(dve,3)*xi + matCOEFF(dve,4)
 toc
+
+gamma_globe = fcnTOGLOB(dve, [eta xi gamma], matDVE, matDVECT, matVLST)
 
 % whos

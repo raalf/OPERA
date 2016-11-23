@@ -29,9 +29,11 @@ function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matE
 [temp, ~] = fcnSTLREAD(strSTL);
 
 % Removing duplicate elements from OpenVSP STL when infinitely thin
-if strcmp(strATYPE,'LS')
-   temp((end/2) + 1:end,:,:) = [];
-end
+% if strcmp(strATYPE,'LS')
+%     [temp2, idx, ~] = unique(temp,'rows','stable');
+% %     temp2(:,:,2:3) = temp(idx,:,2:3);
+% %    temp((end/2) + 1:end,:,:) = [];
+% end
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER] = fcnTRIANG(strATYPE, temp);
 

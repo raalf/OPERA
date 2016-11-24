@@ -29,9 +29,9 @@ strATYPE = 'LS'; % Lifting Surface
 
 % strSTL = 'Cad Geom/wing5.stl';
 
-% strSTL = 'Cad Geom/quad.stl';
-% strSTL = 'CAD Geom/quad-mix.stl';
-strSTL = 'Cad Geom/quad-align.stl';
+strSTL = 'Cad Geom/quad.stl';
+strSTL = 'CAD Geom/quad-mix.stl';
+% strSTL = 'Cad Geom/quad-align.stl';
 % strSTL = 'Cad Geom/quad-align-wing.stl';
 % strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 
@@ -44,8 +44,8 @@ strSTL = 'Cad Geom/quad-align.stl';
 strA2TYPE = 'WING';
 valMAXTIME = 0;
 valDELTIME = 0.3;
-vecTE = [4]';
-vecLE = [3]';
+vecTE = []';
+vecLE = []';
 vecSYM = []';
 
 seqALPHA = 50;
@@ -137,21 +137,21 @@ end
 
 %% End
 
-dve = 2;
-vert = 1;
-
-lambdas = [1 0 0; 0 1 0; 0 0 1];
-
-lam = lambdas(find(matDVE(dve,:,1) == vert),:);
-
-eta = (lam(1)*matPLEX(1,1,dve) + lam(2)*matPLEX(2,1,dve) + lam(3)*matPLEX(3,1,dve));
-xi = (lam(1)*matPLEX(1,2,dve) + lam(2)*matPLEX(2,2,dve) + lam(3)*matPLEX(3,2,dve));
-
-gamma = matCOEFF(dve,1)*(eta^2) + matCOEFF(dve,2)*eta + matCOEFF(dve,3)*(xi^2) + matCOEFF(dve,4)*xi + matCOEFF(dve,5)
-vort_eta = matCOEFF(dve,1)*eta + matCOEFF(dve,2)
-vort_xi = matCOEFF(dve,3)*xi + matCOEFF(dve,4)
-toc
-
-gamma_globe = fcnTOGLOB(dve, [eta xi gamma], matDVE, matDVECT, matVLST)
+% dve = 2;
+% vert = 1;
+% 
+% lambdas = [1 0 0; 0 1 0; 0 0 1];
+% 
+% lam = lambdas(find(matDVE(dve,:,1) == vert),:);
+% 
+% eta = (lam(1)*matPLEX(1,1,dve) + lam(2)*matPLEX(2,1,dve) + lam(3)*matPLEX(3,1,dve));
+% xi = (lam(1)*matPLEX(1,2,dve) + lam(2)*matPLEX(2,2,dve) + lam(3)*matPLEX(3,2,dve));
+% 
+% gamma = matCOEFF(dve,1)*(eta^2) + matCOEFF(dve,2)*eta + matCOEFF(dve,3)*(xi^2) + matCOEFF(dve,4)*xi + matCOEFF(dve,5)
+% vort_eta = matCOEFF(dve,1)*eta + matCOEFF(dve,2)
+% vort_xi = matCOEFF(dve,3)*xi + matCOEFF(dve,4)
+% toc
+% 
+% gamma_globe = fcnTOGLOB(dve, [eta xi gamma], matDVE, matDVECT, matVLST)
 
 % whos

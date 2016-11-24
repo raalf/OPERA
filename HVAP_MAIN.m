@@ -31,8 +31,8 @@ strATYPE = 'LS'; % Lifting Surface
 
 % strSTL = 'Cad Geom/quad.stl';
 % strSTL = 'CAD Geom/quad-mix.stl';
-% strSTL = 'Cad Geom/quad-align.stl';
-strSTL = 'Cad Geom/quad-align-wing.stl';
+strSTL = 'Cad Geom/quad-align.stl';
+% strSTL = 'Cad Geom/quad-align-wing.stl';
 % strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 
 % strSTL = 'CAD Geom/2quad.stl';
@@ -44,8 +44,8 @@ strSTL = 'Cad Geom/quad-align-wing.stl';
 strA2TYPE = 'WING';
 valMAXTIME = 0;
 valDELTIME = 0.3;
-vecTE = [22 21 23]';
-vecLE = [16 10 2]';
+vecTE = [4]';
+vecLE = [3]';
 vecSYM = []';
 
 seqALPHA = 50;
@@ -137,7 +137,7 @@ end
 
 %% End
 
-dve = 1;
+dve = 2;
 vert = 1;
 
 lambdas = [1 0 0; 0 1 0; 0 0 1];

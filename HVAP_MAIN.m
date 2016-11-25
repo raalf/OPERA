@@ -27,10 +27,10 @@ disp('==========================================================================
 strATYPE = 'LS'; % Lifting Surface
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
 
-% strSTL = 'Cad Geom/wing5.stl';
+% % strSTL = 'Cad Geom/wing5.stl';
 
 strSTL = 'Cad Geom/quad.stl';
-strSTL = 'CAD Geom/quad-mix.stl';
+% strSTL = 'CAD Geom/quad-mix.stl';
 % strSTL = 'Cad Geom/quad-align.stl';
 % strSTL = 'Cad Geom/quad-align-wing.stl';
 % strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
@@ -130,7 +130,7 @@ end
 %% Plot
 % 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 if any(vecTE)
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 end

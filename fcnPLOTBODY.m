@@ -27,11 +27,12 @@ if verbose == 1
         text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',20);
     end
     
-    [q_ind] = fcnINDVEL(1:valNELE, matCENTER, matCOEFF, matDVE, matDVECT, matVLST, matPLEX);
+%     [q_ind] = fcnINDVEL(1:valNELE, matCENTER, matCOEFF, matDVE, matDVECT, matVLST, matPLEX);
+    [q_ind] = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX);
     
     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1)+vecUINF(1), q_ind(:,2)+vecUINF(2), q_ind(:,3)+vecUINF(3), 0.25, 'g')
     len = length(matCENTER(:,1));
-    quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 0.25, 'g')
+%     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 0.25, 'g')
     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), repmat(vecUINF(1),len,1), repmat(vecUINF(2),len,1), repmat(vecUINF(3),len,1), 0.25, 'r')
     
     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,1), matDVECT(:,2,1), matDVECT(:,3,1), 0.25, 'b') % eta

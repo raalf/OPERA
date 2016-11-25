@@ -30,8 +30,8 @@ strATYPE = 'LS'; % Lifting Surface
 % % strSTL = 'Cad Geom/wing5.stl';
 
 % strSTL = 'Cad Geom/quad.stl';
-strSTL = 'CAD Geom/quad-mix.stl';
-% strSTL = 'Cad Geom/quad-align.stl';
+% strSTL = 'CAD Geom/quad-mix.stl';
+strSTL = 'Cad Geom/quad-align.stl';
 % strSTL = 'Cad Geom/quad-align-wing.stl';
 % strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 

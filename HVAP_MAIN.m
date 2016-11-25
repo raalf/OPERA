@@ -27,11 +27,11 @@ disp('==========================================================================
 strATYPE = 'LS'; % Lifting Surface
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
 
-% % strSTL = 'Cad Geom/wing5.stl';
+% strSTL = 'Cad Geom/wing5.stl';
 
 % strSTL = 'Cad Geom/quad.stl';
-% strSTL = 'CAD Geom/quad-mix.stl';
-strSTL = 'Cad Geom/quad-align.stl';
+strSTL = 'CAD Geom/quad-mix.stl';
+% strSTL = 'Cad Geom/quad-align.stl';
 % strSTL = 'Cad Geom/quad-align-wing.stl';
 % strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 
@@ -136,6 +136,8 @@ if any(vecTE)
 end
 
 %% End
+
+[a1, a2, b1, b2, c3] = fcnHDVEIND(1, [0 1 0], matDVE, matDVECT, matVLST, matPLEX)
 
 % dve = 2;
 % vert = 1;

@@ -6,7 +6,7 @@ function [q_ind] = fcnINDVEL(dvenum, fpg, matCOEFF, matDVE, matDVECT, matVLST, m
 
 len = length(dvenum);
 
-[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
+[a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
 
 D = [a1 a2 b1 b2 c3];
 D = reshape(reshape(D', 1, 15, []), 3, 5, len);

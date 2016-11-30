@@ -137,8 +137,6 @@ end
 
 %% End
 
-[a1, a2, b1, b2, c3] = fcnHDVEIND(1, [0 1 0], matDVE, matDVECT, matVLST, matPLEX)
-
 % dve = 2;
 % vert = 1;
 % 

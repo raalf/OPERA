@@ -236,7 +236,7 @@ dvenum = reshape(repmat(1:valNELE,len,1),[],1);
 
 fpg = repmat(fpg,valNELE,1);
 
-[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
+[a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
 
 % List of normals we are to dot the above with
 % normals = [VNORM; DVECT(:,:,3)];

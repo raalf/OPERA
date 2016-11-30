@@ -11,13 +11,9 @@ endpoints = zeros(len*5, 3, 2); % Five function calls per DVE
 phi = zeros(len*5,1);
 yaw = zeros(len*5,1);
 
-% This is the other way around in FW, but the signs don't make sense with Horstmann's convention??
-limits = [-ones(len*5,1) ones(len*5,1)]; % Limits of integration for vortex sheets (-1 to 1 for non-special case)
-% unit_vec = zeros(len,3);
-% vec = zeros(len,3);
-% span = zeros(len,1);
+limits = [ones(len*5,1) -ones(len*5,1)]; % Limits of integration for vortex sheets (-1 to 1 for non-special case)
 
-k = zeros(len*5,1)+1; % Until this is figured out for HDVE, k = 1
+k = zeros(len*5,1)+10; % Until this is figured out for HDVE, k = 1
 
 idx = [1:5:len*5]';
 
@@ -90,8 +86,8 @@ if ~isempty(idx_b1) == 1
     % All three vortex sheets should be in the same direction already (left to right)
     
     % Extending vortex sheet at Edge 1 and 2 to match span of vortex sheet at edge 3
-    endpoints(idx_b1+2,:,2) = [endpoints(idx_b1+4,1,2) endpoints(idx_b1+4,1,2).*(unit_vec(idx_b1+2,2)./unit_vec(idx_b1+2,1)) 0]; % Using the vector to extend point 2 location    
-    endpoints(idx_b1+3,:,1) = [0 endpoints(idx_b1+3,2,1) - endpoints(idx_b1+3,1,1).*(unit_vec(idx_b1+3,2)./unit_vec(idx_b1+3,1)) 0]; % Using the vector to extend point 1 location
+    endpoints(idx_b1+2,:,2) = [endpoints(idx_b1+4,1,2) endpoints(idx_b1+4,1,2).*(unit_vec(idx_b1+2,2)./unit_vec(idx_b1+2,1)) zeros(length(nonzeros(idx_b1+2)),1)]; % Using the vector to extend point 2 location    
+    endpoints(idx_b1+3,:,1) = [zeros(length(nonzeros(idx_b1+3)),1) endpoints(idx_b1+3,2,1) - endpoints(idx_b1+3,1,1).*(unit_vec(idx_b1+3,2)./unit_vec(idx_b1+3,1)) zeros(length(nonzeros(idx_b1+3)),1)]; % Using the vector to extend point 1 location
     
     % Finding the projections to determine eta (in percent of span of Edge 2)
     limits(idx_b1+2,2) = (2.*(dot(vec(idx_b1+2,:), vec(idx_b1+4,:), 2)./(span(idx_b1+4).^2))) - 1; % Determines the second limit of the integration for Edge 1 (first being -1 for left side)

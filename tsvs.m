@@ -26,10 +26,7 @@ temp_phi = repmat(phi,len,1);
 temp_yaw = repmat(yaw,len,1);
 temp_k = repmat(k,len,1);
 
-lim1 = -1;
-lim2 = 1;
-
-[aloc, bloc, cloc] = fcnHVSIND(temp_endpoints, lim1, lim2, temp_phi, temp_yaw, fpl, temp_k);
+[aloc, bloc, cloc] = fcnVSIND(temp_endpoints, temp_phi, temp_yaw, fpl, temp_k);
 
 D = [cloc bloc aloc];
 D = reshape(reshape(D', 1, 9, []), 3, 3, len);
@@ -88,10 +85,14 @@ temp_phi = repmat(phi,len,1);
 temp_yaw = repmat(yaw,len,1);
 temp_k = repmat(k,len,1);
 
-lim1 = -1;
-lim2 = 0;
+limits = repmat([1 0],len,1);
 
-[aloc, bloc, cloc] = fcnHVSIND(temp_endpoints, lim1, lim2, temp_phi, temp_yaw, fpl, temp_k);
+% Half-spans of all elements
+hspan1 = abs(temp_endpoints(:,1,2) - temp_endpoints(:,1,1))./2;
+hspan2 = abs(temp_endpoints(:,2,2) - temp_endpoints(:,2,1))./2;
+hspan = hspan1.*cos(temp_yaw) + hspan2.*sin(temp_yaw);
+
+[aloc, bloc, cloc] = fcnHVSIND(temp_endpoints, limits, hspan, temp_phi, temp_yaw, fpl, temp_k);
 
 D = [cloc bloc aloc];
 D = reshape(reshape(D', 1, 9, []), 3, 3, len);
@@ -125,10 +126,14 @@ temp_phi = repmat(phi,len,1);
 temp_yaw = repmat(yaw,len,1);
 temp_k = repmat(k,len,1);
 
-lim1 = 0;
-lim2 = 1;
+limits = repmat([0 -1],len,1);
 
-[aloc, bloc, cloc] = fcnHVSIND(temp_endpoints, lim1, lim2, temp_phi, temp_yaw, fpl, temp_k);
+% Half-spans of all elements
+hspan1 = abs(temp_endpoints(:,1,2) - temp_endpoints(:,1,1))./2;
+hspan2 = abs(temp_endpoints(:,2,2) - temp_endpoints(:,2,1))./2;
+hspan = hspan1.*cos(temp_yaw) + hspan2.*sin(temp_yaw);
+
+[aloc, bloc, cloc] = fcnHVSIND(temp_endpoints, limits, hspan, temp_phi, temp_yaw, fpl, temp_k);
 
 D = [cloc bloc aloc];
 D = reshape(reshape(D', 1, 9, []), 3, 3, len);

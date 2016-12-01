@@ -13,7 +13,7 @@ yaw = zeros(len*5,1);
 
 limits = [ones(len*5,1) -ones(len*5,1)]; % Limits of integration for vortex sheets (-1 to 1 for non-special case)
 
-k = zeros(len*5,1)+10; % Until this is figured out for HDVE, k = 1
+k = zeros(len*5,1)+0.1; % Until this is figured out for HDVE, k = 1
 
 idx = [1:5:len*5]';
 
@@ -36,7 +36,7 @@ phi(idx+1) = atan((endpoints(idx+1,1,1)-endpoints(idx+1,1,2))./endpoints(idx+1,2
 % First edge
 endpoints(idx+2,:,1:2) = reshape(permute(matPLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
 yaw(idx+2) = 0;
-phi(idx+2) = atan(endpoints(idx+2,2,2)./endpoints(idx+2,1,2));
+phi(idx+2) = -atan(endpoints(idx+2,2,2)./endpoints(idx+2,1,2));
 
 % Second edge
 endpoints(idx+3,:,1:2) = reshape(permute(matPLEX(2:3,:,dvenum),[3 2 1]), [],3,2);
@@ -132,6 +132,22 @@ b1l = zeros(len,3);
 b2l = zeros(len,3);
 b3l = zeros(len,3);
 
+% al(idx+1,:) = zeros(len,3);
+% al(idx+2,:) = zeros(len,3);
+% al(idx+3,:) = zeros(len,3);
+% al(idx+4,:) = zeros(len,3);
+% 
+% bl(idx+1,:) = zeros(len,3);
+% bl(idx+2,:) = zeros(len,3);
+% bl(idx+3,:) = zeros(len,3);
+% bl(idx+4,:) = zeros(len,3);
+% 
+% cl(idx+1,:) = zeros(len,3);
+% cl(idx+2,:) = zeros(len,3);
+% cl(idx+3,:) = zeros(len,3);
+% cl(idx+4,:) = zeros(len,3);
+
+
 %% Summing the velocities of all five sheets
 
 % Subtracting second vortex sheet from first in the left-to-right direction
@@ -176,7 +192,6 @@ a3l(idx_e,:) = al(idx_e1+2,:) - al(idx_e1+4,:);
 
 
 %% Transforming to global coordinates
-
 v1 = [a1l; a2l; b1l; b2l; a3l+b3l];
 
 v2 = fcnROTVECT(repmat(dvenum,5,1,1), v1, matDVECT);
@@ -187,6 +202,7 @@ a2 = v2(len+1:2*len,:);
 b1 = v2(2*len+1:3*len,:);
 b2 = v2(3*len+1:4*len,:);
 c3 = v2(4*len+1:5*len,:);
+
 
 
 

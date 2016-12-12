@@ -1,18 +1,18 @@
 clc
 clear
 
-endpoints(:,:,1) = [-0.5 0 0];
-endpoints(:,:,2) = [0.5 0 0];
+endpoints(:,:,1) = [0 0 0];
+endpoints(:,:,2) = [1 1 0];
 
 phi = atan((endpoints(:,2,2)-endpoints(:,2,1))./(endpoints(:,1,2)-endpoints(:,1,1)));
-yaw = 0;
+yaw = pi/2;
 
 k = 0.1;
 
 granularity = 0.5;
-xlims = 10;
-ylims = 10;
-zlims = 10;
+xlims = 2;
+ylims = 2;
+zlims = 2;
 
 x = -xlims:granularity:xlims;
 y = -ylims:granularity:ylims;
@@ -42,12 +42,13 @@ hspan = hspan1.*cos(yaw) + hspan2.*sin(yaw);
 
 hspan = repmat(hspan, len, 1);
 
-[aloc, bloc, cloc] = fcnHVSIND2(temp_endpoints, [-1 1], hspan, temp_phi, temp_yaw, fpl, temp_k);
+[aloc, bloc, cloc] = fcnHVSIND(temp_endpoints, [1 -1], hspan, temp_phi, temp_yaw, fpl, temp_k);
+% [aloc, bloc, cloc] = fcnVSIND(temp_endpoints, temp_phi, temp_yaw, fpl, temp_k);
 
 D = [cloc bloc aloc];
 D = reshape(reshape(D', 1, 9, []), 3, 3, len);
 
-q_ind = permute(sum(D.*repmat(reshape([0 1 0]',1,3,[]),3,1,len),2),[2 1 3]);
+q_ind = permute(sum(D.*repmat(reshape([1 1 0]',1,3,[]),3,1,len),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
 q_ind(test,:)

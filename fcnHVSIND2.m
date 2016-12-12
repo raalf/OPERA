@@ -212,6 +212,7 @@ G231 = N22 - N21;
 G232 = log(ARG2);
 G24 = G232;
 
+% Essentially singfct
 G25 = log(abs(N12./N11));
 G25(N11 < EPS_SMALL) = log(abs(N12(N11 < EPS_SMALL)./EPS_SMALL));
 G25(N12 < EPS_SMALL) = log(abs(EPS_SMALL./N11(N12 < EPS_SMALL)));

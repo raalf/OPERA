@@ -19,7 +19,7 @@ matVLST = [...
             1 0 0 ...
             ];
         
-granularity = 0.5;
+granularity = 0.25;
 
 x = -2:granularity:2;
 y = -2:granularity:2;

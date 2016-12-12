@@ -52,7 +52,7 @@ phi(idx+4) = 0; % Leading edge of Edge 3 is always on eta-axis
 
 vec = (endpoints(:,:,2) - endpoints(:,:,1));
 span = abs(sqrt(vec(:,1).^2 + vec(:,2).^2 + vec(:,3).^2));
-unit_vec = vec./span;
+unit_vec = vec./repmat(span,1,3);
 
 %% Case with obtuse angle at Vertex 1
 idx_a = endpoints(idx+2,1,2) < -dbl_eps; % HDVEs with obtuse angle at Vertex 1 (eta < 0)

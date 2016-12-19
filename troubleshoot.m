@@ -45,8 +45,8 @@ matPLEX = [0 0 0; ...
             1.000000000000000   1.000000000000000                   0; ...
             1.000000000000000                   0                   0];
 
-[a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
-% [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
+% [a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
+[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
 
 q_ind = a1 + a2 + b1 + b2 + c3;
 q_ind = a2 + b2 + c3;
@@ -79,8 +79,8 @@ matPLEX = [0 0 0; ...
             0.707106781186548   0.707106781186547                   0; ...
             1.414213562373095                   0                   0];
 
-[a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
-% [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
+% [a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
+[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
 
 q_ind = a1 + a2 + b1 + b2 + c3;
 q_ind = a2 + b2 + c3;

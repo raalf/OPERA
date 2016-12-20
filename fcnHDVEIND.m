@@ -1,4 +1,4 @@
-function [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX)
+function [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, matROTANG)
 
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 
@@ -170,7 +170,8 @@ a3l(idx_e,:) = -al(idx_e1+2,:) + al(idx_e1+4,:);
 
 v1 = [a1l; a2l; b1l; b2l; a3l+b3l];
 
-v2 = fcnROTVECT(repmat(dvenum,5,1,1), v1, matDVECT);
+v2 = fcnSTARGLOB(v1, matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
+% v2 = fcnROTVECT(repmat(dvenum,5,1,1), v1, matDVECT);
 % v2 = v1
 
 a1 = v2(1:len,:);

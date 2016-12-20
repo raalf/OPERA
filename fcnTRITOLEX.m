@@ -1,4 +1,4 @@
-function [PLEX, DVECT] = fcnTRITOLEX(P, DNORM)
+function [PLEX, DVECT, ROTANG] = fcnTRITOLEX(P, DNORM)
 
 % This function converts a 3-by-3-by-n matrix from global (X,Y,Z)
 % to local (eta,xi,zeta) coordinates, where the depth n is any number of points
@@ -45,5 +45,13 @@ PLEX(3,1,:) = t3;
 % This seems to work fine when gam > 90 degrees, I'm not sure if this could be a problem later on
 gam = acos( (t1.^2 + t3.^2 - t2.^2)./(2.*t1.*t3));
 PLEX(2,1:2,:) = [t1.*cos(gam) t1.*sin(gam)];
+
+ROLL = -atan2(DVECT(:,2,3), DVECT(:,3,3));
+PITCH = asin(DVECT(:,1,3));
+YAW = acos(dot(DVECT(:,:,2),repmat([0 1 0],sp(2),1,1),2));
+
+ROTANG(:,1) = ROLL;
+ROTANG(:,2) = PITCH;
+ROTANG(:,3) = YAW;
 
 end

@@ -11,7 +11,7 @@ hspan = hspan1.*cos(yaw) + hspan2.*sin(yaw);
 
 fp_0 = fpl - eta_translation;
 
-eta_0 = fp_0(:,1).*cos(yaw) + fp_0(:,2).*sin(yaw);
+eta_0 = fp_0(:,1).*cos(yaw) + fp_0(:,2).*-sin(yaw);
 xsi_0 = fp_0(:,1).*sin(yaw) + fp_0(:,2).*cos(yaw);
 zeta_0 = fp_0(:,3);
 
@@ -268,13 +268,13 @@ bloc(idx_LE,3) = 0.5.*log((t1s(idx_LE) + k(idx_LE))./(t2s(idx_LE) + k(idx_LE)));
 cloc(idx_LE,3) = -4.*hspan(idx_LE) + eta_0(idx_LE).*2.*bloc(idx_LE,3);
 
 %% Rotate 90 degrees to appropriate direction if needed
-
-tempb(:,2) = bloc(:,1).*cos(yaw) + bloc(:,2).*sin(yaw);
-tempb(:,1) = bloc(:,1).*sin(yaw) + bloc(:,2).*cos(yaw);
+yaw = -yaw; % says Bill
+tempb(:,1) = bloc(:,1).*cos(yaw) + bloc(:,2).*-sin(yaw);
+tempb(:,2) = bloc(:,1).*sin(yaw) + bloc(:,2).*cos(yaw);
 bloc(:,1:2) = tempb;
 
-tempc(:,2) = cloc(:,1).*cos(yaw) + cloc(:,2).*sin(yaw);
-tempc(:,1) = cloc(:,1).*sin(yaw) + cloc(:,2).*cos(yaw);
+tempc(:,1) = cloc(:,1).*cos(yaw) + cloc(:,2).*-sin(yaw);
+tempc(:,2) = cloc(:,1).*sin(yaw) + cloc(:,2).*cos(yaw);
 cloc(:,1:2) = tempc;
 
 end

@@ -48,7 +48,7 @@ PLEX(2,1:2,:) = [t1.*cos(gam) t1.*sin(gam)];
 
 ROLL = -atan2(DVECT(:,2,3), DVECT(:,3,3));
 PITCH = asin(DVECT(:,1,3));
-YAW = acos(dot(DVECT(:,:,2),repmat([0 1 0],sp(2),1,1),2));
+YAW = acos(dot(DVECT(:,:,2),repmat([0 1 0],sp(3),1,1),2));
 
 ROTANG(:,1) = ROLL;
 ROTANG(:,2) = PITCH;

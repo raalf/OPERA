@@ -152,10 +152,6 @@ idx_b1 = idx(idx_b.*idx ~= 0);
 a1l(idx_b,:) = -cl(idx_b1+2,:) - cl(idx_b1+3,:) + cl(idx_b1+4,:);
 a2l(idx_b,:) = -bl(idx_b1+2,:) - bl(idx_b1+3,:) + bl(idx_b1+4,:);
 a3l(idx_b,:) = -al(idx_b1+2,:) - al(idx_b1+3,:) + al(idx_b1+4,:);
-% 
-% a1l(idx_b,:) = cl(idx_b1+4,:)% - cl(idx_b1+3,:) + cl(idx_b1+4,:);
-% a2l(idx_b,:) = bl(idx_b1+4,:)% - bl(idx_b1+3,:) + bl(idx_b1+4,:);
-% a3l(idx_b,:) = al(idx_b1+4,:) %- al(idx_b1+3,:) + al(idx_b1+4,:);
 
 idx_c = endpoints(idx+1,1,2) > endpoints(idx+1,1,1); % HDVEs with obtuse angle at Vertex 2
 idx_c1 = idx(idx_c.*idx ~= 0); 

@@ -36,6 +36,10 @@ len = length(fpg(:,1));
 
 dvenum = ones(len,1);
 
+test = 502;
+
+matCOEFF = [0 1 0 1 0];
+
 %%
 matDVE = [2 3 4];
 
@@ -63,12 +67,21 @@ matPLEX = [0 0 0; ...
 % [a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
 [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
 
-matCOEFF = [0 1 0 1 0];
+coeff = [...
+    matCOEFF(1).*matDVECT(:,1,2) + matCOEFF(1).*matDVECT(:,2,2) ...
+    matCOEFF(2).*matDVECT(:,1,2) + matCOEFF(2).*matDVECT(:,2,2) ...
+    matCOEFF(3).*matDVECT(:,1,1) + matCOEFF(3).*matDVECT(:,2,1) ...
+    matCOEFF(4).*matDVECT(:,1,1) + matCOEFF(4).*matDVECT(:,2,1) ...
+    matCOEFF(5) ...
+    ];
+
+
 D = [a1 a2 b1 b2 c3];
 D = reshape(reshape(D', 1, 15, []), 3, 5, len);
-q_ind = permute(sum(D.*repmat(reshape(matCOEFF(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
+q_ind = permute(sum(D.*repmat(reshape(coeff(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
+q_ind(test,:)
 
 
 hFig5 = figure(5);
@@ -112,13 +125,22 @@ matROTANG(:,3) = YAW;
 % [a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
 [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
 
-matCOEFF = [0 0 0 1 0];
+coeff = [...
+    matCOEFF(1).*matDVECT(:,1,2) + matCOEFF(1).*matDVECT(:,2,2) ...
+    matCOEFF(2).*matDVECT(:,1,2) + matCOEFF(2).*matDVECT(:,2,2) ...
+    matCOEFF(3).*matDVECT(:,1,1) + matCOEFF(3).*matDVECT(:,2,1) ...
+    matCOEFF(4).*matDVECT(:,1,1) + matCOEFF(4).*matDVECT(:,2,1) ...
+    matCOEFF(5) ...
+    ];
+
+% coeff = [0 0 0 1.4 0];
+
 D = [a1 a2 b1 b2 c3];
 D = reshape(reshape(D', 1, 15, []), 3, 5, len);
-q_ind = permute(sum(D.*repmat(reshape(matCOEFF(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
+q_ind = permute(sum(D.*repmat(reshape(coeff(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
-
+q_ind(test,:)
 
 hFig6 = figure(6);
 clf(6);
@@ -159,12 +181,20 @@ matPLEX = [0 0 0; ...
 % [a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
 [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
 
-matCOEFF = [0 -1 0 1 0];
+coeff = [...
+    matCOEFF(1).*matDVECT(:,1,2) + matCOEFF(1).*matDVECT(:,2,2) ...
+    matCOEFF(2).*matDVECT(:,1,2) + matCOEFF(2).*matDVECT(:,2,2) ...
+    matCOEFF(3).*matDVECT(:,1,1) + matCOEFF(3).*matDVECT(:,2,1) ...
+    matCOEFF(4).*matDVECT(:,1,1) + matCOEFF(4).*matDVECT(:,2,1) ...
+    matCOEFF(5) ...
+    ];
+
 D = [a1 a2 b1 b2 c3];
 D = reshape(reshape(D', 1, 15, []), 3, 5, len);
-q_ind = permute(sum(D.*repmat(reshape(matCOEFF(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
+q_ind = permute(sum(D.*repmat(reshape(coeff(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
+q_ind(test,:)
 
 hFig7 = figure(7);
 clf(7);

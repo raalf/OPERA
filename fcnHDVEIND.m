@@ -7,6 +7,10 @@ dbl_eps = 1e-14;
 
 fp = fcnTOLOC(dvenum, fpg, matDVE, matDVECT, matVLST);
 
+% fp = fcnGLOBSTAR(fpg - matVLST(matDVE(dvenum,1,1),:), matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
+
+
+
 endpoints = zeros(len*5, 3, 2); % Five function calls per DVE
 phi = zeros(len*5,1);
 yaw = zeros(len*5,1);
@@ -114,6 +118,8 @@ if ~isempty(idx_e1) == 1
 end
 %% Running VSIND
 
+phi = -phi;
+
 fpl = reshape(repmat(fp,1,5,1)',3,[],1)';
 
 [al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k);
@@ -146,6 +152,10 @@ idx_b1 = idx(idx_b.*idx ~= 0);
 a1l(idx_b,:) = -cl(idx_b1+2,:) - cl(idx_b1+3,:) + cl(idx_b1+4,:);
 a2l(idx_b,:) = -bl(idx_b1+2,:) - bl(idx_b1+3,:) + bl(idx_b1+4,:);
 a3l(idx_b,:) = -al(idx_b1+2,:) - al(idx_b1+3,:) + al(idx_b1+4,:);
+% 
+% a1l(idx_b,:) = cl(idx_b1+4,:)% - cl(idx_b1+3,:) + cl(idx_b1+4,:);
+% a2l(idx_b,:) = bl(idx_b1+4,:)% - bl(idx_b1+3,:) + bl(idx_b1+4,:);
+% a3l(idx_b,:) = al(idx_b1+4,:) %- al(idx_b1+3,:) + al(idx_b1+4,:);
 
 idx_c = endpoints(idx+1,1,2) > endpoints(idx+1,1,1); % HDVEs with obtuse angle at Vertex 2
 idx_c1 = idx(idx_c.*idx ~= 0); 
@@ -170,7 +180,8 @@ a3l(idx_e,:) = -al(idx_e1+2,:) + al(idx_e1+4,:);
 
 v1 = [a1l; a2l; b1l; b2l; a3l+b3l];
 
-v2 = fcnSTARGLOB(v1, matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
+% v2 = fcnSTARGLOB(v1, matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
+v2 = fcnTOGLOB(reshape(repmat(dvenum,1,5)',[],1), v1, matDVE, matDVECT, matVLST);
 % v2 = fcnROTVECT(repmat(dvenum,5,1,1), v1, matDVECT);
 % v2 = v1
 

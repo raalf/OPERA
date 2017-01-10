@@ -2,7 +2,7 @@ clc
 clear
 
 dvenum = 1;
-% fpg = [1 1 1];
+fpg = [1 2 1];
 % fpg =  [-0.207106781186548   0.207106781186548                   0];
 
 % matVLST = [...
@@ -27,8 +27,8 @@ z = -1:granularity:1;
 
 [X,Y,Z] = meshgrid(x,y,z);
 
-fpg = [reshape(X, [], 1, 1) reshape(Y, [], 1, 1) reshape(Z, [], 1, 1)];
-fpg = unique(fpg,'rows');
+% fpg = [reshape(X, [], 1, 1) reshape(Y, [], 1, 1) reshape(Z, [], 1, 1)];
+% fpg = unique(fpg,'rows');
 
 % fpg = [4 2 1; 2 10 6];
 
@@ -38,7 +38,7 @@ dvenum = ones(len,1);
 
 test = 502;
 
-matCOEFF = [0 1 0 1 0];
+matCOEFF = [1 1 1 1 0];
 
 %%
 matDVE = [2 3 4];
@@ -81,7 +81,7 @@ D = reshape(reshape(D', 1, 15, []), 3, 5, len);
 q_ind = permute(sum(D.*repmat(reshape(coeff(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
-q_ind(test,:)
+% q_ind(test,:)
 
 
 hFig5 = figure(5);
@@ -140,7 +140,7 @@ D = reshape(reshape(D', 1, 15, []), 3, 5, len);
 q_ind = permute(sum(D.*repmat(reshape(coeff(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
-q_ind(test,:)
+% q_ind(test,:)
 
 hFig6 = figure(6);
 clf(6);
@@ -194,7 +194,7 @@ D = reshape(reshape(D', 1, 15, []), 3, 5, len);
 q_ind = permute(sum(D.*repmat(reshape(coeff(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
-q_ind(test,:)
+% q_ind(test,:)
 
 hFig7 = figure(7);
 clf(7);

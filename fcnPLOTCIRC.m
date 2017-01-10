@@ -48,6 +48,8 @@ for i = 1:valNELE
     DT = delaunay(etaxsi(:,1), etaxsi(:,2));
     trisurf(DT, etaxsi(:,1), etaxsi(:,2), (etaxsi(:,3) + matCENTER(i,3)),'EdgeColor','k','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
     
+    
+    
     % Local
 %     etaxsi = fcnTOGLOB(repmat(i,len,1), [eta xsi zeros(len,1)], matDVE, matDVECT, matVLST);
 %     DT = delaunay(etaxsi(:,1), etaxsi(:,2));  

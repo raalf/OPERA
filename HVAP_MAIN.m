@@ -33,7 +33,7 @@ strATYPE = 'LS'; % Lifting Surface
 % strSTL = 'CAD Geom/quad-mix.stl';
 % strSTL = 'Cad Geom/quad-align.stl';
 % strSTL = 'Cad Geom/quad-align-wing.stl';
-% strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
+strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 
 % strSTL = 'CAD Geom/2quad.stl';
 % strSTL = 'CAD Geom/pyramid.stl';
@@ -42,13 +42,13 @@ strATYPE = 'LS'; % Lifting Surface
 % STL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 0;
+valMAXTIME = 10;
 valDELTIME = 0.3;
-vecTE = []';
+vecTE = [23 21 22]';
 vecLE = []';
 vecSYM = []';
 
-seqALPHA = 50;
+seqALPHA = 5;
 seqBETA = 0;
 
 %% Triangulating Geometry
@@ -122,6 +122,9 @@ for ai = 1:length(seqALPHA)
                 vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
                 
                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
+                
+                [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] ...
+                     = fcnRELAX(valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
             end
         end
     end

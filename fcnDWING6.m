@@ -50,7 +50,7 @@ rows = reshape([repmat([1:nedg]',1,5)]',[],1);
 
 % Column indices for each circulation equation, col# = (DVE*5)-4 as each DVE gets a 6 column group
 col1 = reshape([repmat([(matEATT(idx,1).*5)-4],1,5) + repmat([0:4],nedg,1)]',[],1);
-col2 = reshape([repmat([(matEATT(idx,2).*5)-4],1,5)+repmat([0:4],nedg,1)]',[],1);
+col2 = reshape([repmat([(matEATT(idx,2).*5)-4],1,5) + repmat([0:4],nedg,1)]',[],1);
 
 circ_220 = zeros(nedg, valNELE*5);
 

@@ -37,27 +37,27 @@ strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 
 % strSTL = 'CAD Geom/2quad.stl';
 % strSTL = 'CAD Geom/pyramid.stl';
-% 
+%
 % ATYPE = 'PC'; % Panel Code
 % STL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 10;
+valMAXTIME = 2;
 valDELTIME = 0.3;
+flagRELAX = 0;
 vecTE = [23 21 22]';
 vecLE = []';
 vecSYM = []';
 
-seqALPHA = 5;
+seqALPHA = 10;
 seqBETA = 0;
 
 %% Triangulating Geometry
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, ...
     matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnIMPORTGEOM(strSTL, strATYPE);
-matALIGN(11,:,:) = 1;
 
-trimesh(TR)
+% trimesh(TR)
 %% D-Matrix Creation
 
 matD = fcnDWING6(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT);
@@ -123,38 +123,40 @@ for ai = 1:length(seqALPHA)
                 
                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
                 
-                [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] ...
-                     = fcnRELAX(valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
+                if flagRELAX == 1
+                    [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] ...
+                        = fcnRELAX(valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
+                end
             end
         end
     end
 end
 
 %% Plot
-% 
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+%
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 if any(vecTE)
-    [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
+    [hFig1] = fcnPLOTWAKE(1, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 end
 
 %% End
 
 % dve = 2;
 % vert = 1;
-% 
+%
 % lambdas = [1 0 0; 0 1 0; 0 0 1];
-% 
+%
 % lam = lambdas(find(matDVE(dve,:,1) == vert),:);
-% 
+%
 % eta = (lam(1)*matPLEX(1,1,dve) + lam(2)*matPLEX(2,1,dve) + lam(3)*matPLEX(3,1,dve));
 % xi = (lam(1)*matPLEX(1,2,dve) + lam(2)*matPLEX(2,2,dve) + lam(3)*matPLEX(3,2,dve));
-% 
+%
 % gamma = matCOEFF(dve,1)*(eta^2) + matCOEFF(dve,2)*eta + matCOEFF(dve,3)*(xi^2) + matCOEFF(dve,4)*xi + matCOEFF(dve,5)
 % vort_eta = matCOEFF(dve,1)*eta + matCOEFF(dve,2)
 % vort_xi = matCOEFF(dve,3)*xi + matCOEFF(dve,4)
 % toc
-% 
+%
 % gamma_globe = fcnTOGLOB(dve, [eta xi gamma], matDVE, matDVECT, matVLST)
 
 % whos

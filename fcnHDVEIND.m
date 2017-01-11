@@ -165,7 +165,7 @@ a1l(idx_d,:) = -cl(idx_d1+3,:) + cl(idx_d1+4,:);
 a2l(idx_d,:) = -bl(idx_d1+3,:) + bl(idx_d1+4,:);
 a3l(idx_d,:) = -al(idx_d1+3,:) + al(idx_d1+4,:);
 
-idx_e = abs(endpoints(idx+1,1,2) - endpoints(idx+1,1,1)) <= dbl_eps; % HDVEs with right angle at Vertex 2
+idx_e = abs(endpoints(idx+1,1,2) - endpoints(idx+1,1,1)) <= dbl_eps; % HDVEs with right angle at Vertex 3
 idx_e1 = idx(idx_e.*idx ~= 0);
 a1l(idx_e,:) = -cl(idx_e1+2,:) + cl(idx_e1+4,:);
 a2l(idx_e,:) = -bl(idx_e1+2,:) + bl(idx_e1+4,:);

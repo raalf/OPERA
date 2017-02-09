@@ -27,13 +27,13 @@ disp('==========================================================================
 strATYPE = 'LS'; % Lifting Surface
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
 
-% strSTL = 'Cad Geom/wing5.stl';
+strSTL = 'Cad Geom/wing_simple_short.stl';
 
 % strSTL = 'Cad Geom/quad.stl';
 % strSTL = 'CAD Geom/quad-mix.stl';
 % strSTL = 'Cad Geom/quad-align.stl';
 % strSTL = 'Cad Geom/quad-align-wing.stl';
-strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
+% strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 
 % strSTL = 'CAD Geom/2quad.stl';
 % strSTL = 'CAD Geom/pyramid.stl';
@@ -42,12 +42,15 @@ strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 % STL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 2;
+valMAXTIME = 0;
 valDELTIME = 0.3;
 flagRELAX = 0;
-vecTE = [23 21 22]';
 vecLE = []';
 vecSYM = []';
+
+vecTE = [];
+vecTE = [26 19 12 3];
+% vecTE = [52 45 38 31 24 17 3 5 61 68 75 82 89 96]';
 
 seqALPHA = 10;
 seqBETA = 0;
@@ -117,7 +120,6 @@ for ai = 1:length(seqALPHA)
                 [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
                     matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWCOEFF] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, matWCOEFF, vecTE, matEATT);
                 
-                
                 % Rebuild wing resultant
                 vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
                 
@@ -134,10 +136,10 @@ end
 
 %% Plot
 %
-[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
-% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 if any(vecTE)
-    [hFig1] = fcnPLOTWAKE(1, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
+    [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 end
 
 %% End

@@ -6,7 +6,7 @@ set(0,'CurrentFigure',hFig1);
 
 hold on
 
-patch('Faces',matWDVE(:,:,1),'Vertices',matWVLST,'FaceColor','b','EdgeColor','b','LineWidth',2,'FaceAlpha',0.5,'EdgeAlpha',0.5);
+patch('Faces',matWDVE(:,:,1),'Vertices',matWVLST,'FaceColor','b','EdgeColor','b','LineWidth',2,'FaceAlpha',0.5);%,'EdgeAlpha',0.5);
 % alpha(0.5);
 
 if verbose == 1

@@ -27,13 +27,13 @@ disp('==========================================================================
 strATYPE = 'LS'; % Lifting Surface
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
 
-strSTL = 'Cad Geom/wing_simple_short.stl';
+% strSTL = 'Cad Geom/wing_simple_short.stl';
 
 % strSTL = 'Cad Geom/wing_simple.stl';
 
 % strSTL = 'Cad Geom/quad.stl';
 % strSTL = 'CAD Geom/quad-mix.stl';
-% strSTL = 'CAD Geom/quad-mix2.stl';
+strSTL = 'CAD Geom/quad-mix2.stl';
 % strSTL = 'Cad Geom/quad-align.stl';
 % strSTL = 'Cad Geom/quad-align-wing.stl';
 % strSTL = 'Cad Geom/quad-align-wing-stretch.stl';

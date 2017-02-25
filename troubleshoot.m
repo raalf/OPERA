@@ -2,7 +2,7 @@ clc
 clear
 
 dvenum = 1;
-fpg = [1 2 1];
+% fpg = [1 2 1];
 % fpg =  [-0.207106781186548   0.207106781186548                   0];
 
 % matVLST = [...
@@ -27,8 +27,8 @@ z = -1:granularity:1;
 
 [X,Y,Z] = meshgrid(x,y,z);
 
-% fpg = [reshape(X, [], 1, 1) reshape(Y, [], 1, 1) reshape(Z, [], 1, 1)];
-% fpg = unique(fpg,'rows');
+fpg = [reshape(X, [], 1, 1) reshape(Y, [], 1, 1) reshape(Z, [], 1, 1)];
+fpg = unique(fpg,'rows');
 
 % fpg = [4 2 1; 2 10 6];
 
@@ -38,7 +38,7 @@ dvenum = ones(len,1);
 
 test = 502;
 
-matCOEFF = [1 1 1 1 0];
+matCOEFF = [0 0 0 1 0];
 
 %%
 matDVE = [2 3 4];
@@ -64,25 +64,20 @@ matPLEX = [0 0 0; ...
             1.000000000000000   1.000000000000000                   0; ...
             1.000000000000000                   0                   0];
 
-% [a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
+        
 [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
-
-coeff = [...
-    matCOEFF(1).*matDVECT(:,1,2) + matCOEFF(1).*matDVECT(:,2,2) ...
-    matCOEFF(2).*matDVECT(:,1,2) + matCOEFF(2).*matDVECT(:,2,2) ...
-    matCOEFF(3).*matDVECT(:,1,1) + matCOEFF(3).*matDVECT(:,2,1) ...
-    matCOEFF(4).*matDVECT(:,1,1) + matCOEFF(4).*matDVECT(:,2,1) ...
-    matCOEFF(5) ...
-    ];
-
 
 D = [a1 a2 b1 b2 c3];
 D = reshape(reshape(D', 1, 15, []), 3, 5, len);
+
+coeff = matCOEFF;
+
 q_ind = permute(sum(D.*repmat(reshape(coeff(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
-% q_ind(test,:)
+q_ind = fcnROTVECT(1, q_ind, matDVECT);
 
+q_ind(test,:)
 
 hFig5 = figure(5);
 clf(5);
@@ -121,26 +116,19 @@ matROTANG(:,1) = ROLL;
 matROTANG(:,2) = PITCH;
 matROTANG(:,3) = YAW;
 
-
-% [a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
 [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
-
-coeff = [...
-    matCOEFF(1).*matDVECT(:,1,2) + matCOEFF(1).*matDVECT(:,2,2) ...
-    matCOEFF(2).*matDVECT(:,1,2) + matCOEFF(2).*matDVECT(:,2,2) ...
-    matCOEFF(3).*matDVECT(:,1,1) + matCOEFF(3).*matDVECT(:,2,1) ...
-    matCOEFF(4).*matDVECT(:,1,1) + matCOEFF(4).*matDVECT(:,2,1) ...
-    matCOEFF(5) ...
-    ];
-
-% coeff = [0 0 0 1.4 0];
 
 D = [a1 a2 b1 b2 c3];
 D = reshape(reshape(D', 1, 15, []), 3, 5, len);
+
+coeff = matCOEFF;
+
 q_ind = permute(sum(D.*repmat(reshape(coeff(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
-% q_ind(test,:)
+q_ind = fcnROTVECT(1, q_ind, matDVECT);
+
+q_ind(test,:)
 
 hFig6 = figure(6);
 clf(6);
@@ -178,23 +166,19 @@ matPLEX = [0 0 0; ...
             0   1.000000000000000                   0; ...
             1.000000000000000                   0                   0];
 
-% [a1, a2, b1, b2, c3] = fcnHDVEIND2(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
 [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
-
-coeff = [...
-    matCOEFF(1).*matDVECT(:,1,2) + matCOEFF(1).*matDVECT(:,2,2) ...
-    matCOEFF(2).*matDVECT(:,1,2) + matCOEFF(2).*matDVECT(:,2,2) ...
-    matCOEFF(3).*matDVECT(:,1,1) + matCOEFF(3).*matDVECT(:,2,1) ...
-    matCOEFF(4).*matDVECT(:,1,1) + matCOEFF(4).*matDVECT(:,2,1) ...
-    matCOEFF(5) ...
-    ];
 
 D = [a1 a2 b1 b2 c3];
 D = reshape(reshape(D', 1, 15, []), 3, 5, len);
+
+coeff = matCOEFF;
+
 q_ind = permute(sum(D.*repmat(reshape(coeff(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
-% q_ind(test,:)
+% q_ind = fcnROTVECT(1, q_ind, matDVECT);
+
+q_ind(test,:)
 
 hFig7 = figure(7);
 clf(7);

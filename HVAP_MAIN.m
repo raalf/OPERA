@@ -1,5 +1,5 @@
 clear
-% clc
+clc
 
 tic
 
@@ -29,8 +29,11 @@ strATYPE = 'LS'; % Lifting Surface
 
 strSTL = 'Cad Geom/wing_simple_short.stl';
 
+% strSTL = 'Cad Geom/wing_simple.stl';
+
 % strSTL = 'Cad Geom/quad.stl';
 % strSTL = 'CAD Geom/quad-mix.stl';
+% strSTL = 'CAD Geom/quad-mix2.stl';
 % strSTL = 'Cad Geom/quad-align.stl';
 % strSTL = 'Cad Geom/quad-align-wing.stl';
 % strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
@@ -52,7 +55,7 @@ vecTE = [];
 vecTE = [26 19 12 3];
 % vecTE = [52 45 38 31 24 17 3 5 61 68 75 82 89 96]';
 
-seqALPHA = 10;
+seqALPHA = 30;
 seqBETA = 0;
 
 %% Triangulating Geometry
@@ -63,7 +66,7 @@ seqBETA = 0;
 % trimesh(TR)
 %% D-Matrix Creation
 
-matD = fcnDWING6(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT);
+matD = fcnDWING7(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT);
 valDLEN = length(matD);
 
 %% Alpha Loop
@@ -136,7 +139,7 @@ end
 
 %% Plot
 %
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 if any(vecTE)
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
@@ -144,21 +147,31 @@ end
 
 %% End
 
-% dve = 2;
-% vert = 1;
-%
-% lambdas = [1 0 0; 0 1 0; 0 0 1];
-%
-% lam = lambdas(find(matDVE(dve,:,1) == vert),:);
-%
-% eta = (lam(1)*matPLEX(1,1,dve) + lam(2)*matPLEX(2,1,dve) + lam(3)*matPLEX(3,1,dve));
-% xi = (lam(1)*matPLEX(1,2,dve) + lam(2)*matPLEX(2,2,dve) + lam(3)*matPLEX(3,2,dve));
-%
-% gamma = matCOEFF(dve,1)*(eta^2) + matCOEFF(dve,2)*eta + matCOEFF(dve,3)*(xi^2) + matCOEFF(dve,4)*xi + matCOEFF(dve,5)
-% vort_eta = matCOEFF(dve,1)*eta + matCOEFF(dve,2)
-% vort_xi = matCOEFF(dve,3)*xi + matCOEFF(dve,4)
-% toc
-%
-% gamma_globe = fcnTOGLOB(dve, [eta xi gamma], matDVE, matDVECT, matVLST)
+% % matCOEFF = [0 1 0 1 1; 0 1 0 1 1];
+% 
+% i = 1;
+% 
+% point = [0 0 0]
+% 
+% l_point = fcnTOLOC(i, point, matDVE, matDVECT, matVLST)
+% 
+% 
+% 
+% eta = l_point(1);
+% xsi = l_point(2);
+% 
+% circ = matCOEFF(i,1).*(eta.^2) + matCOEFF(i,2).*eta + matCOEFF(i,3).*(xsi.^2)  + matCOEFF(i,4).*xsi + matCOEFF(i,5)
+% % gcirc = fcnTOGLOB(i, [eta xsi circ], matDVE, matDVECT, matVLST)
+%     
+% i = 2;
+% 
+% point = [0 0 0]
+% 
+% l_point = fcnTOLOC(i, point, matDVE, matDVECT, matVLST)
+% 
+% eta = l_point(1);
+% xsi = l_point(2);
+% 
+% circ = matCOEFF(i,1).*(eta.^2) + matCOEFF(i,2).*eta + matCOEFF(i,3).*(xsi.^2) + matCOEFF(i,4).*xsi + matCOEFF(i,5)
+% % gcirc = fcnTOGLOB(i, [eta xsi circ], matDVE, matDVECT, matVLST)
 
-% whos

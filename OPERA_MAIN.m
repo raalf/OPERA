@@ -43,14 +43,13 @@ strSTL = 'Cad Geom/wing_simple_short.stl';
 % STL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 3;
+valMAXTIME = 4;
 valDELTIME = 0.3;
 flagRELAX = 0;
-vecLE = []';
+vecLE = [10 17 24 30]';
 vecSYM = []';
 
-vecTE = [];
-vecTE = [3 12 19 26];
+vecTE = [3 12 19 26]';
 % vecTE = [52 45 38 31 24 17 3 5 61 68 75 82 89 96]';
 
 seqALPHA = 30;
@@ -147,10 +146,10 @@ end
 %% Plot
 %
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
-% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF,'r');
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF,'r');
 if any(vecTE)
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-%     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF,'b');
+    [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF,'b');
 end
 
 %% End

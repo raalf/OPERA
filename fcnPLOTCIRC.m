@@ -1,4 +1,4 @@
-function [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF)
+function [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, colour)
 %FCNPLOTCIRC Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -46,7 +46,8 @@ for i = 1:valNELE
     % Global
     etaxsi = fcnTOGLOB(repmat(i,len,1), [eta xsi circ], matDVE, matDVECT, matVLST);
     DT = delaunay(etaxsi(:,1), etaxsi(:,2));
-    trisurf(DT, etaxsi(:,1), etaxsi(:,2), (etaxsi(:,3) + matCENTER(i,3)),'EdgeColor','k','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
+%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), (etaxsi(:,3) + matCENTER(i,3)),'EdgeColor','k','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
+    trisurf(DT, etaxsi(:,1), etaxsi(:,2), (etaxsi(:,3)),'EdgeColor','k','FaceColor',colour,'FaceAlpha',0.5,'EdgeAlpha',0.5)
     
         % Global
 %     etaxsi = fcnTOGLOB(repmat(i,len,1), [eta xsi vort], matDVE, matDVECT, matVLST);

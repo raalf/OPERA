@@ -44,7 +44,7 @@ end
 hold off
 set(gcf,'Renderer','OpenGL');
 axis equal
-% axis tight
+axis tight
 box on
 grid on
 

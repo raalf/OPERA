@@ -1,5 +1,6 @@
-function [matWAKEGEOM, WADJE, WELST, WVLST, WDVE, WNELE, WEATT, WEIDX, WELOC,...
-    WPLEX, WDVECT, WALIGN, WVATT, WVNORM, WCENTER, matWCOEFF] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, matWCOEFF, vecTE, matEATT)
+function [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
+    matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWCOEFF] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, ...
+    matWCOEFF, vecTE, matEATT, vecTEDVE, vecSPANDIR, valWNELE, matPLEX, matELOC, matVLST, matELST, matDVE)
 % This function creates wake elements, and finds the fcnTRIANG values associated with the wake.
 % All new values are calculated for the entire wake every timestep, as most of them will change
 % as the wing moves and as the wake is relaxed. Currently unsure of the time penalty.
@@ -14,12 +15,25 @@ function [matWAKEGEOM, WADJE, WELST, WVLST, WDVE, WNELE, WEATT, WEIDX, WELOC,...
 
 if valTIMESTEP <= 1
     matWAKEGEOM = matNEWWAKE;
-    [~, WADJE, WELST, WVLST, WDVE, WNELE, WEATT, WEIDX, WELOC, WPLEX, WDVECT, WALIGN, WVATT, WVNORM, WCENTER] = fcnTRIANG('wake',matWAKEGEOM);
-    matWCOEFF = repmat(matCOEFF(nonzeros(matEATT(vecTE,:)),:),2,1);
+    [~, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] = fcnTRIANG('wake',matWAKEGEOM);
+    
+    vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
+    vecWLE = matWEIDX(vecWLEDVE,1);
+    
+    matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT);
+    
+    matWCOEFF = [zeros(valWSIZE*2, 2) matNEWWAKECOEFF];
+    
 else
     matWAKEGEOM = cat(1, matWAKEGEOM, matNEWWAKE);
-    [~, WADJE, WELST, WVLST, WDVE, WNELE, WEATT, WEIDX, WELOC, WPLEX, WDVECT, WALIGN, WVATT, WVNORM, WCENTER] = fcnTRIANG('wake',matWAKEGEOM);
-    matWCOEFF = [matWCOEFF; repmat(matCOEFF(nonzeros(matEATT(vecTE,:)),:),2,1)];
+    [~, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] = fcnTRIANG('wake',matWAKEGEOM);
+    
+    vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
+    vecWLE = matWEIDX(vecWLEDVE,1);
+    
+    matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT);
+    
+    matWCOEFF = [zeros(valWNELE, 2) matNEWWAKECOEFF];
 end
 
 

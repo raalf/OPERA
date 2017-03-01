@@ -43,7 +43,7 @@ strSTL = 'Cad Geom/wing_simple_short.stl';
 % STL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 20;
+valMAXTIME = 50;
 valDELTIME = 0.3;
 flagRELAX = 0;
 vecSYM = []';
@@ -136,15 +136,16 @@ for ai = 1:length(seqALPHA)
                 vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
                 
-%                 vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
-%                 vecWLE = matWEIDX(vecWLEDVE,1);
-%                 matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT);
-%                 matWCOEFF = [zeros(valWNELE, 2) matNEWWAKECOEFF];
+                vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
+                vecWLE = matWEIDX(vecWLEDVE,1);
+                matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWCOEFF, matWALIGN, matWEIDX);              
                 
-%                 if flagRELAX == 1
-%                     [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] ...
-%                         = fcnRELAX(valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
-%                 end
+                if flagRELAX == 1
+                    [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] ...
+                        = fcnRELAX(valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
+                end
+
+                ABC(:,:,valTIMESTEP) = matCOEFF;
             end
         end
     end
@@ -152,7 +153,7 @@ end
 
 %% Plot
 %
-[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF,'r');
 if any(vecTE) && valMAXTIME > 0
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
@@ -160,5 +161,30 @@ if any(vecTE) && valMAXTIME > 0
 end
 
 %% End
+
+hFig3 = figure(3);
+dve = 1;
+hold on
+plot(1:valTIMESTEP, reshape(ABC(dve,1,:),1,[],1),'--xb')
+plot(1:valTIMESTEP, reshape(ABC(dve,2,:),1,[],1),'-.^b')
+
+plot(1:valTIMESTEP, reshape(ABC(dve,3,:),1,[],1),'--*r')
+plot(1:valTIMESTEP, reshape(ABC(dve,4,:),1,[],1),'-.or')
+
+plot(1:valTIMESTEP, reshape(ABC(dve,5,:),1,[],1),'->m')
+hold off
+
+box on
+grid on
+axis tight
+
+legend('A_1','A_2','B_1','B_2','C_3')
+
+
+
+
+
+
+
 
 

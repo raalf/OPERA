@@ -176,6 +176,7 @@ res_wake = [res1; res2; res3; res4; res5];
 
 %% Back half of post-TE wake DVEs
 
+%{
 % The wake HDVEs in question:
 
 % If this is the first row of wake elements (timestep = 1) then we set the aft row of wake elements (2nd triangles in the post-te row) to constant circ
@@ -210,8 +211,8 @@ else
     nedg = length(nonzeros(idx));
          
     % Circulation
-    circ_chw2 = fcnDCIRC(idx, nedg, lamb_mid, valWNELE, matWPLEX, matWEATT, matWELOC);
-    res_chw2 = zeros(nedg,1);
+%     circ_chw2 = fcnDCIRC(idx, nedg, lamb_mid, valWNELE, matWPLEX, matWEATT, matWELOC);
+%     res_chw2 = zeros(nedg,1);
     
     % Vorticity
     % along that edge equal for both HDVES
@@ -242,9 +243,9 @@ else
 %     vort_chw = [vort_echw1; vort_xchw1; vort_echw2; vort_xchw2];
 %     res_vchw = zeros(length(vort_chw(:,1)),1);
     
-    d_wake = [d_wake; circ_chw2];
-    res_wake = [res_wake; res_chw2];
-    d_wake(:,1:valWSIZE*2*5) = [];
+%     d_wake = [d_wake; circ_chw2];
+%     res_wake = [res_wake; res_chw2];
+%     d_wake(:,1:valWSIZE*2*5) = [];
     d_wake = d_wake(:, end - (valWSIZE*2*5) + 1:end);
     
 %     % Adding in values of older (2nd post-te row) of wake HDVEs, where the value of circulation is known. Adding this to resultant
@@ -262,6 +263,28 @@ else
 %     res_wake = [res_wake; res_chw2; res_vchw; res_chw3];
     
 end
+%}
+
+cols = reshape([repmat([(aftdves.*5)-4],1,2)+repmat([0:1],length(aftdves),1)]',[],1);
+
+rows_rep = reshape([repmat([1:valWSIZE]',1,length(aftdves)*2)]',[],1); 
+cols_rep = repmat(cols,valWSIZE,1);
+
+d_wake(sub2ind(size(d_wake),rows_rep,cols_rep)) = 0;
+
+rows = reshape([repmat([1:length(aftdves)*2]',1,1)]',[],1); 
+cols1 = (aftdves.*5)-4;
+cols2 = cols1 + 1;
+
+circ_chw = zeros(length(aftdves)*2, valWNELE*5);
+circ_chw(sub2ind(size(circ_chw),rows,[cols1; cols2])) = 1;
+
+res_chw = zeros(length(aftdves)*2,1);
+
+d_wake = [d_wake; circ_chw];
+res_wake = [res_wake; res_chw];
+
+d_wake = d_wake(:, end - (valWSIZE*2*5) + 1:end);
 
 matNEWWAKECOEFF = d_wake\res_wake;
 matNEWWAKECOEFF = reshape(matNEWWAKECOEFF,5,valWSIZE*2,1)';

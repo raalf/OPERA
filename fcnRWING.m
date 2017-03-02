@@ -1,4 +1,4 @@
-function [vecR] = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX)
+function [vecR] = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE)
 % Resultant
 % Kinematic resultant is the freestream (and wake-induced velocities summed) dotted with the
 % norm of the point we are influencing on, multiplied by 4*pi
@@ -29,7 +29,8 @@ if valTIMESTEP < 1;
 %     vecR(end-len-(len2-1):end-len) = (4*pi).*dot(repmat(vecUINF,len2,1), normals,2);
     
 else
-    [w_ind] = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
+    
+    [w_ind] = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE);
 
     vecR(end-(len-1):end) = (4*pi).*dot(repmat(vecUINF,len,1) + w_ind, matDVECT(:,:,3), 2);
 end

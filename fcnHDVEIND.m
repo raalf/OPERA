@@ -1,4 +1,5 @@
-function [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, matROTANG)
+function [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype)
+% dvetype - 1 for surface, 2 for wake, 3 for semi-infinite wake
 
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 
@@ -8,8 +9,6 @@ dbl_eps = 1e-14;
 fp = fcnTOLOC(dvenum, fpg, matDVE, matDVECT, matVLST);
 
 % fp = fcnGLOBSTAR(fpg - matVLST(matDVE(dvenum,1,1),:), matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
-
-
 
 endpoints = zeros(len*5, 3, 2); % Five function calls per DVE
 phi = zeros(len*5,1);
@@ -22,16 +21,23 @@ idx = [1:5:len*5]';
 %% Finding velocities induced by each vortex sheet
 % Always input left point, right point of vortex sheet LE
 
-% Left to right
 % First edge
 endpoints(idx,:,1:2) = reshape(permute(matPLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
 yaw(idx) = pi/2;
 phi(idx) = abs(atan(endpoints(idx,1,2)./endpoints(idx,2,2)));
 
+% endpoints(idx,:,2:-1:1) = reshape(permute(matPLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
+% yaw(idx) = -pi/2;
+% phi(idx) = abs(atan(endpoints(idx,2,2)./endpoints(idx,1,2)));
+
 % Second edge
 endpoints(idx+1,:,1:2) = reshape(permute(matPLEX(3:-1:2,:,dvenum),[3 2 1]), [],3,2);
 yaw(idx+1) = pi/2;
 phi(idx+1) = abs(atan((endpoints(idx+1,1,1)-endpoints(idx+1,1,2))./endpoints(idx+1,2,2)));
+
+% endpoints(idx+1,:,2:-1:1) = reshape(permute(matPLEX(3:-1:2,:,dvenum),[3 2 1]), [],3,2);
+% yaw(idx+1) = -pi/2;
+% phi(idx+1) = abs(atan(endpoints(idx+1,2,2)./(endpoints(idx+1,1,1)-endpoints(idx+1,1,2))));
 
 % Up to down
 % First edge
@@ -122,6 +128,16 @@ phi = -phi;
 
 fpl = reshape(repmat(fp,1,5,1)',3,[],1)';
 
+% Not running the chordwise sheets for wake DVEs
+idx_pass = false(len*5,1);
+idx_wake = idx(dvetype ~= 1);
+% idx_pass(wake_idx) = 1; % Not running "A" sheet for wake HDVE
+% idx_pass(wake_idx+1) = 1; % Not running "A" sheet #2 for wake HDVE
+
+al = zeros(len*5,3);
+bl = zeros(len*5,3);
+cl = zeros(len*5,3);
+
 [al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k);
 
 a1l = zeros(len,3);
@@ -134,10 +150,19 @@ b3l = zeros(len,3);
 
 %% Summing the velocities of all five sheets
 
-% Subtracting second vortex sheet from first in the left-to-right direction
+% Subtracting first vortex sheet from second in the right-to-left direction
 b1l = cl(idx,:) - cl(idx+1,:);
 b2l = bl(idx,:) - bl(idx+1,:);
 b3l = al(idx,:) - al(idx+1,:);
+
+% b1l = cl(idx+1,:) - cl(idx,:);
+% b2l = bl(idx+1,:) - bl(idx,:);
+% b3l = al(idx+1,:) - al(idx,:);
+
+% % Leaving the semi-infites on the oldest wake row
+% b1l(dvetype == 3,:) = cl(idx(dvetype == 3) + 1,:);
+% b2l(dvetype == 3,:) = bl(idx(dvetype == 3) + 1,:);
+% b3l(dvetype == 3,:) = al(idx(dvetype == 3) + 1,:);
 
 % Subtracting the three vortex sheets in the up-to-down direction based on the shape of the triangle
 
@@ -171,7 +196,9 @@ a1l(idx_e,:) = -cl(idx_e1+2,:) + cl(idx_e1+4,:);
 a2l(idx_e,:) = -bl(idx_e1+2,:) + bl(idx_e1+4,:);
 a3l(idx_e,:) = -al(idx_e1+2,:) + al(idx_e1+4,:);
 
-
+% a1l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
+% a2l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
+% a3l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
 %% Transforming to global coordinates
 
 v1 = [a1l; a2l; b1l; b2l; a3l+b3l];
@@ -186,6 +213,7 @@ a2 = v2(len+1:2*len,:);
 b1 = v2(2*len+1:3*len,:);
 b2 = v2(3*len+1:4*len,:);
 c3 = v2(4*len+1:5*len,:);
+
 
 
 

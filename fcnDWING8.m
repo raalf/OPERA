@@ -93,10 +93,11 @@ fpg = [matCENTER];
 % List of DVEs we are influencing from (one for each of the above fieldpoints)
 len = length(fpg(:,1));
 dvenum = reshape(repmat(1:valNELE,len,1),[],1);
+dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX);
+[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype);
 
 % List of normals we are to dot the above with
 % normals = [VNORM; DVECT(:,:,3)];

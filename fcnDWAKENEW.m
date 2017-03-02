@@ -133,7 +133,7 @@ circ3(sub2ind(size(circ3),rows,col1)) = reshape(gamma3',[],1);
 idx = sort(ismember(matWEATT, vecWLEDVE), 2, 'descend');
 idx = idx(:,1);
 idx_postte = zeros(size(matWEATT(:,1)));
-idx_postte(unique([unique(matWEIDX(vecWLEDVE,:)); unique(matWEIDX(aftdves,2:3))])) = 1; % Here, we are going to ignore edges that aren't between the two post-te HDVEs, as we want to ignore the rest of the wake
+idx_postte(unique([reshape(unique(matWEIDX(vecWLEDVE,:)),[],1); reshape(unique(matWEIDX(aftdves,2:3)),[],1)])) = 1; % Here, we are going to ignore edges that aren't between the two post-te HDVEs, as we want to ignore the rest of the wake
 idx = idx & all(matWEATT,2) & idx_postte; % All post-te row HDVE edges which we must set circulation constant
 
 nedg = length(nonzeros(idx));

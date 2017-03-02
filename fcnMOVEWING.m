@@ -23,7 +23,7 @@ function [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDE
 % this flip, then the normals of those elements will be facing downards
 
 te_flip = permute(reshape(matVLST(matELST(vecTE,:),:)',[],3,2),[2 1 3]); % Just creating a 3d matrix of wake vertices
-idx_flip = te_flip(:,2,1) > te_flip(:,2,2); % Finding out which trailing edges go from out to in, so we know what to flip
+idx_flip = [te_flip(2,:,1) > te_flip(2,:,2)]'; % Finding out which trailing edges go from out to in, so we know what to flip
 idx_flip2 = logical([zeros(length(idx_flip),1); idx_flip]); % idx_flip1 is the first point, idx_flip2 is the second point
 
 % Won't work for rotors

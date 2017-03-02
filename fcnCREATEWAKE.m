@@ -33,7 +33,8 @@ else
     
     matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWCOEFF, matWALIGN, matWEIDX);
     
-    matWCOEFF = [matWCOEFF; matNEWWAKECOEFF];
+    matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1); % Steady
+%     matWCOEFF = [matWCOEFF; matNEWWAKECOEFF];
 end
 
 

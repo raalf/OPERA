@@ -1,10 +1,10 @@
 function [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] ...
-    = fcnRELAX(valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX)
+    = fcnRELAX(valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE)
 % Relaxes wake by moving points in the wake vertex list matWVLST, and updating the local vectors in matWDVECT
 
 %% Finding induced velocities at all wake vertices
 s_ind = fcnSDVEVEL(matWVLST, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX);
-w_ind = fcnWINDVEL(matWVLST, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
+w_ind = fcnWINDVEL(matWVLST, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE);
 
 
 %% Identifying trailing edges, we won't relax these points

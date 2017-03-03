@@ -43,20 +43,20 @@ strSTL = 'Cad Geom/wing_simple_short.stl';
 % STL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 1;
+valMAXTIME = 0;
 valDELTIME = 0.3;
-flagRELAX = 0;
+flagRELAX = 1;
 vecSYM = []';
 
-% vecLE = [2];
-% vecTE = [5];
+vecLE = [2];
+vecTE = [5];
 
 vecLE = [10 17 24 30]';
 vecTE = [3 12 19 26]';
 
 % vecTE = [52 45 38 31 24 17 3 5 61 68 75 82 89 96]';
 
-seqALPHA = 5;
+seqALPHA = 30;
 seqBETA = 0;
 
 %% Triangulating Geometry
@@ -67,13 +67,12 @@ seqBETA = 0;
 % trimesh(TR)
 %% D-Matrix Creation
 
-% matD = fcnDWING7(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT);
-matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT);
-
 if ~isempty(vecTE)
     vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend')); % A vector of trailing edge HDVEs, which corresponds to vecTE edges
     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,1), matROTANG(vecTEDVE,2), matROTANG(vecTEDVE,3)); % Spanwise direction for each HDVE (may change with rotor stuff)
 end
+
+matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR);
 
 valDLEN = length(matD);
 
@@ -144,7 +143,7 @@ for ai = 1:length(seqALPHA)
                 
 %                 if flagRELAX == 1
 %                     [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER] ...
-%                         = fcnRELAX(valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX);
+%                         = fcnRELAX(valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE);
 %                 end
 
                 ABC(:,:,valTIMESTEP) = matCOEFF;
@@ -155,12 +154,33 @@ end
 
 %% Plot
 %
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF);
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF,'r');
 if any(vecTE) && valMAXTIME > 0
     [hFig1] = fcnPLOTWAKE(1, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF,'b');
 end
+
+granularity = 0.5;
+xlims = 5;
+ylims = 5;
+zlims = 2;
+
+x = -1:granularity:2;
+y = 0:granularity:3;
+z = -zlims:granularity:zlims;
+
+[X,Y,Z] = meshgrid(x,y,z);
+
+fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
+
+% [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE)
+[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX)
+
+hold on
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3))
+hold off
 
 %% End
 % 
@@ -182,16 +202,16 @@ end
 % axis tight
 % 
 % legend('A_1','A_2','B_1','B_2','C_3')
-
-hFig4 = figure(4);
-clf(4);
-dve = 1;
-patch('Faces',[1 2 3],'Vertices',matPLEX(:,:,dve),'FaceColor','None','LineWidth',2)
-
-axis equal
-grid on
-box on
-axis tight
+% 
+% hFig4 = figure(4);
+% clf(4);
+% dve = 1;
+% patch('Faces',[1 2 3],'Vertices',matPLEX(:,:,dve),'FaceColor','None','LineWidth',2)
+% 
+% axis equal
+% grid on
+% box on
+% axis tight
 
 
 

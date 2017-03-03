@@ -52,7 +52,7 @@ for i = 1:valNELE
         % Global
 %     etaxsi = fcnTOGLOB(repmat(i,len,1), [eta xsi vort], matDVE, matDVECT, matVLST);
 %     DT = delaunay(etaxsi(:,1), etaxsi(:,2));
-%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), (etaxsi(:,3) + matCENTER(i,3)),'EdgeColor','k','FaceColor','b','FaceAlpha',0.5,'EdgeAlpha',0.5)
+%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), (etaxsi(:,3)),'EdgeColor','k','FaceColor','b','FaceAlpha',0.5,'EdgeAlpha',0.5)
 %     
     axis tight
     

@@ -138,15 +138,15 @@ fpg = repmat(fpg,valNELE,1);
 
 [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype);
 
-% To globe?
-v1 = [a1; a2; b1; b2; c3];
-v2 = fcnTOGLOB(reshape(repmat(dvenum,1,5)',[],1), v1, matDVE, matDVECT, matVLST);
-len2 = length(dvenum);
-a1 = v2(1:len2,:);
-a2 = v2(len2+1:2*len2,:);
-b1 = v2(2*len2+1:3*len2,:);
-b2 = v2(3*len2+1:4*len2,:);
-c3 = v2(4*len2+1:5*len2,:);
+% % To globe?
+% v1 = [a1; a2; b1; b2; c3];
+% v2 = fcnTOGLOB(reshape(repmat(dvenum,1,5)',[],1), v1, matDVE, matDVECT, matVLST);
+% len2 = length(dvenum);
+% a1 = v2(1:len2,:);
+% a2 = v2(len2+1:2*len2,:);
+% b1 = v2(2*len2+1:3*len2,:);
+% b2 = v2(3*len2+1:4*len2,:);
+% c3 = v2(4*len2+1:5*len2,:);
 
 % List of normals we are to dot the above with
 % normals = [VNORM; DVECT(:,:,3)];

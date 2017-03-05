@@ -161,21 +161,17 @@ if any(vecTE) && valMAXTIME > 0
 %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF,'b');
 end
 
-granularity = 0.5;
-xlims = 5;
-ylims = 5;
-zlims = 2;
+% granularity = 0.5;
+% x = -1:granularity:2;
+% y = 0:granularity:3;
+% z = -zlims:granularity:zlims;
+% [X,Y,Z] = meshgrid(x,y,z);
+% fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-x = -1:granularity:2;
-y = 0:granularity:3;
-z = -zlims:granularity:zlims;
-
-[X,Y,Z] = meshgrid(x,y,z);
-
-fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
+fpg = [0.5 1.5 1];
 
 % [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE)
-[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX)
+[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX);
 
 hold on
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))

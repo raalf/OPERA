@@ -197,7 +197,8 @@ a3l(idx_e,:) = -al(idx_e1+2,:) + al(idx_e1+4,:);
 %% Transforming to global coordinates
 v1 = [a1l; a2l; b1l; b2l; a3l+b3l];
 
-v2 = fcnROTVECT(repmat(dvenum,5,1,1), v1, matDVECT);
+% v2 = fcnROTVECT(repmat(dvenum,5,1,1), v1, matDVECT);
+v2 = fcnTOGLOB(reshape(repmat(dvenum,1,5)',[],1), v1, matDVE, matDVECT, matVLST);
 % v2 = v1
 
 a1 = v2(1:len,:);

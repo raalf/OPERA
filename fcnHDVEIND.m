@@ -195,9 +195,9 @@ a1l(idx_e,:) = -cl(idx_e1+2,:) + cl(idx_e1+4,:);
 a2l(idx_e,:) = -bl(idx_e1+2,:) + bl(idx_e1+4,:);
 a3l(idx_e,:) = -al(idx_e1+2,:) + al(idx_e1+4,:);
 
-% a1l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
-% a2l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
-% a3l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
+a1l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
+a2l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
+a3l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
 %% Transforming to global coordinates
 
 v1 = [a1l; a2l; b1l; b2l; a3l+b3l];

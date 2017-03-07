@@ -1,4 +1,4 @@
-function [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype)
+function [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG)
 % dvetype - 1 for surface, 2 for wake, 3 for semi-infinite wake
 
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
@@ -6,9 +6,8 @@ dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 len = length(dvenum);
 dbl_eps = 1e-14;
 
-fp = fcnTOLOC(dvenum, fpg, matDVE, matDVECT, matVLST);
-
-% fp = fcnGLOBSTAR(fpg - matVLST(matDVE(dvenum,1,1),:), matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
+% fp = fcnTOLOC(dvenum, fpg, matDVE, matDVECT, matVLST);
+fp = fcnGLOBSTAR(fpg - matVLST(matDVE(dvenum,1,1),:), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
 
 endpoints = zeros(len*5, 3, 2); % Five function calls per DVE
 phi = zeros(len*5,1);
@@ -203,8 +202,10 @@ a3l(idx_e,:) = -al(idx_e1+2,:) + al(idx_e1+4,:);
 
 v1 = [a1l; a2l; b1l; b2l; a3l+b3l];
 
-% v2 = fcnSTARGLOB(v1, matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
-v2 = fcnTOGLOB(reshape(repmat(dvenum,1,5)',[],1), v1, matDVE, matDVECT, matVLST);
+dvenum = repmat(dvenum, 5, 1);
+
+v2 = fcnSTARGLOB(v1, matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
+% v2 = fcnTOGLOB(reshape(repmat(dvenum,1,5)',[],1), v1, matDVE, matDVECT, matVLST);
 % v2 = fcnROTVECT(repmat(dvenum,5,1,1), v1, matDVECT);
 % v2 = v1;
 

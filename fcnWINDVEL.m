@@ -1,4 +1,4 @@
-function [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE)
+function [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG)
 % This function finds the induced velocity at a point, due to the influence of the entire wake
 
 len = length(fpg(:,1));
@@ -10,7 +10,7 @@ dvetype(oldest_wake) = 3;
 
 fpg = repmat(fpg,valWNELE,1);
 
-[q_ind] = fcnINDVEL(dvenum, fpg, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, dvetype);
+[q_ind] = fcnINDVEL(dvenum, fpg, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, dvetype, matWROTANG);
 
 w_ind = reshape(sum(reshape(q_ind', len*3, [])',1),3,[])';
 

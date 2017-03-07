@@ -1,5 +1,5 @@
 function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, ROTANG] = fcnTRIANG(strATYPE, POINTS)
+            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(strATYPE, POINTS)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -159,7 +159,7 @@ end
 %% Local HDVE Eta-Xi Axis
 
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
-[matPLEX, matDVECT, ROTANG] = fcnTRITOLEX(P, DNORM);
+[matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM);
 
 % % Plotting global and local to visualize
 % test_num = 396;

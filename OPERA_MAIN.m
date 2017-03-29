@@ -35,7 +35,7 @@ strSTL = 'Cad Geom/wing_simple_short.stl';
 % strSTL = 'Cad Geom/quad.stl';
 % strSTL = 'CAD Geom/quad-mix.stl';
 % strSTL = 'CAD Geom/quad-mix2.stl';
-% strSTL = 'Cad Geom/quad-align.stl';
+strSTL = 'Cad Geom/quad-align.stl';
 % strSTL = 'Cad Geom/quad-align-wing.stl';
 % strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 
@@ -57,15 +57,15 @@ vecTE = [];
 % vecLE = [2];
 % vecTE = [5];
 
-vecLE = [10 17 24 30]';
-vecTE = [3 12 19 26]';
+% vecLE = [10 17 24 30]';
+% vecTE = [3 12 19 26]';
 
 % vecTE = [52 45 38 31 24 17 3 5 61 68 75 82 89 96]';
 
 % vecTE = [432 401 370 339 308 277 246 215 184 153 122 91 60 3]';
 % vecLE = [46 77 108 139 170 201 232 263 294 325 356 387 418 440]';
 
-seqALPHA = 30;
+seqALPHA = 12;
 seqBETA = 0;
 
 %% Triangulating Geometry
@@ -187,7 +187,7 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
 hold on
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),5)
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 hold off
 
 %% End

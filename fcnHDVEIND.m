@@ -6,7 +6,6 @@ dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 len = length(dvenum);
 dbl_eps = 1e-14;
 
-% fp = fcnTOLOC(dvenum, fpg, matDVE, matDVECT, matVLST);
 fp = fcnGLOBSTAR(fpg - matVLST(matDVE(dvenum,1,1),:), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
 
 endpoints = zeros(len*5, 3, 2); % Five function calls per DVE
@@ -205,8 +204,7 @@ v1 = [a1l; a2l; b1l; b2l; a3l+b3l];
 dvenum = repmat(dvenum, 5, 1);
 
 v2 = fcnSTARGLOB(v1, matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
-% v2 = fcnTOGLOB(reshape(repmat(dvenum,1,5)',[],1), v1, matDVE, matDVECT, matVLST);
-% v2 = fcnROTVECT(repmat(dvenum,5,1,1), v1, matDVECT);
+
 % v2 = v1;
 
 a1 = v2(1:len,:);

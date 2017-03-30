@@ -1,4 +1,4 @@
-function [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, colour)
+function [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG, colour)
 %FCNPLOTCIRC Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -43,11 +43,14 @@ for i = 1:valNELE
     
     len = length(eta);
     
+    orig = matVLST(matDVE(repmat(i,len,1),1,1),:);
+    
     % Global
-    etaxsi = fcnTOGLOB(repmat(i,len,1), [eta xsi circ], matDVE, matDVECT, matVLST);
+    etaxsi = orig + fcnSTARGLOB([eta xsi circ], matROTANG(repmat(i,len,1), 1), matROTANG(repmat(i,len,1), 2), matROTANG(repmat(i,len,1), 3));
+    
     DT = delaunay(etaxsi(:,1), etaxsi(:,2));
 %     trisurf(DT, etaxsi(:,1), etaxsi(:,2), (etaxsi(:,3) + matCENTER(i,3)),'EdgeColor','k','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
-    trisurf(DT, etaxsi(:,1), etaxsi(:,2), (etaxsi(:,3)),'EdgeColor','k','FaceColor',colour,'FaceAlpha',0.5,'EdgeAlpha',0.5)
+    trisurf(DT, etaxsi(:,1), etaxsi(:,2), etaxsi(:,3),'EdgeColor','k','FaceColor',colour,'FaceAlpha',0.5,'EdgeAlpha',0.5)
     
         % Global
 %     etaxsi = fcnTOGLOB(repmat(i,len,1), [eta xsi vort], matDVE, matDVECT, matVLST);

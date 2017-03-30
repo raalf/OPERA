@@ -31,7 +31,7 @@ fpg = [reshape(X, [], 1, 1) reshape(Y, [], 1, 1) reshape(Z, [], 1, 1)];
 fpg = unique(fpg,'rows');
 
 % fpg = [4 2 1; 2 10 6];
-% fpg = [-0.5 0.25 1]
+% fpg = [0.5 0.25 0.2]
 
 len = length(fpg(:,1));
 
@@ -39,7 +39,7 @@ dvenum = ones(len,1);
 
 test = 1;
 
-matCOEFF = [0 0 0 1 0];
+matCOEFF = [0 1 0 0 0];
 
 %%
 matDVE = [2 3 4];
@@ -54,7 +54,7 @@ matDVECT(:,:,3) = [0 0 1];
 
 ROLL = -atan2(matDVECT(:,2,3), matDVECT(:,3,3));
 PITCH = asin(matDVECT(:,1,3));
-YAW = -acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
+YAW = acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
 
 matROTANG(:,1) = ROLL;
 matROTANG(:,2) = PITCH;
@@ -79,7 +79,7 @@ q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 % q_ind = fcnROTVECT(1, q_ind, matDVECT);
 % q_ind = fcnTOGLOB(ones(length(q_ind),1),q_ind, matDVE, matDVECT, matVLST);
 
-q_ind = fcnSTARGLOB(q_ind, matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
+% q_ind = fcnSTARGLOB(q_ind, matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
 
 q_ind(test,:)
 
@@ -113,12 +113,12 @@ matPLEX = [0 0 0; ...
         
 % ROLL = acos(dot(matDVECT(:,:,1),repmat([1 0 0],1,1,1),2));
 % PITCH = acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
-% YAW = acos(dot(matDVECT(:,:,3),repmat([0 0 1],1,1,1),2));
-        
+% YAW = acos(dot(matDVECT(:,:,3),repmat([0 0 1],1,1,1),2)); 
 
 ROLL = -atan2(matDVECT(:,2,3), matDVECT(:,3,3));
 PITCH = asin(matDVECT(:,1,3));
-YAW = -acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
+% YAW = -acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
+YAW = atan2(matDVECT(:,2,1), matDVECT(:,1,1));
 
 matROTANG(:,1) = ROLL;
 matROTANG(:,2) = PITCH;
@@ -165,7 +165,9 @@ matDVECT(:,:,3) = [0 0 1];
 
 ROLL = -atan2(matDVECT(:,2,3), matDVECT(:,3,3));
 PITCH = asin(matDVECT(:,1,3));
-YAW = -acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
+% YAW = acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
+% YAW = atan2(-matDVECT(:,2,1), -matDVECT(:,1,1))
+YAW = atan2(matDVECT(:,2,1), matDVECT(:,1,1));
 
 matROTANG(:,1) = ROLL;
 matROTANG(:,2) = PITCH;
@@ -185,8 +187,7 @@ coeff = matCOEFF;
 q_ind = permute(sum(D.*repmat(reshape(coeff(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
-q_ind = fcnSTARGLOB(q_ind, matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
-
+% q_ind = fcnSTARGLOB(q_ind, matROTANG(:,1), matROTANG(:,2), matROTANG(:,3));
 
 q_ind(test,:)
 

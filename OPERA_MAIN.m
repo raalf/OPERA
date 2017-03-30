@@ -25,7 +25,7 @@ disp('==========================================================================
 % Analysis Type and Geometry File
 
 strATYPE = 'LS'; % Lifting Surface
-% strSTL = 'CAD Geom/simple_liftingsurface.stl';
+strSTL = 'CAD Geom/simple_liftingsurface.stl';
 
 % strSTL = 'Cad Geom/wing_simple.stl';
 % strSTL = 'Cad Geom/wing_simple_short.stl';
@@ -35,18 +35,18 @@ strATYPE = 'LS'; % Lifting Surface
 % strSTL = 'Cad Geom/quad.stl';
 % strSTL = 'CAD Geom/quad-mix.stl';
 % strSTL = 'CAD Geom/quad-mix2.stl';
-strSTL = 'Cad Geom/quad-align.stl';
+% strSTL = 'Cad Geom/quad-align.stl';
 % strSTL = 'Cad Geom/quad-align-wing.stl';
 % strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 
 % strSTL = 'CAD Geom/2quad.stl';
 % strSTL = 'CAD Geom/pyramid.stl';
 %
-% ATYPE = 'PC'; % Panel Code
-% STL = 'CAD Geom/cube.stl';
+% strATYPE = 'PC'; % Panel Code
+% strSTL = 'CAD Geom/cube.stl';
 
 strA2TYPE = 'WING';
-valMAXTIME = 2;
+valMAXTIME = 0;
 valDELTIME = 0.3;
 flagRELAX = 0;
 vecSYM = []';
@@ -54,9 +54,9 @@ vecLE = [];
 vecTE = [];
 
 
-vecLE = [3];
-vecTE = [4];
-
+% vecLE = [3];
+% vecTE = [4];
+% 
 % vecLE = [10 17 24 30]';
 % vecTE = [3 12 19 26]';
 
@@ -82,7 +82,7 @@ if ~isempty(vecTE)
     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,1), matROTANG(vecTEDVE,2), matROTANG(vecTEDVE,3)); % Spanwise direction for each HDVE (may change with rotor stuff)
 end
 
-matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG);
+matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG);
 
 valDLEN = length(matD);
 
@@ -164,23 +164,17 @@ end
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG);
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG);
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
-%     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
-%     q_indw = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
-%     q_ind = q_inds + q_indw; 
-%     hold on
-%     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1)+vecUINF(1), q_ind(:,2)+vecUINF(2), q_ind(:,3)+vecUINF(3), 0.25, 'g')
-%     hold off
 if any(vecTE) && valMAXTIME > 0
 %     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF, matWROTANG, 'b');
 end
 
-granularity = .1;
-x = -1:granularity:1;
-y = -1:granularity:1;
-% y = ones(size(x))-0.5
+granularity = .01;
+x = -0.2:granularity:1;
+% y = -1:granularity:1;
+y = ones(size(x))+.5;
 z = -0.2:granularity:0.2;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
@@ -194,7 +188,7 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
 
 % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-q_ind = s_ind;
+q_ind = s_ind + vecUINF;
 hold on
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))

@@ -65,7 +65,7 @@ vecTE = [];
 % vecTE = [432 401 370 339 308 277 246 215 184 153 122 91 60 3]';
 % vecLE = [46 77 108 139 170 201 232 263 294 325 356 387 418 440]';
 
-seqALPHA = 12;
+seqALPHA = 30;
 seqBETA = 0;
 
 %% Triangulating Geometry
@@ -171,7 +171,7 @@ if any(vecTE) && valMAXTIME > 0
 %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF, matWROTANG, 'b');
 end
 
-granularity = .01;
+granularity = .1;
 x = -0.2:granularity:1;
 % y = -1:granularity:1;
 y = ones(size(x))+.5;

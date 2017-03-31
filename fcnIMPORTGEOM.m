@@ -1,5 +1,5 @@
 function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, ...
-            matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, ROTANG] = fcnIMPORTGEOM(strSTL, strATYPE)
+            matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matENORM] = fcnIMPORTGEOM(strSTL, strATYPE)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   STL - .stl filename, string.
@@ -35,7 +35,7 @@ function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matE
 % %    temp((end/2) + 1:end,:,:) = [];
 % end
 
-[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, ROTANG] = fcnTRIANG(strATYPE, temp);
+[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matENORM] = fcnTRIANG(strATYPE, temp);
 
 end
 

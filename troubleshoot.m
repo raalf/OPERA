@@ -66,7 +66,7 @@ matPLEX = [0 0 0; ...
             1.000000000000000                   0                   0];
 
         
-[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, 1, matROTANG);
+[a1, a2, b1, b2] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, 1, matROTANG);
 
 D = [a1 a2 b1 b2 c3];
 D = reshape(reshape(D', 1, 15, []), 3, 5, len);

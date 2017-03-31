@@ -25,10 +25,10 @@ disp('==========================================================================
 % Analysis Type and Geometry File
 
 strATYPE = 'LS'; % Lifting Surface
-strSTL = 'CAD Geom/simple_liftingsurface.stl';
+% strSTL = 'CAD Geom/simple_liftingsurface.stl';
 
 % strSTL = 'Cad Geom/wing_simple.stl';
-% strSTL = 'Cad Geom/wing_simple_short.stl';
+strSTL = 'Cad Geom/wing_simple_short.stl';
 
 % strSTL = 'Cad Geom/wing_simple_short2.stl';
 
@@ -58,7 +58,7 @@ vecTE = [];
 % vecTE = [4];
 % 
 % vecLE = [10 17 24 30]';
-% vecTE = [3 12 19 26]';
+vecTE = [3 12 19 26]';
 
 % vecTE = [52 45 38 31 24 17 3 5 61 68 75 82 89 96]';
 
@@ -71,7 +71,7 @@ seqBETA = 0;
 %% Triangulating Geometry
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, ...
-    matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnIMPORTGEOM(strSTL, strATYPE);
+    matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matENORM] = fcnIMPORTGEOM(strSTL, strATYPE);
 
 % trimesh(TR)
 %% D-Matrix Creation
@@ -82,7 +82,7 @@ if ~isempty(vecTE)
     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,1), matROTANG(vecTEDVE,2), matROTANG(vecTEDVE,3)); % Spanwise direction for each HDVE (may change with rotor stuff)
 end
 
-matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG);
+matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM, matENORM);
 
 valDLEN = length(matD);
 
@@ -109,11 +109,12 @@ for ai = 1:length(seqALPHA)
         valWSIZE = [];
         matWCOEFF = [];
         matWVLST = [];
+        matWROTANG = [];
         
         vecUINF = fcnUINFWING(valALPHA, valBETA);
         
         % Building wing resultant
-        vecR = fcnRWING(strATYPE, valDLEN, 0, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE);
+        vecR = fcnRWING(strATYPE, valDLEN, 0, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matENORM);
         
         % Solving for wing coefficients
         [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
@@ -142,7 +143,7 @@ for ai = 1:length(seqALPHA)
                     matCOEFF, valWSIZE, matWCOEFF, vecTE, matEATT, vecTEDVE, vecSPANDIR, valWNELE, matPLEX, matELOC, matVLST, matELST, matDVE);
                 
                 % Rebuild wing resultant
-                vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
+                vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matENORM);
                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
                 
                 % Resolving wake D-matrix (steady)
@@ -171,8 +172,8 @@ if any(vecTE) && valMAXTIME > 0
 %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF, matWROTANG, 'b');
 end
 
-granularity = .1;
-x = -0.2:granularity:1;
+granularity = .01;
+x = -0.2:granularity:1.2;
 % y = -1:granularity:1;
 y = ones(size(x))+.5;
 z = -0.2:granularity:0.2;

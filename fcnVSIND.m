@@ -23,6 +23,24 @@ len = length(eta_0(:,1));
 
 le_vect = xsi_0 - eta_0.*tanphi;
 
+ZAMIN = 0.10*(hspan*2); % Correction factor from Horstmann
+
+% From Horstmann LIFTING_LINE, a23ind.f V-WINKEL NUE
+% I believe EPS is the length of an unswept leading edge
+% Horstmann uses zeta as well, but he does this before transformation
+% to local ref. Here, zeta = 0 always. Length should be the same in
+% either case.
+
+% From Horstmann LIFTING_LINE, a23ind.f FAKTOREN FUER W2 (150)
+% If the point lies on the leading edge, we move it 3% back
+
+EPS = sqrt(((eta_0 - hspan) - (eta_0 + hspan)).^2)/1000;
+% idx200 = le_vect < EPS & abs(zeta_0) < ZAMIN & abs(tanphi) > EPS;
+idx200 = abs(le_vect) < EPS & abs(zeta_0) < ZAMIN;
+xsi_0(idx200) = xsi_0(idx200) + ZAMIN(idx200);
+le_vect(idx200) = xsi_0(idx200) - eta_0(idx200).*tanphi(idx200);
+
+
 % Eqn A2-12
 a2 = 1 + (tanphi.^2);
 b2 = le_vect.*tanphi;

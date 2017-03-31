@@ -1,5 +1,5 @@
 function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(strATYPE, POINTS)
+            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matENORM] = fcnTRIANG(strATYPE, POINTS)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -236,6 +236,25 @@ matVNORM = [mean(temp51,2) mean(temp52,2) mean(temp53,2)];
 matVNORM = matVNORM./repmat(sqrt(sum(abs(matVNORM).^2,2)), 1,3);
 
 % clearvars -except TR ADJE ELST VLST DVE NELE EATT EIDX ELOC PLEX DVECT ALIGN VATT VNORM CENTER
+
+%% Edge averaged normals
+% The midpoint of edges can be used for flow tangency, so the normal there needs to be known
+% It will be the average of the normals of the attached DVEs (should be 1 or 2 DVEs per edge)
+
+%matENORM = 
+
+matENORM = zeros(nedg,3);
+
+idx2 = all(matEATT,2); % Two HDVEs per edge
+idx1 = ~all(matEATT,2); % One HDVE per edge
+
+matENORM(idx1,:) = matDVECT(matEATT(idx1,2),:,3);
+temp55(:,:,1) = matDVECT(matEATT(idx2,1),:,3);
+temp55(:,:,2) = matDVECT(matEATT(idx2,2),:,3);
+
+matENORM(idx2,:) = mean(temp55,3);
+
+
 
 end
 

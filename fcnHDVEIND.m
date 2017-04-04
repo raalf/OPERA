@@ -136,8 +136,8 @@ al = zeros(len*5,3);
 bl = zeros(len*5,3);
 cl = zeros(len*5,3);
 
-% [al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k);
-[bl, cl] = a23ind2(endpoints, phi, yaw, fpl, k);
+[al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k);
+% [bl, cl] = a23ind2(endpoints, phi, yaw, fpl, k);
 
 a1l = zeros(len,3);
 a2l = zeros(len,3);

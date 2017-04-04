@@ -4,7 +4,7 @@ clear
 endpoints(:,:,1) = [0 0 0];
 endpoints(:,:,2) = [1 1 0];
 
-coeff = [1 1 0];
+coeff = [-1 1 0];
 
 phi = atan((endpoints(:,2,2)-endpoints(:,2,1))./(endpoints(:,1,2)-endpoints(:,1,1)));
 yaw = 0;
@@ -12,7 +12,7 @@ yaw = 0;
 k = 0.1;
 
 granularity = 0.25;
-xlims = 5;
+xlims = 2;
 ylims = 5;
 zlims = 2;
 
@@ -27,7 +27,10 @@ y = 0:granularity:1.5;
 
 fpl = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-% fpl = [-4.5 -5 0];
+% fpl = [-100 0.5 -1.25; 0.5 0 -1.25];
+% fpl = [0.5 0 -0.5];
+% fpl = [1 0 0];
+% fpl = [1 1.5 0];
 
 test = 1;
 
@@ -47,10 +50,13 @@ hspan = hspan1.*cos(yaw) + hspan2.*sin(yaw);
 
 hspan = repmat(hspan, len, 1);
 
-[aloc, bloc, cloc] = fcnVSIND(temp_endpoints, temp_phi, temp_yaw, fpl, temp_k);
+% [aloc, bloc, cloc] = fcnVSIND(temp_endpoints, temp_phi, temp_yaw, fpl, temp_k);
 
 % [aloc, bloc, cloc] = fcnHORSTMANN(temp_endpoints, hspan, temp_phi, temp_yaw, fpl, temp_k);
 
+[bloc, cloc] = a23ind2(temp_endpoints, hspan, temp_phi, temp_yaw, fpl, temp_k);
+
+aloc = zeros(size(bloc));
 
 %%
 

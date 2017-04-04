@@ -8,6 +8,14 @@ patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceColor','r','LineWidth',2);
 alpha(0);
 hold on
 
+%     edge1 = matVLST(matELST(:,1),:);
+%     edge2 = matVLST(matELST(:,2),:);
+%     mid = (edge1+edge2)./2;
+%     for ii = 1:length(mid)
+%         str = sprintf('%d',ii);
+%         text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',20);
+%     end
+
 if verbose == 1
     for ii = 1:valNELE
         str = sprintf('%d',ii);

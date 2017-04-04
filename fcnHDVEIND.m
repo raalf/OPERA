@@ -12,7 +12,7 @@ endpoints = zeros(len*5, 3, 2); % Five function calls per DVE
 phi = zeros(len*5,1);
 yaw = zeros(len*5,1);
 
-k = zeros(len*5,1)+1; % Until this is figured out for HDVE, k = 1
+k = zeros(len*5,1)+1e10; % Until this is figured out for HDVE, k = 1
 
 idx = [1:5:len*5]';
 
@@ -136,7 +136,8 @@ al = zeros(len*5,3);
 bl = zeros(len*5,3);
 cl = zeros(len*5,3);
 
-[al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k);
+% [al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k);
+[bl, cl] = a23ind2(endpoints, phi, yaw, fpl, k);
 
 a1l = zeros(len,3);
 a2l = zeros(len,3);
@@ -193,6 +194,7 @@ idx_e1 = idx(idx_e.*idx ~= 0);
 a1l(idx_e,:) = -cl(idx_e1+2,:) + cl(idx_e1+4,:);
 a2l(idx_e,:) = -bl(idx_e1+2,:) + bl(idx_e1+4,:);
 a3l(idx_e,:) = -al(idx_e1+2,:) + al(idx_e1+4,:);
+
 
 a1l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
 a2l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);

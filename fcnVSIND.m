@@ -23,20 +23,19 @@ len = length(eta_0(:,1));
 
 le_vect = xsi_0 - eta_0.*tanphi;
 
-ZAMIN = 0.10*(hspan*2); % Correction factor from Horstmann
+
 
 % From Horstmann LIFTING_LINE, a23ind.f V-WINKEL NUE
 % I believe EPS is the length of an unswept leading edge
 % Horstmann uses zeta as well, but he does this before transformation
 % to local ref. Here, zeta = 0 always. Length should be the same in
 % either case.
-
 % From Horstmann LIFTING_LINE, a23ind.f FAKTOREN FUER W2 (150)
 % If the point lies on the leading edge, we move it 3% back
 
+ZAMIN = 0.2*(hspan*2); % Correction factor from Horstmann
 EPS = sqrt(((eta_0 - hspan) - (eta_0 + hspan)).^2)/1000;
-% idx200 = le_vect < EPS & abs(zeta_0) < ZAMIN & abs(tanphi) > EPS;
-idx200 = abs(le_vect) < EPS & abs(zeta_0) < ZAMIN;
+idx200 = le_vect < EPS & abs(zeta_0) < ZAMIN & abs(tanphi) > EPS;
 xsi_0(idx200) = xsi_0(idx200) + ZAMIN(idx200);
 le_vect(idx200) = xsi_0(idx200) - eta_0(idx200).*tanphi(idx200);
 
@@ -129,7 +128,6 @@ G21c = zeros(len,1);
 G25b = -0.5.*log((k + zeta_0sq + t2s)./(k + zeta_0sq + t1s));
 G25c = -hspan.*log((k + zeta_0sq + t1s).*(k + zeta_0sq + t2s));
 
-
 idx70 = abs(t1) > dbl_eps;
 % G25c(idx70) = G25c(idx70) + t1(idx70).*log(zeta_0(idx70) + t1s(idx70)); before speed boost
 G25c70 = G25c + t1.*log(zeta_0sq + t1s); %speed boost without index
@@ -140,15 +138,10 @@ idx71 = abs(t2) > dbl_eps;
 G25c71 = G25c - t2.*log(zeta_0sq + t2s); %speed boost without index
 G25c(idx71) = G25c71(idx71); %speed boost index
 
-
-
-
 % Eqn A2-9
 % G25 = (0.5.*log(k + t2.^2 + zeta_0sq)) - (0.5.*log(k + t1.^2 + zeta_0sq));
 % G25 = (0.5.*log(t2s + zeta_0sq)) - (0.5.*log(t1s + zeta_0sq)); before speed boost
 G25 = (log(t2s + zeta_0sq) - log(t1s + zeta_0sq))./2;
-
-
 
 % Eqn A2-3
 % G21 = ((beta1./(2.*rho)).*log(mu1_2) + (beta2./rho).*mu2_2) - ((beta1./(2.*rho)).*log(mu1_1) + (beta2./rho).*mu2_1);
@@ -254,9 +247,9 @@ b2_zeta(idx40) = G21b(idx40) + G24(idx40).*b24(idx40) + G25b(idx40);
 c2_zeta(idx40) = G21c(idx40) + G23(idx40).*c23(idx40) + G24(idx40).*c24(idx40) + G25c(idx40) + G27(idx40).*c27(idx40);
 
 % If he point falls on a swept leading edge inside the bounds of a sheet
-idx60 = abs(zeta_0) <= dbl_eps & abs(le_vect) <= dbl_eps & abs(tanphi) > dbl_eps & abs(hspan) - abs(eta_0) >= -dbl_eps;
+idx60 = abs(zeta_0) <= dbl_eps & abs(le_vect) <= dbl_eps & abs(tanphi) > dbl_eps; %& abs(hspan) - abs(eta_0) >= -dbl_eps;
 b2_zeta(idx60) = 0;
-% c2_zeta(idx60) = 0;
+c2_zeta(idx60) = 0;
 
 % a, b, c in local ref frame
 bloc = [b2_xsi b2_eta b2_zeta];
@@ -287,12 +280,12 @@ cloc(idx_LE,3) = -4.*hspan(idx_LE) + eta_0(idx_LE).*2.*bloc(idx_LE,3);
 
 %% Rotate 90 degrees to appropriate direction if needed
 % yaw = -yaw; % says Bill
-tempb(:,2) = bloc(:,1).*cos(yaw) + bloc(:,2).*-sin(yaw);
-tempb(:,1) = bloc(:,1).*sin(yaw) + bloc(:,2).*cos(yaw);
+tempb(:,2) = bloc(:,1).*cos(yaw) + bloc(:,2).*sin(yaw);
+tempb(:,1) = bloc(:,1).*-sin(yaw) + bloc(:,2).*cos(yaw);
 bloc(:,1:2) = tempb;
 
-tempc(:,2) = cloc(:,1).*cos(yaw) + cloc(:,2).*-sin(yaw);
-tempc(:,1) = cloc(:,1).*sin(yaw) + cloc(:,2).*cos(yaw);
+tempc(:,2) = cloc(:,1).*cos(yaw) + cloc(:,2).*sin(yaw);
+tempc(:,1) = cloc(:,1).*-sin(yaw) + cloc(:,2).*cos(yaw);
 cloc(:,1:2) = tempc;
 
 end

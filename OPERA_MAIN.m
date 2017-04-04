@@ -23,19 +23,38 @@ disp('==========================================================================
 
 %% Preamble
 % Analysis Type and Geometry File
-
+strA2TYPE = 'WING';
 strATYPE = 'LS'; % Lifting Surface
+valMAXTIME = 0;
+valDELTIME = 0.3;
+flagRELAX = 0;
+
+vecSYM = []';
+vecLE = [];
+vecTE = [];
+
+seqALPHA = 30;
+seqBETA = 0;
+
+
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
 
 % strSTL = 'Cad Geom/wing_simple.stl';
-strSTL = 'Cad Geom/wing_simple_short.stl';
+% strSTL = 'Cad Geom/wing_simple_short.stl';
 
 % strSTL = 'Cad Geom/wing_simple_short2.stl';
+% vecTE = [432 401 370 339 308 277 246 215 184 153 122 91 60 3]';
+% vecLE = [46 77 108 139 170 201 232 263 294 325 356 387 418 440]';
 
 % strSTL = 'Cad Geom/quad.stl';
 % strSTL = 'CAD Geom/quad-mix.stl';
 % strSTL = 'CAD Geom/quad-mix2.stl';
+
 % strSTL = 'Cad Geom/quad-align.stl';
+% vecLE = [3];
+% vecTE = [4];
+
+
 % strSTL = 'Cad Geom/quad-align-wing.stl';
 % strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
 
@@ -45,28 +64,15 @@ strSTL = 'Cad Geom/wing_simple_short.stl';
 % strATYPE = 'PC'; % Panel Code
 % strSTL = 'CAD Geom/cube.stl';
 
-strA2TYPE = 'WING';
-valMAXTIME = 0;
-valDELTIME = 0.3;
-flagRELAX = 0;
-vecSYM = []';
-vecLE = [];
-vecTE = [];
-
-
-% vecLE = [3];
-% vecTE = [4];
-% 
 % vecLE = [10 17 24 30]';
-vecTE = [3 12 19 26]';
+% vecTE = [3 12 19 26]';
 
 % vecTE = [52 45 38 31 24 17 3 5 61 68 75 82 89 96]';
 
-% vecTE = [432 401 370 339 308 277 246 215 184 153 122 91 60 3]';
-% vecLE = [46 77 108 139 170 201 232 263 294 325 356 387 418 440]';
+strSTL = 'CAD Geom/wing_simple_camber.stl';
+vecTE = [704 664 627 590 553 516 479 442 405 368 331 294 257 220 183 146 109 72 3]
 
-seqALPHA = 30;
-seqBETA = 0;
+
 
 %% Triangulating Geometry
 
@@ -172,13 +178,19 @@ if any(vecTE) && valMAXTIME > 0
 %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF, matWROTANG, 'b');
 end
 
-granularity = .01;
-x = -0.2:granularity:1.2;
+granularity = .025;
+x = -0.6:granularity:1.2;
 % y = -1:granularity:1;
-y = ones(size(x))+.5;
+y = ones(size(x))+1;
 z = -0.2:granularity:0.2;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
+
+% temp1 = [];
+% temp1(:,:,1) = matVLST(matELST(:,1),:);
+% temp1(:,:,2) = matVLST(matELST(:,2),:);
+% edge_midpoints = mean(temp1,3);
+% fpg = [matCENTER; matVLST; edge_midpoints];
 
 % fpg = fpg + matVLST(1,:);
 

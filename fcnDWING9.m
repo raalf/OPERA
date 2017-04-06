@@ -28,27 +28,27 @@ vort_x2 = [];
 % % vnuma is local vertices 1 and 2 (columns) for HDVE 1
 % % vnumb is local vertices 1 and 2 for HDVE 2
 
-% [ta,tb,~] = find(matDVE(matEATT(idx,1),:,1) == repmat(matELST(idx,1),1,3));
-% [~,rb,] = sort(ta);
-% vnuma(:,1) = tb(rb); % Sorting it according to row, cause find returns them jumbled up
-% 
-% [ta,tb,~] = find(matDVE(matEATT(idx,1),:,1) == repmat(matELST(idx,2),1,3));
-% [~,rb,] = sort(ta);
-% vnuma(:,2) = tb(rb);
-% 
-% [ta,tb,~] = find(matDVE(matEATT(idx,2),:,1) == repmat(matELST(idx,1),1,3));
-% [~,rb,] = sort(ta);
-% vnumb(:,1) = tb(rb);
-% 
-% [ta,tb,~] = find(matDVE(matEATT(idx,2),:,1) == repmat(matELST(idx,2),1,3));
-% [~,rb,] = sort(ta);
-% vnumb(:,2) = tb(rb);
-% 
-% % First vertex
-% [vort_e1, vort_x1] = fcnDVORT(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
-% 
-% % Second vertex
-% [vort_e2, vort_x2] = fcnDVORT(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
+[ta,tb,~] = find(matDVE(matEATT(idx,1),:,1) == repmat(matELST(idx,1),1,3));
+[~,rb,] = sort(ta);
+vnuma(:,1) = tb(rb); % Sorting it according to row, cause find returns them jumbled up
+
+[ta,tb,~] = find(matDVE(matEATT(idx,1),:,1) == repmat(matELST(idx,2),1,3));
+[~,rb,] = sort(ta);
+vnuma(:,2) = tb(rb);
+
+[ta,tb,~] = find(matDVE(matEATT(idx,2),:,1) == repmat(matELST(idx,1),1,3));
+[~,rb,] = sort(ta);
+vnumb(:,1) = tb(rb);
+
+[ta,tb,~] = find(matDVE(matEATT(idx,2),:,1) == repmat(matELST(idx,2),1,3));
+[~,rb,] = sort(ta);
+vnumb(:,2) = tb(rb);
+
+% First vertex
+[vort_e1, vort_x1] = fcnDVORT(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
+
+% Second vertex
+[vort_e2, vort_x2] = fcnDVORT(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
 
 
 %% Irrotationality
@@ -107,13 +107,16 @@ end
 
 % Points we are influencing
 % fpg = [VLST; CENTER];
-temp1 = [];
-temp1(:,:,1) = matVLST(matELST(:,1),:);
-temp1(:,:,2) = matVLST(matELST(:,2),:);
 
-edge_midpoints = mean(temp1,3);
+% temp1 = [];
+% temp1(:,:,1) = matVLST(matELST(:,1),:);
+% temp1(:,:,2) = matVLST(matELST(:,2),:);
+% 
+% edge_midpoints = mean(temp1,3);
+% 
+% fpg = [matCENTER; matVLST; edge_midpoints];
 
-fpg = [matCENTER; matVLST; edge_midpoints];
+fpg = matCENTER;
 
 % List of DVEs we are influencing from (one for each of the above fieldpoints)
 len = length(fpg(:,1));
@@ -126,7 +129,9 @@ fpg = repmat(fpg,valNELE,1);
 
 % List of normals we are to dot the above with
 % normals = [VNORM; DVECT(:,:,3)];
-normals = [matDVECT(:,:,3); matVNORM; matENORM];
+% normals = [matDVECT(:,:,3); matVNORM; matENORM];
+normals = matDVECT(:,:,3);
+
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 
 % Dotting a1, a2, b1, b2, c3 with the normals of the field points

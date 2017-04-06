@@ -14,7 +14,7 @@ disp('| APPLIED       |              ||   ___     ___     ___   ||  ');
 disp('| AERODYNAMICS  |              ||  /   \   /| |\   /   \  ||  ');
 disp('| LABORATORY OF |              || |  O  |__|| ||__|  O  | ||  ');
 disp('| FLIGHT        |              ||  \___/--/^^^^^\--\___/  ||  ');
-disp('+---------------+              ||________|       |________||  __');
+disp('+---------------+          __  ||________|       |________||  __');
 disp('        .-----------------/  \-++--------|   .   |--------++-/  \-----------------. ');
 disp('       /.---------________|  |___________\__(*)__/___________|  |________---------.\');
 disp('                 |    |   ''$$''   |                       |   ''$$''   |    |       ');
@@ -201,7 +201,7 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
 
 % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-q_ind = s_ind + vecUINF;
+q_ind = s_ind;% + vecUINF;
 hold on
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))

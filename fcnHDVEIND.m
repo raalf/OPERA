@@ -12,7 +12,7 @@ endpoints = zeros(len*5, 3, 2); % Five function calls per DVE
 phi = zeros(len*5,1);
 yaw = zeros(len*5,1);
 
-k = zeros(len*5,1)+1e10; % Until this is figured out for HDVE, k = 1
+k = zeros(len*5,1)+1; % Until this is figured out for HDVE, k = 1
 
 idx = [1:5:len*5]';
 
@@ -154,10 +154,6 @@ b1l = cl(idx,:) - cl(idx+1,:);
 b2l = bl(idx,:) - bl(idx+1,:);
 b3l = al(idx,:) - al(idx+1,:);
 
-% b1l = cl(idx+1,:) - cl(idx,:);
-% b2l = bl(idx+1,:) - bl(idx,:);
-% b3l = al(idx+1,:) - al(idx,:);
-
 % % Leaving the semi-infites on the oldest wake row
 % b1l(dvetype == 3,:) = cl(idx(dvetype == 3) + 1,:);
 % b2l(dvetype == 3,:) = bl(idx(dvetype == 3) + 1,:);
@@ -169,51 +165,39 @@ idx_a = endpoints(idx,1,2) < 0; % HDVEs with obtuse angle at Vertex 1 (eta < 0)
 idx_a1 = idx(idx_a.*idx ~= 0); % Index of first edge of HDVEs for obtuse angle at Vertex 1
 a1l(idx_a,:) = cl(idx_a1+2,:) - cl(idx_a1+3,:) + cl(idx_a1+4,:);
 a2l(idx_a,:) = bl(idx_a1+2,:) - bl(idx_a1+3,:) + bl(idx_a1+4,:);
-a3l(idx_a,:) = al(idx_a1+2,:) - al(idx_a1+3,:) + al(idx_a1+4,:);
 
 idx_b = endpoints(idx,1,2) >= 0 & endpoints(idx+1,1,2) <= endpoints(idx+1,1,1); % HDVEs with acute (or right) angle at Vertex 1 & Vertex 2
 idx_b1 = idx(idx_b.*idx ~= 0);
 a1l(idx_b,:) = -cl(idx_b1+2,:) - cl(idx_b1+3,:) + cl(idx_b1+4,:);
 a2l(idx_b,:) = -bl(idx_b1+2,:) - bl(idx_b1+3,:) + bl(idx_b1+4,:);
-a3l(idx_b,:) = -al(idx_b1+2,:) - al(idx_b1+3,:) + al(idx_b1+4,:);
 
 idx_c = endpoints(idx+1,1,2) > endpoints(idx+1,1,1); % HDVEs with obtuse angle at Vertex 2
 idx_c1 = idx(idx_c.*idx ~= 0); 
 a1l(idx_c,:) = -cl(idx_c1+2,:) + cl(idx_c1+3,:) + cl(idx_c1+4,:);
 a2l(idx_c,:) = -bl(idx_c1+2,:) + bl(idx_c1+3,:) + bl(idx_c1+4,:);
-a3l(idx_c,:) = -al(idx_c1+2,:) + al(idx_c1+3,:) + al(idx_c1+4,:);
 
 idx_d = abs(endpoints(idx,1,2)) <= dbl_eps; % HDVEs with right angle at Vertex 1
 idx_d1 = idx(idx_d.*idx ~= 0);
 a1l(idx_d,:) = -cl(idx_d1+3,:) + cl(idx_d1+4,:);
 a2l(idx_d,:) = -bl(idx_d1+3,:) + bl(idx_d1+4,:);
-a3l(idx_d,:) = -al(idx_d1+3,:) + al(idx_d1+4,:);
 
 idx_e = abs(endpoints(idx+1,1,2) - endpoints(idx+1,1,1)) <= dbl_eps; % HDVEs with right angle at Vertex 3
 idx_e1 = idx(idx_e.*idx ~= 0);
 a1l(idx_e,:) = -cl(idx_e1+2,:) + cl(idx_e1+4,:);
 a2l(idx_e,:) = -bl(idx_e1+2,:) + bl(idx_e1+4,:);
-a3l(idx_e,:) = -al(idx_e1+2,:) + al(idx_e1+4,:);
 
-
-a1l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
-a2l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
-a3l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
 %% Transforming to global coordinates
 
-v1 = [a1l; a2l; b1l; b2l; a3l+b3l];
+v1 = [a1l; a2l; b1l; b2l;];
 
-dvenum = repmat(dvenum, 5, 1);
+dvenum = repmat(dvenum, 4, 1);
 
 v2 = fcnSTARGLOB(v1, matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
-
-% v2 = v1;
 
 a1 = v2(1:len,:);
 a2 = v2(len+1:2*len,:);
 b1 = v2(2*len+1:3*len,:);
 b2 = v2(3*len+1:4*len,:);
-c3 = v2(4*len+1:5*len,:);
 
 
 

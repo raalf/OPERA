@@ -5,12 +5,16 @@ function [vecR] = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, m
 
 vecR = zeros(valDLEN,1);
 
-len = length([matCENTER(:,1); matVNORM(:,1); matENORM(:,1)]);
+% len = length([matCENTER(:,1); matVNORM(:,1); matENORM(:,1)]);
+
+len = length(matCENTER(:,1));
 
 if valTIMESTEP < 1;
     % Flow tangency at control points goes at the bottom of the resultant
     
-    vecR(end-(len-1):end) = (4*pi).*dot(repmat(vecUINF,len,1), [matDVECT(:,:,3); matVNORM; matENORM], 2);
+%     vecR(end-(len-1):end) = (4*pi).*dot(repmat(vecUINF,len,1), [matDVECT(:,:,3); matVNORM; matENORM], 2);
+    
+    vecR(end-(len-1):end) = (4*pi).*dot(repmat(vecUINF,len,1), matDVECT(:,:,3), 2);
     
 %     % Trailing edge flow tangency goes just above the previous stuff in the resultant
 % 

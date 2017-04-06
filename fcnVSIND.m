@@ -23,8 +23,6 @@ len = length(eta_0(:,1));
 
 le_vect = xsi_0 - eta_0.*tanphi;
 
-
-
 % From Horstmann LIFTING_LINE, a23ind.f V-WINKEL NUE
 % I believe EPS is the length of an unswept leading edge
 % Horstmann uses zeta as well, but he does this before transformation
@@ -33,12 +31,11 @@ le_vect = xsi_0 - eta_0.*tanphi;
 % From Horstmann LIFTING_LINE, a23ind.f FAKTOREN FUER W2 (150)
 % If the point lies on the leading edge, we move it 3% back
 
-ZAMIN = 0.2*(hspan*2); % Correction factor from Horstmann
-EPS = sqrt(((eta_0 - hspan) - (eta_0 + hspan)).^2)/1000;
-idx200 = le_vect < EPS & abs(zeta_0) < ZAMIN & abs(tanphi) > EPS;
-xsi_0(idx200) = xsi_0(idx200) + ZAMIN(idx200);
-le_vect(idx200) = xsi_0(idx200) - eta_0(idx200).*tanphi(idx200);
-
+% ZAMIN = 0.2*(hspan*2); % Correction factor from Horstmann
+% EPS = sqrt(((eta_0 - hspan) - (eta_0 + hspan)).^2)/1000;
+% idx200 = le_vect < EPS & abs(zeta_0) < ZAMIN & abs(tanphi) > EPS;
+% xsi_0(idx200) = xsi_0(idx200) + ZAMIN(idx200);
+% le_vect(idx200) = xsi_0(idx200) - eta_0(idx200).*tanphi(idx200);
 
 % Eqn A2-12
 a2 = 1 + (tanphi.^2);
@@ -246,10 +243,10 @@ c2_eta(idx40) = 0;
 b2_zeta(idx40) = G21b(idx40) + G24(idx40).*b24(idx40) + G25b(idx40);
 c2_zeta(idx40) = G21c(idx40) + G23(idx40).*c23(idx40) + G24(idx40).*c24(idx40) + G25c(idx40) + G27(idx40).*c27(idx40);
 
-% If he point falls on a swept leading edge inside the bounds of a sheet
-idx60 = abs(zeta_0) <= dbl_eps & abs(le_vect) <= dbl_eps & abs(tanphi) > dbl_eps; %& abs(hspan) - abs(eta_0) >= -dbl_eps;
-b2_zeta(idx60) = 0;
-c2_zeta(idx60) = 0;
+% % If he point falls on a swept leading edge inside the bounds of a sheet
+% idx60 = abs(zeta_0) <= dbl_eps & abs(le_vect) <= dbl_eps & abs(tanphi) > dbl_eps; %& abs(hspan) - abs(eta_0) >= -dbl_eps;
+% b2_zeta(idx60) = 0;
+% c2_zeta(idx60) = 0;
 
 % a, b, c in local ref frame
 bloc = [b2_xsi b2_eta b2_zeta];
@@ -257,11 +254,9 @@ cloc = [c2_xsi c2_eta c2_zeta];
 aloc = zeros(size(bloc));
 
 % % If the point lies on a swept leading edge
-% idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps; %& abs(phi) <= dbl_eps;
-% bl(idx_LE,:) = zeros(size(bl(idx_LE,:)));
-% cl(idx_LE,:) = zeros(size(cl(idx_LE,:)));
-% 
-% clear idx_LE 
+idx_LE = abs(zeta_0) <= dbl_eps & abs(xsi_0 - eta_0.*tan(phi)) <= dbl_eps & abs(phi) >= dbl_eps;
+bloc(idx_LE,:) = zeros(size(bloc(idx_LE,:)));
+cloc(idx_LE,:) = zeros(size(cloc(idx_LE,:)));
 
 % If the point lies on an unswept leading edge
 % a23ind.f - Line 604

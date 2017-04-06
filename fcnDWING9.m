@@ -108,15 +108,15 @@ end
 % Points we are influencing
 % fpg = [VLST; CENTER];
 
-% temp1 = [];
-% temp1(:,:,1) = matVLST(matELST(:,1),:);
-% temp1(:,:,2) = matVLST(matELST(:,2),:);
-% 
-% edge_midpoints = mean(temp1,3);
-% 
-% fpg = [matCENTER; matVLST; edge_midpoints];
+temp1 = [];
+temp1(:,:,1) = matVLST(matELST(:,1),:);
+temp1(:,:,2) = matVLST(matELST(:,2),:);
 
-fpg = matCENTER;
+edge_midpoints = mean(temp1,3);
+
+fpg = [matCENTER; matVLST; edge_midpoints];
+
+% fpg = matCENTER;
 
 % List of DVEs we are influencing from (one for each of the above fieldpoints)
 len = length(fpg(:,1));
@@ -129,8 +129,8 @@ fpg = repmat(fpg,valNELE,1);
 
 % List of normals we are to dot the above with
 % normals = [VNORM; DVECT(:,:,3)];
-% normals = [matDVECT(:,:,3); matVNORM; matENORM];
-normals = matDVECT(:,:,3);
+normals = [matDVECT(:,:,3); matVNORM; matENORM];
+% normals = matDVECT(:,:,3);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 

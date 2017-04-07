@@ -129,9 +129,9 @@ for ai = 1:length(seqALPHA)
                     matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1);
                 end
                 
-                % Rebuild wing resultant
-                vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST);
-                matCOEFF = fcnSOLVED(matD, vecR, valNELE);
+%                 % Rebuild wing resultant
+%                 vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST);
+%                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
                 
                 ABC(:,:,valTIMESTEP) = matCOEFF;
             end

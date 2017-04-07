@@ -1,4 +1,4 @@
-function [D] = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG)
+function [D] = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM)
 
 lambda_mid = [ ...
     0.5 0.5 0; ... % Edge 1 mid-point
@@ -72,7 +72,7 @@ irrot(sub2ind(size(irrot),rows,col3)) = reshape(ddgamma',[],1);
 % These are found by looking at the free edges that are NOT symmetry or trailing edge
 % Evaluated at the mid-point of each edge which is used by only 1 HDVE (and not at the trailing edge)
 circ_tip = [];
-if strcmp(strATYPE,'LS') == 1
+if strcmp(strATYPE,'THIN') == 1
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
     idx(vecTE) = 0;
     idx(vecLE) = 0;
@@ -126,8 +126,8 @@ end
 % In the D-Matrix, dot (a1,a2,b1,b2,c3) of our influencing HDVE with the normal of the point we are influencing on
 
 % Points we are influencing
-% fpg = [VLST; CENTER];
-fpg = [matCENTER];
+fpg = matCENTER;
+normals = matDVECT(:,:,3);
 
 % List of DVEs we are influencing from (one for each of the above fieldpoints)
 len = length(fpg(:,1));
@@ -138,9 +138,6 @@ fpg = repmat(fpg,valNELE,1);
 
 [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG);
 
-% List of normals we are to dot the above with
-% normals = [VNORM; DVECT(:,:,3)];
-normals = [matDVECT(:,:,3)];
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 
 % Dotting a1, a2, b1, b2, c3 with the normals of the field points

@@ -32,12 +32,12 @@ valNELE = size(POINTS(:,:,1),1);
 [matVLST,~,j] = unique([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)],'rows','stable');
 matDVE(:,:,1) = reshape(j,[],3);
 
-% Removing duplicate elements from OpenVSP STL when infinitely thin
-if strcmp(strATYPE,'LS')
-   [~, ia, ~] = unique(sort(matDVE(:,:,1),2),'rows','stable');
-   matDVE = matDVE(ia,:,:);
-   valNELE = length(matDVE(:,1,1)); 
-end
+% % Removing duplicate elements from OpenVSP STL when infinitely thin
+% if strcmp(strATYPE,'LS')
+%    [~, ia, ~] = unique(sort(matDVE(:,:,1),2),'rows','stable');
+%    matDVE = matDVE(ia,:,:);
+%    valNELE = length(matDVE(:,1,1)); 
+% end
 
 % Converting above data to triangulation
 TR = triangulation(matDVE(:,:,1),matVLST);

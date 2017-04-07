@@ -8,6 +8,14 @@ patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceColor','r','LineWidth',2);
 alpha(0);
 hold on
 
+% edge1 = matVLST(matELST(:,1),:);
+% edge2 = matVLST(matELST(:,2),:);
+% mid = (edge1+edge2)./2;
+% for ii = 1:length(mid)
+%     str = sprintf('%d',ii);
+%     text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',20);
+% end
+
 if verbose == 1
     for ii = 1:valNELE
         str = sprintf('%d',ii);
@@ -27,14 +35,14 @@ if verbose == 1
         text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',20);
     end
     
-% %     [q_ind] = fcnINDVEL(1:valNELE, matCENTER, matCOEFF, matDVE, matDVECT, matVLST, matPLEX);
-%     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
-%     q_indw = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
-%     q_ind = q_inds + q_indw; 
-%     
-%     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1)+vecUINF(1), q_ind(:,2)+vecUINF(2), q_ind(:,3)+vecUINF(3), 0.25, 'g')
+    % %     [q_ind] = fcnINDVEL(1:valNELE, matCENTER, matCOEFF, matDVE, matDVECT, matVLST, matPLEX);
+    %     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
+    %     q_indw = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
+    %     q_ind = q_inds + q_indw;
+    %
+    %     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1)+vecUINF(1), q_ind(:,2)+vecUINF(2), q_ind(:,3)+vecUINF(3), 0.25, 'g')
     len = length(matCENTER(:,1));
-%     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 0.25, 'g')
+    %     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 0.25, 'g')
     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), repmat(vecUINF(1),len,1), repmat(vecUINF(2),len,1), repmat(vecUINF(3),len,1), 0.25, 'r')
     
     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,1), matDVECT(:,2,1), matDVECT(:,3,1), 0.25, 'b') % eta

@@ -22,64 +22,20 @@ disp('                (o)  (o)        (o)                     (o)        (o)  (o
 disp('=====================================================================================');
 
 %% Preamble
-% Analysis Type and Geometry File
-strA2TYPE = 'WING';
-strATYPE = 'LS'; % Lifting Surface
-valMAXTIME = 10;
-valDELTIME = 0.2;
-flagRELAX = 1;
 
-vecSYM = []';
-vecLE = [];
-vecTE = [];
+strFILE = 'inputs/simple_wing.dat';
 
-seqALPHA = 30;
-seqBETA = 0;
+[matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
+[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
+            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(strATYPE, matPOINTS);
 
-% strSTL = 'CAD Geom/simple_liftingsurface.stl';
-% vecTE = 3;
+[vecTE, vecLE] = fcnTELE(matTEPOINTS, matLEPOINTS, matVLST, matELST); 
 
-% strSTL = 'Cad Geom/wing_simple.stl';
-% strSTL = 'Cad Geom/wing_simple_short.stl';
-% vecTE = [3 12 19 26]';
-
-% strSTL = 'Cad Geom/wing_simple_short2.stl';
-% vecTE = [432 401 370 339 308 277 246 215 184 153 122 91 60 3]';
-% vecLE = [46 77 108 139 170 201 232 263 294 325 356 387 418 440]';
-
-% strSTL = 'Cad Geom/quad.stl';
-% strSTL = 'CAD Geom/quad-mix.stl';
-% strSTL = 'CAD Geom/quad-mix2.stl';
-
-% strSTL = 'Cad Geom/quad-align.stl';
-% vecLE = [3];
-% vecTE = [4];
-
-
-% strSTL = 'Cad Geom/quad-align-wing.stl';
-% strSTL = 'Cad Geom/quad-align-wing-stretch.stl';
-
-% strSTL = 'CAD Geom/2quad.stl';
-% strSTL = 'CAD Geom/pyramid.stl';
-%
-% strATYPE = 'PC'; % Panel Code
-% strSTL = 'CAD Geom/cube.stl';
-
-% vecLE = [10 17 24 30]';
-
-
-% vecTE = [52 45 38 31 24 17 3 5 61 68 75 82 89 96]';
-% 
-strSTL = 'CAD Geom/wing_simple_camber.stl';
-vecTE = [701 664 627 590 553 516 479 442 405 368 331 294 257 220 183 146 109 72 3]
-
-%% Triangulating Geometry
-
-[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, ...
-    matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnIMPORTGEOM(strSTL, strATYPE);
-
-% trimesh(TR)
+% Used for STL file reading
+% [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, ...
+%     matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnIMPORTGEOM(strFILE, strATYPE);
+        
 %% D-Matrix Creation
 vecTEDVE = [];
 vecSPANDIR = [];
@@ -88,7 +44,7 @@ if ~isempty(vecTE)
     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,1), matROTANG(vecTEDVE,2), matROTANG(vecTEDVE,3)); % Spanwise direction for each HDVE (may change with rotor stuff)
 end
 
-matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG);
+matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM);
 
 valDLEN = length(matD);
 
@@ -119,7 +75,7 @@ for ai = 1:length(seqALPHA)
         vecUINF = fcnUINFWING(valALPHA, valBETA);
         
         % Building wing resultant
-        vecR = fcnRWING(strATYPE, valDLEN, 0, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE);
+        vecR = fcnRWING(strATYPE, valDLEN, 0, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, [], matVNORM, matVLST);
         
         % Solving for wing coefficients
         [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
@@ -148,7 +104,7 @@ for ai = 1:length(seqALPHA)
                     matCOEFF, valWSIZE, matWCOEFF, vecTE, matEATT, vecTEDVE, vecSPANDIR, valWNELE, matPLEX, matELOC, matVLST, matELST, matDVE);
                 
                 % Rebuild wing resultant
-                vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
+                vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST);
                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
                 
                 % Resolving wake D-matrix (steady)
@@ -170,7 +126,7 @@ for ai = 1:length(seqALPHA)
                 end
                 
                 % Rebuild wing resultant
-                vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
+                vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST);
                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
 
                 ABC(:,:,valTIMESTEP) = matCOEFF;
@@ -225,24 +181,24 @@ end
 
 %% End
 % 
-hFig3 = figure(3);
-clf(3);
-dve = 1;
-hold on
-plot(1:valTIMESTEP, reshape(ABC(dve,1,:),1,[],1),'--xb')
-plot(1:valTIMESTEP, reshape(ABC(dve,2,:),1,[],1),'-.^b')
-
-plot(1:valTIMESTEP, reshape(ABC(dve,3,:),1,[],1),'--*r')
-plot(1:valTIMESTEP, reshape(ABC(dve,4,:),1,[],1),'-.or')
-
-plot(1:valTIMESTEP, reshape(ABC(dve,5,:),1,[],1),'->m')
-hold off
-
-box on
-grid on
-axis tight
-
-legend('A_1','A_2','B_1','B_2','C_3')
+% hFig3 = figure(3);
+% clf(3);
+% dve = 1;
+% hold on
+% plot(1:valTIMESTEP, reshape(ABC(dve,1,:),1,[],1),'--xb')
+% plot(1:valTIMESTEP, reshape(ABC(dve,2,:),1,[],1),'-.^b')
+% 
+% plot(1:valTIMESTEP, reshape(ABC(dve,3,:),1,[],1),'--*r')
+% plot(1:valTIMESTEP, reshape(ABC(dve,4,:),1,[],1),'-.or')
+% 
+% plot(1:valTIMESTEP, reshape(ABC(dve,5,:),1,[],1),'->m')
+% hold off
+% 
+% box on
+% grid on
+% axis tight
+% 
+% legend('A_1','A_2','B_1','B_2','C_3')
 % 
 % hFig4 = figure(4);
 % clf(4);

@@ -1,0 +1,31 @@
+OPERA INPUT FILE
+ALL UNITS IN SI
+
+ANALYSIS PARAMETERS
+
+Lifting Surface:	 	strATYPE = THIN
+Analysis Type:			strA2TYPE = WING
+
+Maximum Timesteps: 		valMAXTIME = 10
+Timestep Size: 			valDELTIME = 0.2
+Relaxed or Fixed Wake: 	strRELAX = FIXED
+
+Angles of Attack: 		seqALPHA = 30
+Angles of Sideslip: 	seqBETA = 0
+
+GEOMETRY
+
+No. of panels:	valPANELS =	1
+
+Defines leading edge of wing, all measured in metres:
+Keep vecM the same for all panels on a wing.
+
+Panel #:1. 
+Number of spanwise elements:	vecN 		= 2. 
+Number of chordwise elements: 	vecM 		= 2.
+Symmetry about YZ Plane:		strSYM 		= YES
+Trailing edge:					strTE 		= YES
+Leading edge:					strLE       = YES
+xleft		yleft		zleft		chord		epsilon
+0.000000	0.000000	0.000000	1.000000	0.000000
+0.000000	2.500000	0.000000	1.000000	0.000000

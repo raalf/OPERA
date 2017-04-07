@@ -40,7 +40,7 @@ dvenum = ones(len,1);
 
 test = 1;
 
-matCOEFF = [0 1 0 0 0];
+matCOEFF = [0 0 0 1 0];
 
 %
 matDVE = [2 3 4];

@@ -25,7 +25,7 @@ disp('==========================================================================
 % Analysis Type and Geometry File
 strA2TYPE = 'WING';
 strATYPE = 'LS'; % Lifting Surface
-valMAXTIME = 5;
+valMAXTIME = 10;
 valDELTIME = 0.2;
 flagRELAX = 0;
 
@@ -40,8 +40,8 @@ seqBETA = 0;
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
 
 % strSTL = 'Cad Geom/wing_simple.stl';
-strSTL = 'Cad Geom/wing_simple_short.stl';
-vecTE = [3 12 19 26]';
+% strSTL = 'Cad Geom/wing_simple_short.stl';
+% vecTE = [3 12 19 26]';
 
 % strSTL = 'Cad Geom/wing_simple_short2.stl';
 % vecTE = [432 401 370 339 308 277 246 215 184 153 122 91 60 3]';
@@ -70,8 +70,8 @@ vecTE = [3 12 19 26]';
 
 % vecTE = [52 45 38 31 24 17 3 5 61 68 75 82 89 96]';
 
-% strSTL = 'CAD Geom/wing_simple_camber.stl';
-% vecTE = [701 664 627 590 553 516 479 442 405 368 331 294 257 220 183 146 109 72 3]
+strSTL = 'CAD Geom/wing_simple_camber.stl';
+vecTE = [701 664 627 590 553 516 479 442 405 368 331 294 257 220 183 146 109 72 3]
 
 %% Triangulating Geometry
 
@@ -216,7 +216,7 @@ end
 % 
 % 
 % % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-% q_ind = s_ind;% + vecUINF;
+% q_ind = s_ind + vecUINF;
 % hold on
 % % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
@@ -224,25 +224,25 @@ end
 
 %% End
 % 
-hFig3 = figure(3);
-clf(3);
-dve = 1;
-hold on
-plot(1:valTIMESTEP, reshape(ABC(dve,1,:),1,[],1),'--xb')
-plot(1:valTIMESTEP, reshape(ABC(dve,2,:),1,[],1),'-.^b')
-
-plot(1:valTIMESTEP, reshape(ABC(dve,3,:),1,[],1),'--*r')
-plot(1:valTIMESTEP, reshape(ABC(dve,4,:),1,[],1),'-.or')
-
-plot(1:valTIMESTEP, reshape(ABC(dve,5,:),1,[],1),'->m')
-hold off
-
-box on
-grid on
-axis tight
-
-legend('A_1','A_2','B_1','B_2','C_3')
-
+% hFig3 = figure(3);
+% clf(3);
+% dve = 1;
+% hold on
+% plot(1:valTIMESTEP, reshape(ABC(dve,1,:),1,[],1),'--xb')
+% plot(1:valTIMESTEP, reshape(ABC(dve,2,:),1,[],1),'-.^b')
+% 
+% plot(1:valTIMESTEP, reshape(ABC(dve,3,:),1,[],1),'--*r')
+% plot(1:valTIMESTEP, reshape(ABC(dve,4,:),1,[],1),'-.or')
+% 
+% plot(1:valTIMESTEP, reshape(ABC(dve,5,:),1,[],1),'->m')
+% hold off
+% 
+% box on
+% grid on
+% axis tight
+% 
+% legend('A_1','A_2','B_1','B_2','C_3')
+% 
 % hFig4 = figure(4);
 % clf(4);
 % dve = 1;

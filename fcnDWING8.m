@@ -66,7 +66,7 @@ col3 = reshape([repmat((dvenum.*5)-4,1,5) + repmat([0:4],valNELE,1)]',[],1);
 irrot = zeros(valNELE, valNELE*5);
 irrot(sub2ind(size(irrot),rows,col3)) = reshape(ddgamma',[],1);
 
-%% Circulation equations at wing tip
+%% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
 % Circulation is set to zero at the wing tips
 % These are found by looking at the free edges that are NOT symmetry or trailing edge

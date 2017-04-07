@@ -22,7 +22,10 @@ function [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDE
 % edges to "flip," if they naturally go from outwards to inwards. If we don't do
 % this flip, then the normals of those elements will be facing downards
 
-te_flip = permute(reshape(matVLST(matELST(vecTE,:),:)',[],3,2),[2 1 3]); % Just creating a 3d matrix of wake vertices
+% 3D matrix of TE points, 3x?x2, rows are (x,y,z), columns are points, and depth is first and second TE point
+te_flip(:,:,1) = matVLST(matELST(vecTE,1),:)';
+te_flip(:,:,2) = matVLST(matELST(vecTE,2),:)';
+
 idx_flip = [te_flip(2,:,1) > te_flip(2,:,2)]'; % Finding out which trailing edges go from out to in, so we know what to flip
 idx_flip2 = logical([zeros(length(idx_flip),1); idx_flip]); % idx_flip1 is the first point, idx_flip2 is the second point
 
@@ -58,3 +61,7 @@ new_te(idx_flip2,:) = temp;
 matNEWWAKE(:,:,1) = [new_te(1:end/2,:); old_te((end/2)+1:end,:)];
 matNEWWAKE(:,:,2) = [new_te((end/2)+1:end,:); old_te(1:end/2,:)];
 matNEWWAKE(:,:,3) = [old_te(1:end/2,:); new_te((end/2)+1:end,:)];
+
+
+
+

@@ -12,7 +12,7 @@ endpoints = zeros(len*5, 3, 2); % Five function calls per DVE
 phi = zeros(len*5,1);
 yaw = zeros(len*5,1);
 
-k = zeros(len*5,1)+1; % Until this is figured out for HDVE, k = 1
+k = zeros(len*5,1) + 0.1; % Until this is figured out for HDVE, k = 1
 
 idx = [1:5:len*5]';
 
@@ -46,88 +46,9 @@ endpoints(idx+4,:,1:2) = reshape(permute(matPLEX(1:2:3,:,dvenum),[3 2 1]), [],3,
 yaw(idx+4) = 0;
 phi(idx+4) = 0; % Leading edge of Edge 3 is always on eta-axis
 
-% %% Case with obtuse angle at Vertex 1
-% idx_a = endpoints(idx+2,1,2) < -dbl_eps; % HDVEs with obtuse angle at Vertex 1 (eta < 0)
-% idx_a1 = idx(idx_a.*idx ~= 0); % Index of first edge of HDVEs for obtuse angle at Vertex 1
-% 
-% if ~isempty(idx_a1) == 1
-%     % In this special case, Edge 2 is the longest edge (idx+3). What we need to do is extend the spans
-%     % of the 1st and 3rd vortex sheet to match the span of the second. Then we need to evaluate HVSIND only
-%     % on the range where the edge actually exists
-%     
-%     % Swapping endpoints so this vortex sheet goes from left to right (Edge 1)
-%     temp1 = endpoints(idx_a1+2,:,1);
-%     endpoints(idx_a1+2,:,1) = endpoints(idx_a1+2,:,2);
-%     endpoints(idx_a1+2,:,2) = temp1;
-%     
-%     % Adjusting phi so it is the correct sign
-%     phi(idx_a1) = -phi(idx_a1);
-%     phi(idx_a1+1) = -phi(idx_a1+1);
-%     
-% end
-% 
-% 
-% %% Case with acute angles at Vertices 1 and 3
-% idx_b = endpoints(idx+2,1,2) > dbl_eps & endpoints(idx+2,1,2) < (endpoints(idx+4,1,2) - dbl_eps); % HDVEs with acute (or right) angle at Vertex 1 & Vertex 3
-% idx_b1 = idx(idx_b.*idx ~= 0);
-% 
-% if ~isempty(idx_b1) == 1
-%     % All three vortex sheets should be in the same direction already (left to right)
-%     
-%     % Adjusting phi so it is the correct sign
-%     phi(idx_b1+1) = -phi(idx_b1+1);
-%     phi(idx_b1+2) = -phi(idx_b1+2);
-%     
-% end
-% %% Case with obtuse angle at Vertex 3
-% idx_c = endpoints(idx+2,1,2) > (endpoints(idx+4,1,2) + dbl_eps); % HDVEs with obtuse angle at Vertex 2
-% idx_c1 = idx(idx_c.*idx ~= 0);
-% 
-% if ~isempty(idx_c1) == 1
-%     % Swapping endpoints so this vortex sheet goes from left to right (Edge 2)
-%     temp1 = endpoints(idx_c1+3,:,1);
-%     endpoints(idx_c1+3,:,1) = endpoints(idx_c1+3,:,2);
-%     endpoints(idx_c1+3,:,2) = temp1;
-% 
-%     % Adjusting phi so it is the correct sign
-%     phi(idx_c1+2) = -phi(idx_c1+2);
-%     phi(idx_c1+3) = -phi(idx_c1+3);
-%    
-% end
-% 
-% %% Right angle at Vertex 1
-% idx_d = abs(endpoints(idx,1,2)) <= dbl_eps; % HDVEs with right angle at Vertex 2
-% idx_d1 = idx(idx_d.*idx ~= 0);
-% 
-% if ~isempty(idx_d1) == 1
-%     % Adjusting phi so it is the correct sign
-%     phi(idx_d1) = 0;
-%     phi(idx_d1+1) = -phi(idx_d1+1);
-% end
-% %% Right angle at Vertex 3
-% idx_e = abs(endpoints(idx+1,1,2) - endpoints(idx+1,1,1)) <= dbl_eps;
-% idx_e1 = idx(idx_e.*idx ~= 0);
-% 
-% if ~isempty(idx_e1) == 1
-%     % Adjusting phi so it is the correct sign
-%     phi(idx_e1+1) = 0;
-%     phi(idx_e1+2) = -phi(idx_e1+2);
-% end
 %% Running VSIND
 
-% phi = -phi;
-
 fpl = reshape(repmat(fp,1,5,1)',3,[],1)';
-
-% Not running the chordwise sheets for wake DVEs
-idx_pass = false(len*5,1);
-idx_wake = idx(dvetype ~= 1);
-% idx_pass(wake_idx) = 1; % Not running "A" sheet for wake HDVE
-% idx_pass(wake_idx+1) = 1; % Not running "A" sheet #2 for wake HDVE
-
-al = zeros(len*5,3);
-bl = zeros(len*5,3);
-cl = zeros(len*5,3);
 
 [al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k);
 
@@ -135,17 +56,9 @@ a1l = zeros(len,3);
 a2l = zeros(len,3);
 a3l = zeros(len,3);
 
-b1l = zeros(len,3);
-b2l = zeros(len,3);
-b3l = zeros(len,3);
-
 %% Summing the velocities of all five sheets
 
 % Subtracting first vortex sheet from second in the right-to-left direction
-% b1l = cl(idx,:) - cl(idx+1,:);
-% b2l = bl(idx,:) - bl(idx+1,:);
-% b3l = al(idx,:) - al(idx+1,:);
-
 b1l = cl(idx+1,:) - cl(idx,:);
 b2l = bl(idx+1,:) - bl(idx,:);
 b3l = al(idx+1,:) - al(idx,:);

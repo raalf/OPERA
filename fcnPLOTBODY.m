@@ -13,7 +13,7 @@ hold on
 % mid = (edge1+edge2)./2;
 % for ii = 1:length(mid)
 %     str = sprintf('%d',ii);
-%     text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',20);
+%     text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',15);
 % end
 
 if verbose == 1

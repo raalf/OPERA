@@ -31,8 +31,10 @@ fpg = [reshape(X, [], 1, 1) reshape(Y, [], 1, 1) reshape(Z, [], 1, 1)];
 fpg = unique(fpg,'rows');
 
 % fpg = [4 2 1; 2 10 6];
-% fpg = [-0.5 1 1]
-% fpg = [0.5 0.5 1]
+% fpg = [0.25 0.25 0]
+% fpg = [0.6 0.2 0]
+% fpg = [-0.25 -0.25 0]
+% fpg = [1.2 -0.75 1];
 
 len = length(fpg(:,1));
 
@@ -40,29 +42,31 @@ dvenum = ones(len,1);
 
 test = 1;
 
-matCOEFF = [0 0 0 1 0];
+matCOEFF = [0 1 0 1 0];
 
-%
-matDVE = [2 3 4];
+matDVE = [3 4 2];
 
-matDVECT(:,:,1) = [1 0 0];
-matDVECT(:,:,2) = [0 1 0];
+matDVECT(:,:,1) = [-0.707106781186547  -0.707106781186547                   0];
+matDVECT(:,:,2) = [0.707106781186547  -0.707106781186547                   0];
 matDVECT(:,:,3) = [0 0 1];
+
+matPLEX = [0 0 0; ...
+            0.707106781186548   0.707106781186547                   0; ...
+            1.414213562373095                   0                   0];
+        
+% ROLL = acos(dot(matDVECT(:,:,1),repmat([1 0 0],1,1,1),2));
+% PITCH = acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
+% YAW = acos(dot(matDVECT(:,:,3),repmat([0 0 1],1,1,1),2)); 
 
 ROLL = -atan2(matDVECT(:,2,3), matDVECT(:,3,3));
 PITCH = asin(matDVECT(:,1,3));
-YAW = acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
+% YAW = -acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
+YAW = atan2(matDVECT(:,2,1), matDVECT(:,1,1));
 
 matROTANG(:,1) = ROLL;
 matROTANG(:,2) = PITCH;
 matROTANG(:,3) = YAW;
 
-
-matPLEX = [0 0 0; ...
-            1.000000000000000   1.000000000000000                   0; ...
-            1.000000000000000                   0                   0];
-
-        
 [q_ind] = fcnSDVEVEL(fpg, 1, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
 
 hFig5 = figure(5);

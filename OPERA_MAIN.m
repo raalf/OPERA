@@ -27,7 +27,7 @@ strA2TYPE = 'WING';
 strATYPE = 'LS'; % Lifting Surface
 valMAXTIME = 10;
 valDELTIME = 0.2;
-flagRELAX = 0;
+flagRELAX = 1;
 
 vecSYM = []';
 vecLE = [];
@@ -38,6 +38,7 @@ seqBETA = 0;
 
 
 % strSTL = 'CAD Geom/simple_liftingsurface.stl';
+% vecTE = 3;
 
 % strSTL = 'Cad Geom/wing_simple.stl';
 % strSTL = 'Cad Geom/wing_simple_short.stl';
@@ -69,7 +70,7 @@ seqBETA = 0;
 
 
 % vecTE = [52 45 38 31 24 17 3 5 61 68 75 82 89 96]';
-
+% 
 strSTL = 'CAD Geom/wing_simple_camber.stl';
 vecTE = [701 664 627 590 553 516 479 442 405 368 331 294 257 220 183 146 109 72 3]
 
@@ -181,7 +182,7 @@ end
 %% Plot
 
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG);
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
+% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
 %     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
 %     q_indw = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
 %     q_ind = q_inds + q_indw; 
@@ -189,14 +190,14 @@ end
 %     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1)+vecUINF(1), q_ind(:,2)+vecUINF(2), q_ind(:,3)+vecUINF(3), 0.25, 'g')
 %     hold off
 if any(vecTE) && valMAXTIME > 0
-    [hFig1] = fcnPLOTWAKE(1, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
+    [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF, matWROTANG, 'b');
 end
-% 
+% % 
 % granularity = .025;
 % x = -0.6:granularity:1.2;
 % % y = -1:granularity:1;
-% y = ones(size(x))+1;
+% y = ones(size(x)) + 0.5;
 % z = -0.2:granularity:0.2;
 % [X,Y,Z] = meshgrid(x,y,z);
 % fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
@@ -224,24 +225,24 @@ end
 
 %% End
 % 
-% hFig3 = figure(3);
-% clf(3);
-% dve = 1;
-% hold on
-% plot(1:valTIMESTEP, reshape(ABC(dve,1,:),1,[],1),'--xb')
-% plot(1:valTIMESTEP, reshape(ABC(dve,2,:),1,[],1),'-.^b')
-% 
-% plot(1:valTIMESTEP, reshape(ABC(dve,3,:),1,[],1),'--*r')
-% plot(1:valTIMESTEP, reshape(ABC(dve,4,:),1,[],1),'-.or')
-% 
-% plot(1:valTIMESTEP, reshape(ABC(dve,5,:),1,[],1),'->m')
-% hold off
-% 
-% box on
-% grid on
-% axis tight
-% 
-% legend('A_1','A_2','B_1','B_2','C_3')
+hFig3 = figure(3);
+clf(3);
+dve = 1;
+hold on
+plot(1:valTIMESTEP, reshape(ABC(dve,1,:),1,[],1),'--xb')
+plot(1:valTIMESTEP, reshape(ABC(dve,2,:),1,[],1),'-.^b')
+
+plot(1:valTIMESTEP, reshape(ABC(dve,3,:),1,[],1),'--*r')
+plot(1:valTIMESTEP, reshape(ABC(dve,4,:),1,[],1),'-.or')
+
+plot(1:valTIMESTEP, reshape(ABC(dve,5,:),1,[],1),'->m')
+hold off
+
+box on
+grid on
+axis tight
+
+legend('A_1','A_2','B_1','B_2','C_3')
 % 
 % hFig4 = figure(4);
 % clf(4);

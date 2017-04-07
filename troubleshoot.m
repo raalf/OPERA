@@ -32,6 +32,7 @@ fpg = unique(fpg,'rows');
 
 % fpg = [4 2 1; 2 10 6];
 % fpg = [0.5 0.25 0.2]
+% fpg = [1 -0.5 1];
 
 len = length(fpg(:,1));
 

@@ -142,18 +142,18 @@ b3l = zeros(len,3);
 %% Summing the velocities of all five sheets
 
 % Subtracting first vortex sheet from second in the right-to-left direction
-b1l = cl(idx,:) - cl(idx+1,:);
-b2l = bl(idx,:) - bl(idx+1,:);
-b3l = al(idx,:) - al(idx+1,:);
+% b1l = cl(idx,:) - cl(idx+1,:);
+% b2l = bl(idx,:) - bl(idx+1,:);
+% b3l = al(idx,:) - al(idx+1,:);
 
-% b1l = cl(idx+1,:) - cl(idx,:);
-% b2l = bl(idx+1,:) - bl(idx,:);
-% b3l = al(idx+1,:) - al(idx,:);
+b1l = cl(idx+1,:) - cl(idx,:);
+b2l = bl(idx+1,:) - bl(idx,:);
+b3l = al(idx+1,:) - al(idx,:);
 
 % % Leaving the semi-infites on the oldest wake row
-% b1l(dvetype == 3,:) = cl(idx(dvetype == 3) + 1,:);
-% b2l(dvetype == 3,:) = bl(idx(dvetype == 3) + 1,:);
-% b3l(dvetype == 3,:) = al(idx(dvetype == 3) + 1,:);
+b1l(dvetype == 3,:) = cl(idx(dvetype == 3) + 1,:);
+b2l(dvetype == 3,:) = bl(idx(dvetype == 3) + 1,:);
+b3l(dvetype == 3,:) = al(idx(dvetype == 3) + 1,:);
 
 % Subtracting the three vortex sheets in the up-to-down direction based on the shape of the triangle
 
@@ -163,13 +163,13 @@ a1l(idx_a,:) = cl(idx_a1+2,:) - cl(idx_a1+3,:) + cl(idx_a1+4,:);
 a2l(idx_a,:) = bl(idx_a1+2,:) - bl(idx_a1+3,:) + bl(idx_a1+4,:);
 a3l(idx_a,:) = al(idx_a1+2,:) - al(idx_a1+3,:) + al(idx_a1+4,:);
 
-idx_b = endpoints(idx,1,2) >= 0 & endpoints(idx+1,1,2) <= endpoints(idx+1,1,1); % HDVEs with acute (or right) angle at Vertex 1 & Vertex 2
+idx_b = endpoints(idx,1,2) >= 0 & endpoints(idx+1,1,1) <= endpoints(idx+1,1,2); % HDVEs with acute (or right) angle at Vertex 1 & Vertex 2
 idx_b1 = idx(idx_b.*idx ~= 0);
 a1l(idx_b,:) = -cl(idx_b1+2,:) - cl(idx_b1+3,:) + cl(idx_b1+4,:);
 a2l(idx_b,:) = -bl(idx_b1+2,:) - bl(idx_b1+3,:) + bl(idx_b1+4,:);
 a3l(idx_b,:) = -al(idx_b1+2,:) - al(idx_b1+3,:) + al(idx_b1+4,:);
 
-idx_c = endpoints(idx+1,1,2) > endpoints(idx+1,1,1); % HDVEs with obtuse angle at Vertex 2
+idx_c = endpoints(idx+1,1,1) > endpoints(idx+1,1,2); % HDVEs with obtuse angle at Vertex 2
 idx_c1 = idx(idx_c.*idx ~= 0); 
 a1l(idx_c,:) = -cl(idx_c1+2,:) + cl(idx_c1+3,:) + cl(idx_c1+4,:);
 a2l(idx_c,:) = -bl(idx_c1+2,:) + bl(idx_c1+3,:) + bl(idx_c1+4,:);

@@ -15,7 +15,6 @@ q_ind = permute(sum(D.*repmat(reshape(matCOEFF(dvenum,:)',1,5,[]),3,1,1),2),[2 1
 
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 
-% q_ind = fcnTOGLOB(dvenum, q_ind, matDVE, matDVECT, matVLST);
 
 end
 

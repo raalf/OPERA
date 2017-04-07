@@ -2,12 +2,12 @@ clc
 clear
 
 endpoints(:,:,1) = [0 0 0];
-endpoints(:,:,2) = [1 1 0];
+endpoints(:,:,2) = [-1.5 1 0];
 
 coeff = [1 1 0];
 
-phi = atan((endpoints(:,2,2)-endpoints(:,2,1))./(endpoints(:,1,2)-endpoints(:,1,1)));
-yaw = pi/2;
+phi = -atan((endpoints(:,1,2)-endpoints(:,1,1))./(endpoints(:,2,2)-endpoints(:,2,1)));
+yaw = -pi/2;
 
 k = 0.1;
 
@@ -44,7 +44,7 @@ hspan = hspan1.*cos(yaw) + hspan2.*sin(yaw);
 
 hspan = repmat(hspan, len, 1);
 
-[aloc, bloc, cloc] = fcnHVSIND(temp_endpoints, limits, hspan, temp_phi, temp_yaw, fpl, temp_k);
+[aloc, bloc, cloc] = fcnVSIND(temp_endpoints, temp_phi, temp_yaw, fpl, temp_k);
 
 D = [cloc bloc aloc];
 D = reshape(reshape(D', 1, 9, []), 3, 3, len);

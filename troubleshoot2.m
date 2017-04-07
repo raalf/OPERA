@@ -31,7 +31,8 @@ fpg = [reshape(X, [], 1, 1) reshape(Y, [], 1, 1) reshape(Z, [], 1, 1)];
 fpg = unique(fpg,'rows');
 
 % fpg = [4 2 1; 2 10 6];
-% fpg = [0.5 0.25 0.2]
+% fpg = [-0.5 1 1]
+% fpg = [0.5 0.5 1]
 
 len = length(fpg(:,1));
 
@@ -39,7 +40,7 @@ dvenum = ones(len,1);
 
 test = 1;
 
-matCOEFF = [0 1 0 1 0];
+matCOEFF = [0 1 0 0 0];
 
 %
 matDVE = [2 3 4];

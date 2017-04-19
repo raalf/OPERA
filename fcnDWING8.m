@@ -55,16 +55,17 @@ vnumb(:,2) = tb(rb);
 
 %% Irrotationality
 
-dvenum = [1:valNELE]';
-
-% A1 + B1 = 0
-ddgamma = repmat([1 0 -1 0 0],valNELE,1);
-
-rows = reshape([repmat([1:valNELE]',1,5)]',[],1);
-col3 = reshape([repmat((dvenum.*5)-4,1,5) + repmat([0:4],valNELE,1)]',[],1);
-
-irrot = zeros(valNELE, valNELE*5);
-irrot(sub2ind(size(irrot),rows,col3)) = reshape(ddgamma',[],1);
+irrot = [];
+% dvenum = [1:valNELE]';
+% 
+% % A1 + B1 = 0
+% ddgamma = repmat([1 0 -1 0 0],valNELE,1);
+% 
+% rows = reshape([repmat([1:valNELE]',1,5)]',[],1);
+% col3 = reshape([repmat((dvenum.*5)-4,1,5) + repmat([0:4],valNELE,1)]',[],1);
+% 
+% irrot = zeros(valNELE, valNELE*5);
+% irrot(sub2ind(size(irrot),rows,col3)) = reshape(ddgamma',[],1);
 
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
@@ -75,7 +76,7 @@ circ_tip = [];
 if strcmp(strATYPE,'THIN') == 1
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
     idx(vecTE) = 0;
-    idx(vecLE) = 0;
+%     idx(vecLE) = 0;
     
     nedg = length(matEATT(idx,1));
     
@@ -86,39 +87,39 @@ end
 
 vort_te = [];
 
-if ~isempty(vecTEDVE)
-    len = length(vecTEDVE);
-
-    %(x,y) of all three vertices of HDVEs at trailing edge of the wing and the corresponding leading edge of the post te wake HDVE
-    x1 = reshape(matPLEX(1,1,vecTEDVE),len,1);
-    x2 = reshape(matPLEX(2,1,vecTEDVE),len,1);
-    x3 = reshape(matPLEX(3,1,vecTEDVE),len,1);
-    y1 = reshape(matPLEX(1,2,vecTEDVE),len,1);
-    y2 = reshape(matPLEX(2,2,vecTEDVE),len,1);
-    y3 = reshape(matPLEX(3,2,vecTEDVE),len,1);
-
-    lmb1 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:))],1),len,1);
-    lmb2 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:))],2),len,1);
-    lmb3 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:))],3),len,1);
-
-    a2 = ones(len,1);
-    a1 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
-    b2 = ones(len,1);
-    b1 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
-
-    c3 = zeros(len,1);
-
-    dgammate = [a1(:,1).*vecSPANDIR(:,2), a2(:,1).*vecSPANDIR(:,2), b1(:,1).*vecSPANDIR(:,1), b2(:,1).*vecSPANDIR(:,1), c3(:,1)];
-
-    % Row indices of the rows where vorticity equations will go
-    rows = reshape([repmat([1:len]',1,5)]',[],1);
-
-    % Column indices for each circulation equation, col# = (DVE*6)-5 as each DVE gets a 6 column group
-    col1 = reshape([repmat([(vecTEDVE.*5)-4],1,5)+repmat([0:4],len,1)]',[],1);
-
-    vort_te = zeros(len, valNELE*5);
-    vort_te(sub2ind(size(vort_te),rows,col1)) = reshape(dgammate,[],1);
-end
+% if ~isempty(vecTEDVE)
+%     len = length(vecTEDVE);
+% 
+%     %(x,y) of all three vertices of HDVEs at trailing edge of the wing and the corresponding leading edge of the post te wake HDVE
+%     x1 = reshape(matPLEX(1,1,vecTEDVE),len,1);
+%     x2 = reshape(matPLEX(2,1,vecTEDVE),len,1);
+%     x3 = reshape(matPLEX(3,1,vecTEDVE),len,1);
+%     y1 = reshape(matPLEX(1,2,vecTEDVE),len,1);
+%     y2 = reshape(matPLEX(2,2,vecTEDVE),len,1);
+%     y3 = reshape(matPLEX(3,2,vecTEDVE),len,1);
+% 
+%     lmb1 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:))],1),len,1);
+%     lmb2 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:))],2),len,1);
+%     lmb3 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:))],3),len,1);
+% 
+%     a2 = ones(len,1);
+%     a1 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
+%     b2 = ones(len,1);
+%     b1 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
+% 
+%     c3 = zeros(len,1);
+% 
+%     dgammate = [a1(:,1).*vecSPANDIR(:,2), a2(:,1).*vecSPANDIR(:,2), b1(:,1).*vecSPANDIR(:,1), b2(:,1).*vecSPANDIR(:,1), c3(:,1)];
+% 
+%     % Row indices of the rows where vorticity equations will go
+%     rows = reshape([repmat([1:len]',1,5)]',[],1);
+% 
+%     % Column indices for each circulation equation, col# = (DVE*6)-5 as each DVE gets a 6 column group
+%     col1 = reshape([repmat([(vecTEDVE.*5)-4],1,5)+repmat([0:4],len,1)]',[],1);
+% 
+%     vort_te = zeros(len, valNELE*5);
+%     vort_te(sub2ind(size(vort_te),rows,col1)) = reshape(dgammate,[],1);
+% end
 
 %% Kinematic conditions at vertices
 % Flow tangency is to be enforced at all control points on the surface HDVEs

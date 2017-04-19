@@ -2,12 +2,13 @@ clc
 clear
 
 endpoints(:,:,1) = [0 0 0];
-endpoints(:,:,2) = [-1.5 1 0];
+endpoints(:,:,2) = [1 1 0];
 
-coeff = [1 1 0];
+coeff = [0 1 0];
 
-phi = -atan((endpoints(:,1,2)-endpoints(:,1,1))./(endpoints(:,2,2)-endpoints(:,2,1)));
-yaw = -pi/2;
+phi = atan((endpoints(:,1,2)-endpoints(:,1,1))./(endpoints(:,2,2)-endpoints(:,2,1)));
+
+yaw = pi;
 
 k = 0.1;
 

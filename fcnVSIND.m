@@ -3,17 +3,17 @@ function [aloc, bloc, cloc] = fcnVSIND(endpoints, phi, yaw, fpl, k)
 dbl_eps = 1e-14;
 
 eta_translation = mean(endpoints,3);
-
-hspan1 = abs(endpoints(:,1,2) - endpoints(:,1,1))./2;
-hspan2 = abs(endpoints(:,2,2) - endpoints(:,2,1))./2;
-
-hspan = abs(hspan1.*cos(yaw) + hspan2.*sin(yaw));
-
 fp_0 = fpl - eta_translation;
 
-eta_0 = fp_0(:,1).*cos(yaw) + fp_0(:,2).*-sin(yaw);
-xsi_0 = fp_0(:,1).*sin(yaw) + fp_0(:,2).*cos(yaw);
-zeta_0 = fp_0(:,3);
+loc = fcnGLOBSTAR(fp_0, 0, 0, yaw);
+eta_0 = loc(:,2);
+xsi_0 = loc(:,1);
+zeta_0 = loc(:,3);
+
+endpoint1 = fcnGLOBSTAR(endpoints(:,:,1), 0, 0, yaw);
+endpoint2 = fcnGLOBSTAR(endpoints(:,:,2), 0, 0, yaw);
+
+hspan = abs((endpoint1(:,2) + endpoint2(:,2))./2);
 
 zeta_0sq = zeta_0.*zeta_0;
 
@@ -274,14 +274,17 @@ bloc(idx_LE,3) = 0.5.*log((t1s(idx_LE) + k(idx_LE))./(t2s(idx_LE) + k(idx_LE)));
 cloc(idx_LE,3) = -4.*hspan(idx_LE) + eta_0(idx_LE).*2.*bloc(idx_LE,3);
 
 %% Rotate 90 degrees to appropriate direction if needed
-yaw = -yaw; % says Bill
-tempb(:,2) = bloc(:,1).*cos(yaw) + bloc(:,2).*sin(yaw);
-tempb(:,1) = bloc(:,1).*-sin(yaw) + bloc(:,2).*cos(yaw);
-bloc(:,1:2) = tempb;
+% yaw = -yaw; % says Bill
+% tempb(:,2) = bloc(:,1).*cos(yaw) + bloc(:,2).*sin(yaw);
+% tempb(:,1) = bloc(:,1).*-sin(yaw) + bloc(:,2).*cos(yaw);
+% bloc(:,1:2) = tempb;
+% 
+% tempc(:,2) = cloc(:,1).*cos(yaw) + cloc(:,2).*sin(yaw);
+% tempc(:,1) = cloc(:,1).*-sin(yaw) + cloc(:,2).*cos(yaw);
+% cloc(:,1:2) = tempc;
 
-tempc(:,2) = cloc(:,1).*cos(yaw) + cloc(:,2).*sin(yaw);
-tempc(:,1) = cloc(:,1).*-sin(yaw) + cloc(:,2).*cos(yaw);
-cloc(:,1:2) = tempc;
+bloc = fcnSTARGLOB(bloc, 0, 0, yaw);
+cloc = fcnSTARGLOB(cloc, 0, 0, yaw);
 
 end
 

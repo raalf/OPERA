@@ -128,11 +128,7 @@ for ai = 1:length(seqALPHA)
                     matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWCOEFF, matWALIGN, matWEIDX);
                     matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1);
                 end
-                
-%                 % Rebuild wing resultant
-%                 vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST);
-%                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
-                
+                          
                 ABC(:,:,valTIMESTEP) = matCOEFF;
             end
         end
@@ -142,7 +138,7 @@ end
 %% Plot
 
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG);
-% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
 %     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
 %     q_indw = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
 %     q_ind = q_inds + q_indw;
@@ -161,21 +157,21 @@ end
 % z = -0.2:granularity:0.2;
 % [X,Y,Z] = meshgrid(x,y,z);
 % fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-%
+% 
 % % temp1 = [];
 % % temp1(:,:,1) = matVLST(matELST(:,1),:);
 % % temp1(:,:,2) = matVLST(matELST(:,2),:);
 % % edge_midpoints = mean(temp1,3);
 % % fpg = [matCENTER; matVLST; edge_midpoints];
-%
+% 
 % % fpg = fpg + matVLST(1,:);
-%
+% 
 % % fpg = [0.5 1.5 1];
-%
+% 
 % % [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
 % [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
-%
-%
+% 
+% 
 % % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
 % q_ind = s_ind + vecUINF;
 % hold on

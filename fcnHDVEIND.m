@@ -22,28 +22,28 @@ idx = [1:5:len*5]';
 % Right to left. Sheet LE is on right, sheet extends to infinity on the left.
 % First edge
 endpoints(idx,:,1:2) = reshape(permute(matPLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx) = -pi/2;
-phi(idx) = -atan((endpoints(idx,1,2)-endpoints(idx,1,1))./(endpoints(idx,2,2)-endpoints(idx,2,1)));
+yaw(idx) = pi;
+phi(idx) = atan((endpoints(idx,1,2)-endpoints(idx,1,1))./(endpoints(idx,2,2)-endpoints(idx,2,1)));
 
 % Second edge
 endpoints(idx+1,:,1:2) = reshape(permute(matPLEX(2:3,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+1) = -pi/2;
-phi(idx+1) = -atan((endpoints(idx+1,1,2)-endpoints(idx+1,1,1))./(endpoints(idx+1,2,2)-endpoints(idx+1,2,1)));
+yaw(idx+1) = pi;
+phi(idx+1) = atan((endpoints(idx+1,1,2)-endpoints(idx+1,1,1))./(endpoints(idx+1,2,2)-endpoints(idx+1,2,1)));
 
 % Up to down. Sheet LE is on the bottom, sheet extends to infinity upwards.
 % First edge
 endpoints(idx+2,:,1:2) = reshape(permute(matPLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+2) = 0;
-phi(idx+2) = atan((endpoints(idx+2,2,2)-endpoints(idx+2,2,1))./(endpoints(idx+2,1,2)-endpoints(idx+2,1,1)));
+yaw(idx+2) = pi/2;
+phi(idx+2) = -atan((endpoints(idx+2,2,2)-endpoints(idx+2,2,1))./(endpoints(idx+2,1,2)-endpoints(idx+2,1,1)));
 
 % Second edge
 endpoints(idx+3,:,1:2) = reshape(permute(matPLEX(2:3,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+3) = 0;
-phi(idx+3) = atan((endpoints(idx+3,2,2)-endpoints(idx+3,2,1))./(endpoints(idx+3,1,2)-endpoints(idx+3,1,1)));
+yaw(idx+3) = pi/2;
+phi(idx+3) = -atan((endpoints(idx+3,2,2)-endpoints(idx+3,2,1))./(endpoints(idx+3,1,2)-endpoints(idx+3,1,1)));
 
 % Third edge
 endpoints(idx+4,:,1:2) = reshape(permute(matPLEX(1:2:3,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+4) = 0;
+yaw(idx+4) = pi/2;
 phi(idx+4) = 0; % Leading edge of Edge 3 is always on eta-axis
 
 %% Running VSIND

@@ -53,20 +53,6 @@ vnumb(:,2) = tb(rb);
 [vort_e2, vort_x2] = fcnDVORT(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
 
 
-%% Irrotationality
-
-irrot = [];
-% dvenum = [1:valNELE]';
-% 
-% % A1 + B1 = 0
-% ddgamma = repmat([1 0 -1 0 0],valNELE,1);
-% 
-% rows = reshape([repmat([1:valNELE]',1,5)]',[],1);
-% col3 = reshape([repmat((dvenum.*5)-4,1,5) + repmat([0:4],valNELE,1)]',[],1);
-% 
-% irrot = zeros(valNELE, valNELE*5);
-% irrot(sub2ind(size(irrot),rows,col3)) = reshape(ddgamma',[],1);
-
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
 % Circulation is set to zero at the wing tips
@@ -76,7 +62,7 @@ circ_tip = [];
 if strcmp(strATYPE,'THIN') == 1
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
     idx(vecTE) = 0;
-%     idx(vecLE) = 0;
+    idx(vecLE) = 0;
     
     nedg = length(matEATT(idx,1));
     
@@ -152,7 +138,7 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',5,[],valNELE),[2 1 3]),[],5*
 
 %% Piecing together D-matrix
 
-D = [circ; vort_e1; vort_x1; vort_e2; vort_x2; vort_te; irrot; circ_tip; king_kong];
+D = [circ; vort_e1; vort_x1; vort_e2; vort_x2; vort_te; circ_tip; king_kong];
 
 end
 

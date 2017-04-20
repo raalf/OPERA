@@ -19,7 +19,7 @@ DVECT(:,:,3) = [0 0 1];
 % FP = [0 -5 5];
 FP = [0 0 .5];
 
-COEFF = [1 1 1 1 0]';
+COEFF = [0 0 0 1 0]';
 
 D = INFLUENCECOEFF2(testDVE, DVECT, FP);
 

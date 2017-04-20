@@ -22,10 +22,11 @@ disp('                (o)  (o)        (o)                     (o)        (o)  (o
 disp('=====================================================================================');
 
 %% Preamble
-
+% 
 % strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
-strFILE = 'inputs/2dve.dat';
+% strFILE = 'inputs/2dve.dat';
+strFILE = 'inputs/4dve.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -154,7 +155,7 @@ end
 % granularity = .025;
 % x = -0.6:granularity:1.2;
 % % y = -1:granularity:1;
-% y = ones(size(x)) + 0.5;
+% y = ones(size(x)) -1;
 % z = -0.2:granularity:0.2;
 % [X,Y,Z] = meshgrid(x,y,z);
 % fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');

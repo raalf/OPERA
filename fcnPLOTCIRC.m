@@ -7,8 +7,8 @@ set(0,'CurrentFigure',hFig1);
 hold on
 
 count = 1;
-for i = 0:0.05:1
-    for j = 1-i:-0.05:0
+for i = 0:0.1:1
+    for j = 1-i:-0.1:0
         lambda(count,1) = i;
         lambda(count,2) = j;
         lambda(count,3) = 1-i-j;
@@ -49,28 +49,11 @@ for i = 1:valNELE
     etaxsi = orig + fcnSTARGLOB([eta xsi circ], matROTANG(repmat(i,len,1), 1), matROTANG(repmat(i,len,1), 2), matROTANG(repmat(i,len,1), 3));
     
     DT = delaunay(etaxsi(:,1), etaxsi(:,2));
-%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), (etaxsi(:,3) + matCENTER(i,3)),'EdgeColor','k','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
-    trisurf(DT, etaxsi(:,1), etaxsi(:,2), etaxsi(:,3),'EdgeColor','k','FaceColor',colour,'FaceAlpha',0.5,'EdgeAlpha',0.5)
-    
-        % Global
-%     etaxsi = fcnTOGLOB(repmat(i,len,1), [eta xsi vort], matDVE, matDVECT, matVLST);
-%     DT = delaunay(etaxsi(:,1), etaxsi(:,2));
-%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), (etaxsi(:,3)),'EdgeColor','k','FaceColor','b','FaceAlpha',0.5,'EdgeAlpha',0.5)
-%     
+%     trimesh(DT, etaxsi(:,1), etaxsi(:,2), etaxsi(:,3),'EdgeColor','k','FaceColor',colour,'FaceAlpha',0.5,'EdgeAlpha',0.5)
+    trimesh(DT, etaxsi(:,1), etaxsi(:,2), etaxsi(:,3),'EdgeColor','k','FaceColor',colour,'FaceAlpha',0.5,'EdgeAlpha',0.5)
+  
     axis tight
-    
-    % Local
-%     etaxsi = fcnTOGLOB(repmat(i,len,1), [eta xsi zeros(len,1)], matDVE, matDVECT, matVLST);
-%     DT = delaunay(etaxsi(:,1), etaxsi(:,2));  
-%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), (circ + matCENTER(i,3)),'EdgeColor','k','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
-
-%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), vort + matCENTER(i,3),'EdgeColor','b','FaceColor','b','FaceAlpha',0.5,'EdgeAlpha',0.5)
-%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), vort2,'EdgeColor','g','FaceColor','g','FaceAlpha',0.5,'EdgeAlpha',0.5)
-%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), vort3,'EdgeColor','m','FaceColor','m','FaceAlpha',0.5,'EdgeAlpha',0.5)
-
-%     trisurf(DT, etaxsi(:,1), etaxsi(:,2), etaxsi(:,3) - matCENTER(i,3),'EdgeColor','r','FaceColor','r','FaceAlpha',0.5,'EdgeAlpha',0.5)
-
-    
+  
 end
 
 end

@@ -6,7 +6,7 @@ ANALYSIS PARAMETERS
 Lifting Surface:	 	strATYPE = THIN
 Analysis Type:			strA2TYPE = WING
 
-Maximum Timesteps: 		valMAXTIME = 2
+Maximum Timesteps: 		valMAXTIME = 0
 Timestep Size: 			valDELTIME = 0.5
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 

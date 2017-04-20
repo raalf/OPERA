@@ -25,7 +25,9 @@ nedg = length(matEATT(idx,1));
 
 circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC);
 
-%% Vorticity
+%% Vorticity along edge between elements
+vort_edge1 = [];
+vort_edge2 = [];
 
 % Typically found at the two vertices that split two HDVEs
 % vnuma is local vertices 1 and 2 (columns) for HDVE 1
@@ -46,12 +48,22 @@ vnumb(:,1) = tb(rb);
 [~,rb,] = sort(ta);
 vnumb(:,2) = tb(rb);
 
-% First vertex
-[vort_e1, vort_x1] = fcnDVORT(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
+% Unit vector in local ref frame (a for HDVE1, b for HDVE2) from local vertex to local vertex on the edge that forms the border between the two
 
-% Second vertex
-[vort_e2, vort_x2] = fcnDVORT(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
+temp = reshape(permute(matPLEX,[1 3 2]),[],3,1);
 
+e1vec = temp(matEATT(idx,1).*3 + vnuma(:,2) - 3,:) - temp(matEATT(idx,1).*3 + vnuma(:,1) - 3,:);
+e2vec = temp(matEATT(idx,2).*3 + vnumb(:,2) - 3,:) - temp(matEATT(idx,2).*3 + vnumb(:,1) - 3,:);
+e1vec = e1vec./sqrt(e1vec(:,1).^2 + e1vec(:,2).^2 + e1vec(:,3).^2);
+e2vec = e2vec./sqrt(e2vec(:,1).^2 + e2vec(:,2).^2 + e2vec(:,3).^2);
+
+vort_edge1 = fcnDVORTEDGE(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, e1vec, e2vec);
+vort_edge2 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, e1vec, e2vec);
+
+%% Vorticity perpendicular to edge between elements (at midpoint)
+vort_perp = [];
+
+vort_perp = fcnDVORTPERP(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, [-e1vec(:,2) e1vec(:,1) e1vec(:,3)], [-e2vec(:,2) e2vec(:,1) e2vec(:,3)], matELOC);
 
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
@@ -66,46 +78,14 @@ if strcmp(strATYPE,'THIN') == 1
     
     nedg = length(matEATT(idx,1));
     
-    circ_tip = fcnDCIRCTIP(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC);   
+    % Finding the two local vertex numbers of the edge endpoints
+    vnumc = nonzeros(matELOC(idx,:));
+    vnumc = repmat(vnumc,1,2);
+    vnumc(:,2) = vnumc(:,2) + 1;
+    vnumc(vnumc(:,2) == 4,2) = 1;
+    
+    circ_tip = fcnDCIRCTIP(idx, nedg, lambda_vert, lambda_mid, valNELE, matPLEX, matEATT, matELOC, vnumc);  
 end
-
-%% Setting TE Spanwise Vorticity 
-
-vort_te = [];
-
-% if ~isempty(vecTEDVE)
-%     len = length(vecTEDVE);
-% 
-%     %(x,y) of all three vertices of HDVEs at trailing edge of the wing and the corresponding leading edge of the post te wake HDVE
-%     x1 = reshape(matPLEX(1,1,vecTEDVE),len,1);
-%     x2 = reshape(matPLEX(2,1,vecTEDVE),len,1);
-%     x3 = reshape(matPLEX(3,1,vecTEDVE),len,1);
-%     y1 = reshape(matPLEX(1,2,vecTEDVE),len,1);
-%     y2 = reshape(matPLEX(2,2,vecTEDVE),len,1);
-%     y3 = reshape(matPLEX(3,2,vecTEDVE),len,1);
-% 
-%     lmb1 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:))],1),len,1);
-%     lmb2 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:))],2),len,1);
-%     lmb3 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:))],3),len,1);
-% 
-%     a2 = ones(len,1);
-%     a1 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
-%     b2 = ones(len,1);
-%     b1 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
-% 
-%     c3 = zeros(len,1);
-% 
-%     dgammate = [a1(:,1).*vecSPANDIR(:,2), a2(:,1).*vecSPANDIR(:,2), b1(:,1).*vecSPANDIR(:,1), b2(:,1).*vecSPANDIR(:,1), c3(:,1)];
-% 
-%     % Row indices of the rows where vorticity equations will go
-%     rows = reshape([repmat([1:len]',1,5)]',[],1);
-% 
-%     % Column indices for each circulation equation, col# = (DVE*6)-5 as each DVE gets a 6 column group
-%     col1 = reshape([repmat([(vecTEDVE.*5)-4],1,5)+repmat([0:4],len,1)]',[],1);
-% 
-%     vort_te = zeros(len, valNELE*5);
-%     vort_te(sub2ind(size(vort_te),rows,col1)) = reshape(dgammate,[],1);
-% end
 
 %% Kinematic conditions at vertices
 % Flow tangency is to be enforced at all control points on the surface HDVEs
@@ -138,7 +118,7 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',5,[],valNELE),[2 1 3]),[],5*
 
 %% Piecing together D-matrix
 
-D = [circ; vort_e1; vort_x1; vort_e2; vort_x2; vort_te; circ_tip; king_kong];
+D = [circ; vort_edge1; vort_edge2; vort_perp; circ_tip; king_kong];
 
 end
 

@@ -19,10 +19,12 @@ D = zeros(valNELE*9, valNELE*5);
 
 %% Circulation equations between elements
 
+circ = []
+
 % Evaluated at the mid-point of each edge which splits two HDVEs
 idx = all(matEATT,2); % All edges that split 2 DVEs
 nedg = length(matEATT(idx,1));
-
+% 
 circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC);
 
 %% Vorticity along edge between elements

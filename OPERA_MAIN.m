@@ -25,8 +25,8 @@ disp('==========================================================================
 % 
 % strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
-strFILE = 'inputs/2dve.dat';
-% strFILE = 'inputs/4dve.dat';
+% strFILE = 'inputs/2dve.dat';
+strFILE = 'inputs/4dve.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -47,7 +47,7 @@ if ~isempty(vecTE)
     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,1), matROTANG(vecTEDVE,2), matROTANG(vecTEDVE,3)); % Spanwise direction for each HDVE (may change with rotor stuff)
 end
 
-matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM);
+matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM);
 
 valDLEN = length(matD);
 
@@ -152,35 +152,35 @@ if any(vecTE) && valMAXTIME > 0
 %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF, matWROTANG, 'b');
 end
 %
-% granularity = .1;
-% x = -0.6:granularity:1.2;
-% y = -0.2:granularity:1.2;
-% % y = ones(size(x)) -.5;
-% z = -0.2:granularity:0.2;
-% [X,Y,Z] = meshgrid(x,y,z);
-% fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-% 
-% % temp1 = [];
-% % temp1(:,:,1) = matVLST(matELST(:,1),:);
-% % temp1(:,:,2) = matVLST(matELST(:,2),:);
-% % edge_midpoints = mean(temp1,3);
-% % fpg = [matCENTER; matVLST; edge_midpoints];
-% 
-% % fpg = fpg + matVLST(1,:);
-% 
-% % fpg = [0.5 1.5 1];
-% 
-% % [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
-% [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
-% 
-% 
-% % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
+granularity = .1;
+x = -0.6:granularity:1.2;
+y = -1.2:granularity:1.2;
+% y = ones(size(x)) -.5;
+z = -0.2:granularity:0.2;
+[X,Y,Z] = meshgrid(x,y,z);
+fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
+
+% temp1 = [];
+% temp1(:,:,1) = matVLST(matELST(:,1),:);
+% temp1(:,:,2) = matVLST(matELST(:,2),:);
+% edge_midpoints = mean(temp1,3);
+% fpg = [matCENTER; matVLST; edge_midpoints];
+
+% fpg = fpg + matVLST(1,:);
+
+% fpg = [0.5 1.5 1];
+
+% [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
+[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
+
+
+q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
 % q_ind = s_ind;
-% hold on
-% % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
-% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
-% hold off
-% set(gcf,'Renderer','opengl');
+hold on
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
+hold off
+set(gcf,'Renderer','opengl');
 
 %% End
 %

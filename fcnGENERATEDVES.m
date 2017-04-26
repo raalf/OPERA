@@ -142,8 +142,8 @@ for i = 1:valPANELS
             permute(reshape([P3(idxStart:idxEnd,:).*[1 -1 1] P1(idxStart:idxEnd,:).*[1 -1 1] P4(idxStart:idxEnd,:).*[1 -1 1]],[],3,3), [3 2 1]));
         temp_points = cat(3, temp_points, temp_points_sym);
         
-        temp_le = [temp_le; temp_le.*[1 -1 1]];
-        temp_te = [temp_te; temp_te.*[1 -1 1]];
+        temp_le = [temp_le; temp_le.*repmat([1 -1 1],1,1,length(temp_le(1,1,:)))];
+        temp_te = [temp_te; temp_te.*repmat([1 -1 1],1,1,length(temp_te(1,1,:)))];
     end
     
     points = cat(3, points, temp_points);

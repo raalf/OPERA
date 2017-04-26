@@ -23,15 +23,15 @@ a2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
 a1 = a2.^2;
 b2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
 b1 = b2.^2;
+a3 = ones(nedg*3,1);
+b3 = ones(nedg*3,1);
 
-c3 = ones(nedg*3,1);
+gamma_tip = [a1(:,1), a2(:,1), a3(:,1), b1(:,1), b2(:,1), b3(:,1)];
 
-gamma_tip = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)];
+rows = reshape([repmat([1:nedg*3]',1,6)]',[],1);
+col4 = reshape([repmat([(nonzeros(matEATT(idx,:)).*6)-5],3,6)+repmat([0:5],nedg*3,1)]',[],1);
 
-rows = reshape([repmat([1:nedg*3]',1,5)]',[],1);
-col4 = reshape([repmat([(nonzeros(matEATT(idx,:)).*5)-4],3,5)+repmat([0:4],nedg*3,1)]',[],1);
-
-circ_tip = zeros(nedg*3, valNELE*5);
+circ_tip = zeros(nedg*3, valNELE*6);
 circ_tip(sub2ind(size(circ_tip),rows,col4)) = reshape(gamma_tip',[],1);
 
 

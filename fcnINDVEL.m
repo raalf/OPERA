@@ -6,12 +6,12 @@ function [q_ind] = fcnINDVEL(dvenum, fpg, matCOEFF, matDVE, matDVECT, matVLST, m
 
 len = length(dvenum);
 
-[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG);
+[a1, a2, a3, b1, b2, b3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG);
 
-D = [a1 a2 b1 b2 c3];
-D = reshape(reshape(D', 1, 15, []), 3, 5, len);
+D = [a1 a2 a3 b1 b2 b3];
+D = reshape(reshape(D', 1, 18, []), 3, 6, len);
 
-q_ind = permute(sum(D.*repmat(reshape(matCOEFF(dvenum,:)',1,5,[]),3,1,1),2),[2 1 3]);
+q_ind = permute(sum(D.*repmat(reshape(matCOEFF(dvenum,:)',1,6,[]),3,1,1),2),[2 1 3]);
 
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 

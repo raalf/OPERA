@@ -12,20 +12,18 @@ lambda_vert = [ ...
     0 0 1; ...
     ];
 
-% D = sparse(N*5, N*5);
-
 % Making D-matrix a little long, in case we are over-constrained
-D = zeros(valNELE*9, valNELE*5);
+D = zeros(valNELE*9, valNELE*6);
 
 %% Circulation equations between elements
 
-circ = []
+circ = [];
 
 % Evaluated at the mid-point of each edge which splits two HDVEs
 idx = all(matEATT,2); % All edges that split 2 DVEs
 nedg = length(matEATT(idx,1));
-% 
-circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC);
+
+circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
 
 %% Vorticity along edge between elements
 vort_edge1 = [];
@@ -105,22 +103,25 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG);
+[a1, a2, a3, b1, b2, b3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 
 % Dotting a1, a2, b1, b2, c3 with the normals of the field points
-temp60 = [dot(a1,normals,2) dot(a2,normals,2) dot(b1,normals,2) dot(b2,normals,2) dot(c3, normals,2)];
+temp60 = [dot(a1,normals,2) dot(a2,normals,2) dot(a3,normals,2) dot(b1,normals,2) dot(b2,normals,2) dot(b3,normals,2)];
 
 % Reshaping and inserting into the bottom of the D-Matrix
 rows = [1:len]';
 
-king_kong = zeros(len, valNELE*5);
-king_kong(rows,:) = reshape(permute(reshape(temp60',5,[],valNELE),[2 1 3]),[],5*valNELE,1);
+king_kong = zeros(len, valNELE*6);
+king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
 
 %% Piecing together D-matrix
 
 D = [circ; vort_edge1; vort_edge2; vort_perp; circ_tip; king_kong];
+
+% D(abs(D) < 1e-4) = zeros(length(D(abs(D) < 1e-10)), 1);
+
 
 end
 

@@ -25,8 +25,8 @@ disp('==========================================================================
 % 
 % strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
-strFILE = 'inputs/2dve.dat';
-% strFILE = 'inputs/4dve.dat';
+% strFILE = 'inputs/2dve.dat';
+strFILE = 'inputs/4dve.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -139,8 +139,8 @@ end
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG);
-% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
+[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG, [35 1 4 4]);
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
 %     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
 %     q_indw = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
 %     q_ind = q_inds + q_indw;
@@ -151,11 +151,11 @@ if any(vecTE) && valMAXTIME > 0
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF, matWROTANG, 'b');
 end
-% %
-% granularity = .025;
+%
+% granularity = .1;
 % x = -0.6:granularity:1.2;
-% % y = -1:granularity:1;
-% y = ones(size(x)) -1;
+% y = -0.2:granularity:1.2;
+% % y = ones(size(x)) -.5;
 % z = -0.2:granularity:0.2;
 % [X,Y,Z] = meshgrid(x,y,z);
 % fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
@@ -175,11 +175,12 @@ end
 % 
 % 
 % % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-% q_ind = s_ind + vecUINF;
+% q_ind = s_ind;
 % hold on
 % % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 % hold off
+% set(gcf,'Renderer','opengl');
 
 %% End
 %

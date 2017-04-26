@@ -1,4 +1,4 @@
-function [a1, a2, b1, b2, c3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG)
+function [a1, a2, a3, b1, b2, b3] = fcnHDVEIND(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG)
 % dvetype - 1 for surface, 2 for wake, 3 for semi-infinite wake
 
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
@@ -105,9 +105,9 @@ a2l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
 a3l(dvetype == 2,:) = zeros(length(nonzeros(dvetype == 2)),3);
 %% Transforming to global coordinates
 
-v1 = [a1l; a2l; b1l; b2l; a3l+b3l];
+v1 = [a1l; a2l; a3l; b1l; b2l; b3l];
 
-dvenum = repmat(dvenum, 5, 1);
+dvenum = repmat(dvenum, 6, 1);
 
 v2 = fcnSTARGLOB(v1, matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
 
@@ -115,9 +115,10 @@ v2 = fcnSTARGLOB(v1, matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,
 
 a1 = v2(1:len,:);
 a2 = v2(len+1:2*len,:);
-b1 = v2(2*len+1:3*len,:);
-b2 = v2(3*len+1:4*len,:);
-c3 = v2(4*len+1:5*len,:);
+a3 = v2(2*len+1:3*len,:);
+b1 = v2(3*len+1:4*len,:);
+b2 = v2(4*len+1:5*len,:);
+b3 = v2(5*len+1:6*len,:);
 
 
 

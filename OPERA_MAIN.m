@@ -18,12 +18,16 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 % 
-% strFILE = 'inputs/simple_wing.dat';
+strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
-% strFILE = 'inputs/2dve.dat';
-strFILE = 'inputs/4dve.dat';
+strFILE = 'inputs/2dve.dat';
+% strFILE = 'inputs/4dve.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
+
+matPOINTS(:,:,1) = [1 1 0; 1 1 0];
+matPOINTS(:,:,2) = [0 0 0; 1 0 0];
+matPOINTS(:,:,3) = [0 1 0; 0 0 0];
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(strATYPE, matPOINTS);

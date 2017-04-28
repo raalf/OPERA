@@ -28,6 +28,8 @@ circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matAL
 %% Vorticity along edge between elements
 vort_edge1 = [];
 vort_edge2 = [];
+vort_perp1 = [];
+vort_perp2 = [];
 
 % Typically found at the two vertices that split two HDVEs
 % vnuma is local vertices 1 and 2 (columns) for HDVE 1
@@ -60,10 +62,8 @@ e2vec = e2vec./repmat(sqrt(e2vec(:,1).^2 + e2vec(:,2).^2 + e2vec(:,3).^2),1,3);
 vort_edge1 = fcnDVORTEDGE(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, e1vec, e2vec);
 vort_edge2 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, e1vec, e2vec);
 
-%% Vorticity perpendicular to edge between elements (at midpoint)
-vort_perp = [];
-
-vort_perp = fcnDVORTPERP(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, [-e1vec(:,2) e1vec(:,1) e1vec(:,3)], [-e2vec(:,2) e2vec(:,1) e2vec(:,3)], matELOC);
+vort_perp1 = fcnDVORTEDGE(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, [-e1vec(:,2) e1vec(:,1) e1vec(:,3)], [-e2vec(:,2) e2vec(:,1) e2vec(:,3)]);
+vort_perp2 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, [-e1vec(:,2) e1vec(:,1) e1vec(:,3)], [-e2vec(:,2) e2vec(:,1) e2vec(:,3)]);
 
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
@@ -118,7 +118,7 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*
 
 %% Piecing together D-matrix
 
-D = [circ; vort_edge1; vort_edge2; vort_perp; circ_tip; king_kong];
+D = [circ; vort_edge1; vort_edge2; vort_perp1; vort_perp2; circ_tip; king_kong];
 
 % D(abs(D) < 1e-4) = zeros(length(D(abs(D) < 1e-10)), 1);
 

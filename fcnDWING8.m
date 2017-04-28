@@ -54,8 +54,8 @@ temp = reshape(permute(matPLEX,[1 3 2]),[],3,1);
 
 e1vec = temp(matEATT(idx,1).*3 + vnuma(:,2) - 3,:) - temp(matEATT(idx,1).*3 + vnuma(:,1) - 3,:);
 e2vec = temp(matEATT(idx,2).*3 + vnumb(:,2) - 3,:) - temp(matEATT(idx,2).*3 + vnumb(:,1) - 3,:);
-e1vec = e1vec./sqrt(e1vec(:,1).^2 + e1vec(:,2).^2 + e1vec(:,3).^2);
-e2vec = e2vec./sqrt(e2vec(:,1).^2 + e2vec(:,2).^2 + e2vec(:,3).^2);
+e1vec = e1vec./repmat(sqrt(e1vec(:,1).^2 + e1vec(:,2).^2 + e1vec(:,3).^2),1,3);
+e2vec = e2vec./repmat(sqrt(e2vec(:,1).^2 + e2vec(:,2).^2 + e2vec(:,3).^2),1,3);
 
 vort_edge1 = fcnDVORTEDGE(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, e1vec, e2vec);
 vort_edge2 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, e1vec, e2vec);

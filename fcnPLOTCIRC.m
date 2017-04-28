@@ -33,8 +33,8 @@ for i = 1:valNELE
     eta = (x1.*lambda(:,1) + x2.*lambda(:,2) + x3.*lambda(:,3));
     xsi = (y1.*lambda(:,1) + y2.*lambda(:,2) + y3.*lambda(:,3));
     
-    circ = matCOEFF(i,1).*(eta.^2) + matCOEFF(i,2).*eta + matCOEFF(i,3).*(xsi.^2) ...
-        + matCOEFF(i,4).*xsi + matCOEFF(i,5);
+    circ = matCOEFF(i,1).*(eta.^2) + matCOEFF(i,2).*eta + +matCOEFF(i,3) + matCOEFF(i,4).*(xsi.^2) ...
+        + matCOEFF(i,5).*xsi + matCOEFF(i,6);
     
     vort = 2.*matCOEFF(i,1).*eta + matCOEFF(i,2) + 2.*matCOEFF(i,3).*xsi + matCOEFF(i,4);
    

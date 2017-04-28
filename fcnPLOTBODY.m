@@ -1,4 +1,4 @@
-function [hFig1] = fcnPLOTBODY(verbose, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG, fig_size)
+function [hFig1] = fcnPLOTBODY(verbose, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG, fig_size, rendertype)
 % This function plots all elements, and can label vertices, faces and edges.
 
 hFig1 = figure(1);
@@ -53,7 +53,7 @@ if verbose == 1
 end
 
 hold off
-set(gcf,'Renderer','Painters');
+set(gcf,'Renderer',rendertype);
 axis equal
 axis tight
 box on

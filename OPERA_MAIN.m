@@ -6,27 +6,22 @@ tic
 % warning off
 
 %% Header
-
-disp('=====================================================================================');
-disp('+---------------+                                      ');
-disp('| RYERSON       |  OPERA V1.0  []                         []  ');
-disp('| APPLIED       |              ||   ___     ___     ___   ||  ');
-disp('| AERODYNAMICS  |              ||  /   \   /| |\   /   \  ||  ');
-disp('| LABORATORY OF |              || |  O  |__|| ||__|  O  | ||  ');
-disp('| FLIGHT        |              ||  \___/--/^^^^^\--\___/  ||  ');
-disp('+---------------+              ||________|       |________||  __');
-disp('        .-----------------/  \-++--------|   .   |--------++-/  \-----------------. ');
-disp('       /.---------________|  |___________\__(*)__/___________|  |________---------.\');
-disp('                 |    |   ''$$''   |                       |   ''$$''   |    |       ');
-disp('                (o)  (o)        (o)                     (o)        (o)  (o)         ');
-disp('=====================================================================================');
-
+disp('====================================================================');
+disp('                    /$$$$$$  /$$$$$$$  /$$$$$$$$ /$$$$$$$   /$$$$$$ ');
+disp('+---------------+  /$$__  $$| $$__  $$| $$_____/| $$__  $$ /$$__  $$');
+disp('| RYERSON       | | $$  \ $$| $$  \ $$| $$      | $$  \ $$| $$  \ $$');
+disp('| APPLIED       | | $$  | $$| $$$$$$$/| $$$$$   | $$$$$$$/| $$$$$$$$');
+disp('| AERODYNAMICS  | | $$  | $$| $$____/ | $$__/   | $$__  $$| $$__  $$');
+disp('| LABORATORY OF | | $$  | $$| $$      | $$      | $$  \ $$| $$  | $$');
+disp('| FLIGHT        | |  $$$$$$/| $$      | $$$$$$$$| $$  | $$| $$  | $$');
+disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
+disp('====================================================================');
 %% Preamble
 % 
 % strFILE = 'inputs/simple_wing.dat';
-strFILE = 'inputs/standard_cirrus.dat';
+% strFILE = 'inputs/standard_cirrus.dat';
 % strFILE = 'inputs/2dve.dat';
-% strFILE = 'inputs/4dve.dat';
+strFILE = 'inputs/4dve.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -139,7 +134,7 @@ end
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG, [35 1 4 4]);
+[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG, [3 1 4 4], 'opengl');
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
 %     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
 %     q_indw = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);

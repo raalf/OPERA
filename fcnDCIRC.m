@@ -20,7 +20,8 @@ b1 = b2.^2;
 a3 = ones(nedg,2);
 b3 = ones(nedg,2);
 
-align = abs(matALIGN(idx,:,:));
+% align = abs(matALIGN(idx,:,:));
+align = matALIGN(idx,:,:);
 
 zer = zeros(length(a1(:,1)),1);
 

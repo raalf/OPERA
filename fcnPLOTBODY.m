@@ -60,7 +60,7 @@ box on
 grid on
 
 set(hFig1,'Units','Inches');
-set(hFig1, 'Position',fig_size);
+% set(hFig1, 'Position',fig_size);
 
 xlabel('Global X-Dir', 'FontSize', 15);
 ylabel('Global Y-Dir', 'FontSize', 15);

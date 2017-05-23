@@ -17,23 +17,23 @@ hold on
 % end
 
 if verbose == 1
-    for ii = 1:valNELE
-        str = sprintf('%d',ii);
-        text(matCENTER(ii,1),matCENTER(ii,2),matCENTER(ii,3),str,'Color','k','FontSize',20);
-    end
-    
-    for ii = 1:length(matVLST(:,1))
-        str = sprintf('%d',ii);
-        text(matVLST(ii,1),matVLST(ii,2),matVLST(ii,3),str,'Color','r','FontSize',20);
-    end
-    
-    edge1 = matVLST(matELST(:,1),:);
-    edge2 = matVLST(matELST(:,2),:);
-    mid = (edge1+edge2)./2;
-    for ii = 1:length(mid)
-        str = sprintf('%d',ii);
-        text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',20);
-    end
+%     for ii = 1:valNELE
+%         str = sprintf('%d',ii);
+%         text(matCENTER(ii,1),matCENTER(ii,2),matCENTER(ii,3),str,'Color','k','FontSize',20);
+%     end
+%     
+%     for ii = 1:length(matVLST(:,1))
+%         str = sprintf('%d',ii);
+%         text(matVLST(ii,1),matVLST(ii,2),matVLST(ii,3),str,'Color','r','FontSize',20);
+%     end
+%     
+%     edge1 = matVLST(matELST(:,1),:);
+%     edge2 = matVLST(matELST(:,2),:);
+%     mid = (edge1+edge2)./2;
+%     for ii = 1:length(mid)
+%         str = sprintf('%d',ii);
+%         text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',20);
+%     end
     
     % %     [q_ind] = fcnINDVEL(1:valNELE, matCENTER, matCOEFF, matDVE, matDVECT, matVLST, matPLEX);
     %     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
@@ -47,8 +47,8 @@ if verbose == 1
     
     h1 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,1), matDVECT(:,2,1), matDVECT(:,3,1), 0.25, 'b'); % eta
     h2 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,2), matDVECT(:,2,2), matDVECT(:,3,2), 0.25, 'k'); % xi
-%     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,3), matDVECT(:,2,3), matDVECT(:,3,3), 0.25, 'm') % zeta (normal)
-    legend([h1,h2],'Local Eta direction','Local Xsi direction','Location','NorthWest')
+    h3 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,3), matDVECT(:,2,3), matDVECT(:,3,3), 0.25, 'm'); % zeta (normal)
+    legend([h1,h2,h3],'Local Eta direction','Local Xsi direction','Normal','Location','NorthWest')
     
 end
 

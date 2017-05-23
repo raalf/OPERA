@@ -161,7 +161,7 @@ end
 %% Local HDVE Eta-Xi Axis
 
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
-[matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM);
+[matPLEX, matDVECT, matROTANG] = fcnTRITOLEXFS(P, DNORM);
 
 % % Plotting global and local to visualize
 % test_num = 396;

@@ -19,5 +19,4 @@ a = (p1-p0)./norm(p1-p0);
 b = (p2-p0)./norm(p2-p0);
 
 angle = (atan2d(b(2),b(1)) - atan2d(a(2),a(1)))
-
 angle(angle < 0) = angle + rad2deg(2*pi)

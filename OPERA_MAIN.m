@@ -22,7 +22,7 @@ disp('====================================================================');
 % strFILE = 'inputs/standard_cirrus.dat';
 % strFILE = 'inputs/2dve.dat';
 % strFILE = 'inputs/4dve.dat';
-strFILE = 'inputs/noplane.dat';
+strFILE = 'inputs/nonplanar.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -31,7 +31,7 @@ strFILE = 'inputs/noplane.dat';
 % matPOINTS(:,:,3) = [0 1 0; 0 0 0];
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(strATYPE, matPOINTS);
+    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(strATYPE, matPOINTS);
 
 valTIMESTEP = 0;
 

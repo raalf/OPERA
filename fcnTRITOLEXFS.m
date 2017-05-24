@@ -1,8 +1,8 @@
 function [PLEX, DVECT, ROTANG] = fcnTRITOLEXFS(P, DNORM)
 
-% This function converts a 3-by-3-by-n matrix from global (X,Y,Z)
-% to local (eta,xi,zeta) coordinates, where the depth n is any number of points
-% and columns are (X,Y,Z), rows are vertex numbers 1,2,3
+% This function converts a nx3x3 matrix from global (X,Y,Z)
+% to local (eta,xi,zeta) coordinates, where the depth n is vertex number
+% and columns are (X,Y,Z), rows are HDVE number
 % Vertex number matters, as the first one is used as the origin and
 % the third one is placed on the eta-axis
 % T.D.K 2016-07-13. 212-230 KING ST E, TORONTO, ONTARIO, CANADA, M5A-1K5
@@ -28,7 +28,7 @@ DVECT(:,:,3) = DNORM;
 
 % Element "xsi" is aligned with global X (Change for rotors?)
 global_x = repmat([1 0 0],sp(3),1);
-DVECT(:,:,1) = global_x - ((dot(global_x,DVECT(:,:,3),2))./(sqrt(sum(DVECT(:,:,3).^2,2)))).*DVECT(:,:,3);
+DVECT(:,:,1) = global_x - repmat((dot(global_x,DVECT(:,:,3),2))./(sqrt(sum(DVECT(:,:,3).^2,2))),1,3).*DVECT(:,:,3);
 
 % Element "eta" 
 DVECT(:,:,2) = cross(DVECT(:,:,3),DVECT(:,:,1),2);
@@ -48,8 +48,10 @@ temp_points2 = fcnGLOBSTAR(temp_points, reshape(repmat(ROLL,1,3)',[],1),reshape(
 PLEX = permute(reshape(temp_points2',3,3,sp(3)),[2 1 3]);
 
 %% Translating local coordinates towards origin
-% UNFINISHED
-[~,idx] = max(PLEX(:,1,:)); % Largest X value in the local coordinates
+% Translating so that vertex 1 is at local origin (0,0)
+PLEX = PLEX - repmat(PLEX(1,:,:),3,1,1);
+
+%% Finding local leading and trailing edges of HDVEs
 
 
 

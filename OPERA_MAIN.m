@@ -43,6 +43,7 @@ valTIMESTEP = 0;
 % [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, ...
 %     matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnIMPORTGEOM(strFILE, strATYPE);
 % vecTE = []
+
 %% D-Matrix Creation
 vecTEDVE = [];
 vecSPANDIR = [];
@@ -51,10 +52,10 @@ if ~isempty(vecTE)
     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,1), matROTANG(vecTEDVE,2), matROTANG(vecTEDVE,3)); % Spanwise direction for each HDVE (may change with rotor stuff)
 end
 
-% matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM);
-% 
-% valDLEN = length(matD);
-% 
+matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM);
+
+valDLEN = length(matD);
+
 %% Alpha Loop
 for ai = 1:length(seqALPHA)
     valALPHA = deg2rad(seqALPHA(ai));

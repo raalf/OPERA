@@ -1,4 +1,4 @@
-function [D] = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM)
+function [D] = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM, matVSCOMB)
 
 lambda_mid = [ ...
     0.5 0.5 0; ... % Edge 1 mid-point
@@ -103,7 +103,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[a1, a2, a3, b1, b2, b3] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG);
+[a1, a2, a3, b1, b2, b3] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 

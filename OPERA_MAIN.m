@@ -21,8 +21,8 @@ disp('====================================================================');
 % strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
 % strFILE = 'inputs/2dve.dat';
-% strFILE = 'inputs/4dve.dat';
-strFILE = 'inputs/noplane.dat';
+strFILE = 'inputs/4dve.dat';
+% strFILE = 'inputs/noplane.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -52,7 +52,7 @@ if ~isempty(vecTE)
     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,1), matROTANG(vecTEDVE,2), matROTANG(vecTEDVE,3)); % Spanwise direction for each HDVE (may change with rotor stuff)
 end
 
-matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM);
+matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM, matVSCOMB);
 
 valDLEN = length(matD);
 
@@ -61,91 +61,91 @@ for ai = 1:length(seqALPHA)
     valALPHA = deg2rad(seqALPHA(ai));
     for bi = 1:length(seqBETA)
         valBETA = deg2rad(seqBETA(bi));
-%         
-%         matWADJE = [];
-%         matWELST = [];
-%         matWDVE = [];
-%         valWNELE = [];
-%         matWEATT = [];
-%         matWEIDX = [];
-%         matWELOC = [];
-%         matWPLEX = [];
-%         matWDVECT = [];
-%         matWALIGN = [];
-%         matWVATT = [];
-%         matWVNORM = [];
-%         matWCENTER = [];
-%         matWAKEGEOM = [];
-%         valWSIZE = [];
-%         matWCOEFF = [];
-%         matWVLST = [];
-%         
+        
+        matWADJE = [];
+        matWELST = [];
+        matWDVE = [];
+        valWNELE = [];
+        matWEATT = [];
+        matWEIDX = [];
+        matWELOC = [];
+        matWPLEX = [];
+        matWDVECT = [];
+        matWALIGN = [];
+        matWVATT = [];
+        matWVNORM = [];
+        matWCENTER = [];
+        matWAKEGEOM = [];
+        valWSIZE = [];
+        matWCOEFF = [];
+        matWVLST = [];
+        
         vecUINF = fcnUINFWING(valALPHA, valBETA);
-%         
-%         % Building wing resultant
-%         vecR = fcnRWING(strATYPE, valDLEN, 0, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, [], matVNORM, matVLST);
-%         
-%         % Solving for wing coefficients
-%         [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
-%         
-%         for valTIMESTEP = 1:valMAXTIME
-%             %% Timestep to solution
-%             %   Move wing
-%             %   Generate new wake elements
-%             %   Create and solve WD-Matrix for new elements
-%             %   Solve wing D-Matrix with wake-induced velocities
-%             %   Solve entire WD-Matrix
-%             %   Relaxation procedure (Relax, create W-Matrix and W-Resultant, solve W-Matrix)
-%             %   Calculate surface normal forces
-%             %   Calculate DVE normal forces
-%             %   Calculate induced drag
-%             
-%             valWSIZE = length(vecTE);
-%             
-%             % Moving the wing
-%             [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, matVLST, matCENTER, matELST, vecTE);
-%             
-%             % Generating new wake elements
-%             if any(vecTE)
-%                 [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
-%                     matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, ...
-%                     matCOEFF, valWSIZE, matWCOEFF, vecTE, matEATT, vecTEDVE, vecSPANDIR, valWNELE, matPLEX, matELOC, matVLST, matELST, matDVE);
-%                 
-%                 % Rebuild wing resultant
-%                 vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST);
-%                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
-%                 
-%                 % Resolving wake D-matrix (steady)
-%                 vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
-%                 vecWLE = matWEIDX(vecWLEDVE,1);
-%                 matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWCOEFF, matWALIGN, matWEIDX);
-%                 matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1);
-%                 
-%                 if flagRELAX == 1
-%                     [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWROTANG] ...
-%                         = fcnRELAX(vecUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matROTANG, matWROTANG);
-%                   
-%                     % Rebuild wing resultant
-%                     vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST);
-%                     matCOEFF = fcnSOLVED(matD, vecR, valNELE);                  
-%                     
-%                     % Resolving wake D-matrix (steady)
-%                     vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
-%                     vecWLE = matWEIDX(vecWLEDVE,1);
-%                     matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWCOEFF, matWALIGN, matWEIDX);
-%                     matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1);
-%                 end
-%                           
-%                 ABC(:,:,valTIMESTEP) = matCOEFF;
-%             end
-%         end
+         
+        % Building wing resultant
+        vecR = fcnRWING(strATYPE, valDLEN, 0, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, [], matVNORM, matVLST);
+         
+        % Solving for wing coefficients
+        [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
+        
+        for valTIMESTEP = 1:valMAXTIME
+            %% Timestep to solution
+            %   Move wing
+            %   Generate new wake elements
+            %   Create and solve WD-Matrix for new elements
+            %   Solve wing D-Matrix with wake-induced velocities
+            %   Solve entire WD-Matrix
+            %   Relaxation procedure (Relax, create W-Matrix and W-Resultant, solve W-Matrix)
+            %   Calculate surface normal forces
+            %   Calculate DVE normal forces
+            %   Calculate induced drag
+            
+            valWSIZE = length(vecTE);
+            
+            % Moving the wing
+            [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, matVLST, matCENTER, matELST, vecTE);
+            
+            % Generating new wake elements
+            if any(vecTE)
+                [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
+                    matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, ...
+                    matCOEFF, valWSIZE, matWCOEFF, vecTE, matEATT, vecTEDVE, vecSPANDIR, valWNELE, matPLEX, matELOC, matVLST, matELST, matDVE);
+                
+                % Rebuild wing resultant
+                vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST);
+                matCOEFF = fcnSOLVED(matD, vecR, valNELE);
+                
+                % Resolving wake D-matrix (steady)
+                vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
+                vecWLE = matWEIDX(vecWLEDVE,1);
+                matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWCOEFF, matWALIGN, matWEIDX);
+                matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1);
+                
+                if flagRELAX == 1
+                    [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWROTANG] ...
+                        = fcnRELAX(vecUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matROTANG, matWROTANG);
+                  
+                    % Rebuild wing resultant
+                    vecR = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matEATT, matCENTER, matDVECT, vecUINF, vecTE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST);
+                    matCOEFF = fcnSOLVED(matD, vecR, valNELE);                  
+                    
+                    % Resolving wake D-matrix (steady)
+                    vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
+                    vecWLE = matWEIDX(vecWLEDVE,1);
+                    matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWCOEFF, matWALIGN, matWEIDX);
+                    matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1);
+                end
+                          
+                ABC(:,:,valTIMESTEP) = matCOEFF;
+            end
+        end
     end
 end
 
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
-% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
 %     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
 %     q_indw = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
 %     q_ind = q_inds + q_indw;

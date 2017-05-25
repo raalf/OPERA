@@ -60,9 +60,9 @@ PLEX = permute(reshape(temp_points2',3,3,sp(3)),[2 1 3]);
 PLEX = PLEX - repmat(PLEX(1,:,:),3,1,1);
 
 %% Finding local leading and trailing edges of HDVEs (matVSCOMB)
-a = (PLEX(2,:,:))./sqrt(sum(PLEX(2,:,:).^2,2));
-c = (PLEX(3,:,:) - PLEX(2,:,:))./sqrt(sum((PLEX(3,:,:) - PLEX(2,:,:)).^2,2));
-b = (PLEX(3,:,:))./sqrt(sum(PLEX(3,:,:).^2,2));
+a = (PLEX(2,:,:))./repmat(sqrt(sum(PLEX(2,:,:).^2,2)),1,3,1);
+c = (PLEX(3,:,:) - PLEX(2,:,:))./repmat(sqrt(sum((PLEX(3,:,:) - PLEX(2,:,:)).^2,2)),1,3,1);
+b = (PLEX(3,:,:))./repmat(sqrt(sum(PLEX(3,:,:).^2,2)),1,3,1);
 
 angle1 = atan2(a(:,2,:),a(:,1,:));
 angle2 = atan2(c(:,2,:),c(:,1,:));
@@ -123,55 +123,56 @@ len = length(nonzeros(idx));
 matVSCOMB(idx,3,1) = zeros(len,1,1);
 
 %% For sheets extending in the xsi direction to positive xsi infinity
+
+% Edge 1 is 1, Edges 2 and 3 are -1
+idx = angle1 >= pi/2 & angle3 >= pi/2 & angle1 <= 3*pi/2 & angle3 <= 3*pi/2 & angle2 <= pi/2;
+len = length(nonzeros(idx));
+matVSCOMB(idx,:,2) = repmat([1 -1 -1],len,1);
+
 % Edge 1 and 2 are 1, Edge 3 is -1
-idx = angle1 <= pi/2 & (angle2 >= 3*pi/2 | angle2 < angle1);
+idx = angle1 >= 3*pi/2 & angle3 <= pi/2 & angle2 <= pi/2;
 len = length(nonzeros(idx));
 matVSCOMB(idx,:,2) = repmat([1 1 -1],len,1);
 
-% Edge 1 and 3 are -1, Edge2 is 1
-idx = angle1 >= pi/2 & angle3 <= pi/2 & angle1 - angle3 < pi;
-len = length(nonzeros(idx));
-matVSCOMB(idx,:,2) = repmat([-1 1 -1],len,1);
-
-% Edge 1 and 3 are 1, Edge 2 is -1
-idx = angle1 >= pi/2 & angle1 <= 3*pi/2 & angle3 <= pi/2 & angle1 - angle3 > pi;
-len = length(nonzeros(idx));
-matVSCOMB(idx,:,2) = repmat([1 -1 1],len,1);
-
-% Edge 1 is -1, Edges 2 and 3 are 1
-idx = angle1 >= pi/2 & angle3 >= pi/2 & angle1 <= 3*pi/2 & angle3 <= 3*pi/2 & angle2 <= pi/2;
-len = length(nonzeros(idx));
-matVSCOMB(idx,:,2) = repmat([-1 1 1],len,1);
-
 % Edge 1 and 2 are -1, Edge 3 is 1
-idx = angle1 >= pi/2 & angle3 >= pi/2 & angle1 <= 3*pi/2 & angle3 <= 3*pi/2 & angle2 >= pi/2;
+idx = angle1 <= pi/2 & (angle2 >= 3*pi/2 | angle2 < angle1);
 len = length(nonzeros(idx));
 matVSCOMB(idx,:,2) = repmat([-1 -1 1],len,1);
 
-% Edge 1 and 3 are 1, Edge 2 is -1
-idx = angle1 >= 3*pi/2 & angle3 <= 3*pi/2 & angle1 - angle3 < pi;
+% Edge 1 and 3 are 1, Edge2 is -1
+idx = angle1 >= pi/2 & angle3 <= pi/2 & angle1 - angle3 < pi;
 len = length(nonzeros(idx));
 matVSCOMB(idx,:,2) = repmat([1 -1 1],len,1);
 
 % Edge 1 and 3 are -1, Edge 2 is 1
-idx = angle1 >= 3*pi/2 & angle3 <= 3*pi/2 & angle3 >= pi/2 & angle1 - angle3 > pi;
+idx = angle1 >= pi/2 & angle1 <= 3*pi/2 & angle3 <= pi/2 & angle1 - angle3 > pi;
 len = length(nonzeros(idx));
 matVSCOMB(idx,:,2) = repmat([-1 1 -1],len,1);
 
-% Edge 3 and 2 are 1, Edge 1 is -1
+% Edge 1 and 2 are 1, Edge 3 is -1
+idx = angle1 >= pi/2 & angle3 >= pi/2 & angle1 <= 3*pi/2 & angle3 <= 3*pi/2 & angle2 >= pi/2;
+len = length(nonzeros(idx));
+matVSCOMB(idx,:,2) = repmat([1 1 -1],len,1);
+
+% Edge 1 and 3 are -1, Edge 2 is 1
+idx = angle1 >= 3*pi/2 & angle3 <= 3*pi/2 & angle1 - angle3 < pi;
+len = length(nonzeros(idx));
+matVSCOMB(idx,:,2) = repmat([-1 1 -1],len,1);
+
+% Edge 1 and 3 are 1, Edge 2 is -1
+idx = angle1 >= 3*pi/2 & angle3 <= 3*pi/2 & angle3 >= pi/2 & angle1 - angle3 > pi;
+len = length(nonzeros(idx));
+matVSCOMB(idx,:,2) = repmat([1 -1 1],len,1);
+
+% Edge 3 and 2 are -1, Edge 1 is 1
 idx = angle1 >= 3*pi/2 & angle3 <= pi/2 & angle2 >= pi/2;
 len = length(nonzeros(idx));
-matVSCOMB(idx,:,2) = repmat([-1 1 1],len,1);
+matVSCOMB(idx,:,2) = repmat([1 -1 -1],len,1);
 
-% Edge 1 and 2 are -1, Edge 3 is 1
-idx = angle1 >= 3*pi/2 & angle3 <= pi/2 & angle2 <= pi/2;
-len = length(nonzeros(idx));
-matVSCOMB(idx,:,2) = repmat([-1 -1 1],len,1);
-
-% Edge 1 is 1, Edges 2 and 3 are -1
+% Edge 1 is -1, Edges 2 and 3 are 1
 idx = angle1 >= 3*pi/2 & angle3 >= 3*pi/2;
 len = length(nonzeros(idx));
-matVSCOMB(idx,:,2) = repmat([1 -1 -1],len,1);
+matVSCOMB(idx,:,2) = repmat([-1 1 1],len,1);
 
 % Special cases for above, when perpendicular to vortex sheet direction
 idx = angle1 == pi/2 | angle1 == 3*pi/2;

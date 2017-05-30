@@ -55,11 +55,6 @@ gamma1 = [gamma12; gamma13];
 gamma2 = [gamma22; gamma23];
 circ(sub2ind(size(circ),rows,col1)) = reshape(gamma1',[],1);
 circ(sub2ind(size(circ),rows,col2)) = reshape(gamma2',[],1);
-
-
-    
-
-
-
+  
 end
 

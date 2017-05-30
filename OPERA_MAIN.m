@@ -18,9 +18,9 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 % 
-% strFILE = 'inputs/simple_wing.dat';
+strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
-strFILE = 'inputs/2dve.dat';
+% strFILE = 'inputs/2dve.dat';
 % strFILE = 'inputs/4dve.dat';
 % strFILE = 'inputs/noplane.dat';
 
@@ -145,17 +145,34 @@ end
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
-%     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
-%     q_indw = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
-%     q_ind = q_inds + q_indw;
+
+% dve_num = 4;
+% dir = 2;
+% 
+% for i = 1:3  
+%     edge_points = matVLST(matELST(matEIDX(dve_num,i),:),:);
 %     hold on
-%     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1)+vecUINF(1), q_ind(:,2)+vecUINF(2), q_ind(:,3)+vecUINF(3), 0.25, 'g')
+%     if matVSCOMB(dve_num,i,dir) == 1
+%         plot3(edge_points(:,1), edge_points(:,2), edge_points(:,3),'--r','LineWidth',2)
+%     elseif matVSCOMB(dve_num,i,dir) == -1
+%         plot3(edge_points(:,1), edge_points(:,2), edge_points(:,3),'--b','LineWidth',2)
+%     end
 %     hold off
-if any(vecTE) && valMAXTIME > 0
-    [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-%     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF, matWROTANG, 'b');
-end
+% end
+
+
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
+% %     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
+% %     q_indw = fcnWINDVEL(matCENTER, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
+% %     q_ind = q_inds + q_indw;
+% %     hold on
+% %     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1)+vecUINF(1), q_ind(:,2)+vecUINF(2), q_ind(:,3)+vecUINF(3), 0.25, 'g')
+% %     hold off
+% if any(vecTE) && valMAXTIME > 0
+%     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
+% %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, vecUINF, matWROTANG, 'b');
+% end
+
 % %
 % granularity = .1;
 % x = -0.6:granularity:1.2;

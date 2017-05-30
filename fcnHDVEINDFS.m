@@ -38,18 +38,18 @@ phi(idx+2) = atan((endpoints(idx+2,1,2)-endpoints(idx+2,1,1))./(endpoints(idx+2,
 % Up to down. Sheet LE is on the bottom, sheet extends to infinity upwards.
 % First edge
 endpoints(idx+3,:,1:2) = reshape(permute(matPLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+2) = pi/2;
-phi(idx+2) = -atan((endpoints(idx+2,2,2)-endpoints(idx+2,2,1))./(endpoints(idx+2,1,2)-endpoints(idx+2,1,1)));
-
-% Second edge
-endpoints(idx+4,:,1:2) = reshape(permute(matPLEX(2:3,:,dvenum),[3 2 1]), [],3,2);
 yaw(idx+3) = pi/2;
 phi(idx+3) = -atan((endpoints(idx+3,2,2)-endpoints(idx+3,2,1))./(endpoints(idx+3,1,2)-endpoints(idx+3,1,1)));
 
+% Second edge
+endpoints(idx+4,:,1:2) = reshape(permute(matPLEX(2:3,:,dvenum),[3 2 1]), [],3,2);
+yaw(idx+4) = pi/2;
+phi(idx+4) = -atan((endpoints(idx+4,2,2)-endpoints(idx+4,2,1))./(endpoints(idx+4,1,2)-endpoints(idx+4,1,1)));
+
 % Third edge
 endpoints(idx+5,:,1:2) = reshape(permute(matPLEX(1:2:3,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+4) = pi/2;
-phi(idx+4) = -atan((endpoints(idx+5,2,2)-endpoints(idx+5,2,1))./(endpoints(idx+5,1,2)-endpoints(idx+5,1,1))); % Leading edge of Edge 3 is always on eta-axis
+yaw(idx+5) = pi/2;
+phi(idx+5) = -atan((endpoints(idx+5,2,2)-endpoints(idx+5,2,1))./(endpoints(idx+5,1,2)-endpoints(idx+5,1,1))); % Leading edge of Edge 3 is always on eta-axis
 
 %% Running VSIND
 
@@ -69,9 +69,10 @@ b2l = repmat(matVSCOMB(dvenum,1,1),1,3).*bl(idx,:) + repmat(matVSCOMB(dvenum,2,1
 b3l = repmat(matVSCOMB(dvenum,1,1),1,3).*al(idx,:) + repmat(matVSCOMB(dvenum,2,1),1,3).*al(idx+1,:) + repmat(matVSCOMB(dvenum,3,1),1,3).*al(idx+2,:);
 
 % DOWN-TO-UP (negative because matVSCOMB assumes sheet goes left to right, to positive eta infinity)
-a1l = -repmat(matVSCOMB(dvenum,1,2),1,3).*cl(idx+3,:) + -repmat(matVSCOMB(dvenum,2,2),1,3).*cl(idx+4,:) + -repmat(matVSCOMB(dvenum,3,2),1,3).*cl(idx+5,:);
-a2l = -repmat(matVSCOMB(dvenum,1,2),1,3).*bl(idx+3,:) + -repmat(matVSCOMB(dvenum,2,2),1,3).*bl(idx+4,:) + -repmat(matVSCOMB(dvenum,3,2),1,3).*bl(idx+5,:);
-a3l = -repmat(matVSCOMB(dvenum,1,2),1,3).*al(idx+3,:) + -repmat(matVSCOMB(dvenum,2,2),1,3).*al(idx+4,:) + -repmat(matVSCOMB(dvenum,3,2),1,3).*al(idx+5,:);
+matVSCOMB(:,:,2) = matVSCOMB(:,:,2)*-1;
+a1l = repmat(matVSCOMB(dvenum,1,2),1,3).*cl(idx+3,:) + repmat(matVSCOMB(dvenum,2,2),1,3).*cl(idx+4,:) + repmat(matVSCOMB(dvenum,3,2),1,3).*cl(idx+5,:);
+a2l = repmat(matVSCOMB(dvenum,1,2),1,3).*bl(idx+3,:) + repmat(matVSCOMB(dvenum,2,2),1,3).*bl(idx+4,:) + repmat(matVSCOMB(dvenum,3,2),1,3).*bl(idx+5,:);
+a3l = repmat(matVSCOMB(dvenum,1,2),1,3).*al(idx+3,:) + repmat(matVSCOMB(dvenum,2,2),1,3).*al(idx+4,:) + repmat(matVSCOMB(dvenum,3,2),1,3).*al(idx+5,:);
 
 
 % % Subtracting first vortex sheet from second in the right-to-left direction

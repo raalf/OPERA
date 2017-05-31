@@ -1,4 +1,4 @@
-function [q_ind] = fcnINDVEL(dvenum, fpg, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG)
+function [q_ind] = fcnINDVEL(dvenum, fpg, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB)
 % This function takes in HDVE number and a corresponding global field point and returns an induced velocity
 % in the global reference frame. 
 

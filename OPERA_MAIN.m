@@ -18,8 +18,8 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 % 
-strFILE = 'inputs/simple_wing.dat';
-% strFILE = 'inputs/standard_cirrus.dat';
+% strFILE = 'inputs/simple_wing.dat';
+strFILE = 'inputs/standard_cirrus.dat';
 % strFILE = 'inputs/2dve.dat';
 % strFILE = 'inputs/4dve.dat';
 % strFILE = 'inputs/noplane.dat';
@@ -144,7 +144,7 @@ end
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
 
 % dve_num = 4;
 % dir = 2;

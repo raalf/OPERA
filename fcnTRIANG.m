@@ -46,6 +46,7 @@ TR = triangulation(matDVE(:,:,1),matVLST);
 
 matELST = edges(TR); % List of unique edges
 DNORM = -faceNormal(TR);
+% DNORM(1,:) = [0 0 1] %TEMPORARY DON'T KEEP
 
 matDVE(:,:,2) = faceNormal(TR); % Normal
 matCENTER = incenter(TR); % incenter of triangle

@@ -68,13 +68,13 @@ a3l = zeros(len,3);
 
 %% Summing the velocities of all five sheets
 
-% RIGHT-TO-LEFT
+% RIGHT-TO-LEFT (negative because matVSCOMB assumes sheet goes left to right, to positive eta infinity)
+% matVSCOMB(:,:,1) = matVSCOMB(:,:,1)*-1;
 b1l = repmat(matVSCOMB(dvenum,1,1),1,3).*cl(idx,:) + repmat(matVSCOMB(dvenum,2,1),1,3).*cl(idx+1,:) + repmat(matVSCOMB(dvenum,3,1),1,3).*cl(idx+2,:);
 b2l = repmat(matVSCOMB(dvenum,1,1),1,3).*bl(idx,:) + repmat(matVSCOMB(dvenum,2,1),1,3).*bl(idx+1,:) + repmat(matVSCOMB(dvenum,3,1),1,3).*bl(idx+2,:);
 b3l = repmat(matVSCOMB(dvenum,1,1),1,3).*al(idx,:) + repmat(matVSCOMB(dvenum,2,1),1,3).*al(idx+1,:) + repmat(matVSCOMB(dvenum,3,1),1,3).*al(idx+2,:);
 
-% DOWN-TO-UP (negative because matVSCOMB assumes sheet goes left to right, to positive eta infinity)
-% matVSCOMB(:,:,2) = matVSCOMB(:,:,2)*-1;
+% DOWN-TO-UP 
 a1l = repmat(matVSCOMB(dvenum,1,2),1,3).*cl(idx+3,:) + repmat(matVSCOMB(dvenum,2,2),1,3).*cl(idx+4,:) + repmat(matVSCOMB(dvenum,3,2),1,3).*cl(idx+5,:);
 a2l = repmat(matVSCOMB(dvenum,1,2),1,3).*bl(idx+3,:) + repmat(matVSCOMB(dvenum,2,2),1,3).*bl(idx+4,:) + repmat(matVSCOMB(dvenum,3,2),1,3).*bl(idx+5,:);
 a3l = repmat(matVSCOMB(dvenum,1,2),1,3).*al(idx+3,:) + repmat(matVSCOMB(dvenum,2,2),1,3).*al(idx+4,:) + repmat(matVSCOMB(dvenum,3,2),1,3).*al(idx+5,:);

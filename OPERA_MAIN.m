@@ -146,9 +146,9 @@ end
 
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
 
-% dve_num = 4;
-% dir = 2;
-% 
+dve_num = 1;
+dir = 1;
+
 % for i = 1:3  
 %     edge_points = matVLST(matELST(matEIDX(dve_num,i),:),:);
 %     hold on
@@ -160,6 +160,28 @@ end
 %     hold off
 % end
 
+% % Plotting global and local to visualize
+% test_num = 2;
+% hFig2 = figure(2);
+% clf(2);
+% subplot(2,1,1)
+% patch(matPLEX(:,1,test_num),matPLEX(:,2,test_num),'b')
+% alpha(0.5);
+% xlabel('u-direction','FontSize',15);
+% ylabel('v-direction','FontSize',15);
+% axis equal
+% grid minor
+% box on
+% subplot(2,1,2)
+% P = [matVLST(matDVE(test_num,1),:); matVLST(matDVE(test_num,2),:); matVLST(matDVE(test_num,3),:)];
+% patch(P(:,1),P(:,2),P(:,3),'r')
+% alpha(0.5);
+% xlabel('X-direction','FontSize',15);
+% ylabel('Y-direction','FontSize',15);
+% zlabel('Z-direction','FontSize',15);
+% axis equal
+% grid minor
+% box on
 
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
 % %     q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);

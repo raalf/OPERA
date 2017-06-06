@@ -1,11 +1,10 @@
 function [PLEX, DVECT, ROTANG, matVSCOMB] = fcnTRITOLEXFS(P, DNORM, matCENTER)
-
 % This function converts a nx3x3 matrix from global (X,Y,Z)
 % to local (eta,xi,zeta) coordinates, where the depth n is vertex number
 % and columns are (X,Y,Z), rows are HDVE number
 % Vertex number matters maybe?
 % The local origin is set to the incenter of the triangle
-% T.D.K 2016-07-13. 212-230 KING ST E, TORONTO, ONTARIO, CANADA, M5A-1K5
+% T.D.K 2016-07-13. 230 KING ST E, TORONTO, ONTARIO, CANADA, M5A-1K5
 
 % matVSCOMB uses 1, 0, -1 to tell whether a vortex
 % sheet is added or subtracted in the induction function
@@ -15,7 +14,8 @@ function [PLEX, DVECT, ROTANG, matVSCOMB] = fcnTRITOLEXFS(P, DNORM, matCENTER)
 % matVSCOMB(:,:,1) is for sheets going to positive eta infinity
 % matVSCOMB(:,:,2) is for sheets going to positive xsi infinity
 
-% Point 1 is the origin in local eta-xi reference frame, [0 0]
+% MODIFIED
+% T.D.K 2017-06-05, 907 E 13TH AVE, DENVER, COLORADO, USA, 80218
 
 % Pre-allocating memory for a turbo-boost in performance
 sp = size(P);
@@ -26,7 +26,6 @@ try
 catch
     PLEX = zeros(3,3);
 end
-%zeta is always zero in the local plane of the hdve
 
 %% Getting Roll/Pitch/Yaw
 DVECT = zeros(sp(3),3,3);

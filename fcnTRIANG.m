@@ -164,28 +164,6 @@ end
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
 [matPLEX, matDVECT, matROTANG, matVSCOMB] = fcnTRITOLEXFS(P, DNORM, matCENTER);
 
-% % Plotting global and local to visualize
-% test_num = 1;
-% hFig2 = figure(2);
-% clf(2);
-% subplot(2,1,1)
-% patch(matPLEX(:,1,test_num),matPLEX(:,2,test_num),'b')
-% alpha(0.5);
-% xlabel('u-direction','FontSize',15);
-% ylabel('v-direction','FontSize',15);
-% axis equal
-% grid on
-% box on
-% subplot(2,1,2)
-% patch(P(:,1,test_num),P(:,2,test_num),P(:,3,test_num),'r')
-% alpha(0.5);
-% xlabel('X-direction','FontSize',15);
-% ylabel('Y-direction','FontSize',15);
-% zlabel('Z-direction','FontSize',15);
-% axis equal
-% grid on
-% box on
-
 %% Finding DVE Alignment Matrix ALIGN
 
 matALIGN = repmat(zeros(size(matEATT)),1,1,2);

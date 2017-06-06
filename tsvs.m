@@ -9,6 +9,7 @@ coeff = [0 1 0];
 phi = atan((endpoints(:,1,2)-endpoints(:,1,1))./(endpoints(:,2,2)-endpoints(:,2,1)));
 
 yaw = pi/2;
+% yaw = 0
 
 k = 0.1;
 

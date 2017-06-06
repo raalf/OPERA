@@ -19,8 +19,8 @@ disp('====================================================================');
 %% Preamble
 % 
 % strFILE = 'inputs/simple_wing.dat';
-strFILE = 'inputs/standard_cirrus.dat';
-% strFILE = 'inputs/2dve.dat';
+% strFILE = 'inputs/standard_cirrus.dat';
+strFILE = 'inputs/2dve.dat';
 % strFILE = 'inputs/4dve.dat';
 % strFILE = 'inputs/noplane.dat';
 

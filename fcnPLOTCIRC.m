@@ -43,7 +43,7 @@ for i = 1:valNELE
     
     len = length(eta);
     
-    orig = matVLST(matDVE(repmat(i,len,1),1,1),:);
+    orig = matCENTER(i,:);
     
     % Global
     etaxsi = orig + fcnSTARGLOB([eta xsi circ], matROTANG(repmat(i,len,1), 1), matROTANG(repmat(i,len,1), 2), matROTANG(repmat(i,len,1), 3));

@@ -1,22 +1,32 @@
 clc
 clear
 
-p0 = [0 0 0];
-p1 = [1 1 0];
-p2 = [1 0.8 0];
+p0 = [2 -1; 1 0; 5 2];
 
-vectarrow(p0,p1)
-hold on
-vectarrow(p0,p2)
-hold off
-box on
+% Edge vectors by going around in order
+edge = [p0(1,:) - p0(2,:); p0(2,:) - p0(3,:); p0(3,:) - p0(1,:)];
+
+% Finding normals and normalizing
+edge_normal = [edge(:,2) -edge(:,1)];
+edge_normal = edge_normal./(sqrt(sum(edge_normal(:,1).^2 + edge_normal(:,2).^2,2)));
+
+edge_midpoints = [mean(p0(1:2,:),1); mean(p0(2:3,:),1); mean(p0(3:-2:1,:),1)];
+
+check_normal = dot(edge_normal(1,:), edge(3,:));
+check_normal(check_normal > 0) = 1;
+
+if check_normal == 1
+   edge_normal = [-edge_normal(:,1) -edge_normal(:,2)]; 
+end
+
+%%
+hfig15 = figure(15);
+clf(15)
+fill(p0(:,1), p0(:,2), 'w', 'FaceAlpha',0)
 grid minor
-axis tight
+box on
 axis equal
-view(2)
 
-a = (p1-p0)./norm(p1-p0);
-b = (p2-p0)./norm(p2-p0);
-
-angle = (atan2d(b(2),b(1)) - atan2d(a(2),a(1)))
-angle(angle < 0) = angle + rad2deg(2*pi)
+hold on
+quiver(edge_midpoints(:,1), edge_midpoints(:,2), edge_normal(:,1), edge_normal(:,2))
+hold off

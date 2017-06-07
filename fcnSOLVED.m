@@ -11,7 +11,7 @@ function [matCOEFF] = fcnSOLVED(matD, vecR, valNELE)
 
 matCOEFF = matD\vecR;
 
-matD*matCOEFF
+% matD*matCOEFF
 
 matCOEFF = reshape(matCOEFF,6,valNELE,1)';
 

@@ -40,22 +40,22 @@ a2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
 a1 = a2.^2;
 b2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
 b1 = b2.^2;
-
-c3 = ones(len,2);
+b3 = ones(len,2);
+a3 = ones(len,2);
 
 % The resultant is the circulation at the trailing edge of the wing, found using the coefficients A1 A2 B1 B2 C3 we solved for in DWING/Resultant
 % res1 = -sum([a1(:,1).*vecSPANDIR(:,1), a2(:,1).*vecSPANDIR(:,1), b1(:,1).*vecSPANDIR(:,2), b2(:,1).*vecSPANDIR(:,2), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
-res1 = -sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
+res1 = -sum([a1(:,1), a2(:,1), a3(:,1), b1(:,1), b2(:,1), b3(:,1)].*matCOEFF(vecTEDVE,:),2);
 
 % These are the wake coefficients (spanwise) that we need to solve for, B1, B2 and C3
-gamma1 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c3(:,2)];
+gamma1 = [a1(:,2), a2(:,2), a3(:,2), b1(:,2), b2(:,2), b3(:,2)];
 
 % Row indices of the rows where circulation equations will go
-rows = reshape([repmat([1:len]',1,5)]',[],1);
+rows = reshape([repmat([1:len]',1,6)]',[],1);
 
 % Column indices for each circulation equation, col# = (DVE*5)-4 as each DVE gets a 6 column group
-col1 = reshape([repmat([(vecWLEDVE.*5)-4],1,5) + repmat([0:4],len,1)]',[],1);
-circ1 = zeros(len, valWNELE*5);
+col1 = reshape([repmat([(vecWLEDVE.*6)-5],1,6) + repmat([0:5],len,1)]',[],1);
+circ1 = zeros(len, valWNELE*6);
 circ1(sub2ind(size(circ1),rows,col1)) = reshape(gamma1',[],1);
 
 %% Vertices to set wake circulation opposite to wing (along TE)
@@ -85,22 +85,22 @@ a2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
 a1 = a2.^2;
 b2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
 b1 = b2.^2;
-
-c3 = ones(len,2);
+b3 = ones(len,2);
+a3 = ones(len,2);
 
 % The resultant is the circulation at the trailing edge of the wing, found using the coefficients A1 A2 B1 B2 C3 we solved for in DWING/Resultant
 % res2 = -sum([a1(:,1).*vecSPANDIR(:,2), a2(:,1).*vecSPANDIR(:,2), b1(:,1).*vecSPANDIR(:,1), b2(:,1).*vecSPANDIR(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
-res2 = -sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
+res2 = -sum([a1(:,1), a2(:,1), a3(:,1), b1(:,1), b2(:,1), b3(:,1)].*matCOEFF(vecTEDVE,:),2);
 
 % These are the wake coefficients (spanwise) that we need to solve for, B1, B2 and C3
-gamma2 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c3(:,2)]; % Wake only changes in the spanwise direction, which is always local xsi
+gamma2 = [a1(:,2), a2(:,2), a3(:,2), b1(:,2), b2(:,2), b3(:,2)]; % Wake only changes in the spanwise direction, which is always local xsi
 
 % Row indices of the rows where circulation equations will go
-rows = reshape([repmat([1:len]',1,5)]',[],1);
+rows = reshape([repmat([1:len]',1,6)]',[],1);
 
 % Column indices for each circulation equation, col# = (DVE*5)-4 as each DVE gets a 6 column group
-col1 = reshape([repmat([(vecWLEDVE.*5)-4],1,5) + repmat([0:4],len,1)]',[],1);
-circ2 = zeros(len, valWNELE*5);
+col1 = reshape([repmat([(vecWLEDVE.*6)-5],1,6) + repmat([0:5],len,1)]',[],1);
+circ2 = zeros(len, valWNELE*6);
 circ2(sub2ind(size(circ2),rows,col1)) = reshape(gamma2',[],1);
 
 %% Second Vertex
@@ -113,21 +113,22 @@ a1 = a2.^2;
 b2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
 b1 = b2.^2;
 
-c3 = ones(len,2);
+b3 = ones(len,2);
+a3 = ones(len,2);
 
 % The resultant is the circulation at the trailing edge of the wing, found using the coefficients A1 A2 B1 B2 C3 we solved for in DWING/Resultant
 % res3 = -sum([a1(:,1).*vecSPANDIR(:,2), a2(:,1).*vecSPANDIR(:,2), b1(:,1).*vecSPANDIR(:,1), b2(:,1).*vecSPANDIR(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
-res3 = -sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
+res3 = -sum([a1(:,1), a2(:,1), a3(:,1), b1(:,1), b2(:,1), b3(:,1)].*matCOEFF(vecTEDVE,:),2);
 
 % These are the wake coefficients (spanwise) that we need to solve for, B1, B2 and C3
-gamma3 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c3(:,2)]; % Wake only changes in the spanwise direction, which is always local xsi
+gamma3 = [a1(:,2), a2(:,2), a3(:,2), b1(:,2), b2(:,2), b3(:,2)]; % Wake only changes in the spanwise direction, which is always local xsi
 
 % Row indices of the rows where circulation equations will go
-rows = reshape([repmat([1:len]',1,5)]',[],1);
+rows = reshape([repmat([1:len]',1,6)]',[],1);
 
 % Column indices for each circulation equation, col# = (DVE*5)-4 as each DVE gets a 6 column group
-col1 = reshape([repmat([(vecWLEDVE.*5)-4],1,5) + repmat([0:4],len,1)]',[],1);
-circ3 = zeros(len, valWNELE*5);
+col1 = reshape([repmat([(vecWLEDVE.*6)-5],1,6) + repmat([0:5],len,1)]',[],1);
+circ3 = zeros(len, valWNELE*6);
 circ3(sub2ind(size(circ3),rows,col1)) = reshape(gamma3',[],1);
 
 %% Now for the second (aft) post TE wake element
@@ -141,8 +142,8 @@ idx = idx & all(matWEATT,2) & idx_postte; % All post-te row HDVE edges which we 
 
 nedg = length(nonzeros(idx));
 
-circ4 = fcnDCIRC(idx, nedg, lamb_mid, valWNELE, matWPLEX, matWEATT, matWELOC);
-res4 = zeros(nedg,1);
+circ4 = fcnDCIRC(idx, nedg, lamb_mid, valWNELE, matWPLEX, matWEATT, matWELOC, matWALIGN);
+res4 = zeros(nedg*2,1);
 
 %% Vorticity
 
@@ -166,10 +167,10 @@ vnumb2(:,1) = tb(rb);
 vnumb2(:,2) = tb(rb);
 
 % First vertex
-[vort_e1, vort_x1] = fcnDVORT(idx, vnuma2(:,1), vnumb2(:,1), nedg, lamb_vert, valWNELE, matWPLEX, matWEATT, matWELOC, matWALIGN);
+[vort_e1, vort_x1] = fcnDVORTVERT(idx, vnuma2(:,1), vnumb2(:,1), nedg, lamb_vert, valWNELE, matWPLEX, matWEATT, matWELOC, matWALIGN);
 
 % Second vertex
-[vort_e2, vort_x2] = fcnDVORT(idx, vnuma2(:,2), vnumb2(:,2), nedg, lamb_vert, valWNELE, matWPLEX, matWEATT, matWELOC, matWALIGN);
+[vort_e2, vort_x2] = fcnDVORTVERT(idx, vnuma2(:,2), vnumb2(:,2), nedg, lamb_vert, valWNELE, matWPLEX, matWEATT, matWELOC, matWALIGN);
 
 vort5 = [vort_e1; vort_x1; vort_e2; vort_x2];
 res5 = zeros(nedg*4,1);
@@ -268,7 +269,7 @@ else
 end
 %}
 
-cols = reshape([repmat([(aftdves.*5)-4],1,2)+repmat([0:1],length(aftdves),1)]',[],1);
+cols = reshape([repmat([(aftdves.*6)-5],1,2)+repmat([0:1],length(aftdves),1)]',[],1);
 
 rows_rep = reshape([repmat([1:valWSIZE]',1,length(aftdves)*2)]',[],1); 
 cols_rep = repmat(cols,valWSIZE,1);
@@ -276,10 +277,10 @@ cols_rep = repmat(cols,valWSIZE,1);
 d_wake(sub2ind(size(d_wake),rows_rep,cols_rep)) = 0;
 
 rows = reshape([repmat([1:length(aftdves)*2]',1,1)]',[],1); 
-cols1 = (aftdves.*5)-4;
+cols1 = (aftdves.*6)-5;
 cols2 = cols1 + 1;
 
-circ_chw = zeros(length(aftdves)*2, valWNELE*5);
+circ_chw = zeros(length(aftdves)*2, valWNELE*6);
 circ_chw(sub2ind(size(circ_chw),rows,[cols1; cols2])) = 1;
 
 res_chw = zeros(length(aftdves)*2,1);
@@ -287,10 +288,10 @@ res_chw = zeros(length(aftdves)*2,1);
 d_wake = [d_wake; circ_chw];
 res_wake = [res_wake; res_chw];
 
-d_wake = d_wake(:, end - (valWSIZE*2*5) + 1:end);
+d_wake = d_wake(:, end - (valWSIZE*2*6) + 1:end);
 
 matNEWWAKECOEFF = d_wake\res_wake;
-matNEWWAKECOEFF = reshape(matNEWWAKECOEFF,5,valWSIZE*2,1)';
+matNEWWAKECOEFF = reshape(matNEWWAKECOEFF,6,valWSIZE*2,1)';
 
 
 end

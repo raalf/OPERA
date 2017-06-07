@@ -18,11 +18,11 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 % 
-strFILE = 'inputs/simple_wing.dat';
+% strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
 % strFILE = 'inputs/2dve.dat';
 % strFILE = 'inputs/4dve.dat';
-% strFILE = 'inputs/nonplanar.dat';
+strFILE = 'inputs/nonplanar.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -33,7 +33,10 @@ strFILE = 'inputs/simple_wing.dat';
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(strATYPE, matPOINTS);
 
-valMAXTIME = 10
+valMAXTIME = 0
+valTIMESTEP = 0
+seqALPHA = 10
+flagRELAX = 0
 
 [vecTE, vecLE] = fcnTELE(matTEPOINTS, matLEPOINTS, matVLST, matELST);
 
@@ -195,35 +198,35 @@ if any(vecTE) && valMAXTIME > 0
 end
 
 % %
-% granularity = .05;
-% x = -0.6:granularity:1.2;
-% % y = -1.2:granularity:1.2;
-% y = ones(size(x)) - 0.5;
-% z = -0.2:granularity:0.2;
-% [X,Y,Z] = meshgrid(x,y,z);
-% fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
+granularity = .05;
+x = -0.6:granularity:1.2;
+% y = -1.2:granularity:1.2;
+y = ones(size(x)) - 0.5;
+z = -0.2:granularity:0.2;
+[X,Y,Z] = meshgrid(x,y,z);
+fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
+
+% temp1 = [];
+% temp1(:,:,1) = matVLST(matELST(:,1),:);
+% temp1(:,:,2) = matVLST(matELST(:,2),:);
+% edge_midpoints = mean(temp1,3);
+% fpg = [matCENTER; matVLST; edge_midpoints];
 % 
-% % temp1 = [];
-% % temp1(:,:,1) = matVLST(matELST(:,1),:);
-% % temp1(:,:,2) = matVLST(matELST(:,2),:);
-% % edge_midpoints = mean(temp1,3);
-% % fpg = [matCENTER; matVLST; edge_midpoints];
-% % 
-% % fpg = fpg + matCENTER;
-% 
-% % fpg = [0.5 0 1];
-% 
-% % [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVSCOMB);
-% [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matVSCOMB, matCENTER);
-% 
-% 
-% q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-% % q_ind = s_ind;
-% hold on
-% % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
-% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
-% hold off
-% set(gcf,'Renderer','opengl');
+% fpg = fpg + matCENTER;
+
+% fpg = [0.5 0 1];
+
+% [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVSCOMB);
+[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matVSCOMB, matCENTER);
+
+
+q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
+% q_ind = s_ind;
+hold on
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
+hold off
+set(gcf,'Renderer','opengl');
 
 %% End
 %

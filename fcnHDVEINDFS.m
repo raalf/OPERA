@@ -1,4 +1,4 @@
-function [a1, a2, a3, b1, b2, b3] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB)
+function [a1, a2, a3, b1, b2, b3] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB, matCENTER)
 % dvetype - 1 for surface, 2 for wake, 3 for semi-infinite wake
 
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
@@ -6,7 +6,7 @@ dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 len = length(dvenum);
 dbl_eps = 1e-14;
 
-fp = fcnGLOBSTAR(fpg - matVLST(matDVE(dvenum,1,1),:), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
+fp = fcnGLOBSTAR(fpg - matCENTER(dvenum,:), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
 
 endpoints = zeros(len*6, 3, 2); % Five function calls per DVE
 phi = zeros(len*6,1);
@@ -19,7 +19,7 @@ idx = [1:6:len*6]';
 %% Finding velocities induced by each vortex sheet
 % Always input left point, right point of vortex sheet LE
 
-% Right to left. Sheet LE is on right, sheet extends to infinity on the left.
+% Right to left. Sheet LE is on right, sheet extends to infinity on the right.
 % First edge
 endpoints(idx,:,1:2) = reshape(permute(matPLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
 yaw(idx) = 0;

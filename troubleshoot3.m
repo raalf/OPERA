@@ -1,9 +1,7 @@
 clc
 clear
 
-% fpg = [0 0 1; 0.5 0 0.5];
-fpg = [0 0 0; 0 0 0];
-len = length(fpg(:,1));
+
 
 matPOINTS(:,:,1) = [0 2.5 0; 0 -2.5, 0];
 matPOINTS(:,:,2) = [0 1.25 0; 0 -1.25 0];
@@ -28,6 +26,10 @@ vecUINF = [0.707 0 0.707];
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG([], matPOINTS);
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG, [100 100 4 4], 'opengl');
+
+% fpg = [0 0 1; 0.5 0 0.5];
+fpg = repmat(matCENTER(2,:),2,1);
+len = length(fpg(:,1));
 
 dve_num = 2;
 dir = 1;

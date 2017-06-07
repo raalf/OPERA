@@ -20,9 +20,9 @@ disp('====================================================================');
 % 
 % strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
-strFILE = 'inputs/2dve.dat';
-% strFILE = 'inputs/4dve.dat';
-% strFILE = 'inputs/noplane.dat';
+% strFILE = 'inputs/2dve.dat';
+strFILE = 'inputs/4dve.dat';
+% strFILE = 'inputs/nonplanar.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -146,9 +146,8 @@ end
 
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
 
-dve_num = 1;
-dir = 1;
-
+% dve_num = 1;
+% dir = 1;
 % for i = 1:3  
 %     edge_points = matVLST(matELST(matEIDX(dve_num,i),:),:);
 %     hold on
@@ -196,10 +195,10 @@ dir = 1;
 % end
 
 % %
-% granularity = .1;
+% granularity = .05;
 % x = -0.6:granularity:1.2;
-% y = -1.2:granularity:1.2;
-% % y = ones(size(x)) -.5;
+% % y = -1.2:granularity:1.2;
+% y = ones(size(x)) - 0.5;
 % z = -0.2:granularity:0.2;
 % [X,Y,Z] = meshgrid(x,y,z);
 % fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
@@ -209,17 +208,17 @@ dir = 1;
 % % temp1(:,:,2) = matVLST(matELST(:,2),:);
 % % edge_midpoints = mean(temp1,3);
 % % fpg = [matCENTER; matVLST; edge_midpoints];
+% % 
+% % fpg = fpg + matCENTER;
 % 
-% % fpg = fpg + matVLST(1,:);
+% % fpg = [0.5 0 1];
 % 
-% fpg = [0.5 0 1];
-% 
-% % [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG);
-% [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
+% % [w_ind] = fcnWINDVEL(fpg, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVSCOMB);
+% [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matVSCOMB, matCENTER);
 % 
 % 
-% % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-% q_ind = s_ind;
+% q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
+% % q_ind = s_ind;
 % hold on
 % % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3))
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))

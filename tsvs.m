@@ -6,10 +6,11 @@ endpoints(:,:,2) = [1 1 0];
 
 coeff = [0 1 0];
 
-phi = atan((endpoints(:,1,2)-endpoints(:,1,1))./(endpoints(:,2,2)-endpoints(:,2,1)));
+% phi = atan((endpoints(:,1,2)-endpoints(:,1,1))./(endpoints(:,2,2)-endpoints(:,2,1)));
+phi = pi/4
 
-yaw = pi/2;
-% yaw = 0
+% yaw = pi/2;
+yaw = 0
 
 k = 0.1;
 
@@ -65,7 +66,7 @@ hold on
 quiver3(fpl(:,1), fpl(:,2), fpl(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),0,'b');
 hold off
 
-view([0 0]);
+view(2);
 
 grid on
 axis tight

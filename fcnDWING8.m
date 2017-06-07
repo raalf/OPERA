@@ -65,6 +65,10 @@ vort_edge2 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNEL
 vort_perp1 = fcnDVORTEDGE(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, [-e1vec(:,2) e1vec(:,1) e1vec(:,3)], [-e2vec(:,2) e2vec(:,1) e2vec(:,3)]);
 vort_perp2 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, [-e1vec(:,2) e1vec(:,1) e1vec(:,3)], [-e2vec(:,2) e2vec(:,1) e2vec(:,3)]);
 
+%% Vorticity in eta and xsi directions of HDVE1
+
+vort = fcnDVORT(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
+
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
 % Circulation is set to zero at the wing tips
@@ -103,7 +107,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[a1, a2, a3, b1, b2, b3] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB);
+[a1, a2, a3, b1, b2, b3] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB, matCENTER);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 
@@ -118,7 +122,8 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*
 
 %% Piecing together D-matrix
 
-D = [circ; vort_edge1; vort_edge2; vort_perp1; vort_perp2; circ_tip; king_kong];
+D = [circ; vort; circ_tip; king_kong];
+% D = [circ; vort_edge1; vort_edge2; vort_perp1; vort_perp2; circ_tip; king_kong];
 
 % D(abs(D) < 1e-4) = zeros(length(D(abs(D) < 1e-10)), 1);
 

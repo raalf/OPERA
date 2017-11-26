@@ -107,12 +107,12 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[a1, a2, a3, b1, b2, b3] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB, matCENTER);
+[infl_glob] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB, matCENTER);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 
 % Dotting a1, a2, b1, b2, c3 with the normals of the field points
-temp60 = [dot(a1,normals,2) dot(a2,normals,2) dot(a3,normals,2) dot(b1,normals,2) dot(b2,normals,2) dot(b3,normals,2)];
+temp60 = [dot(permute(infl_glob(:,1,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,2,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,3,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,4,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,5,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,6,:),[3 1 2]),normals,2)];
 
 % Reshaping and inserting into the bottom of the D-Matrix
 rows = [1:len]';
@@ -122,8 +122,8 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*
 
 %% Piecing together D-matrix
 
-D = [circ; vort; circ_tip; king_kong];
-% D = [circ; vort_edge1; vort_edge2; vort_perp1; vort_perp2; circ_tip; king_kong];
+% D = [circ; vort; circ_tip; king_kong];
+D = [circ; vort_edge1; vort_edge2; vort_perp1; vort_perp2; circ_tip; king_kong];
 
 % D(abs(D) < 1e-4) = zeros(length(D(abs(D) < 1e-10)), 1);
 

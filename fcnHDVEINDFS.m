@@ -1,101 +1,75 @@
-function [a1, a2, a3, b1, b2, b3] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB, matCENTER)
+function [infl_glob] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB, matCENTER)
 % dvetype - 1 for surface, 2 for wake, 3 for semi-infinite wake
 
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 
 len = length(dvenum);
-dbl_eps = 1e-14;
 
-fp = fcnGLOBSTAR(fpg - matCENTER(dvenum,:), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
+pa = fcnGLOBSTAR(fpg - matCENTER(dvenum,:), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
 
-endpoints = zeros(len*6, 3, 2); % Five function calls per DVE
-phi = zeros(len*6,1);
-yaw = zeros(len*6,1);
+p1 = permute(matPLEX(1,:,dvenum),[3 2 1]);
+p2 = permute(matPLEX(2,:,dvenum),[3 2 1]);
+p3 = permute(matPLEX(3,:,dvenum),[3 2 1]);
 
-k = zeros(len*6,1) + 0.1; % Until this is figured out for HDVE, k = 1
+fn = cross(p3 - p1, p2 - p1);
 
-idx = [1:6:len*6]';
-
-%% Finding velocities induced by each vortex sheet
-% Always input left point, right point of vortex sheet LE
-
-% Right to left. Sheet LE is on right, sheet extends to infinity on the right.
-% First edge
-endpoints(idx,:,1:2) = reshape(permute(matPLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx) = 0;
-phi(idx) = atan((endpoints(idx,1,2)-endpoints(idx,1,1))./(endpoints(idx,2,2)-endpoints(idx,2,1)));
-
-% Second edge
-endpoints(idx+1,:,1:2) = reshape(permute(matPLEX(2:3,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+1) = 0;
-phi(idx+1) = atan((endpoints(idx+1,1,2)-endpoints(idx+1,1,1))./(endpoints(idx+1,2,2)-endpoints(idx+1,2,1)));
-
-% Third edge
-endpoints(idx+2,:,1:2) = reshape(permute(matPLEX(1:2:3,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+2) = 0;
-phi(idx+2) = atan((endpoints(idx+2,1,2)-endpoints(idx+2,1,1))./(endpoints(idx+2,2,2)-endpoints(idx+2,2,1)));
-
-% Up to down. Sheet LE is on the bottom, sheet extends to infinity upwards.
-% First edge
-endpoints(idx+3,:,1:2) = reshape(permute(matPLEX(1:2,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+3) = pi/2;
-phi(idx+3) = -atan((endpoints(idx+3,2,2)-endpoints(idx+3,2,1))./(endpoints(idx+3,1,2)-endpoints(idx+3,1,1)));
-
-% Second edge
-endpoints(idx+4,:,1:2) = reshape(permute(matPLEX(2:3,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+4) = pi/2;
-phi(idx+4) = -atan((endpoints(idx+4,2,2)-endpoints(idx+4,2,1))./(endpoints(idx+4,1,2)-endpoints(idx+4,1,1)));
-
-% Third edge
-endpoints(idx+5,:,1:2) = reshape(permute(matPLEX(1:2:3,:,dvenum),[3 2 1]), [],3,2);
-yaw(idx+5) = pi/2;
-phi(idx+5) = -atan((endpoints(idx+5,2,2)-endpoints(idx+5,2,1))./(endpoints(idx+5,1,2)-endpoints(idx+5,1,1))); % Leading edge of Edge 3 is always on eta-axis
-
-%% Running VSIND
-
-fpl = reshape(repmat(fp,1,6,1)',3,[],1)';
-
-[al, bl, cl] = fcnVSIND(endpoints, phi, yaw, fpl, k); 
-
-idx_null = abs(phi) == pi/2;
-
-bl(idx_null,:) = zeros(length(nonzeros(idx_null)),3);
-cl(idx_null,:) = zeros(length(nonzeros(idx_null)),3);
-
-a1l = zeros(len,3);
-a2l = zeros(len,3);
-a3l = zeros(len,3);
-
-%% Summing the velocities of all five sheets
-
-% RIGHT-TO-LEFT (negative because matVSCOMB assumes sheet goes left to right, to positive eta infinity)
-% matVSCOMB(:,:,1) = matVSCOMB(:,:,1)*-1;
-b1l = repmat(matVSCOMB(dvenum,1,1),1,3).*cl(idx,:) + repmat(matVSCOMB(dvenum,2,1),1,3).*cl(idx+1,:) + repmat(matVSCOMB(dvenum,3,1),1,3).*cl(idx+2,:);
-b2l = repmat(matVSCOMB(dvenum,1,1),1,3).*bl(idx,:) + repmat(matVSCOMB(dvenum,2,1),1,3).*bl(idx+1,:) + repmat(matVSCOMB(dvenum,3,1),1,3).*bl(idx+2,:);
-b3l = repmat(matVSCOMB(dvenum,1,1),1,3).*al(idx,:) + repmat(matVSCOMB(dvenum,2,1),1,3).*al(idx+1,:) + repmat(matVSCOMB(dvenum,3,1),1,3).*al(idx+2,:);
-
-% DOWN-TO-UP 
-a1l = repmat(matVSCOMB(dvenum,1,2),1,3).*cl(idx+3,:) + repmat(matVSCOMB(dvenum,2,2),1,3).*cl(idx+4,:) + repmat(matVSCOMB(dvenum,3,2),1,3).*cl(idx+5,:);
-a2l = repmat(matVSCOMB(dvenum,1,2),1,3).*bl(idx+3,:) + repmat(matVSCOMB(dvenum,2,2),1,3).*bl(idx+4,:) + repmat(matVSCOMB(dvenum,3,2),1,3).*bl(idx+5,:);
-a3l = repmat(matVSCOMB(dvenum,1,2),1,3).*al(idx+3,:) + repmat(matVSCOMB(dvenum,2,2),1,3).*al(idx+4,:) + repmat(matVSCOMB(dvenum,3,2),1,3).*al(idx+5,:);
-
-%% Transforming to global coordinates
-
-v1 = [a1l; a2l; a3l; b1l; b2l; b3l];
-
-dvenum = repmat(dvenum, 6, 1);
-
-v2 = fcnSTARGLOB(v1, matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
-
-% v2 = v1;
-
-a1 = v2(1:len,:);
-a2 = v2(len+1:2*len,:);
-a3 = v2(2*len+1:3*len,:);
-b1 = v2(3*len+1:4*len,:);
-b2 = v2(4*len+1:5*len,:);
-b3 = v2(5*len+1:6*len,:);
+N = zeros(len,3,3);
+N(:,:,1) = cross(fn, p2-p1, 2);
+N(:,:,2) = cross(fn, p3-p2, 2);
+N(:,:,3) = cross(fn, p1-p3, 2);
+N = N./sum(sqrt(N.^2),2);
 
 
+%% (b1,b2,b3)
+b1 = (p3 - p1);
+b3 = cross(p3 - p1, p2 - p1);
+b2 = cross(b3, b1);
+
+b1 = b1./sqrt(sum(b1.^2,2));
+b2 = b2./sqrt(sum(b2.^2,2));
+b3 = b3./sqrt(sum(b3.^2,2));
+
+%% Projection of P_A on plane
+pb = pa - dot((pa - p1), b3, 2).*b3;
+
+z = dot((pa - pb), b3, 2);
+
+%% Influence from S1 S2 and S3
+q1 = p1 - pb;
+q2 = p2 - pb;
+q3 = p3 - pb;
+
+c3 = b3;
+
+delta = 0.1;
+h = sqrt(z.^2 + delta.^2);
+
+% S1 (pb,p1,p2)
+[infl_1] = fcnSNINF(q1, q2, c3, z, h);
+
+% S2 (pb,p2,p3)
+[infl_2] = fcnSNINF(q2, q3, c3, z, h);
+
+% S3 (pb,p3,p1)
+[infl_3] = fcnSNINF(q3, q1, c3, z, h);
+
+%% Combining S1, S2, S3 to make S
+
+% PROBLEM IN HERE SOMEWHERE FOR MULTIPLE POINTS
+
+comb = [dot(N(:,:,1), q1, 2) dot(N(:,:,2),q2,2) dot(N(:,:,3),q3,2)];
+comb = comb./abs(comb);
+comb = reshape(comb',1,3,[]);
+
+infl_1 = infl_1.*repmat(permute(comb(:,1,:),[2 1 3]),3,6,1);
+infl_2 = infl_2.*repmat(permute(comb(:,2,:),[2 1 3]),3,6,1);
+infl_3 = infl_3.*repmat(permute(comb(:,3,:),[2 1 3]),3,6,1);
+
+infl = infl_1 + infl_2 + infl_3;
+
+dvenum = reshape(repmat(dvenum,1,6,1)',[],1,1);
+
+infl_glob = fcnSTARGLOB(reshape(permute(infl,[2 3 1]),[],3,1), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
+infl_glob = reshape(infl_glob',3,6,[]);
 
 

@@ -25,36 +25,24 @@ align = matALIGN(idx,:,:);
 
 zer = zeros(length(a1(:,1)),1);
 
-gamma12 = [];
-gamma22 = [];
-gamma13 = [];
-gamma23 = [];
+% gamma12 = [];
+% gamma22 = [];
+% gamma13 = [];
+% gamma23 = [];
+% 
+% gamma12 = [a1(:,1), a2(:,1), a3(:,1), zer, zer, zer];
+% gamma22 = [a1(:,2).*align(:,1,1), a2(:,2).*align(:,1,1), a3(:,2).*align(:,1,1), b1(:,2).*align(:,2,1), b2(:,2).*align(:,2,1), b3(:,2).*align(:,2,1)].*-1;
+% 
+% gamma13 = [zer, zer, zer, b1(:,1), b2(:,1), b3(:,1)];
+% gamma23 = [a1(:,2).*align(:,1,2), a2(:,2).*align(:,1,2), a3(:,2).*align(:,1,2), b1(:,2).*align(:,2,2), b2(:,2).*align(:,2,2), b3(:,2).*align(:,2,2)].*-1;
 
-gamma12 = [a1(:,1), a2(:,1), a3(:,1), zer, zer, zer];
-gamma22 = [a1(:,2).*align(:,1,1), a2(:,2).*align(:,1,1), a3(:,2).*align(:,1,1), b1(:,2).*align(:,2,1), b2(:,2).*align(:,2,1), b3(:,2).*align(:,2,1)].*-1;
 
-gamma13 = [zer, zer, zer, b1(:,1), b2(:,1), b3(:,1)];
-gamma23 = [a1(:,2).*align(:,1,2), a2(:,2).*align(:,1,2), a3(:,2).*align(:,1,2), b1(:,2).*align(:,2,2), b2(:,2).*align(:,2,2), b3(:,2).*align(:,2,2)].*-1;
+% gamma22 = [a1(:,2).*align(:,1,1), a2(:,2).*align(:,1,1), a3(:,2).*align(:,1,1), b1(:,2).*align(:,2,1), b2(:,2).*align(:,2,1), b3(:,2).*align(:,2,1)].*-1;
 
-% gamma12 = [a1(:,1), a2(:,1), a3(:,1), b1(:,1), b2(:,1), b3(:,1)];
-% % gamma22 = [a1(:,2).*align(:,1,1), a2(:,2).*align(:,1,1), a3(:,2).*align(:,1,1), b1(:,2).*align(:,2,1), b2(:,2).*align(:,2,1), b3(:,2).*align(:,2,1)].*-1;
-% gamma22 = [a1(:,2), a2(:,2), a3(:,2), b1(:,2), b2(:,2), b3(:,2)].*-1;
+gamma1 = [a1(:,1), a2(:,1), a3(:,1), b1(:,1), b2(:,1), b3(:,1)];
+gamma2 = [a1(:,2), a2(:,2), a3(:,2), b1(:,2), b2(:,2), b3(:,2)].*-1;
+circ = fcnCREATEDSECT(sparse(nedg, 6*2), nedg, 6, matEATT(idx,1), matEATT(idx,2), gamma1, gamma2);
 
-lines = nedg*2;
-
-% % Row indices of the rows where circulation equations will go
-rows = reshape([repmat([1:lines]',1,6)]',[],1);
-
-% Column indices for each circulation equation, col# = (DVE*5)-4 as each DVE gets a 6 column group
-col1 = reshape([repmat([(matEATT(idx,1).*6)-5],2,6) + repmat([0:5],lines,1)]',[],1);
-col2 = reshape([repmat([(matEATT(idx,2).*6)-5],2,6) + repmat([0:5],lines,1)]',[],1);
-
-circ = zeros(lines, valNELE*6);
-
-gamma1 = [gamma12; gamma13];
-gamma2 = [gamma22; gamma23];
-circ(sub2ind(size(circ),rows,col1)) = reshape(gamma1',[],1);
-circ(sub2ind(size(circ),rows,col2)) = reshape(gamma2',[],1);
   
 end
 

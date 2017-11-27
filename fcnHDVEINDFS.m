@@ -1,5 +1,4 @@
 function [infl_glob] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB, matCENTER)
-% dvetype - 1 for surface, 2 for wake, 3 for semi-infinite wake
 
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 
@@ -18,7 +17,6 @@ N(:,:,1) = cross(fn, p2-p1, 2);
 N(:,:,2) = cross(fn, p3-p2, 2);
 N(:,:,3) = cross(fn, p1-p3, 2);
 N = N./sum(sqrt(N.^2),2);
-
 
 %% (b1,b2,b3)
 b1 = (p3 - p1);
@@ -54,8 +52,6 @@ h = sqrt(z.^2 + delta.^2);
 [infl_3] = fcnSNINF(q3, q1, c3, z, h);
 
 %% Combining S1, S2, S3 to make S
-
-% PROBLEM IN HERE SOMEWHERE FOR MULTIPLE POINTS
 
 comb = [dot(N(:,:,1), q1, 2) dot(N(:,:,2),q2,2) dot(N(:,:,3),q3,2)];
 comb = comb./abs(comb);

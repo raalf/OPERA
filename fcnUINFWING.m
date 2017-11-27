@@ -10,7 +10,7 @@ function [vecUINF] = fcnUINFWING(valALPHA, valBETA)
 
 uinf = 1;
 
-vecUINF = [uinf*cos(valALPHA)*cos(valBETA) uinf*sin(valBETA) uinf*sin(valALPHA)*cos(valBETA)];
+vecUINF = [uinf*cosd(valALPHA)*cosd(valBETA) uinf*sind(valBETA) uinf*sind(valALPHA)*cosd(valBETA)];
 
 end
 

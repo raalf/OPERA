@@ -17,8 +17,6 @@ D = zeros(valNELE*9, valNELE*6);
 
 %% Circulation equations between elements
 
-circ = [];
-
 % Evaluated at the mid-point of each edge which splits two HDVEs
 idx = all(matEATT,2); % All edges that split 2 DVEs
 nedg = length(matEATT(idx,1));
@@ -26,10 +24,6 @@ nedg = length(matEATT(idx,1));
 circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
 
 %% Vorticity along edge between elements
-vort_edge1 = [];
-vort_edge2 = [];
-vort_perp1 = [];
-vort_perp2 = [];
 
 % Typically found at the two vertices that split two HDVEs
 % vnuma is local vertices 1 and 2 (columns) for HDVE 1
@@ -122,8 +116,8 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*
 
 %% Piecing together D-matrix
 
-% D = [circ; vort; circ_tip; king_kong];
-D = [circ; vort_edge1; vort_edge2; vort_perp1; vort_perp2; circ_tip; king_kong];
+D = [circ; vort; circ_tip; king_kong];
+% D = [circ; vort_edge1; vort_edge2; vort_perp1; vort_perp2; circ_tip; king_kong];
 
 % D(abs(D) < 1e-4) = zeros(length(D(abs(D) < 1e-10)), 1);
 

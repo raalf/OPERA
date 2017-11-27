@@ -1,59 +1,59 @@
-function [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG, colour)
-%FCNPLOTCIRC Summary of this function goes here
-%   Detailed explanation goes here
-
-set(0,'CurrentFigure',hFig1);
-
-hold on
-
-count = 1;
-for i = 0:0.1:1
-    for j = 1-i:-0.1:0
-        lambda(count,1) = i;
-        lambda(count,2) = j;
-        lambda(count,3) = 1-i-j;
-        count = count + 1;
-    end
-end
+function [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG, colour, ppa)
 
 for i = 1:valNELE
+    corners = fcnGLOBSTAR(matVLST(matDVE(i,:),:) - matCENTER(i,:), repmat(matROTANG(i,1),3,1), repmat(matROTANG(i,2),3,1), repmat(matROTANG(i,3),3,1));
+    points = polygrid(corners(:,1), corners(:,2), ppa);
     
-    x1 = matPLEX(1,1,i);
-    x2 = matPLEX(2,1,i);
-    x3 = matPLEX(3,1,i);
-    
-    y1 = matPLEX(1,2,i);
-    y2 = matPLEX(2,2,i);
-    y3 = matPLEX(3,2,i);
-    
-    z1 = matPLEX(1,3,i);
-    z2 = matPLEX(2,3,i);
-    z3 = matPLEX(3,3,i);
-    
-    eta = (x1.*lambda(:,1) + x2.*lambda(:,2) + x3.*lambda(:,3));
-    xsi = (y1.*lambda(:,1) + y2.*lambda(:,2) + y3.*lambda(:,3));
-    circ = matCOEFF(i,1).*(eta.^2) + matCOEFF(i,2).*eta + +matCOEFF(i,3) + matCOEFF(i,4).*(xsi.^2) + matCOEFF(i,5).*xsi + matCOEFF(i,6);
-    
-%     vort = 2.*matCOEFF(i,1).*eta + matCOEFF(i,2) + 2.*matCOEFF(i,3).*xsi + matCOEFF(i,4);
-%     vort2 = matCOEFF(i,1).*eta + matCOEFF(i,2);
-%     vort3 = matCOEFF(i,3).*xsi + matCOEFF(i,4);
-    
-    len = length(eta);
-    
-    orig = matCENTER(i,:);
-    
-    % Global
-    etaxsi = orig + fcnSTARGLOB([eta xsi circ], matROTANG(repmat(i,len,1), 1), matROTANG(repmat(i,len,1), 2), matROTANG(repmat(i,len,1), 3));
+    len = size(points,1);
 
-%     scatter3(etaxsi(:,1), etaxsi(:,2), etaxsi(:,3),'x');
+%     % points(:,2) is eta in local, points(:,1) is xsi
+    circ = matCOEFF(i,1).*points(:,1).^2 + matCOEFF(i,2).*points(:,1) + matCOEFF(i,3) + matCOEFF(i,4).*points(:,2).^2 + matCOEFF(i,5).*points(:,2) + matCOEFF(i,6);
+    vort = [2.*matCOEFF(i,1).*points(:,1) + matCOEFF(i,2), 2.*matCOEFF(i,4).*points(:,2) + matCOEFF(i,5), points(:,2).*0];
     
-    DT = delaunay(etaxsi(:,1), etaxsi(:,2));
-%     trimesh(DT, etaxsi(:,1), etaxsi(:,2), etaxsi(:,3),'EdgeColor','k','FaceColor',colour,'FaceAlpha',0.5,'EdgeAlpha',0.5)
-    trimesh(DT, etaxsi(:,1), etaxsi(:,2), etaxsi(:,3),'EdgeColor','k','FaceColor',colour,'FaceAlpha',0.5,'EdgeAlpha',0.5)
-  
-    axis tight
-  
+    len = size(circ,1);
+    tri = delaunay(points(:,1), points(:,2));
+    
+    circ_glob = fcnSTARGLOB([points circ], repmat(matROTANG(i,1),len,1), repmat(matROTANG(i,2),len,1), repmat(matROTANG(i,3),len,1));
+    circ_glob = circ_glob + matCENTER(i,:);
+    
+    vort_glob = fcnSTARGLOB(vort, repmat(matROTANG(i,1),len,1), repmat(matROTANG(i,2),len,1), repmat(matROTANG(i,3),len,1));
+    points_glob = fcnSTARGLOB([points points(:,1).*0], repmat(matROTANG(i,1),len,1), repmat(matROTANG(i,2),len,1), repmat(matROTANG(i,3),len,1));
+    points_glob = points_glob + matCENTER(i,:);
+    
+    hold on
+    trisurf(tri, circ_glob(:,1), circ_glob(:,2), circ_glob(:,3),'edgealpha',0,'facealpha',0.8);
+    quiver3(points_glob(:,1), points_glob(:,2), points_glob(:,3), vort_glob(:,1), vort_glob(:,2), vort_glob(:,3))
+    hold off
+end
+
+
+function [inPoints] = polygrid( xv, yv, N)
+
+%Find the bounding rectangle
+	lower_x = min(xv);
+	higher_x = max(xv);
+
+	lower_y = min(yv);
+	higher_y = max(yv);
+%Create a grid of points within the bounding rectangle
+
+	inc_x = (higher_x - lower_x)/N;
+	inc_y = (higher_y - lower_y)/N;
+
+	
+	interval_x = lower_x:inc_x:higher_x;
+	interval_y = lower_y:inc_y:higher_y;
+	[bigGridX, bigGridY] = meshgrid(interval_x, interval_y);
+	
+%Filter grid to get only points in polygon
+	[in,on] = inpolygon(bigGridX(:), bigGridY(:), xv, yv);
+    in = in | on;
+    
+%Return the co-ordinates of the points that are in the polygon
+	inPoints = [bigGridX(in), bigGridY(in)];
+
 end
 
 end
+
 

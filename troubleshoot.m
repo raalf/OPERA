@@ -48,15 +48,15 @@ vecUINF = fcnUINFWING(valALPHA, 0);
 
 % Solving for wing coefficients
 [matCOEFF] = [...
-    0 0 0 0 1 0;
-    0 0 0 0 1 0; ...
+    -1 -.41 .205 0 0 0;
+    -1 .41 .205 0 0 0; ...
     ];
 
 
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r');
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 view([-30 17])
 
 

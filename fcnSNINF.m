@@ -11,14 +11,14 @@ l2 = dot(qn, c2, 2);
 [H00, H10, H01, H20, H11, H02] = fcnHINTEGRAL_2(a,h,l1,l2);
 
 % First order term
-a2 = [-z.*H00.*c2(:,1) - H01.*c3(:,1), -z.*H00.*c2(:,2) - H01.*c3(:,2), -z.*H00.*c2(:,3) - H01.*c3(:,3)];
+b2 = [-z.*H00.*c2(:,1) - H01.*c3(:,1), -z.*H00.*c2(:,2) - H01.*c3(:,2), -z.*H00.*c2(:,3) - H01.*c3(:,3)];
 % Second order term
-a1 = [-z.*H10.*c2(:,1) - H11.*c3(:,1), -z.*H10.*c2(:,2) - H11.*c3(:,2), -z.*H10.*c2(:,3) - H11.*c3(:,3)];
+b1 = [-z.*H10.*c2(:,1) - H11.*c3(:,1), -z.*H10.*c2(:,2) - H11.*c3(:,2), -z.*H10.*c2(:,3) - H11.*c3(:,3)];
 
 % First order term
-b2 = [z.*H00.*c1(:,1) + H10.*c3(:,1), z.*H00.*c1(:,2) + H10.*c3(:,2), z.*H00.*c1(:,3) + H10.*c3(:,3)];
+a2 = [z.*H00.*c1(:,1) + H10.*c3(:,1), z.*H00.*c1(:,2) + H10.*c3(:,2), z.*H00.*c1(:,3) + H10.*c3(:,3)];
 % Second order term
-b1 = [z.*H01.*c1(:,1) + H11.*c3(:,1), z.*H01.*c1(:,2) + H11.*c3(:,2), z.*H01.*c1(:,3) + H11.*c3(:,3)];
+a1 = [z.*H01.*c1(:,1) + H11.*c3(:,1), z.*H01.*c1(:,2) + H11.*c3(:,2), z.*H01.*c1(:,3) + H11.*c3(:,3)];
 
 % Orientation of the triangle (determines whether to add or subtract influence)
 % First, set all orientations the same, then apply comb to add or subtract

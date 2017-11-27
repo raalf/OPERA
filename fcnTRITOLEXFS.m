@@ -35,10 +35,10 @@ DVECT(:,:,3) = DNORM;
 
 % Element "xsi" is aligned with global X (Change for rotors?)
 global_x = repmat([1 0 0],sp(3),1);
-DVECT(:,:,2) = global_x - repmat((dot(global_x,DVECT(:,:,3),2))./(sqrt(sum(DVECT(:,:,3).^2,2))),1,3).*DVECT(:,:,3);
+DVECT(:,:,1) = global_x - repmat((dot(global_x,DVECT(:,:,3),2))./(sqrt(sum(DVECT(:,:,3).^2,2))),1,3).*DVECT(:,:,3);
 
 % Element "eta" 
-DVECT(:,:,1) = cross(DVECT(:,:,3),DVECT(:,:,2),2);
+DVECT(:,:,2) = cross(DVECT(:,:,3),DVECT(:,:,1),2);
 
 % Roll, pitch, yaw angles for global/local transformations
 ROLL = -atan2(DVECT(:,2,3), DVECT(:,3,3));

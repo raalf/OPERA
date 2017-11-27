@@ -45,8 +45,8 @@ if verbose == 1
     %     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 0.25, 'g')
 %     quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), repmat(vecUINF(1),len,1), repmat(vecUINF(2),len,1), repmat(vecUINF(3),len,1), 0.25, 'r')
     
-    h1 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,1), matDVECT(:,2,1), matDVECT(:,3,1), 0.25, 'b'); % eta
-    h2 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,2), matDVECT(:,2,2), matDVECT(:,3,2), 0.25, 'k'); % xi
+    h1 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,1), matDVECT(:,2,1), matDVECT(:,3,1), 0.25, 'k'); % xsi
+    h2 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,2), matDVECT(:,2,2), matDVECT(:,3,2), 0.25, 'b'); % eta
     h3 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,3), matDVECT(:,2,3), matDVECT(:,3,3), 0.25, 'm'); % zeta (normal)
 %     legend([h1,h2,h3],'Local Eta direction','Local Xsi direction','Normal','Location','NorthWest')
     

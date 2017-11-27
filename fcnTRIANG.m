@@ -184,11 +184,11 @@ idx2 = ~any(vec2,2);
 vec2(idx2,:) = cross(vec1(idx2,:),matDVECT(matEATT(idx2,2),:,3)); 
 
 % Finding local eta, xi of projections on adjacent DVE
-matALIGN(idx,1,1) = dot(vec1,matDVECT(matEATT(idx,2),:,1),2);
-matALIGN(idx,2,1) = dot(vec1,matDVECT(matEATT(idx,2),:,2),2);
+matALIGN(idx,1,1) = dot(vec2,matDVECT(matEATT(idx,2),:,1),2);
+matALIGN(idx,2,1) = dot(vec2,matDVECT(matEATT(idx,2),:,2),2);
 
-matALIGN(idx,1,2) = dot(vec2,matDVECT(matEATT(idx,2),:,1),2);
-matALIGN(idx,2,2) = dot(vec2,matDVECT(matEATT(idx,2),:,2),2);
+matALIGN(idx,1,2) = dot(vec1,matDVECT(matEATT(idx,2),:,1),2);
+matALIGN(idx,2,2) = dot(vec1,matDVECT(matEATT(idx,2),:,2),2);
 
 %% Vertex attachements and normal averages
 

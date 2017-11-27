@@ -13,10 +13,10 @@ lmb1 = reshape(lambda(matELOC(idx,:),1),nedg,2);
 lmb2 = reshape(lambda(matELOC(idx,:),2),nedg,2);
 lmb3 = reshape(lambda(matELOC(idx,:),3),nedg,2);
 
-a2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
-a1 = a2.^2;
-b2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
+b2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
 b1 = b2.^2;
+a2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
+a1 = a2.^2;
 a3 = ones(nedg,2);
 b3 = ones(nedg,2);
 

@@ -14,16 +14,16 @@ lmb1 = reshape(lambda([vnuma vnumb],1),nedg,2);
 lmb2 = reshape(lambda([vnuma vnumb],2),nedg,2);
 lmb3 = reshape(lambda([vnuma vnumb],3),nedg,2);
 
-a2 = ones(nedg,2);
-a1 = 2.*(lmb1.*x1+lmb2.*x2+lmb3.*x3);
 b2 = ones(nedg,2);
-b1 = 2.*(lmb1.*y1+lmb2.*y2+lmb3.*y3);
+b1 = 2.*(lmb1.*x1+lmb2.*x2+lmb3.*x3);
+a2 = ones(nedg,2);
+a1 = 2.*(lmb1.*y1+lmb2.*y2+lmb3.*y3);
 a3 = zeros(nedg,2);
 b3 = zeros(nedg,2);
 
 % y component of evec with a, because a changes with y, and vice versa? no? No, it changes with eta
-dgamma1 = [a1(:,1).*e1vec(:,1), a2(:,1).*e1vec(:,1), a3(:,1).*e1vec(:,1), b1(:,1).*e1vec(:,2), b2(:,1).*e1vec(:,2), b3(:,1).*e1vec(:,2)];
-dgamma2 = [a1(:,2).*e2vec(:,1), a2(:,2).*e2vec(:,1), a3(:,2).*e2vec(:,1), b1(:,2).*e2vec(:,2), b2(:,2).*e2vec(:,2), b3(:,2).*e2vec(:,2)].*-1;
+dgamma1 = [a1(:,1).*e1vec(:,2), a2(:,1).*e1vec(:,2), a3(:,1).*e1vec(:,2), b1(:,1).*e1vec(:,1), b2(:,1).*e1vec(:,1), b3(:,1).*e1vec(:,1)];
+dgamma2 = [a1(:,2).*e2vec(:,2), a2(:,2).*e2vec(:,2), a3(:,2).*e2vec(:,2), b1(:,2).*e2vec(:,1), b2(:,2).*e2vec(:,1), b3(:,2).*e2vec(:,1)].*-1;
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,6)]',[],1);

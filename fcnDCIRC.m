@@ -41,7 +41,7 @@ zer = zeros(length(a1(:,1)),1);
 
 gamma1 = [a1(:,1), a2(:,1), a3(:,1), b1(:,1), b2(:,1), b3(:,1)];
 gamma2 = [a1(:,2), a2(:,2), a3(:,2), b1(:,2), b2(:,2), b3(:,2)].*-1;
-circ = fcnCREATEDSECT(sparse(nedg, 6*2), nedg, 6, matEATT(idx,1), matEATT(idx,2), gamma1, gamma2);
+circ = fcnCREATEDSECT(sparse(nedg, valNELE*6), nedg, 6, matEATT(idx,1), matEATT(idx,2), gamma1, gamma2);
 
   
 end

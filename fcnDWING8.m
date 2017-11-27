@@ -1,4 +1,4 @@
-function [D] = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM, matVSCOMB)
+function [D] = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM, matVSCOMB)
 
 lambda_mid = [ ...
     0.5 0.5 0; ... % Edge 1 mid-point
@@ -21,10 +21,6 @@ D = zeros(valNELE*9, valNELE*6);
 idx = all(matEATT,2); % All edges that split 2 DVEs
 nedg = length(matEATT(idx,1));
 
-circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
-
-%% Vorticity along edge between elements
-
 % Typically found at the two vertices that split two HDVEs
 % vnuma is local vertices 1 and 2 (columns) for HDVE 1
 % vnumb is local vertices 1 and 2 for HDVE 2
@@ -44,6 +40,12 @@ vnumb(:,1) = tb(rb);
 [~,rb,] = sort(ta);
 vnumb(:,2) = tb(rb);
 
+%% Circulation
+circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
+circ1 = fcnDCIRC2(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
+circ2 = fcnDCIRC2(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
+
+%% Vorticity along edge between elements
 % Unit vector in local ref frame (a for HDVE1, b for HDVE2) from local vertex to local vertex on the edge that forms the border between the two
 
 temp = reshape(permute(matPLEX,[1 3 2]),[],3,1);
@@ -94,6 +96,12 @@ end
 fpg = matCENTER;
 normals = matDVECT(:,:,3);
 
+% fpg = matVLST;
+% normals = matVNORM;
+
+% fpg = [matCENTER; (matVLST(matELST(vecLE,1),:) + matVLST(matELST(vecLE,2),:))./2];
+% normals = [matDVECT(:,:,3); matDVECT(vecLEDVE,:,3)];
+
 % List of DVEs we are influencing from (one for each of the above fieldpoints)
 len = length(fpg(:,1));
 dvenum = reshape(repmat(1:valNELE,len,1),[],1);
@@ -116,7 +124,7 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*
 
 %% Piecing together D-matrix
 
-D = [circ; vort; circ_tip; king_kong];
+D = [circ; circ1; circ2; vort; circ_tip; king_kong];
 % D = [circ; vort_edge1; vort_edge2; vort_perp1; vort_perp2; circ_tip; king_kong];
 
 % D(abs(D) < 1e-4) = zeros(length(D(abs(D) < 1e-10)), 1);

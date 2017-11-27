@@ -56,6 +56,7 @@ h = sqrt(z.^2 + delta.^2);
 comb = [dot(N(:,:,1), q1, 2) dot(N(:,:,2),q2,2) dot(N(:,:,3),q3,2)];
 comb = comb./abs(comb);
 comb = reshape(comb',1,3,[]);
+comb(isnan(comb)) = 1;
 
 infl_1 = infl_1.*repmat(permute(comb(:,1,:),[2 1 3]),3,6,1);
 infl_2 = infl_2.*repmat(permute(comb(:,2,:),[2 1 3]),3,6,1);

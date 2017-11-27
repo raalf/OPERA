@@ -23,6 +23,7 @@ b1 = [z.*H01.*c1(:,1) + H11.*c3(:,1), z.*H01.*c1(:,2) + H11.*c3(:,2), z.*H01.*c1
 % Orientation of the triangle (determines whether to add or subtract influence)
 % First, set all orientations the same, then apply comb to add or subtract
 ori = dot(c3, cross(qm, qn), 2)./abs(dot(c3, cross(qm, qn), 2));
+ori(isnan(ori)) = 1;
 
 % Order: [Second Order | First Order | 0 | Second Order | First Order | 0]
 infl = [reshape(a1',3,1,[]) reshape(a2',3,1,[]) reshape(a1'.*0,3,1,[]) reshape(b1',3,1,[]) reshape(b2',3,1,[]) reshape(b1'.*0,3,1,[])];

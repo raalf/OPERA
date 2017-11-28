@@ -1,87 +1,98 @@
-clc
 clear
+% clc
 
-dvenum = 1;
-% fpg = [1 2 1];
-% fpg =  [-0.207106781186548   0.207106781186548                   0];
+%% Preamble
+%
+% strFILE = 'inputs/simple_wing.dat';
+% strFILE = 'inputs/standard_cirrus.dat';
+strFILE = 'inputs/2dve.dat';
+% strFILE = 'inputs/4dve.dat';
+% strFILE = 'inputs/Stock_Test1.dat'
+% strFILE = 'inputs/nonplanar.dat';
 
-% matVLST = [...
-%             0.5 -0.5 0; ...
-%             0.5 0.5 0; ...
-%             -0.5 -0.5 0; ...
-%             -0.5 0.5 0 ...
-%             ];
+[matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
-matVLST = [...
-            0 -0.5 0; ...
-            0 0 0; ...
-            1 1 0; ...
-            1 0 0 ...
-            ];
-        
-granularity = 0.25;
+[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
+    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(strATYPE, matPOINTS);
 
-x = -1:granularity:2;
-y = -1:granularity:2;
-z = -1:granularity:1;
+valTIMESTEP = 0;
+flagRELAX = 0;
 
+valMAXTIME = 0;
+valALPHA = 20
+
+vecLE = [];
+vecTE = [];
+try
+[vecTE, vecLE] = fcnTELE(matTEPOINTS, matLEPOINTS, matVLST, matELST);
+end
+%% D-Matrix Creation
+vecTEDVE = [];
+vecSPANDIR = [];
+
+vecLEDVE = nonzeros(sort(matEATT(vecLE,:),2,'descend'));
+if ~isempty(vecTE)
+    vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend')); % A vector of trailing edge HDVEs, which corresponds to vecTE edges
+    vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,1), matROTANG(vecTEDVE,2), matROTANG(vecTEDVE,3)); % Spanwise direction for each HDVE (may change with rotor stuff)
+end
+
+matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM, matVSCOMB);
+
+valDLEN = length(matD);
+
+
+vecUINF = fcnUINFWING(valALPHA, 0);
+matUINF = repmat(vecUINF, valNELE, 1);
+
+% Building wing resultant
+vecR = fcnRWING(strATYPE, valDLEN, 0, matELST, matCENTER, matDVECT, matUINF, vecLE, vecLEDVE, 0, [], [], [], [], [], [], [], matVNORM, matVLST);
+
+% Solving for wing coefficients
+[matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
+
+%%
+
+% % Solving for wing coefficients
+% [matCOEFF] = [...
+%     0 0 0 -1 -1 0;
+%     0 0 0 -1 -1 0; ...
+%     ];
+
+% matCOEFF = [matCOEFF(:,4:6) matCOEFF(:,1:3)]
+
+% matCOEFF = [0 1 0 0 0 0; 0 1 0 0 0 0];
+% matCOEFF = repmat(matCOEFF(1,:),2,1);
+
+
+%% Plot
+
+[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
+view([-30 17])
+
+granularity = .2;
+x = -0.6:granularity:1.2;
+y = -0.2:granularity:1.2;
+% y = ones(size(x)) - 0.5;
+z = -0.2:granularity:0.2;
 [X,Y,Z] = meshgrid(x,y,z);
+fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-fpg = [reshape(X, [], 1, 1) reshape(Y, [], 1, 1) reshape(Z, [], 1, 1)];
-fpg = unique(fpg,'rows');
+% fpg = [-0.5 0.5 0.15];
 
-% fpg = [4 2 1; 2 10 6];
-% fpg = [0.25 0.25 0]
-% fpg = [0.6 0.2 0]
-% fpg = [-0.25 -0.25 0]
-% fpg = [1.2 -0.75 1];
+[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matVSCOMB, matCENTER);
 
-len = length(fpg(:,1));
-
-dvenum = ones(len,1);
-
-test = 1;
-
-matCOEFF = [0 1 0 1 0];
-
-matDVE = [3 4 2];
-
-matDVECT(:,:,1) = [-0.707106781186547  -0.707106781186547                   0];
-matDVECT(:,:,2) = [0.707106781186547  -0.707106781186547                   0];
-matDVECT(:,:,3) = [0 0 1];
-
-matPLEX = [0 0 0; ...
-            0.707106781186548   0.707106781186547                   0; ...
-            1.414213562373095                   0                   0];
-        
-% ROLL = acos(dot(matDVECT(:,:,1),repmat([1 0 0],1,1,1),2));
-% PITCH = acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
-% YAW = acos(dot(matDVECT(:,:,3),repmat([0 0 1],1,1,1),2)); 
-
-ROLL = -atan2(matDVECT(:,2,3), matDVECT(:,3,3));
-PITCH = asin(matDVECT(:,1,3));
-% YAW = -acos(dot(matDVECT(:,:,2),repmat([0 1 0],1,1,1),2));
-YAW = atan2(matDVECT(:,2,1), matDVECT(:,1,1));
-
-matROTANG(:,1) = ROLL;
-matROTANG(:,2) = PITCH;
-matROTANG(:,3) = YAW;
-
-[q_ind] = fcnSDVEVEL(fpg, 1, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG);
-
-hFig5 = figure(5);
-clf(5);
-
-patch(matVLST(matDVE(:),1), matVLST(matDVE(:),2), matVLST(matDVE(:),3),'r','FaceAlpha',0.5);
+q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
+q_ind = s_ind;
 hold on
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3));
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 hold off
 
-grid on
-axis tight
-box on
-axis equal
+view([0 90])
 
-xlabel('X-Dir','FontSize',15);
-ylabel('Y-Dir','FontSize',15);
-zlabel('Z-Dir','FontSize',15);
+
+
+
+
+
+

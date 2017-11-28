@@ -12,7 +12,7 @@ strFILE = 'inputs/Stock_Test1.dat';
 
 flagRELAX = 0;
 
-valMAXTIME = 5;
+valMAXTIME = 0;
 valDELTIME = 0.05;
 valALPHA = 0;
 
@@ -52,12 +52,12 @@ matUINF_VLST = [matVLST(:,1).*0, cos(2.*pi.*matVLST(:,2)).*cos(2.*pi.*matVLST(:,
 matUINF = [matCENTER(:,1).*0, cos(2.*pi.*matCENTER(:,2)).*cos(2.*pi.*matCENTER(:,3)), sin(2.*pi.*matCENTER(:,2)).*sin(2.*pi.*matCENTER(:,3))];
 
 % Building wing resultant
-% vecR = fcnRWING(strATYPE, valDLEN, 0, matELST, matCENTER, matDVECT, matUINF, vecLE, vecLEDVE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, [], matVNORM, matVLST);
+vecR = fcnRWING(strATYPE, valDLEN, 0, matELST, matCENTER, matDVECT, matUINF, vecLE, vecLEDVE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, [], matVNORM, matVLST);
 
 % Solving for wing coefficients
-% [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
+[matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
 
-matCOEFF = repmat([0 1 0 0 0 0], valNELE, 1);
+% matCOEFF = repmat([0 1 0 0 0 0], valNELE, 1);
 
 % vidx = matVLST(:,2) > 0 & matVLST(:,2) < 1;
 vidx = true(size(matVLST,1),1);
@@ -81,9 +81,7 @@ matGEOM(:,:,3) = matVLST(matDVE(:,3,1),:);
 vecR = fcnRWING(strATYPE, valDLEN, 0, matELST, matCENTER, matDVECT, matUINF, vecLE, vecLEDVE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, [], matVNORM, matVLST);
 [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
 
-
 q_ind_VLST = fcnSDVEVEL(matVLST, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matVSCOMB, matCENTER);
-
 
 end
 
@@ -94,6 +92,10 @@ end
 
 hold on
 % quiver3(matVLST(:,1), matVLST(:,2), matVLST(:,3), matUINF_VLST(:,1), matUINF_VLST(:,2), matUINF_VLST(:,3))
+
+    h1 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,1), matDVECT(:,2,1), matDVECT(:,3,1), 0.25, 'k'); % xsi
+    h2 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,2), matDVECT(:,2,2), matDVECT(:,3,2), 0.25, 'b'); % eta
+    h3 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,3), matDVECT(:,2,3), matDVECT(:,3,3), 0.25, 'm'); % zeta (normal)
 
 hold off
 

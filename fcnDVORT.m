@@ -25,16 +25,14 @@ align = matALIGN(idx,:,:);
 
 zer = zeros(length(a1(:,1)),1);
 
-dgamma12 = [];
-dgamma22 = [];
-dgamma13 = [];
-dgamma23 = [];
-
 dgamma12 = [a1(:,1), a2(:,1), a3(:,1), zer, zer, zer];
-dgamma22 = [a1(:,2).*align(:,2,1), a2(:,2).*align(:,2,1), a3(:,2).*align(:,2,1), b1(:,2).*align(:,1,1), b2(:,2).*align(:,1,1), b3(:,2).*align(:,1,1)].*-1;
+% dgamma22 = [a1(:,2).*align(:,2,1), a2(:,2).*align(:,2,1), a3(:,2).*align(:,2,1), b1(:,2).*align(:,1,1), b2(:,2).*align(:,1,1), b3(:,2).*align(:,1,1)].*-1;
+dgamma22 = [a1(:,2), a2(:,2), a3(:,2), zer, zer, zer].*-1;
 
 dgamma13 = [zer, zer, zer, b1(:,1), b2(:,1), b3(:,1)];
-dgamma23 = [a1(:,2).*align(:,2,2), a2(:,2).*align(:,2,2), a3(:,2).*align(:,2,2), b1(:,2).*align(:,1,2), b2(:,2).*align(:,1,2), b3(:,2).*align(:,1,2)].*-1;
+% dgamma23 = [a1(:,2).*align(:,2,2), a2(:,2).*align(:,2,2), a3(:,2).*align(:,2,2), b1(:,2).*align(:,1,2), b2(:,2).*align(:,1,2), b3(:,2).*align(:,1,2)].*-1;
+dgamma23 = [zer, zer, zer, b1(:,2), b2(:,2), b3(:,2)].*-1;
+
 
 lines = nedg*2;
 

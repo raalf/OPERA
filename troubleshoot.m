@@ -1,17 +1,6 @@
 clear
 clc
 
-%% Header
-disp('====================================================================');
-disp('                    /$$$$$$  /$$$$$$$  /$$$$$$$$ /$$$$$$$   /$$$$$$ ');
-disp('+---------------+  /$$__  $$| $$__  $$| $$_____/| $$__  $$ /$$__  $$');
-disp('| RYERSON       | | $$  \ $$| $$  \ $$| $$      | $$  \ $$| $$  \ $$');
-disp('| APPLIED       | | $$  | $$| $$$$$$$/| $$$$$   | $$$$$$$/| $$$$$$$$');
-disp('| AERODYNAMICS  | | $$  | $$| $$____/ | $$__/   | $$__  $$| $$__  $$');
-disp('| LABORATORY OF | | $$  | $$| $$      | $$      | $$  \ $$| $$  | $$');
-disp('| FLIGHT        | |  $$$$$$/| $$      | $$$$$$$$| $$  | $$| $$  | $$');
-disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
-disp('====================================================================');
 %% Preamble
 %
 % strFILE = 'inputs/simple_wing.dat';
@@ -21,6 +10,11 @@ strFILE = 'inputs/2dve.dat';
 % strFILE = 'inputs/nonplanar.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
+
+translate = [0 3 0];
+matPOINTS = matPOINTS + translate;
+matTEPOINTS = matTEPOINTS + translate;
+matLEPOINTS = matLEPOINTS + translate;
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(strATYPE, matPOINTS);
@@ -48,8 +42,8 @@ vecUINF = fcnUINFWING(valALPHA, 0);
 
 % Solving for wing coefficients
 [matCOEFF] = [...
-    0 0 0 1 -2 2;
-    0 0 0 1 -1 1.4; ...
+    0 0 0 -1 -1 0;
+    0 0 0 -1 -1 0; ...
     ];
 
 % matCOEFF = [matCOEFF(:,4:6) matCOEFF(:,1:3)]

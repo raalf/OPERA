@@ -42,7 +42,7 @@ q3 = p3 - pb;
 
 c3 = b3;
 
-delta = 1;
+delta = 0.2;
 h = sqrt(z.^2 + delta.^2);
 
 b(:,:,1) = b1;

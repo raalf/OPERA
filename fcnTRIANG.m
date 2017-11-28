@@ -30,7 +30,7 @@ valNELE = size(POINTS(:,:,1),1);
 
 % Getting unique vertices, and switching from (x,y,z) to indices with reference to master list VLST
 % [matVLST,~,j] = unique([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)],'rows','stable');
-tol = 1e-6;
+tol = 1e-14;
 [matVLST,~,j] = uniquetol([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)], tol, 'ByRows',true);
 matDVE(:,:,1) = reshape(j,[],3);
 

@@ -1,4 +1,4 @@
-function [hFig1] = fcnPLOTBODY(verbose, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, vecUINF, matROTANG, fig_size, rendertype)
+function [hFig1] = fcnPLOTBODY(verbose, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, fig_size, rendertype)
 % This function plots all elements, and can label vertices, faces and edges.
 
 hFig1 = figure(1);

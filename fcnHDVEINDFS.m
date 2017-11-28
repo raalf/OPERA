@@ -42,7 +42,7 @@ q3 = p3 - pb;
 
 c3 = b3;
 
-delta = 0.000001;
+delta = 1;
 h = sqrt(z.^2 + delta.^2);
 
 b(:,:,1) = b1;
@@ -75,5 +75,7 @@ dvenum = reshape(repmat(dvenum,1,6,1)',[],1,1);
 
 infl_glob = fcnSTARGLOB(reshape(permute(infl,[2 3 1]),[],3,1), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
 infl_glob = reshape(infl_glob',3,6,[]);
+
+infl_glob(isnan(infl_glob)) = 0;
 
 end

@@ -90,6 +90,8 @@ matTEPOINTS = [];
 matLEPOINTS = [];
 
 for i = 1:valPANELS
+    temp_te = [];
+    temp_le = [];
     
     rchord = matGEOM(1,4,i); repsilon = deg2rad(matGEOM(1,5,i));
     tchord = matGEOM(2,4,i); tepsilon = deg2rad(matGEOM(2,5,i));
@@ -153,6 +155,7 @@ for i = 1:valPANELS
     
     matTEPOINTS = [matTEPOINTS; temp_te];
     matLEPOINTS = [matLEPOINTS; temp_le];
+
     
     clear LE_Left LE_Mid LE_Right TE_Right TE_Left ...
         imLEL imLER imTER imTEL ...

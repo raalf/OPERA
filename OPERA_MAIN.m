@@ -132,30 +132,6 @@ end
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 % hold off
 
-%% End
-
-if valTIMESTEP > 0
-    hFig3 = figure(3);
-    clf(3);
-    dve = 1;
-    hold on
-    plot(1:valTIMESTEP, reshape(ABC(dve,1,:),1,[],1),'--xb')
-    plot(1:valTIMESTEP, reshape(ABC(dve,2,:),1,[],1),'-.^b')
-    
-    plot(1:valTIMESTEP, reshape(ABC(dve,3,:),1,[],1),'--*r')
-    plot(1:valTIMESTEP, reshape(ABC(dve,4,:),1,[],1),'-.or')
-    
-    plot(1:valTIMESTEP, reshape(ABC(dve,5,:),1,[],1),'->m')
-    hold off
-    
-    box on
-    grid on
-    axis tight
-    
-    legend('A_1','A_2','B_1','B_2','C_3')
-end
-
-
 
 
 

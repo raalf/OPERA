@@ -12,25 +12,17 @@ p1 = permute(matPLEX(1,:,dvenum),[3 2 1]);
 p2 = permute(matPLEX(2,:,dvenum),[3 2 1]);
 p3 = permute(matPLEX(3,:,dvenum),[3 2 1]);
 
-fn = cross(p3 - p1, p2 - p1);
-
-N = zeros(len,3,3);
-N(:,:,1) = cross(fn, p2-p1, 2);
-N(:,:,2) = cross(fn, p3-p2, 2);
-N(:,:,3) = cross(fn, p1-p3, 2);
-N = N./sum(sqrt(N.^2),2);
-
 %% (b1,b2,b3)
-% b1 = (p3 - p1);
-% b3 = cross(p3 - p1, p2 - p1);
-% b2 = cross(b3, b1);
-% b1 = b1./sqrt(sum(b1.^2,2));
-% b2 = b2./sqrt(sum(b2.^2,2));
-% b3 = b3./sqrt(sum(b3.^2,2));
-
 b1 = matDVECT(dvenum,:,1);
 b2 = matDVECT(dvenum,:,2);
 b3 = matDVECT(dvenum,:,3);
+
+%% Edge normals
+N = zeros(len,3,3);
+N(:,:,1) = cross(b3, p2-p1, 2);
+N(:,:,2) = cross(b3, p3-p2, 2);
+N(:,:,3) = cross(b3, p1-p3, 2);
+N = N./sum(sqrt(N.^2),2);
 
 %% Projection of P_A on plane
 pb = pa - dot((pa - p1), b3, 2).*b3;
@@ -51,73 +43,7 @@ b(:,:,1) = b1;
 b(:,:,2) = b2;
 b(:,:,3) = b3;
 
-if flagPLOT == 1 && len == 1
-    % GLOBAL ----------------------------------------------------------------------------------------------------------------------------
-    hFig1 = figure(28);
-    clf(28);
-    
-    ax(1) = subplot(1,2,1);
-    patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceColor','r','LineWidth',2);
-    alpha(0);
-    hold on
-    
-    for ii = 1:length(matVLST(:,1))
-        str = sprintf('P%d',ii);
-        text(matVLST(ii,1),matVLST(ii,2),matVLST(ii,3),str,'Color','r','FontSize',20);
-    end
-    
-    h1 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,1), matDVECT(:,2,1), matDVECT(:,3,1), 0.25, 'k'); % xsi
-    h2 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,2), matDVECT(:,2,2), matDVECT(:,3,2), 0.25, 'b'); % eta
-    h3 = quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), matDVECT(:,1,3), matDVECT(:,2,3), matDVECT(:,3,3), 0.25, 'm'); % zeta (normal)
-    
-    scatter3(fpg(:,1), fpg(:,2), fpg(:,3), 100, 'ok', 'filled')
-    text(fpg(:,1), fpg(:,2), fpg(:,3), 'PA', 'FontSize',20,'Color','m')
-    
-    hold off
-    axis equal
-    box on
-    grid minor
-    
-    title('Global Coordinate System','FontSize',15);
-    xlabel('Global X-Dir', 'FontSize', 15);
-    ylabel('Global Y-Dir', 'FontSize', 15);
-    zlabel('Global Z-Dir', 'FontSize', 15);
-    
-    % LOCAL ------------------------------------------------------------------------------------------------------------------------------
-    ax(2) = subplot(1,2,2);
-    patch(matPLEX(:,1), matPLEX(:,2), matPLEX(:,3),'LineWidth',2,'EdgeColor','k','FaceAlpha',0);
-    
-    hold on
-    scatter3(pa(:,1), pa(:,2), pa(:,3), 100, 'ok', 'filled')
-    text(pa(:,1), pa(:,2), pa(:,3), 'PA', 'FontSize',20,'Color','m')
-    
-    scatter3(pb(:,1), pb(:,2), pb(:,3), 100, 'og', 'filled')
-    text(pb(:,1), pb(:,2), pb(:,3), 'PB', 'FontSize',20,'Color','m')
-
-    % (b1,b2,b3)
-    quiver3(pb(:,1),pb(:,2),pb(:,3), b1(1,1), b1(1,2), b1(1,3), 0.2, 'b', 'LineWidth',2)
-    quiver3(pb(:,1),pb(:,2),pb(:,3), b2(1,1), b2(1,2), b2(1,3), 0.2, 'b', 'LineWidth',2)
-    quiver3(pb(:,1),pb(:,2),pb(:,3), b3(1,1), b3(1,2), b3(1,3), 0.2, 'b', 'LineWidth',2)
-
-    for i = 1:3
-        text(matPLEX(i,1), matPLEX(i,2), matPLEX(i,3), ['P' num2str(i)], 'FontSize',20,'Color','r')
-    end
-    
-    hold off
-    axis equal
-    box on
-    grid minor
-    
-    title('Local Coordinate System','FontSize',15);
-    xlabel('Local Xsi-Dir', 'FontSize', 15);
-    ylabel('Local Eta-Dir', 'FontSize', 15);
-    zlabel('Local Zeta-Dir', 'FontSize', 15);
-    
-    view([0 90])
-        
-%     linkprop(ax,{'xlim','ylim','zlim','CameraUpVector', 'CameraPosition', 'CameraTarget'});   
-    
-end
+if flagPLOT == 1 && len == 1; temp_plt_s; end
 
 % S1 (pb,p1,p2)
 [infl_1] = fcnSNINF(q1, q2, c3, b, z, h);

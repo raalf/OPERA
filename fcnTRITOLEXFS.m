@@ -28,6 +28,10 @@ catch
 end
 
 %% Getting Roll/Pitch/Yaw
+if size(sp,2) == 2
+    sp = [sp 1];
+end
+
 DVECT = zeros(sp(3),3,3);
 
 % Normal

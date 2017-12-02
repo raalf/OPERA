@@ -4,10 +4,6 @@ c2 = (qn - qm);
 c2 = c2./sqrt(sum(c2.^2,2));
 c1 = cross(c2,c3);
 
-% % WHAAAAAAAAAAAAAAAAAAAAAAAAT
-% c1 = b(:,:,1);
-% c2 = b(:,:,2);
-
 a = dot(qm, c1, 2);
 l1 = dot(qm, c2, 2);
 l2 = dot(qn, c2, 2);

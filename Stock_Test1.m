@@ -12,7 +12,7 @@ strFILE = 'inputs/Stock_Test1.dat';
 
 flagRELAX = 0;
 
-valMAXTIME = 0;
+valMAXTIME = 5;
 valDELTIME = 0.05;
 valALPHA = 0;
 
@@ -23,7 +23,7 @@ vecSPANDIR = [];
 vecTE = [];
 vecLE = [];
 
-matD = fcnDWING8(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM, matVSCOMB);
+matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM, matVSCOMB);
 
 valDLEN = length(matD);
 

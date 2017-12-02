@@ -23,7 +23,7 @@ valALPHA = 20
 vecLE = [];
 vecTE = [];
 try
-[vecTE, vecLE] = fcnTELE(matTEPOINTS, matLEPOINTS, matVLST, matELST);
+    [vecTE, vecLE] = fcnTELE(matTEPOINTS, matLEPOINTS, matVLST, matELST);
 end
 %% D-Matrix Creation
 vecTEDVE = [];
@@ -69,23 +69,29 @@ vecR = fcnRWING(strATYPE, valDLEN, 0, matELST, matCENTER, matDVECT, matUINF, vec
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 view([-30 17])
 
-% granularity = .2;
-% x = -0.6:granularity:1.2;
-% y = -0.2:granularity:1.2;
-% % y = ones(size(x)) - 0.5;
-% z = -0.2:granularity:0.2;
-% [X,Y,Z] = meshgrid(x,y,z);
-% fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-% 
-% % fpg = [-0.5 0.5 0.15];
-% 
-% [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matVSCOMB, matCENTER);
-% 
-% q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
+granularity = .2;
+x = -0.6:granularity:1.2;
+y = -0.2:granularity:1.2;
+% y = ones(size(x)) - 0.5;
+z = -0.2:granularity:0.2;
+[X,Y,Z] = meshgrid(x,y,z);
+fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
+
+% fpg = [-0.5 0.5 0.15];
+
+[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matVSCOMB, matCENTER);
+
+q_ind = s_ind + repmat(vecUINF,size(s_ind,1),1);
 % q_ind = s_ind;
-% hold on
-% % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
-% hold off
+hold on
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
+hold off
+
+hold on
+q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, [], matCENTER);
+q_ind = q_inds + matUINF;
+quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 0.25, 'g')
+hold off
 
 view([0 90])
 

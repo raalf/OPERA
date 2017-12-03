@@ -1,4 +1,4 @@
-function [H00, H10, H01, H20, H11, H02] = fcnHINTEGRAL_2(a,h,l1,l2)
+function [H00, H10, H01, H20, H11, H02] = fcnHINTEGRAL(a,h,l1,l2)
     
 H00 = ((1./h).*atan2((a.*l2), (a.^2 + h.^2 + h.*sqrt(l2.^2 + a.^2 + h.^2)))) - ...
       ((1./h).*atan2((a.*l1), (a.^2 + h.^2 + h.*sqrt(l1.^2 + a.^2 + h.^2))));

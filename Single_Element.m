@@ -35,12 +35,13 @@ z = -0.2:granularity:0.2;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-fpg = [3 -3 3];
+% fpg = [0.5 0.5 0.5];
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matVSCOMB, matCENTER);
 
 % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-q_ind = s_ind
+q_ind = s_ind;
+disp(q_ind(102,:))
 figure(1);
 hold on
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))

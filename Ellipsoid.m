@@ -106,8 +106,8 @@ Zq = reshape(q_ind(:,3), size(Z));
 
 [Xs,Ys,Zs] = meshgrid(-3,y,z);
 hold on
-% streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
-quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
+streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
+% quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
 hold off
 
 

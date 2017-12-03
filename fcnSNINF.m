@@ -8,7 +8,7 @@ a = dot(qm, c1, 2);
 l1 = dot(qm, c2, 2);
 l2 = dot(qn, c2, 2);
 
-[H00, H10, H01, H20, H11, H02] = fcnHINTEGRAL_2(a,h,l1,l2);
+[H00, H10, H01, H20, H11, H02] = fcnHINTEGRAL(a,h,l1,l2);
 
 a1 = [-z.*H01.*c2(:,1), -z.*H01.*c2(:,2), -H02.*c3(:,3)];
 a2 = [-z.*H00.*c2(:,1), -z.*H00.*c2(:,2), -H01.*c3(:,3)];
@@ -23,7 +23,7 @@ c2 = [z.*H01.*c1(:,1) - z.*H10.*c2(:,1), z.*H01.*c1(:,2) - z.*H10.*c2(:,2), H11.
 ori = dot(c3, cross(qm, qn), 2)./abs(dot(c3, cross(qm, qn), 2));
 ori(isnan(ori)) = 1;
 
-% Order: A1 A2 B1 B2 C2
+% Order: A1 A2 B1 B2 C2 C3
 infl = [reshape(a1',3,1,[]) reshape(a2',3,1,[]) reshape(b1',3,1,[]) reshape(b2',3,1,[]) reshape(c2',3,1,[]) reshape(c2'.*0,3,1,[])];
 infl = infl.*repmat(reshape(ori,1,1,[]),3,6,1);
 

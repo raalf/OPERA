@@ -1,6 +1,6 @@
 function [infl_glob] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB, matCENTER)
 
-flagPLOT = 1;
+flagPLOT = 0;
 
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 
@@ -30,9 +30,9 @@ pb = pa - dot((pa - p1), b3, 2).*b3;
 z = dot((pa - pb), b3, 2);
 
 %% Influence from S1 S2 and S3
-q1 = p1 - pb;
-q2 = p2 - pb;
-q3 = p3 - pb;
+q(:,:,1) = p1 - pb;
+q(:,:,2) = p2 - pb;
+q(:,:,3) = p3 - pb;
 
 c3 = b3;
 
@@ -43,33 +43,34 @@ b(:,:,1) = b1;
 b(:,:,2) = b2;
 b(:,:,3) = b3;
 
-if flagPLOT == 1 && len == 1; temp_plt_s; end
-
-% S1 (pb,p1,p2)
-[infl_1] = fcnSNINF(q1, q2, c3, b, z, h);
-
-% S2 (pb,p2,p3)
-[infl_2] = fcnSNINF(q2, q3, c3, b, z, h);
-
-% S3 (pb,p3,p1)
-[infl_3] = fcnSNINF(q3, q1, c3, b, z, h);
-
-%% Combining S1, S2, S3 to make S
-
-comb = [dot(N(:,:,1), q1, 2) dot(N(:,:,2),q2,2) dot(N(:,:,3),q3,2)];
+% Whether or not to add or subtract the triangle
+comb = [dot(N(:,:,1),q(:,:,1),2), dot(N(:,:,2),q(:,:,2),2), dot(N(:,:,3),q(:,:,3),2)];
 comb = comb./abs(comb);
 comb = reshape(comb',1,3,[]);
 comb(isnan(comb)) = 0;
 
-infl_1 = infl_1.*repmat(permute(comb(:,1,:),[2 1 3]),3,6,1);
-infl_2 = infl_2.*repmat(permute(comb(:,2,:),[2 1 3]),3,6,1);
-infl_3 = infl_3.*repmat(permute(comb(:,3,:),[2 1 3]),3,6,1);
+if flagPLOT == 1 && len == 1; temp_plt_s; end
 
-infl = infl_1 + infl_2 + infl_3;
+infl = nan(3,6,len,size(q,3));
+for i = 1:size(q,3)
+    m = i;
+    if i == size(q,3)
+        n = 1;
+    else
+        n = i+1;
+    end
+    
+    infl(:,:,:,i) = fcnSNINF(q(:,:,m), q(:,:,n), c3, b, z, h).*repmat(permute(comb(:,i,:),[2 1 3]),3,6,1);
+    
+end
+
+% Combining S1, S2, S3 to make S
+
+infl_tot = sum(infl,4);
 
 dvenum = reshape(repmat(dvenum,1,6,1)',[],1,1);
 
-infl_glob = fcnSTARGLOB(reshape(permute(infl,[2 3 1]),[],3,1), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
+infl_glob = fcnSTARGLOB(reshape(permute(infl_tot,[2 3 1]),[],3,1), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
 infl_glob = reshape(infl_glob',3,6,[]);
 
 infl_glob(isnan(infl_glob)) = 0;

@@ -4,8 +4,8 @@ function [hFig1] = fcnPLOTBODY(verbose, matDVE, valNELE, matVLST, matELST, matDV
 hFig1 = figure(1);
 clf(1);
 
-patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceColor','r','LineWidth',2);
-alpha(0);
+patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceColor','w','LineWidth',2,'FaceAlpha',1);
+% alpha(0);
 hold on
 
 % edge1 = matVLST(matELST(:,1),:);

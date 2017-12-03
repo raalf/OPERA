@@ -1,5 +1,5 @@
 clear
-clc
+% clc
 
 %% Preamble
 
@@ -11,13 +11,15 @@ matPOINTS(:,:,1) = [0 0 0];
 matPOINTS(:,:,2) = [0 1 0];
 matPOINTS(:,:,3) = [1 0.5 0];
 
+matPOINTS = matPOINTS;
+
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(strATYPE, matPOINTS);
+    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(matPOINTS);
 
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [ 0 1 0 0 0 0 ];
+matCOEFF = [ 1 1 1 1 1 1 ];
 
 %% Plot
 
@@ -33,12 +35,12 @@ z = -0.2:granularity:0.2;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-fpg = [-0.5 0.5 0.15];
+fpg = [3 -3 3];
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matVSCOMB, matCENTER);
 
 % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-q_ind = s_ind;
+q_ind = s_ind
 figure(1);
 hold on
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))

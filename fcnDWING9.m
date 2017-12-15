@@ -109,6 +109,7 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*
 %% Piecing together D-matrix
 
 D = [circ1; circ2; vort1; vort2; circ_tip; king_kong];
+% D = [circ; circ1; circ2; vort; vort1; vort2; circ_tip; king_kong];
 
 % D = [circ; circ1; circ2; vort; circ_tip; king_kong];
 % D = [circ; vort; circ_tip; king_kong];

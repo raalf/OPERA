@@ -5,14 +5,15 @@ clear
 %
 % strFILE = 'inputs/simple_wing.dat'
 % strFILE = 'inputs/nonplanar.dat'
-strFILE = 'inputs/2dve.dat';
-% strFILE = 'inputs/4dve.dat';
+% strFILE = 'inputs/2dve.dat';
+strFILE = 'inputs/4dve.dat';
 % strFILE = 'inputs/Stock_Test1.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(strATYPE, matPOINTS);
+    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(matPOINTS);
+strATYPE = 'THIN';
 
 valTIMESTEP = 0;
 flagRELAX = 0;

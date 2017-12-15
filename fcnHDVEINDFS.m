@@ -1,6 +1,6 @@
 function [infl_glob] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB, matCENTER)
 
-flagPLOT = 0;
+flagPLOT = 1;
 
 dvenum = reshape(dvenum, [], 1, 1); % Ensuring dvenum is a column vector
 
@@ -36,7 +36,7 @@ q(:,:,3) = p3 - pb;
 
 c3 = b3;
 
-delta = 0.2;
+delta = 0.01;
 h = sqrt(z.^2 + delta.^2);
 
 b(:,:,1) = b1;

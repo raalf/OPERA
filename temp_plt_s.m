@@ -125,6 +125,7 @@ text(pb(:,1) + laa*q2(:,1), pb(:,2) + laa*q2(:,2), pb(:,3) + laa*q2(:,3), 'q2', 
 c2 = (q2 - q1);
 c2 = c2./sqrt(sum(c2.^2,2));
 c1 = cross(c2,c3);
+
 quiver3(pb(:,1),pb(:,2),pb(:,3), c1(1,1), c1(1,2), c1(1,3), 0.2, 'r', 'LineWidth',1)
 text(pb(:,1)+0.3*c1(1,1), pb(:,2)+0.3*c1(1,2), pb(:,3)+0.3*c1(1,3), 'C1','FontSize',fsiz,'Color','r')
 quiver3(pb(:,1),pb(:,2),pb(:,3), c2(1,1), c2(1,2), c2(1,3), 0.2, 'r', 'LineWidth',1)

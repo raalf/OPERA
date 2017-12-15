@@ -8,7 +8,7 @@ strFILE = 'inputs/Stock_Test1.dat';
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(strATYPE, matPOINTS);
+    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(matPOINTS);
 
 flagRELAX = 0;
 
@@ -76,7 +76,7 @@ matGEOM(:,:,2) = matVLST(matDVE(:,2,1),:);
 matGEOM(:,:,3) = matVLST(matDVE(:,3,1),:);
 
 [~, ~, matELST, ~, ~, ~, ~, matEIDX, matELOC, matPLEX, ...
-    matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG('wake',matGEOM);
+    matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matGEOM);
 
 vecR = fcnRWING(strATYPE, valDLEN, 0, matELST, matCENTER, matDVECT, matUINF, vecLE, vecLEDVE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, [], matVNORM, matVLST);
 [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);

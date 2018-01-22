@@ -17,7 +17,7 @@ matPOINTS(:,:,3) = [1 0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [ 0 0 0 -1 0 0 ];
+matCOEFF = [ 0 1 0 0 0 0 ];
 
 %% Plot
 
@@ -25,14 +25,14 @@ matCOEFF = [ 0 0 0 -1 0 0 ];
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 view([-30 17])
 
-granularity = .01;
+granularity = .05;
 % x = -0.5:granularity:1.2;
 % y = -0.2:granularity:1.2;
 % y = ones(size(x)) - 0.5;
 z = -0.2:granularity:0.2;
 
 % z = 0.01;
-x = zeros(size(z)) + 0.3;
+x = 0:granularity:1;
 y = zeros(size(z)) + 0.5;
 
 

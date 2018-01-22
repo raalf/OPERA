@@ -5,8 +5,8 @@ clear
 %
 % strFILE = 'inputs/simple_wing.dat'
 % strFILE = 'inputs/nonplanar.dat'
-% strFILE = 'inputs/2dve.dat';
-strFILE = 'inputs/4dve.dat';
+strFILE = 'inputs/2dve.dat';
+% strFILE = 'inputs/4dve.dat';
 % strFILE = 'inputs/4dve_nosym.dat'
 % strFILE = 'inputs/Stock_Test1.dat'
 
@@ -71,10 +71,10 @@ vecR = fcnRWING(strATYPE, valDLEN, 0, matELST, matCENTER, matDVECT, matUINF, vec
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 view([-30 17])
 
-granularity = .2;
+granularity = .05;
 x = -0.6:granularity:1.2;
-y = -0.2:granularity:1.2;
-% y = ones(size(x)) - 0.5;
+% y = -0.2:granularity:1.2;
+y = zeros(size(x)) + 0.33;
 z = -0.2:granularity:0.2;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
@@ -83,10 +83,10 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
 
-q_ind = s_ind + repmat(vecUINF,size(s_ind,1),1);
-% q_ind = s_ind;
+% q_ind = s_ind + repmat(vecUINF,size(s_ind,1),1);
+q_ind = s_ind;
 hold on
-% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 hold off
 
 hold on

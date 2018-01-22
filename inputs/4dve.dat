@@ -21,7 +21,7 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 4. 
+Number of spanwise elements:	vecN 		= 2. 
 Number of chordwise elements: 	vecM 		= 1.
 Symmetry about YZ Plane:		strSYM 		= YES
 Trailing edge:					strTE 		= YES

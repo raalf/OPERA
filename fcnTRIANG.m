@@ -1,5 +1,5 @@
 function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(POINTS)
+            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(POINTS)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -49,7 +49,8 @@ DNORM = -faceNormal(TR);
 % DNORM(1,:) = [0 0 1] %TEMPORARY DON'T KEEP
 
 % matDVE(:,:,2) = faceNormal(TR); % Normal
-matCENTER = incenter(TR); % incenter of triangle
+% matCENTER = incenter(TR); % incenter of triangle
+matCENTER = (matVLST(matDVE(:,1),:) + matVLST(matDVE(:,2),:) + matVLST(matDVE(:,3),:))./3;
 
 
 %% Finding edge attachement matrix (which DVEs share which edge)
@@ -160,9 +161,8 @@ if isempty(find(isnan(matADJE))) == 0 && strcmp(ATYPE,'PC')
 end
 
 %% Local HDVE Eta-Xi Axis
-
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
-[matPLEX, matDVECT, matROTANG, matVSCOMB] = fcnTRITOLEXFS(P, DNORM, matCENTER);
+[matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER);
 
 %% Finding DVE Alignment Matrix ALIGN
 

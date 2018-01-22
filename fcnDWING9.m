@@ -1,4 +1,4 @@
-function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM, matVSCOMB)
+function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM)
 
 lambda_mid = [ ...
     0.5 0.5 0; ... % Edge 1 mid-point
@@ -41,9 +41,16 @@ vnumb(:,1) = tb(rb);
 vnumb(:,2) = tb(rb);
 
 %% Circulation
+circ = [];
+circ1 = [];
+circ2 = [];
+vort = [];
+vort1 = [];
+vort2 = [];
+
 circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
-circ1 = fcnDCIRC2(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
-circ2 = fcnDCIRC2(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
+% circ1 = fcnDCIRC2(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
+% circ2 = fcnDCIRC2(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
 
 vort = fcnDVORT(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
 [vort1] = fcnDVORTVERT(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
@@ -79,6 +86,8 @@ end
 % Points we are influencing
 fpg = matCENTER;
 normals = matDVECT(:,:,3);
+% fpg = matVLST;
+% normals = matVNORM;
 
 % fpg = matVLST;
 % normals = matVNORM;
@@ -93,7 +102,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[infl_glob] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matVSCOMB, matCENTER);
+[infl_glob] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matCENTER);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 
@@ -108,8 +117,8 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*
 
 %% Piecing together D-matrix
 
-D = [circ1; circ2; vort1; vort2; circ_tip; king_kong];
-% D = [circ; circ1; circ2; vort; vort1; vort2; circ_tip; king_kong];
+% D = [circ1; circ2; vort1; vort2; circ_tip; king_kong];
+D = [circ; circ1; circ2; vort; vort1; vort2; circ_tip; king_kong];
 
 % D = [circ; circ1; circ2; vort; circ_tip; king_kong];
 % D = [circ; vort; circ_tip; king_kong];

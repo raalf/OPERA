@@ -7,12 +7,13 @@ clear
 % strFILE = 'inputs/nonplanar.dat'
 % strFILE = 'inputs/2dve.dat';
 strFILE = 'inputs/4dve.dat';
+% strFILE = 'inputs/4dve_nosym.dat'
 % strFILE = 'inputs/Stock_Test1.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG, matVSCOMB] = fcnTRIANG(matPOINTS);
+    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 strATYPE = 'THIN';
 
 valTIMESTEP = 0;
@@ -36,7 +37,7 @@ if ~isempty(vecTE)
     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,1), matROTANG(vecTEDVE,2), matROTANG(vecTEDVE,3)); % Spanwise direction for each HDVE (may change with rotor stuff)
 end
 
-matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM, matVSCOMB);
+matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM);
 
 valDLEN = length(matD);
 
@@ -80,7 +81,7 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
 % fpg = [-0.5 0.5 0.15];
 
-[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matVSCOMB, matCENTER);
+[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
 
 q_ind = s_ind + repmat(vecUINF,size(s_ind,1),1);
 % q_ind = s_ind;
@@ -89,12 +90,63 @@ hold on
 hold off
 
 hold on
-q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, [], matCENTER);
+q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF;
 quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 0.25, 'g')
 hold off
 
 view([0 90])
+
+%%
+v_row = 1:size(matVLST,1);
+
+ii = 1;
+iii = 1;
+for jj = 1:length(v_row)
+    
+    [~, b] = ismembertol(v_row(jj), matDVE,'OutputAllIndices',true);
+
+    [elem(:,1) elem(:,2)] = ind2sub(size(matDVE), cell2mat(b));
+
+    for i = 1:size(elem,1)
+        point = matPLEX(elem(i,2),:,elem(i,1));
+        vort = [2.*matCOEFF(elem(i,1),3).*point(:,1) + matCOEFF(elem(i,1),4) + matCOEFF(elem(i,1),5).*point(:,2), 2.*matCOEFF(elem(i,1),1).*point(:,2) + matCOEFF(elem(i,1),2) + matCOEFF(elem(i,1),5).*point(:,1), point(:,2).*0];
+        vort_glob(ii,:) = fcnSTARGLOB(vort, matROTANG(elem(i,1),1), matROTANG(elem(i,1),2), matROTANG(elem(i,1),3));
+        point_glob(ii,:) = matVLST(v_row(jj),:);
+        v_num(ii,:) = v_row(jj);
+        ii = ii + 1;
+    end
+    
+    vort_avg(iii,:) = mean(vort_glob(ii-size(elem,1):ii-1,:),1);
+    point_avg(iii,:) = point_glob(ii-1,:);
+    
+    iii = iii + 1;
+    elem = [];
+    point = [];
+    vort = [];
+end
+
+hFig28 = figure(28);
+clf(28);
+
+subplot(1,2,1)
+scatter(v_num, vort_glob(:,1));
+ylabel('Gamma_x','FontSize',15);
+xlabel('Vertex Number','FontSize',15);
+
+grid minor
+box on
+axis tight
+
+subplot(1,2,2)
+scatter(v_num, vort_glob(:,2));
+ylabel('Gamma_y','FontSize',15);
+xlabel('Vertex Number','FontSize',15);
+
+grid minor
+box on
+axis tight
+
 
 
 

@@ -17,24 +17,24 @@ matPOINTS(:,:,3) = [1 0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [ 0 0 0 0 0 0 ];
+matCOEFF = [ 0 0 1 0 0 0 ];
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
+% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 view([-30 17])
 
-granularity = .05;
+granularity = .1;
 % x = -0.5:granularity:1.2;
-% y = -0.2:granularity:1.2;
+y = -0.2:granularity:1.2;
 % y = ones(size(x)) - 0.5;
 z = -0.2:granularity:0.2;
 
 % z = 0.01;
-x = 0:granularity:1;
+x = -.2:granularity:1;
 % x = zeros(size(z)) + 0.33;
-y = zeros(size(z)) + 0.5;
+% y = zeros(size(z)) + 0.5;
 
 
 [X,Y,Z] = meshgrid(x,y,z);

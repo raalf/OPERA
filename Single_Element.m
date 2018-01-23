@@ -17,7 +17,7 @@ matPOINTS(:,:,3) = [1 0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [ 0 1 0 0 0 0 ];
+matCOEFF = [ 0 0 0 0 0 0 ];
 
 %% Plot
 
@@ -33,6 +33,7 @@ z = -0.2:granularity:0.2;
 
 % z = 0.01;
 x = 0:granularity:1;
+% x = zeros(size(z)) + 0.33;
 y = zeros(size(z)) + 0.5;
 
 

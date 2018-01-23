@@ -5,11 +5,11 @@ clc
 
 %% Geometry
 
-a = 3;
-b = 2;
+a = 1;
+b = 1;
 c = 1;
 
-[x,y,z] = ellipsoid(0,0,0,b,a,c,30);
+[x,y,z] = ellipsoid(0,0,0,b,a,c,20);
 [V,S] = alphavol([x(:), y(:), z(:)]);
 
 TR = triangulation(S.bnd, [x(:), y(:), z(:)]);
@@ -74,7 +74,7 @@ vecR = fcnRWING([], valDLEN, 0, matELST, matCENTER, matDVECT, matUINF, vecLE, ve
 q_inds = fcnSDVEVEL(matVLST, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF(1,:);
 
-matVLSTCP = 1 - (sqrt(sum(q_ind.^2,2))).^2;
+matVLSTCP = sqrt(sum(q_ind.^2,2));
 
 hFig1 = figure(1);
 clf(1);

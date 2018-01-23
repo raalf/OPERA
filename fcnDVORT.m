@@ -21,10 +21,10 @@ lmb3 = reshape(lambda(matELOC(idx,:),3),nedg,2);
 % b3 = zeros(nedg,2);
 
 a2 = ones(nedg,2);
-a1 = 2.*(lmb1.*y1+lmb2.*y2+lmb3.*y3);
+a1 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
 
 b2 = ones(nedg,2);
-b1 = 2.*(lmb1.*x1+lmb2.*x2+lmb3.*x3);
+b1 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
 
 c2eta = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
 c2xi = (lmb1.*x1+lmb2.*x2+lmb3.*x3);

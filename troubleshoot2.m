@@ -5,8 +5,8 @@ clear
 %
 % strFILE = 'inputs/simple_wing.dat'
 % strFILE = 'inputs/nonplanar.dat'
-strFILE = 'inputs/2dve.dat';
-% strFILE = 'inputs/4dve.dat';
+% strFILE = 'inputs/2dve.dat';
+strFILE = 'inputs/4dve.dat';
 % strFILE = 'inputs/4dve_nosym.dat'
 % strFILE = 'inputs/Stock_Test1.dat'
 
@@ -83,8 +83,8 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
 
-% q_ind = s_ind + repmat(vecUINF,size(s_ind,1),1);
-q_ind = s_ind;
+q_ind = s_ind + repmat(vecUINF,size(s_ind,1),1);
+% q_ind = s_ind;
 hold on
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 hold off

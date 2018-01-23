@@ -1,6 +1,6 @@
 function [infl_glob] = fcnHDVEINDFS(dvenum_all, fpg_all, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matCENTER)
 
-flagPLOT = 0;
+flagPLOT = 1;
 
 dvenum_all = reshape(dvenum_all, [], 1, 1); % Ensuring dvenum is a column vector
 

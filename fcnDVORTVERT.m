@@ -20,18 +20,18 @@ a1 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
 b2 = ones(nedg,2);
 b1 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
 
-c2eta = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
-c2xi = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
+c2xsi = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
+c2eta = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
 
-% align = abs(matALIGN(idx,:,:));
-align = matALIGN(idx,:,:);
+% % align = abs(matALIGN(idx,:,:));
+% align = matALIGN(idx,:,:);
 
 zer = a1(:,1).*0;
-dgamma12 = [a1(:,1), a2(:,1), zer, zer, c2xi(:,1), zer];
-dgamma22 = [a1(:,2), a2(:,2), zer, zer, c2xi(:,2), zer].*-1;
+dgamma12 = [a1(:,1), a2(:,1), zer, zer, c2eta(:,1), zer];
+dgamma22 = [a1(:,2), a2(:,2), zer, zer, c2eta(:,2), zer].*-1;
 
-dgamma13 = [zer, zer, b1(:,1), b2(:,1), c2eta(:,1), zer];
-dgamma23 = [zer, zer, b1(:,2), b2(:,2), c2eta(:,2), zer].*-1;
+dgamma13 = [zer, zer, b1(:,1), b2(:,1), c2xsi(:,1), zer];
+dgamma23 = [zer, zer, b1(:,2), b2(:,2), c2xsi(:,2), zer].*-1;
 
 
 lines = nedg*2;

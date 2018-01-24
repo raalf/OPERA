@@ -18,12 +18,12 @@ c2c = [z.*H01.*c1(:,1) - z.*H10.*c2(:,1), z.*H01.*c1(:,2) - z.*H10.*c2(:,2), c3(
 
 % Orientation of the triangle (determines whether to add or subtract influence)
 % First, set all orientations the same, then apply comb to add or subtract
-ori = dot(c3, cross(qm, qn), 2)./abs(dot(c3, cross(qm, qn), 2));
+% ori = dot(c3, cross(qm, qn), 2)./abs(dot(c3, cross(qm, qn), 2));
 % ori(isnan(ori)) = 1;
 
 % Order: A1 A2 B1 B2 C2 C3
 infl = [reshape(a1c',3,1,[]) reshape(a2c',3,1,[]) reshape(b1c',3,1,[]) reshape(b2c',3,1,[]) reshape(c2c',3,1,[]) reshape(c2c'.*0,3,1,[])];
 
-infl = infl.*repmat(reshape(ori,1,1,[]),3,6,1);
+% infl = infl.*repmat(reshape(ori,1,1,[]),3,6,1);
 
 end

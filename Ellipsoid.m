@@ -9,7 +9,7 @@ a = 1;
 b = 1;
 c = 1;
 
-[x,y,z] = ellipsoid(0,0,0,b,a,c,20);
+[x,y,z] = ellipsoid(0,0,0,b,a,c,10);
 [V,S] = alphavol([x(:), y(:), z(:)]);
 
 TR = triangulation(S.bnd, [x(:), y(:), z(:)]);
@@ -91,14 +91,18 @@ axis equal
 % quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'g')
 % hold off
 
-
-
-
 granularity = .25;
 x = -3:granularity:3;
 % y = -1.2:granularity:1.2;
 y = ones(size(x)) - 1;
 z = -3:granularity:3;
+
+granularity = 1;
+x = -30:granularity:30;
+% y = -1.2:granularity:1.2;
+y = ones(size(x)) - 1;
+z = -30:granularity:30;
+
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 

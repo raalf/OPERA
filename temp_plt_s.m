@@ -85,11 +85,11 @@ scatter3(pb(:,1), pb(:,2), pb(:,3), 100, 'og', 'filled')
 % text(pb(:,1), pb(:,2), pb(:,3), 'PB', 'FontSize',fsiz,'Color','m')
 
 % (b1,b2,b3)
-quiver3(pb(:,1),pb(:,2),pb(:,3), b1(1,1), b1(1,2), b1(1,3), 0.2, 'b', 'LineWidth',1)
-text(pb(:,1)+0.2*b1(1,1), pb(:,2)+0.2*b1(1,2), pb(:,3)+0.2*b1(1,3), 'B1','FontSize',fsiz,'Color','b')
-quiver3(pb(:,1),pb(:,2),pb(:,3), b2(1,1), b2(1,2), b2(1,3), 0.2, 'b', 'LineWidth',1)
-text(pb(:,1)+0.2*b2(1,1), pb(:,2)+0.2*b2(1,2), pb(:,3)+0.2*b2(1,3), 'B2','FontSize',fsiz,'Color','b')
-quiver3(pb(:,1),pb(:,2),pb(:,3), b3(1,1), b3(1,2), b3(1,3), 0.2, 'b', 'LineWidth',1)
+quiver3(pb(:,1),pb(:,2),pb(:,3), b(1,1,1), b(1,2,1), b(1,3,1), 0.2, 'b', 'LineWidth',1)
+text(pb(:,1)+0.2*b(1,1,1), pb(:,2)+0.2*b(1,2,1), pb(:,3)+0.2*b(1,3,1), 'B1','FontSize',fsiz,'Color','b')
+quiver3(pb(:,1),pb(:,2),pb(:,3), b(1,1,2), b(1,2,2), b(1,3,2), 0.2, 'b', 'LineWidth',1)
+text(pb(:,1)+0.2*b(1,1,2), pb(:,2)+0.2*b(1,2,2), pb(:,3)+0.2*b(1,3,2), 'B2','FontSize',fsiz,'Color','b')
+quiver3(pb(:,1),pb(:,2),pb(:,3), b(1,1,3), b(1,2,3), b(1,3,3), 0.2, 'b', 'LineWidth',1)
 % text(pb(:,1)+0.2*b3(1,1), pb(:,2)+0.2*b3(1,2), pb(:,3)+0.2*b3(1,3), 'B3','FontSize',fsiz,'Color','b')
 
 for i = 1:3

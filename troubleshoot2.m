@@ -97,55 +97,55 @@ hold off
 
 view([0 90])
 
-%%
-v_row = 1:size(matVLST,1);
-
-ii = 1;
-iii = 1;
-for jj = 1:length(v_row)
-    
-    [~, b] = ismembertol(v_row(jj), matDVE,'OutputAllIndices',true);
-
-    [elem(:,1) elem(:,2)] = ind2sub(size(matDVE), cell2mat(b));
-
-    for i = 1:size(elem,1)
-        point = matPLEX(elem(i,2),:,elem(i,1));
-        vort = [2.*matCOEFF(elem(i,1),3).*point(:,1) + matCOEFF(elem(i,1),4) + matCOEFF(elem(i,1),5).*point(:,2), 2.*matCOEFF(elem(i,1),1).*point(:,2) + matCOEFF(elem(i,1),2) + matCOEFF(elem(i,1),5).*point(:,1), point(:,2).*0];
-        vort_glob(ii,:) = fcnSTARGLOB(vort, matROTANG(elem(i,1),1), matROTANG(elem(i,1),2), matROTANG(elem(i,1),3));
-        point_glob(ii,:) = matVLST(v_row(jj),:);
-        v_num(ii,:) = v_row(jj);
-        ii = ii + 1;
-    end
-    
-    vort_avg(iii,:) = mean(vort_glob(ii-size(elem,1):ii-1,:),1);
-    point_avg(iii,:) = point_glob(ii-1,:);
-    
-    iii = iii + 1;
-    elem = [];
-    point = [];
-    vort = [];
-end
-
-hFig28 = figure(28);
-clf(28);
-
-subplot(1,2,1)
-scatter(v_num, vort_glob(:,1));
-ylabel('Gamma_x','FontSize',15);
-xlabel('Vertex Number','FontSize',15);
-
-grid minor
-box on
-axis tight
-
-subplot(1,2,2)
-scatter(v_num, vort_glob(:,2));
-ylabel('Gamma_y','FontSize',15);
-xlabel('Vertex Number','FontSize',15);
-
-grid minor
-box on
-axis tight
+% %%
+% v_row = 1:size(matVLST,1);
+% 
+% ii = 1;
+% iii = 1;
+% for jj = 1:length(v_row)
+%     
+%     [~, b] = ismembertol(v_row(jj), matDVE,'OutputAllIndices',true);
+% 
+%     [elem(:,1) elem(:,2)] = ind2sub(size(matDVE), cell2mat(b));
+% 
+%     for i = 1:size(elem,1)
+%         point = matPLEX(elem(i,2),:,elem(i,1));
+%         vort = [2.*matCOEFF(elem(i,1),3).*point(:,1) + matCOEFF(elem(i,1),4) + matCOEFF(elem(i,1),5).*point(:,2), 2.*matCOEFF(elem(i,1),1).*point(:,2) + matCOEFF(elem(i,1),2) + matCOEFF(elem(i,1),5).*point(:,1), point(:,2).*0];
+%         vort_glob(ii,:) = fcnSTARGLOB(vort, matROTANG(elem(i,1),1), matROTANG(elem(i,1),2), matROTANG(elem(i,1),3));
+%         point_glob(ii,:) = matVLST(v_row(jj),:);
+%         v_num(ii,:) = v_row(jj);
+%         ii = ii + 1;
+%     end
+%     
+%     vort_avg(iii,:) = mean(vort_glob(ii-size(elem,1):ii-1,:),1);
+%     point_avg(iii,:) = point_glob(ii-1,:);
+%     
+%     iii = iii + 1;
+%     elem = [];
+%     point = [];
+%     vort = [];
+% end
+% 
+% hFig28 = figure(28);
+% clf(28);
+% 
+% subplot(1,2,1)
+% scatter(v_num, vort_glob(:,1));
+% ylabel('Gamma_x','FontSize',15);
+% xlabel('Vertex Number','FontSize',15);
+% 
+% grid minor
+% box on
+% axis tight
+% 
+% subplot(1,2,2)
+% scatter(v_num, vort_glob(:,2));
+% ylabel('Gamma_y','FontSize',15);
+% xlabel('Vertex Number','FontSize',15);
+% 
+% grid minor
+% box on
+% axis tight
 
 
 

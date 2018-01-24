@@ -1,6 +1,6 @@
 function [infl_glob] = fcnHDVEINDFS(dvenum_all, fpg_all, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matCENTER)
 
-flagPLOT = 1;
+flagPLOT = 0;
 
 dvenum_all = reshape(dvenum_all, [], 1, 1); % Ensuring dvenum is a column vector
 
@@ -54,7 +54,7 @@ for i = 1:chunk_sz:num_pts
 
     c3 = b(:,:,3);
 
-    delta = 0.2;
+    delta = 0.066;
     h = sqrt(z.^2 + delta.^2);
     
     % Whether or not to add or subtract the triangle
@@ -69,7 +69,7 @@ for i = 1:chunk_sz:num_pts
     for ii = 1:size(q,3)
         n = mod(ii,3) + 1;
         
-        infl(:,:,:,ii) = fcnSNINF(q(:,:,ii), q(:,:,n), c3, b, z, h).*repmat(permute(comb(:,ii,:),[2 1 3]),3,6,1);
+        infl(:,:,:,ii) = fcnSNINF(q(:,:,ii), q(:,:,n), c3, z, h).*repmat(permute(comb(:,ii,:),[2 1 3]),3,6,1);
 %         infl(:,:,:,ii) = fcnSNINF(q(:,:,ii), q(:,:,n), c3, b, z, h);
     end
 

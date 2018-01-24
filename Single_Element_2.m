@@ -44,7 +44,7 @@ fpg = [-0.2500         0    3.0000];
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
 
 % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-q_ind = s_ind;
+q_ind = s_ind
 
 figure(1);
 hold on

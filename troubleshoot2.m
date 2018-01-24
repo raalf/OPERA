@@ -6,8 +6,8 @@ clear
 % strFILE = 'inputs/simple_wing.dat'
 % strFILE = 'inputs/nonplanar.dat'
 % strFILE = 'inputs/2dve.dat';
-strFILE = 'inputs/4dve.dat';
-% strFILE = 'inputs/4dve_nosym.dat'
+% strFILE = 'inputs/4dve.dat';
+strFILE = 'inputs/4dve_nosym.dat'
 % strFILE = 'inputs/Stock_Test1.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);

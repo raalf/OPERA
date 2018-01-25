@@ -45,6 +45,6 @@ comb(isnan(comb)) = 0;
 infl = [reshape(a1c',3,1,[]) reshape(a2c',3,1,[]) reshape(b1c',3,1,[]) reshape(b2c',3,1,[]) reshape(c2c',3,1,[]) reshape(c2c'.*0,3,1,[])];
 
 infl = infl.*repmat(reshape(ori,1,1,[]),3,6,1).*repmat(reshape(comb,1,1,[]),3,6,1);
-% infl = infl.*repmat(reshape(comb,1,1,[]),3,6,1);
+% infl = infl.*repmat(reshape(ori,1,1,[]),3,6,1);
 
 end

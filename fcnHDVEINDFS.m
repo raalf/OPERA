@@ -64,7 +64,7 @@ for i = 1:chunk_sz:num_pts
 
     c3 = b(:,:,3);
 
-    delta = 0.2;
+    delta = 0.066;
     h = sqrt(z.^2 + delta.^2);
            
     ax2 = [];

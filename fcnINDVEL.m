@@ -10,7 +10,7 @@ infl_glob = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetyp
 
 q_ind = permute(sum(infl_glob.*repmat(reshape(matCOEFF(dvenum,:)',1,6,[]),3,1,1),2),[2 1 3]);
 
-q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
+q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(4*pi);
 
 
 end

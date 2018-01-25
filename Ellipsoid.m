@@ -75,6 +75,7 @@ q_inds = fcnSDVEVEL(matVLST, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPL
 q_ind = q_inds + matUINF(1,:);
 
 matVLSTCP = sqrt(sum(q_ind.^2,2));
+% matVLSTCP = 1 - sqrt(sum(q_ind.^2,2)).^2;
 
 hFig1 = figure(1);
 clf(1);
@@ -86,10 +87,11 @@ grid on
 box on
 axis equal
 
-% hold on
-
-% quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'g')
-% hold off
+hold on
+q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
+q_ind = q_inds + matUINF(1,:);
+quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'g')
+hold off
 
 granularity = .25;
 x = -3:granularity:3;
@@ -132,6 +134,24 @@ axis tight
 % streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
 % % quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
 % hold off
+
+hFig213 = figure(213);
+clf(213);
+
+idx_cp = matVLST(:,2) == 0;
+
+theta = acosd(-matVLST(idx_cp,1));
+
+scatter(theta, matVLSTCP(idx_cp), 'ok');
+hold on
+load('sphere_velocities.mat')
+plot(sphere_velocities(:,1), sphere_velocities(:,2), '--sb');
+grid on
+box on
+axis tight
+
+xlabel('Chordwise Location (m)', 'FontSize',15);
+ylabel('Pressure Coefficient','FontSize',15);
 
 %%
 % v_row = 1:size(matVLST,1);

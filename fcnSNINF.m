@@ -1,4 +1,4 @@
-function [infl] = fcnSNINF(qm, qn, c3, z, h, flagPLOT, ii, pb, ax2)
+function [infl] = fcnSNINF(qm, qn, c3, z, h, N, flagPLOT, ii, pb, ax2)
 
 c2 = (qn - qm);
 c2 = c2./sqrt(sum(c2.^2,2));
@@ -32,14 +32,19 @@ b1c = [z.*H10.*c1(:,1), z.*H10.*c1(:,2), H20.*c3(:,3)];
 b2c = [z.*H00.*c1(:,1), z.*H00.*c1(:,2), H10.*c3(:,3)];
 c2c = [z.*H01.*c1(:,1) - z.*H10.*c2(:,1), z.*H01.*c1(:,2) - z.*H10.*c2(:,2), c3(:,3).*0];
 
-% Orientation of the triangle (determines whether to add or subtract influence)
-% First, set all orientations the same, then apply comb to add or subtract
+% % Orientation of the triangle (determines whether to add or subtract influence)
+% % First, set all orientations the same, then apply comb to add or subtract
 ori = dot(c3, cross(qm, qn), 2)./abs(dot(c3, cross(qm, qn), 2));
 ori(isnan(ori)) = 1;
+
+comb = dot(N, qm, 2);
+comb = comb./abs(comb);
+comb(isnan(comb)) = 0;
 
 % Order: A1 A2 B1 B2 C2 C3
 infl = [reshape(a1c',3,1,[]) reshape(a2c',3,1,[]) reshape(b1c',3,1,[]) reshape(b2c',3,1,[]) reshape(c2c',3,1,[]) reshape(c2c'.*0,3,1,[])];
 
-infl = infl.*repmat(reshape(ori,1,1,[]),3,6,1);
+infl = infl.*repmat(reshape(ori,1,1,[]),3,6,1).*repmat(reshape(comb,1,1,[]),3,6,1);
+% infl = infl.*repmat(reshape(comb,1,1,[]),3,6,1);
 
 end

@@ -42,17 +42,17 @@ c1 = [c1x c1y 0];
 c2 = [c2x c2y 0];
 c3 = [0 0 c3z]; 
 
-soln_1 = z*(b00*H00 + b10*H10 + b01*H01)*c1 - z*(a00*H00 + a10*H10 + a01*H01)*c2 ...
-    + (b00*H10 + b10*H20 + b01*H11 - a00*H01 - a10*H11 - a01*H02)*c3;
-
-disp('dS1_x:')
-disp(soln_1(1))
-
-disp('dS1_y:')
-disp(soln_1(2))
-
-disp('dS1_z:')
-disp(soln_1(3))
+% soln_1 = z*(b00*H00 + b10*H10 + b01*H01)*c1 - z*(a00*H00 + a10*H10 + a01*H01)*c2 ...
+%     + (b00*H10 + b10*H20 + b01*H11 - a00*H01 - a10*H11 - a01*H02)*c3;
+% 
+% disp('dS1_x:')
+% disp(soln_1(1))
+% 
+% disp('dS1_y:')
+% disp(soln_1(2))
+% 
+% disp('dS1_z:')
+% disp(soln_1(3))
 
 %%
 dO1 = [ z*H00*c1x z*H10*c1x z*H01*c1x -z*H00*c2x -z*H10*c2x -z*H01*c2x; ...
@@ -76,16 +76,16 @@ x2 = [A1; A2; B1; B2; C2];
 [dO2, ~] = equationsToMatrix(soln_3,x2)
 
 %%
-t1 = z*(b00 + b10*u + b01*v)*c1 - z*(a00 + a10*u + a01*v)*c2 + (b00*u + b10*u^2 + b01*u*v - a00*v - a10*u*v - a01*v^2)*c3
-
-soln_4 = subs(t1, b00, B2);
-soln_4 = subs(soln_4, b10, B1);
-soln_4 = subs(soln_4, b01, C2);
-soln_4 = subs(soln_4, a00, A2);
-soln_4 = subs(soln_4, a10, C2);
-soln_4 = subs(soln_4, a01, A1);
-
-x3 = [A1; A2; B1; B2; C2; C3];
-[dO2, ~] = equationsToMatrix(soln_4,x3)
+% t1 = z*(b00 + b10*u + b01*v)*c1 - z*(a00 + a10*u + a01*v)*c2 + (b00*u + b10*u^2 + b01*u*v - a00*v - a10*u*v - a01*v^2)*c3
+% 
+% soln_4 = subs(t1, b00, B2);
+% soln_4 = subs(soln_4, b10, B1);
+% soln_4 = subs(soln_4, b01, C2);
+% soln_4 = subs(soln_4, a00, A2);
+% soln_4 = subs(soln_4, a10, C2);
+% soln_4 = subs(soln_4, a01, A1);
+% 
+% x3 = [A1; A2; B1; B2; C2; C3];
+% [dO2, ~] = equationsToMatrix(soln_4,x3)
 
 

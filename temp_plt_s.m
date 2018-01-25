@@ -90,7 +90,7 @@ text(pb(:,1)+0.2*b(1,1,1), pb(:,2)+0.2*b(1,2,1), pb(:,3)+0.2*b(1,3,1), 'B1','Fon
 quiver3(pb(:,1),pb(:,2),pb(:,3), b(1,1,2), b(1,2,2), b(1,3,2), 0.2, 'b', 'LineWidth',1)
 text(pb(:,1)+0.2*b(1,1,2), pb(:,2)+0.2*b(1,2,2), pb(:,3)+0.2*b(1,3,2), 'B2','FontSize',fsiz,'Color','b')
 quiver3(pb(:,1),pb(:,2),pb(:,3), b(1,1,3), b(1,2,3), b(1,3,3), 0.2, 'b', 'LineWidth',1)
-% text(pb(:,1)+0.2*b3(1,1), pb(:,2)+0.2*b3(1,2), pb(:,3)+0.2*b3(1,3), 'B3','FontSize',fsiz,'Color','b')
+text(pb(:,1)+0.2*b(1,1,3), pb(:,2)+0.2*b(1,2,3), pb(:,3)+0.2*b(1,3,3), 'B3','FontSize',fsiz,'Color','b')
 
 for i = 1:3
     text(matPLEX(i,1), matPLEX(i,2), matPLEX(i,3), ['P' num2str(i)], 'FontSize',fsiz,'Color','r')

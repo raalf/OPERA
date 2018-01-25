@@ -1,5 +1,24 @@
 ax2(ii+1) = subplot(2,2,ii+1);
-copyobj(get(ax2(1),'Children'),ax2(ii+1));
+% copyobj(get(ax2(1),'Children'),ax2(ii+1));
+
+p = [pb; pb+qm; pb+qn];
+patch(p(:,1), p(:,2), p(:,3),'LineWidth',2,'EdgeColor','k','FaceAlpha',0);
+
+for i = 1:3
+    text(p(i,1), p(i,2), p(i,3), ['P' num2str(i)], 'FontSize',20,'Color','r')
+end
+
+hold off
+axis equal
+box off
+grid minor
+
+title('Local Coordinate System','FontSize',15);
+xlabel('\xi', 'FontSize', 15);
+ylabel('\eta', 'FontSize', 15);
+zlabel('\zeta', 'FontSize', 15);
+
+view([0 90])
 
 fsiz = 15;
 mhs = 0.5;

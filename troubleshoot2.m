@@ -4,7 +4,7 @@ clear
 %% Preamble
 %
 % strFILE = 'inputs/simple_wing.dat'
-% strFILE = 'inputs/nonplanar.dat'
+strFILE = 'inputs/nonplanar.dat'
 % strFILE = 'inputs/2dve.dat';
 % strFILE = 'inputs/4dve.dat';
 % strFILE = 'inputs/4dve_nosym.dat'

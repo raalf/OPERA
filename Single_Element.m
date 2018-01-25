@@ -39,7 +39,7 @@ x = -8:granularity:8;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-% fpg = [0.100000000000000  -0.200000000000000  -0.200000000000000];
+fpg = [0.100000000000000  -0.200000000000000  -0.200000000000000];
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
 

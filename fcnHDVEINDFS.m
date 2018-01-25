@@ -1,6 +1,6 @@
 function [infl_glob] = fcnHDVEINDFS(dvenum_all, fpg_all, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matCENTER)
 
-flagPLOT = 0;
+flagPLOT = 1;
 
 dvenum_all = reshape(dvenum_all, [], 1, 1); % Ensuring dvenum is a column vector
 
@@ -63,14 +63,15 @@ for i = 1:chunk_sz:num_pts
     comb = reshape(comb',1,3,[]);
     comb(isnan(comb)) = 0;
        
+    ax2 = [];
     if flagPLOT == 1 && len == 1; temp_plt_s; end
 
     infl = nan(3,6,len,size(q,3));
     for ii = 1:size(q,3)
         n = mod(ii,3) + 1;
         
-        infl(:,:,:,ii) = fcnSNINF(q(:,:,ii), q(:,:,n), c3, z, h).*repmat(permute(comb(:,ii,:),[2 1 3]),3,6,1);
-%         infl(:,:,:,ii) = fcnSNINF(q(:,:,ii), q(:,:,n), c3, b, z, h);
+%         infl(:,:,:,ii) = fcnSNINF(q(:,:,ii), q(:,:,n), c3, z, h, flagPLOT, ii, pb, ax2);
+        infl(:,:,:,ii) = fcnSNINF(q(:,:,ii), q(:,:,n), c3, z, h, flagPLOT, ii, pb, ax2).*repmat(permute(comb(:,ii,:),[2 1 3]),3,6,1);
     end
 
     % Combining S1, S2, S3 to make S

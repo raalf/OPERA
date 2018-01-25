@@ -1,9 +1,10 @@
-function [infl] = fcnSNINF(qm, qn, c3, z, h)
+function [infl] = fcnSNINF(qm, qn, c3, z, h, flagPLOT, ii, pb, ax2)
 
 c2 = (qn - qm);
 c2 = c2./sqrt(sum(c2.^2,2));
 c1 = cross(c2,c3);
 
+% idx_flip = sign(dot(qm,c1, 2)) < 0 & sign(dot(qm,c2,2)) < 0;
 idx_flip = sign(dot(qm,c1, 2)) < 0;
 c2(idx_flip,:) = c2(idx_flip,:).*-1;
 c1(idx_flip,:) = c1(idx_flip,:).*-1;
@@ -18,6 +19,10 @@ l2 = dot(qn, c2, 2);
 phi = [];
 phi(:,1) = atan2d(l1, a);
 phi(:,2) = atan2d(l2, a);
+
+if flagPLOT == 1 && size(h,1) == 1
+   temp_plt_s2;    
+end
 
 [H00, H10, H01, H20, H11, H02] = fcnHINTEGRAL(a,h,l1,l2);
 

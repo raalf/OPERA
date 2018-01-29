@@ -1,6 +1,6 @@
 function [infl_glob] = fcnHDVEINDFS(dvenum_all, fpg_all, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matCENTER)
 
-flagPLOT = 1;
+flagPLOT = 0;
 
 dvenum_all = reshape(dvenum_all, [], 1, 1); % Ensuring dvenum is a column vector
 
@@ -41,14 +41,16 @@ for i = 1:chunk_sz:num_pts
     z = dot((pa - pb), b(:,:,3), 2);
     
     %% Transform into Local-Local
-    loc_rot = [zeros(len,1) acos(dot(b(:,:,2), repmat([0 1 0],len,1), 2)) acos(dot(b(:,:,3), repmat([0 0 1],len,1), 2))];
+    loc_rot = [-atan2(b(:,2,3), b(:,3,3)), asin(b(:,1,3)), atan2(b(:,2,1), b(:,1,1))];
+
+%     ROLL = -atan2(b(:,2,3), b(:,3,3));    
+%     PITCH = asin(b(:,1,3));
+%     YAW = atan2(b(:,2,1), b(:,1,1));
     
     p1 = fcnGLOBSTAR(p1 - pb, loc_rot(:,1), loc_rot(:,2), loc_rot(:,3));
     p2 = fcnGLOBSTAR(p2 - pb, loc_rot(:,1), loc_rot(:,2), loc_rot(:,3));
     p3 = fcnGLOBSTAR(p3 - pb, loc_rot(:,1), loc_rot(:,2), loc_rot(:,3));
-    
-    pb = [0 0 0];
-    
+        
     %% Edge normals
     N = nan(len,3,3);
     N(:,:,1) = cross(b(:,:,3), p2-p1, 2);
@@ -58,13 +60,13 @@ for i = 1:chunk_sz:num_pts
     
     %% Influence from S1 S2 and S3    
     q = nan(len,3,3);
-    q(:,:,1) = p1 - pb;
-    q(:,:,2) = p2 - pb;
-    q(:,:,3) = p3 - pb;
+    q(:,:,1) = p1;
+    q(:,:,2) = p2;
+    q(:,:,3) = p3;
 
     c3 = b(:,:,3);
 
-    delta = 0.066;
+    delta = 0.000001;
     h = sqrt(z.^2 + delta.^2);
            
     ax2 = [];
@@ -75,7 +77,7 @@ for i = 1:chunk_sz:num_pts
     infl = nan(3,6,len,size(q,3));
     for ii = 1:size(q,3)
         n = mod(ii,3) + 1;
-        infl(:,:,:,ii) = fcnSNINF(q(:,:,ii), q(:,:,n), c3, z, h, N(:,:,ii), flagPLOT, ii, pb, ax2);
+        infl(:,:,:,ii) = fcnSNINF(q(:,:,ii), q(:,:,n), c3, z, h, N(:,:,ii), flagPLOT, ii, pb, ax2, loc_rot);
         infl(:,:,:,ii) = reshape(fcnSTARGLOB(reshape(permute(infl(:,:,:,ii),[2 3 1]),[],3,1), loc_rot(dvenum,1), loc_rot(dvenum,2), loc_rot(dvenum,3))',3,6,[]);
     end
 

@@ -9,7 +9,7 @@ a = 1;
 b = 1;
 c = 1;
 
-[x,y,z] = ellipsoid(0,0,0,b,a,c,14);
+[x,y,z] = ellipsoid(0,0,0,b,a,c,20);
 [V,S] = alphavol([x(:), y(:), z(:)]);
 
 TR = triangulation(S.bnd, [x(:), y(:), z(:)]);
@@ -73,7 +73,6 @@ vecR = fcnRWING([], valDLEN, 0, matELST, matCENTER, matDVECT, matUINF, vecLE, ve
 
 % q_inds = fcnSDVEVEL(matVLST, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
 % q_ind = q_inds + matUINF(1,:);
-
 % matVLSTCP = sqrt(sum(q_ind.^2,2));
 % matVLSTCP = 1 - sqrt(sum(q_ind.^2,2)).^2;
 
@@ -140,23 +139,23 @@ axis tight
 % % quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
 % hold off
 
-% hFig213 = figure(213);
-% clf(213);
-% 
+hFig213 = figure(213);
+clf(213);
+
 % idx_cp = matVLST(:,2) == 0;
 % 
 % theta = acosd(-matVLST(idx_cp,1));
-% 
+
 % scatter(theta, matVLSTCP(idx_cp), 'ok');
-% hold on
-% load('sphere_velocities.mat')
-% plot(sphere_velocities(:,1), sphere_velocities(:,2), '--sb');
-% grid on
-% box on
-% axis tight
-% 
-% xlabel('Chordwise Location (m)', 'FontSize',15);
-% ylabel('Pressure Coefficient','FontSize',15);
+hold on
+load('sphere_velocities.mat')
+plot(sphere_velocities(:,1), sphere_velocities(:,2), '--sb');
+grid on
+box on
+axis tight
+
+xlabel('Chordwise Location (m)', 'FontSize',15);
+ylabel('Pressure Coefficient','FontSize',15);
 
 %%
 % v_row = 1:size(matVLST,1);

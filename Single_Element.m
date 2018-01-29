@@ -36,17 +36,22 @@ x = -.2:granularity:1.2;
 % y = zeros(len,1) + 0.5;
 % x = zeros(len,1) + 0.8;
 
+% granularity = 0.01;
+% z = -5:1:5;
+% len = length(z);
+% y = zeros(len,1) + 0.5;
+% x = zeros(len,1) + 0.8;
+
 % granularity = 0.5;
 % y = -8:granularity:8;
 % z = -1:granularity:1;
 % x = -8:granularity:8;
 
-
-
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-fpg = [0.8 0.5 1];
+% fpg = [-8 5 1];
+% fpg = [0.8 0.5 -1];
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
 

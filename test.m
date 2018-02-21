@@ -1,51 +1,34 @@
 clc
 clear
 
-load('temp1.mat')
-
-%%
-q_inds = fcnSDVEVEL(matVLST, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
-q_ind = q_inds + matUINF(1,:);
-
-matVLSTCP = sqrt(sum(q_ind.^2,2));
+load('matlab.mat');
 
 hFig1 = figure(1);
 clf(1);
-
-patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceVertexCData',matVLSTCP,'FaceColor','interp','LineWidth',2);
-colorbar;
-
-grid on
+patch('Faces',[1 2 3],'Vertices', matPLEX, 'FaceAlpha',0, 'linewidth',2)
+grid minor
 box on
-axis equal
-
-% hold on
-
-% quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'g')
-% hold off
-
-granularity = .25;
-x = -3:granularity:3;
-% y = -1.2:granularity:1.2;
-y = ones(size(x)) - 1;
-z = -3:granularity:3;
-
-% granularity = 1;
-% x = -30:granularity:30;
-% % y = -1.2:granularity:1.2;
-% y = ones(size(x)) - 1;
-% z = -30:granularity:30;
-
-[X,Y,Z] = meshgrid(x,y,z);
-fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-
-fpg = [-0.25 0 3];
-
-[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
-
-% q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-q_ind = s_ind;
-hold on
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
-hold off
 axis tight
+axis equal
+xlabel('Local xsi','FontSize',15)
+ylabel('Local eta','FontSize',15)
+zlabel('Local zeta','FontSize',15)
+for i = 1:3
+    str = ['P' num2str(i)];
+    text(matPLEX(i,1), matPLEX(i,2), matPLEX(i,3),str,'Color','b','FontSize',20);
+end
+
+p1 = matPLEX(1,:);
+p2 = matPLEX(2,:);
+p3 = matPLEX(3,:);
+% Edge normal
+N = nan(1,3,3);
+N(:,:,1) = cross([0 0 1], p2-p1, 2);
+N(:,:,2) = cross([0 0 1], p3-p2, 2);
+N(:,:,3) = cross([0 0 1], p1-p3, 2);
+N = N./sum(sqrt(N.^2),2);
+
+comb = dot(N, repmat([0 1 0],1,1,3), 2);
+comb = comb./abs(comb);
+comb(isnan(comb)) = 0;
+comb

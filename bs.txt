@@ -1,7 +1,21 @@
-[ 
-int((zm*(LF2 - LF4 + LF1*xsi - LF3*xsi)*(2*A2 + 2*C2*xsi + A1*LF2 + A1*LF4 + A1*LF1*xsi + A1*LF3*xsi))/(2*abs(xm - xsi)^3), xsi, xsi_1, xsi_2), 
-
-int(int((zm*(B2 + C2*eta + B1*xsi))/abs(eta - ym)^3, eta, LF2 + LF1*xsi, LF4 + LF3*xsi), xsi, xsi_1, xsi_2), 
-
--(6*A1*LF2^2*xsi_1^2 + 3*A1*LF1^2*xsi_1^4 - 6*A1*LF2^2*xsi_2^2 - 3*A1*LF1^2*xsi_2^4 - 6*A1*LF4^2*xsi_1^2 - 3*A1*LF3^2*xsi_1^4 + 6*A1*LF4^2*xsi_2^2 + 3*A1*LF3^2*xsi_2^4 - 6*B1*LF2^2*xsi_1^2 - 3*B1*LF1^2*xsi_1^4 + 6*B1*LF2^2*xsi_2^2 - 4*B2*LF1^2*xsi_1^3 + 3*B1*LF1^2*xsi_2^4 + 6*B1*LF4^2*xsi_1^2 + 4*B2*LF1^2*xsi_2^3 + 3*B1*LF3^2*xsi_1^4 - 6*B1*LF4^2*xsi_2^2 + 4*B2*LF3^2*xsi_1^3 - 3*B1*LF3^2*xsi_2^4 - 4*B2*LF3^2*xsi_2^3 - 2*C2*LF1^3*xsi_1^4 + 2*C2*LF1^3*xsi_2^4 + 2*C2*LF3^3*xsi_1^4 - 2*C2*LF3^3*xsi_2^4 + 8*A2*LF1*xsi_1^3 + 12*A2*LF2*xsi_1^2 - 8*A2*LF1*xsi_2^3 - 12*A2*LF2*xsi_2^2 - 8*A2*LF3*xsi_1^3 - 12*A2*LF4*xsi_1^2 + 8*A2*LF3*xsi_2^3 + 12*A2*LF4*xsi_2^2 - 12*B2*LF2^2*xsi_1 + 12*B2*LF2^2*xsi_2 + 12*B2*LF4^2*xsi_1 - 12*B2*LF4^2*xsi_2 + 6*C2*LF1*xsi_1^4 + 8*C2*LF2*xsi_1^3 - 8*C2*LF2^3*xsi_1 - 6*C2*LF1*xsi_2^4 - 8*C2*LF2*xsi_2^3 + 8*C2*LF2^3*xsi_2 - 6*C2*LF3*xsi_1^4 - 8*C2*LF4*xsi_1^3 + 8*C2*LF4^3*xsi_1 + 6*C2*LF3*xsi_2^4 + 8*C2*LF4*xsi_2^3 - 8*C2*LF4^3*xsi_2 + 8*A1*LF1*LF2*xsi_1^3 - 8*A1*L\\\r\nF1*LF2*xsi_2^3 - 8*A1*LF3*LF4*xsi_1^3 + 8*A1*LF3*LF4*xsi_2^3 - 8*B1*LF1*LF2*xsi_1^3 - 12*B2*LF1*LF2*xsi_1^2 + 8*B1*LF1*LF2*xsi_2^3 + 12*B2*LF1*LF2*xsi_2^2 + 8*B1*LF3*LF4*xsi_1^3 + 12*B2*LF3*LF4*xsi_1^2 - 8*B1*LF3*LF4*xsi_2^3 - 12*B2*LF3*LF4*xsi_2^2 - 12*A1*LF2^2*xm*xsi_1 - 12*A2*LF1*xm*xsi_1^2 + 12*A1*LF2^2*xm*xsi_2 + 12*A2*LF1*xm*xsi_2^2 + 12*A1*LF4^2*xm*xsi_1 + 12*A2*LF3*xm*xsi_1^2 - 12*A1*LF4^2*xm*xsi_2 - 12*A2*LF3*xm*xsi_2^2 + 8*B1*LF1*xsi_1^3*ym + 12*B1*LF2*xsi_1^2*ym + 12*B2*LF1*xsi_1^2*ym - 8*B1*LF1*xsi_2^3*ym - 12*B1*LF2*xsi_2^2*ym - 12*B2*LF1*xsi_2^2*ym - 8*C2*LF1*xm*xsi_1^3 - 12*C2*LF2*xm*xsi_1^2 - 8*B1*LF3*xsi_1^3*ym - 12*B1*LF4*xsi_1^2*ym - 12*B2*LF3*xsi_1^2*ym + 8*C2*LF1*xm*xsi_2^3 + 12*C2*LF2*xm*xsi_2^2 + 8*B1*LF3*xsi_2^3*ym + 12*B1*LF4*xsi_2^2*ym + 12*B2*LF3*xsi_2^2*ym + 8*C2*LF3*xm*xsi_1^3 + 12*C2*LF4*xm*xsi_1^2 - 8*C2*LF3*xm*xsi_2^3 - 12*C2*LF4*xm*xsi_2^2 + 12*C2*LF2^2*xsi_1*ym - 12*C2*LF2^2*xsi_2*ym - 12*C2*LF4^2*xsi_1*ym + 12*C2*LF4^2*xsi_2*ym - 12*C2*LF1*LF2^2*xsi_\\\r\n1^2 + 12*C2*LF1*LF2^2*xsi_2^2 - 8*C2*LF1^2*LF2*xsi_1^3 + 8*C2*LF1^2*LF2*xsi_2^3 + 12*C2*LF3*LF4^2*xsi_1^2 - 12*C2*LF3*LF4^2*xsi_2^2 + 8*C2*LF3^2*LF4*xsi_1^3 - 8*C2*LF3^2*LF4*xsi_2^3 - 4*A1*LF1^2*xm*xsi_1^3 + 4*A1*LF1^2*xm*xsi_2^3 + 4*A1*LF3^2*xm*xsi_1^3 - 4*A1*LF3^2*xm*xsi_2^3 + 4*C2*LF1^2*xsi_1^3*ym - 4*C2*LF1^2*xsi_2^3*ym - 4*C2*LF3^2*xsi_1^3*ym + 4*C2*LF3^2*xsi_2^3*ym - 24*A2*LF2*xm*xsi_1 + 24*A2*LF2*xm*xsi_2 + 24*A2*LF4*xm*xsi_1 - 24*A2*LF4*xm*xsi_2 + 24*B2*LF2*xsi_1*ym - 24*B2*LF2*xsi_2*ym - 24*B2*LF4*xsi_1*ym + 24*B2*LF4*xsi_2*ym - 12*A1*LF1*LF2*xm*xsi_1^2 + 12*A1*LF1*LF2*xm*xsi_2^2 + 12*A1*LF3*LF4*xm*xsi_1^2 - 12*A1*LF3*LF4*xm*xsi_2^2 + 12*C2*LF1*LF2*xsi_1^2*ym - 12*C2*LF1*LF2*xsi_2^2*ym - 12*C2*LF3*LF4*xsi_1^2*ym + 12*C2*LF3*LF4*xsi_2^2*ym)/(24*abs(zm)^3)
-]
+tr1 =
+ 
+[ (C2*zm*(eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3))^2)/(2*abs(xm - xsi)^3) - (C2*zm*(eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))^2)/(2*abs(xm - xsi)^3) - (zm*(eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))*(B2 + B1*xsi))/abs(xm - xsi)^3 + (zm*(eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3))*(B2 + B1*xsi))/abs(xm - xsi)^3, int(-(zm*(A2 + A1*eta + C2*xsi))/abs(eta - ym)^3, eta, eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3), eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3)), ((eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3))^2*(A2 - A1*ym + C2*xsi - C2*(xm - xsi)))/(2*abs(zm)^3) - ((eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))^2*(A2 - A1*ym + C2*xsi - C2*(xm - xsi)))/(2*abs(zm)^3) - (A1*(eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))^3)/(3*abs(zm)^3) + (A1*(eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3))^3)/(3*abs(zm)^3) + ((eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))*(ym*(A2 + C2*xsi) + (xm - xsi)*(B2 + B1*xsi)))/abs(zm)^3 - ((eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3))*(ym*(A2 + C2*xsi) + (xm - xsi)*(B2 + B1*xsi)))/abs(zm)^3]
+ 
+>> tr1(1)
+ 
+ans =
+ 
+(C2*zm*(eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3))^2)/(2*abs(xm - xsi)^3) - (C2*zm*(eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))^2)/(2*abs(xm - xsi)^3) - (zm*(eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))*(B2 + B1*xsi))/abs(xm - xsi)^3 + (zm*(eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3))*(B2 + B1*xsi))/abs(xm - xsi)^3
+ 
+>> tr1(2)
+ 
+ans =
+ 
+int(-(zm*(A2 + A1*eta + C2*xsi))/abs(eta - ym)^3, eta, eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3), eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))
+ 
+>> tr1(3)
+ 
+ans =
+ 
+((eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3))^2*(A2 - A1*ym + C2*xsi - C2*(xm - xsi)))/(2*abs(zm)^3) - ((eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))^2*(A2 - A1*ym + C2*xsi - C2*(xm - xsi)))/(2*abs(zm)^3) - (A1*(eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))^3)/(3*abs(zm)^3) + (A1*(eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3))^3)/(3*abs(zm)^3) + ((eta_1 + ((eta_1 - eta_3)*(xsi - xsi_1))/(xsi_1 - xsi_3))*(ym*(A2 + C2*xsi) + (xm - xsi)*(B2 + B1*xsi)))/abs(zm)^3 - ((eta_2 + ((eta_2 - eta_3)*(xsi - xsi_2))/(xsi_2 - xsi_3))*(ym*(A2 + C2*xsi) + (xm - xsi)*(B2 + B1*xsi)))/abs(zm)^3

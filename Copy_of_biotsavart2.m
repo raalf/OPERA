@@ -23,10 +23,22 @@ syms xsi_1 xsi_2 xsi_3 eta_1 eta_2 eta_3 xsi_12
 
 eta_le = eta_2 + (xsi - xsi_2)*((eta_3 - eta_2)/(xsi_3 - xsi_2));
 eta_te = eta_1 + (xsi - xsi_1)*((eta_3 - eta_1)/(xsi_3 - xsi_1));
-tr1 = int(tr, eta, eta_le, eta_te);
-save('hello3.mat');
-% pretty(tr1)
-syms xsi_1 xsi_2
-tr2 = int(tr1, xsi, xsi_12, xsi_3);
-% pretty(tr2)
-save('hello4.mat');
+
+tr1(1) = int(tr(1), eta, eta_te, eta_le);
+tr1(3) = int(tr(3), eta, eta_te, eta_le);
+% CHECK THIS vvvvvvvvvvvvvv
+tr2_pre = -(A2*eta*zm)/(abs(eta - ym)^3) - (eta*A1*eta*zm)/(abs(eta - ym)^3) - (C2*eta*xsi*zm)/(abs(eta - ym)^3);
+tr1(2) = subs(tr2_pre, eta, eta_le) - subs(tr2_pre, eta, eta_te);
+
+tr11_c = children(tr1(1));
+tr12_c = children(tr1(2));
+tr13_c = children(tr1(3));
+
+for i = 1:3
+    kids = children(tr1(i));
+    for j = 1:size(kids,2)
+       disp(['Direction ', num2str(i), ' Term ', num2str(j)]) 
+       t(i,j) = int(kids(j), xsi);
+    end
+    kids = [];
+end

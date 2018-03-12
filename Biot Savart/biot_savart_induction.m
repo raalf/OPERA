@@ -21,35 +21,42 @@ zlabel('\zeta-Direction','FontSize',15);
 % [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
 %     matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 
-% fpg = [2 5 1];
+fpg = [0.8 0.5 1e-10];
 
-granularity = 0.20;
-y = -0.2:granularity:2;
-z = -.4:granularity:0.4;
-x = -.4:granularity:1.3;
-
-% granularity = 0.5;
-% y = 1.8;
-% z = -1:0.1:1;
-% x = 2;
-
-% granularity = 0.4;
-% y = -9:granularity:9;
-% z = -2:granularity:2;
-% x = 4;
-
-[X,Y,Z] = meshgrid(x,y,z);
-fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-
-idx = fpg(:,3) == 0;
-fpg(idx,:) = [];
+% granularity = 0.20;
+% y = -0.2:granularity:2;
+% z = -.4:granularity:0.4;
+% x = -.4:granularity:1.3;
+% load('matlab.mat','infl_glob');
+% 
+% 
+% % granularity = 0.025;
+% % y = 0.6;
+% % z = -0.2:granularity:0.2;
+% % x = 0.4;
+% 
+% % granularity = 0.5;
+% % y = 1.8;
+% % z = -1:0.1:1;
+% % x = 2;
+% 
+% % granularity = 0.4;
+% % y = -9:granularity:9;
+% % z = -2:granularity:2;
+% % x = 4;
+% 
+% [X,Y,Z] = meshgrid(x,y,z);
+% fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
+% 
+% idx = fpg(:,3) == 0;
+% fpg(idx,:) = [];
+% infl_glob(:,:,idx) = [];
 
 len = size(fpg,1);
 dvenum = ones(len, 1);
-% infl_glob = induc(repmat(matPOINTS,len,1,1), fpg);
-load('matlab.mat','infl_glob');
+infl_glob = induc(repmat(matPOINTS,len,1,1), fpg);
+% load('matlab.mat','infl_glob');
 
-infl_glob(:,:,idx) = [];
 q_ind = permute(sum(infl_glob.*repmat(reshape(matCOEFF(dvenum,:)',1,6,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 

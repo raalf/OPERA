@@ -5,7 +5,7 @@ matPOINTS(:,:,1) = [0 0 0];
 matPOINTS(:,:,2) = [0 2 0];
 matPOINTS(:,:,3) = [1 0.5 0];
 
-matCOEFF = [1 1 1 1 1 1];
+matCOEFF = [0 0 0 1 0 0];
 
 hFig203 = figure(203);
 clf(203);
@@ -23,7 +23,7 @@ zlabel('\zeta-Direction','FontSize',15);
 
 % fpg = [2 5 1];
 
-granularity = 0.20;
+granularity = 0.25;
 y = -0.2:granularity:2;
 z = -.4:granularity:0.4;
 x = -.4:granularity:1.3;
@@ -42,10 +42,8 @@ x = -.4:granularity:1.3;
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
 len = size(fpg,1);
-dvenum = ones(len, 1);
-infl_glob = induc(repmat(matPOINTS,len,1,1), fpg);
-q_ind = permute(sum(infl_glob.*repmat(reshape(matCOEFF(dvenum,:)',1,6,[]),3,1,1),2),[2 1 3]);
-q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
+q_ind = induc(repmat(matPOINTS,len,1,1), fpg, repmat(matCOEFF,len,1));
+
 
 % tic
 % for i = 1:size(fpg,1)
@@ -60,7 +58,7 @@ hold on
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 hold off
 
-function [infl_glob] = induc(matPOINTS, fpg)
+function [q_ind] = induc(matPOINTS, fpg, matCOEFF)
 xi_1 = matPOINTS(:,1,1);
 xi_2 = matPOINTS(:,1,2);
 xi_3 = matPOINTS(:,1,3);
@@ -123,22 +121,19 @@ d_inf = [...
 d_inf = subs(d_inf, 'eta', 'y');
 d_inf = subs(d_inf, 'xi', 'x');
 
+q_ind = fpg.*0;
+
 eta_le = eta_2 + (x - xi_2).*((eta_3 - eta_2)./(xi_3 - xi_2));
 eta_te = eta_1 + (x - xi_1).*((eta_3 - eta_1)./(xi_3 - xi_1));
 
-count = 1;
-h = waitbar(count/length(d_inf(:)),'Please wait...');
-infl_glob = zeros(3,6,size(fpg,1));
+d_inf_out = zeros(3,6,size(fpg,1));
 for i = 1:size(d_inf,1)
     for j = 1:size(d_inf,2)
         if isempty(find(d_inf(i,j)==0,1))
-            infl_glob(mod(j-1,3) + 1, floor(j/3) + 1, i) = integral2(matlabFunction(d_inf(i,j)), xi_1(i), xi_3(i), matlabFunction(eta_te(i)), matlabFunction(eta_le(i)));
+            d_inf_out(mod(j-1,3) + 1, floor(j/3) + 1, i) = integral2(matlabFunction(d_inf(i,j)), xi_1(i), xi_3(i), matlabFunction(eta_te(i)), matlabFunction(eta_le(i)));
         end
-        waitbar(count/length(d_inf(:)), h)
-        count = count + 1;
+        h = waitbar(count,'message');
     end
 end
-
-close(h);
 
 end

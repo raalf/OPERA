@@ -37,80 +37,61 @@ assumeAlso(xi_3 > xi_2);
 assumeAlso(xi_2 == xi_1);
 assumeAlso(eta_2 > eta_1);
 
+coeff = [A1; A2; B1; B2; C2; C3];
+
+D_kin = equationsToMatrix(tr, coeff)
+
 %% Integrating Biot-Savart from trailing to leading edge
 
-kids = children(expand(tr(1)));
-for i = 1:length(kids)
-    clc
-    disp([num2str(i) '/' num2str(length(kids))])
-    tr11_pre(i) = int(simplify(kids(i)), eta, eta_te, eta_le);
-    pretty(tr11_pre(i))
-end
-% Summing the child integrals back up and evaluating from TE to LE
-tr1(1) = sum(tr11_pre);
-% Solved using the above block
-% tr1(1) = piecewise((eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= 0 & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2) & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2) + (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3))/(xi_2 - xi_3) & (eta_1*(xi_1 - xi_3) + (eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3) <= eta_p + (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) & eta_p + (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) <= (eta_2*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (eta_1*(xi_1 - xi_3) - eta_p*(xi_1 - xi_3) + (eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3) <= -(- abs(xi - xi_p)^2 - zeta_p^2)^(1/2), - (C2*(eta_1 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)/2 + (C2*(eta_2 + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)/2 + limit((eta - eta_p)/(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta - eta_p)^2)^(1/2), eta, eta_p + (- abs(zeta_p)^2 - abs(xi - xi_p)^2)^(1/2), 'Left')/(abs(zeta_p)^2 + abs(xi - xi_p)^2) - limit((eta - eta_p)/(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta - eta_p)^2)^(1/2), eta, eta_p + (- abs(zeta_p)^2 - abs(xi - xi_p)^2)^(1/2), 'Right')/(abs(zeta_p)^2 + abs(xi - xi_p)^2) - (eta_1 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))*(B2 + B1*xi) + (eta_2 + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))*(B2 + B1*xi) - zeta_p*(eta_1 - eta_2 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) - ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3)) + limit((eta - eta_p)/(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta - eta_p)^2)^(1/2), eta, eta_p - (- abs(zeta_p)^2 - abs(xi - xi_p)^2)^(1/2), 'Left')/(abs(zeta_p)^2 + abs(xi - xi_p)^2) - limit((eta - eta_p)/(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta - eta_p)^2)^(1/2), eta, eta_p - (- abs(zeta_p)^2 - abs(xi - xi_p)^2)^(1/2), 'Right')/(abs(zeta_p)^2 + abs(xi - xi_p)^2) + ((eta_1 - eta_2)*(xi - xi_3))/(xi_2 - xi_3) - (eta_1 - eta_p + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))/((abs(zeta_p)^2 + abs(xi - xi_p)^2)*(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta_1 - eta_p + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)^(1/2)) + (eta_2 - eta_p + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))/((abs(zeta_p)^2 + abs(xi - xi_p)^2)*(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta_2 - eta_p + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)^(1/2)), 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (eta_1*(xi_1 - xi_3) + (eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3) <= eta_p - (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) & eta_p - (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) <= (eta_2*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2) & (0 < (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0 | in((eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3), 'real') & in((eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3), 'real') & ((- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) < (eta_1*(xi_1 - xi_3) - eta_p*(xi_1 - xi_3) + (eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3) | ~(- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))), - (C2*(eta_1 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)/2 + (C2*(eta_2 + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)/2 - (eta_1 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))*(B2 + B1*xi) + (eta_2 + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))*(B2 + B1*xi) - zeta_p*(eta_1 - eta_2 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) - ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3)) + limit((eta - eta_p)/(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta - eta_p)^2)^(1/2), eta, eta_p - (- abs(zeta_p)^2 - abs(xi - xi_p)^2)^(1/2), 'Left')/(abs(zeta_p)^2 + abs(xi - xi_p)^2) - limit((eta - eta_p)/(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta - eta_p)^2)^(1/2), eta, eta_p - (- abs(zeta_p)^2 - abs(xi - xi_p)^2)^(1/2), 'Right')/(abs(zeta_p)^2 + abs(xi - xi_p)^2) + ((eta_1 - eta_2)*(xi - xi_3))/(xi_2 - xi_3) - (eta_1 - eta_p + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))/((abs(zeta_p)^2 + abs(xi - xi_p)^2)*(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta_1 - eta_p + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)^(1/2)) + (eta_2 - eta_p + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))/((abs(zeta_p)^2 + abs(xi - xi_p)^2)*(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta_2 - eta_p + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)^(1/2)), 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & ((eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= (- (xi - xi_p)^2 - zeta_p^2)^(1/2) & (0 < (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0) | (0 < (eta_1*(xi_1 - xi_3) - eta_p*(xi_1 - xi_3) + (eta_1 - eta_3)*(xi - xi_1) + (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_1 - xi_3))/(xi_1 - xi_3) | ~-(- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3)) & (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= 0 & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2)) & (eta_1*(xi_1 - xi_3) + (eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3) <= eta_p + (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) & eta_p + (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) <= (eta_2*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3), - (C2*(eta_1 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)/2 + (C2*(eta_2 + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)/2 + limit((eta - eta_p)/(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta - eta_p)^2)^(1/2), eta, eta_p + (- abs(zeta_p)^2 - abs(xi - xi_p)^2)^(1/2), 'Left')/(abs(zeta_p)^2 + abs(xi - xi_p)^2) - limit((eta - eta_p)/(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta - eta_p)^2)^(1/2), eta, eta_p + (- abs(zeta_p)^2 - abs(xi - xi_p)^2)^(1/2), 'Right')/(abs(zeta_p)^2 + abs(xi - xi_p)^2) - (eta_1 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))*(B2 + B1*xi) + (eta_2 + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))*(B2 + B1*xi) - zeta_p*(eta_1 - eta_2 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) - ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3)) + ((eta_1 - eta_2)*(xi - xi_3))/(xi_2 - xi_3) - (eta_1 - eta_p + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))/((abs(zeta_p)^2 + abs(xi - xi_p)^2)*(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta_1 - eta_p + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)^(1/2)) + (eta_2 - eta_p + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))/((abs(zeta_p)^2 + abs(xi - xi_p)^2)*(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta_2 - eta_p + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)^(1/2)), ((eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0 | ~(eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2)) & (~(eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= (- (xi - xi_p)^2 - zeta_p^2)^(1/2) | (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0) | 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (~(eta_1*(xi_1 - xi_3) + (eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3) <= eta_p - (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) | ~eta_p - (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) <= (eta_2*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3)) & (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2) & (0 < (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0) | (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= (- (xi - xi_p)^2 - zeta_p^2)^(1/2) & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (0 < (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0) & (~(eta_1*(xi_1 - xi_3) + (eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3) <= eta_p + (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) | ~eta_p + (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) <= (eta_2*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3)) | (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= 0 & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (~(eta_1*(xi_1 - xi_3) + (eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3) <= eta_p - (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) | ~eta_p - (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) <= (eta_2*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3)) & (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2) & (~(eta_1*(xi_1 - xi_3) + (eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3) <= eta_p + (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) | ~eta_p + (- abs(xi - xi_p)^2 - zeta_p^2)^(1/2) <= (eta_2*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3)), - (C2*(eta_1 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)/2 + (C2*(eta_2 + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)/2 - (eta_1 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))*(B2 + B1*xi) + (eta_2 + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))*(B2 + B1*xi) - zeta_p*(eta_1 - eta_2 + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) - ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3)) + ((eta_1 - eta_2)*(xi - xi_3))/(xi_2 - xi_3) - (eta_1 - eta_p + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))/((abs(zeta_p)^2 + abs(xi - xi_p)^2)*(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta_1 - eta_p + ((eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)^(1/2)) + (eta_2 - eta_p + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))/((abs(zeta_p)^2 + abs(xi - xi_p)^2)*(abs(zeta_p)^2 + abs(xi - xi_p)^2 + (eta_2 - eta_p + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3))^2)^(1/2)), ((eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= (- (xi - xi_p)^2 - zeta_p^2)^(1/2) & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2)) & (~0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | ~(eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2) | 0 < (- eta_1*xi_3 + eta_3*xi_2 + xi*(eta_1 - eta_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3))/(xi_2 - xi_3) | (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= 0 & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (- eta_1*xi_3 + eta_p*xi_3 + xi*(eta_1 - eta_3) + xi_2*(eta_3 - eta_p) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3))/(xi_2 - xi_3) <= 0) & (~(eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= (- (xi - xi_p)^2 - zeta_p^2)^(1/2) | (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0 | (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= 0 & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | in((eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3), 'real') & 0 <= (eta_1*xi_3 - eta_3*xi_2 - xi*(eta_1 - eta_3) + eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3))/(xi_2 - xi_3)) & ((eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0 | ~(eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2) | (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= 0 & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | in((eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3), 'real') & (- eta_1*xi_3 + eta_3*xi_2 + xi*(eta_1 - eta_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3))/(xi_2 - xi_3) <= 0) & (~(- (xi - xi_p)^2 - zeta_p^2)^(1/2) <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | 0 < (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | ~0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | (eta_1*xi_3 - eta_3*xi_2 - xi*(eta_1 - eta_3) + eta_p*(xi_2 - xi_3))/(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2) < 0 | (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= 0 & 0 <= (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) & (- eta_1*xi_3 + eta_p*xi_3 + xi*(eta_1 - eta_3) + xi_2*(eta_3 - eta_p) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3))/(xi_2 - xi_3) <= 0) & (0 < (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0 | (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0 | ~(eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2) | ~(- eta_1*xi_3 + eta_p*xi_3 + xi*(eta_1 - eta_3) + xi_2*(eta_3 - eta_p) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3))/(xi_2 - xi_3) <= 0 | (eta_1*xi_3 - eta_3*xi_2 - xi*(eta_1 - eta_3) + eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3))/(xi_2 - xi_3) < 0) & (0 < (eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) | (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0 | (eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) < 0 | ~(eta_1*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (eta_1 - eta_3)*(xi - xi_2))/(xi_2 - xi_3) <= -(- (xi - xi_p)^2 - zeta_p^2)^(1/2) | in((eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3), 'real') & (- eta_1*xi_3 + eta_3*xi_2 + xi*(eta_1 - eta_3) - eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3))/(xi_2 - xi_3) <= 0 | in((eta_2*(xi_2 - xi_3) - eta_p*(xi_2 - xi_3) - (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3) + (eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3), 'real') & 0 <= (eta_1*xi_3 - eta_3*xi_2 - xi*(eta_1 - eta_3) + eta_p*(xi_2 - xi_3) + (- (xi - xi_p)^2 - zeta_p^2)^(1/2)*(xi_2 - xi_3))/(xi_2 - xi_3)), int(1/(abs(zeta_p)^2 + abs(eta - eta_p)^2 + abs(xi - xi_p)^2)^(3/2), eta, eta_1 + ((eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3), eta_2 + ((eta_2 - eta_3)*(xi - xi_2))/(xi_2 - xi_3)) - (C2*(eta_1 + ((eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3))^2)/2 + (C2*(eta_2 + ((eta_2 - eta_3)*(xi - xi_1))/(xi_1 - xi_3))^2)/2 - (eta_1 + ((eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3))*(B2 + B1*xi) + (eta_2 + ((eta_2 - eta_3)*(xi - xi_1))/(xi_1 - xi_3))*(B2 + B1*xi) - zeta_p*(eta_1 - eta_2 + ((eta_1 - eta_3)*(xi - xi_1))/(xi_1 - xi_3) - ((eta_2 - eta_3)*(xi - xi_1))/(xi_1 - xi_3)) + ((eta_1 - eta_2)*(xi - xi_3))/(xi_1 - xi_3));
-
 % fid = fopen('bs1.txt', 'wt');
-% disp('1/3')
-% tr1(1) = int(tr(1), eta, eta_te, eta_le);
-% fprintf(fid, '%s \n\n', char(tr1(1)));
-% disp('2/3')
-% tr1(2) = int(tr(2), eta, eta_te, eta_le);
-% fprintf(fid, '%s \n\n', char(tr1(2)));
-% disp('3/3')
-% tr1(3) = int(tr(3), eta, eta_te, eta_le);
-% fprintf(fid, '%s \n\n', char(tr1(3)));
+% fprintf(fid, 'Xi term \n\n');
+% 
+% % Xi term
+% kids = children(expand(tr(1)));
+% for i = 1:length(kids)
+%     clc
+%     disp(['Xi-dir ', num2str(i) '/' num2str(length(kids))])
+%     tr11_pre(i) = int(simplify(kids(i)), eta, eta_te, eta_le);
+%     fprintf(fid, '%s \n', char(tr11_pre(i)));
+%     pretty(tr11_pre(i))
+% end
+% fprintf(fid, '\n');
+% % Summing the child integrals back up and evaluating from TE to LE
+% % tr1(1) = sum(tr11_pre);
+% % fprintf(fid, '%s \n\n', char(tr1(1)));
+% 
+% fprintf(fid, 'Eta term \n\n');
+% % Eta term
+% kids = children(expand(tr(2)));
+% for i = 1:length(kids)
+%     clc
+%     disp(['Eta-dir ', num2str(i) '/' num2str(length(kids))])
+%     tr12_pre(i) = int(simplify(kids(i)), eta, eta_te, eta_le);
+%     fprintf(fid, '%s \n', char(tr12_pre(i)));
+%     pretty(tr12_pre(i))
+% end
+% fprintf(fid, '\n');
+% % Summing the child integrals back up and evaluating from TE to LE
+% % tr1(2) = sum(tr12_pre);
+% % fprintf(fid, '%s \n\n', char(tr1(2)));
+% 
+% % Zeta term
+% kids = children(expand(tr(3)));
+% for i = 1:length(kids)
+%     clc
+%     disp(['Zeta-dir ', num2str(i) '/' num2str(length(kids))])
+%     tr13_pre(i) = int(simplify(kids(i)), eta, eta_te, eta_le);
+%     fprintf(fid, '%s \n', char(tr13_pre(i)));
+%     pretty(tr13_pre(i))
+% end
+% fprintf(fid, '\n');
+% % Summing the child integrals back up and evaluating from TE to LE
+% % tr1(1) = sum(tr11_pre);
+% % fprintf(fid, '%s \n\n', char(tr1(1)));
+% 
 % fclose(fid);
-
-%% Integrating from left to right (xi_1 to xi_3)
-
-% % Xi direction w_ind
-% kids = children(tr1(1));
-% for i = 1:length(kids)
-% %     clc
-%     disp([num2str(i) '/' num2str(length(kids))])
-%     tr21_pre(i) = int(simplify(kids(i)), xi, xi_1, xi_3);
-% %     pretty(tr21_pre(i))
-% end
-% % Summing the child integrals back up and evaluating from TE to LE
-% tr2(1) = sum(tr21_pre);
-
-% % Eta direction w_ind
-% kids = children(expand(tr1(2)));
-% for i = 1:length(kids)
-%     disp(i)
-%     tr22_pre(i) = int(simplify(kids(i)), xi, xi_1, xi_3);
-% end
-% % The sign of the children terms are based on the sign of xi - xi_p
-% tr22_pre = tr22_pre.*sign(xi - xi_p); 
-% % Summing the child integrals back up and evaluating from TE to LE
-% tr22_comb = sum(tr22_pre);
-% tr2(2) = subs(tr22_comb, xi, xi_3) - subs(tr22_comb, xi, xi_1);
-
-% Zeta direction w_ind (easy)
-tr2(3) = int(tr1(3), xi, xi_1, xi_3);
-
-matlabFunction(tr2(3),'File','w_zeta')
-
-fid = fopen('bs2.txt', 'wt');
-for i = 1:3
-    
-%     kids = children(tr2(i));
-    
-%     for jj = 1:length(kids)
-%         if jj < length(kids)
-%             fprintf(fid, '+ (%s) ... \n', char(kids(jj)));
-%         elseif jj == length(kids)
-%             fprintf(fid, '+ (%s); \n', char(kids(jj))); 
-%         end
-%     end
-%     
-%     fprintf(fid, '\n\n\n\n');
-    fprintf(fid, '%s \n\n', char(tr2(i)));
-end
-fclose(fid);
-
+% 
+% %% Integrating from left to right (xi_1 to xi_3)
 
 
 

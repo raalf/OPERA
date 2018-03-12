@@ -5,7 +5,7 @@ matPOINTS(:,:,1) = [0 0 0];
 matPOINTS(:,:,2) = [0 2 0];
 matPOINTS(:,:,3) = [1 0.5 0];
 
-matCOEFF = [1 1 1 1 1 1];
+matCOEFF = [0 1 0 0 0 0];
 
 hFig203 = figure(203);
 clf(203);
@@ -41,9 +41,15 @@ x = -.4:granularity:1.3;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
+idx = fpg(:,3) == 0;
+fpg(idx,:) = [];
+
 len = size(fpg,1);
 dvenum = ones(len, 1);
-infl_glob = induc(repmat(matPOINTS,len,1,1), fpg);
+% infl_glob = induc(repmat(matPOINTS,len,1,1), fpg);
+load('matlab.mat','infl_glob');
+
+infl_glob(:,:,idx) = [];
 q_ind = permute(sum(infl_glob.*repmat(reshape(matCOEFF(dvenum,:)',1,6,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
 

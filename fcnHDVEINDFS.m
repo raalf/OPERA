@@ -3,13 +3,13 @@ function [infl_glob] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matP
 fpl = fcnGLOBSTAR(fpg - matCENTER(dvenum,:), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
 
 %%
-xi_1 = matPLEX(:,1,1);
-xi_2 = matPLEX(:,1,2);
-xi_3 = matPLEX(:,1,3);
+xi_1 = permute(matPLEX(1,1,dvenum),[3 2 1]);
+xi_2 = permute(matPLEX(2,1,dvenum),[3 2 1]);
+xi_3 = permute(matPLEX(3,1,dvenum),[3 2 1]);
 
-eta_1 = matPLEX(:,2,1);
-eta_2 = matPLEX(:,2,2);
-eta_3 = matPLEX(:,2,3);
+eta_1 = permute(matPLEX(1,2,dvenum),[3 2 1]);
+eta_2 = permute(matPLEX(2,2,dvenum),[3 2 1]);
+eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 
 % Checking which elements are on the element, moving them off by a small
 % amount
@@ -49,7 +49,7 @@ for i = 1:len
         elseif j == 5
             term = @(x,y) -zeta_p(i).*1.0./(abs(zeta_p(i)).^2+abs(y-eta_p(i)).^2+abs(x-xi_p(i)).^2).^(3.0./2.0);
             infl_loc(2,2,i) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta);               
-        elseif i == 6
+        elseif j == 6
             term = @(x,y) -(y-eta_p(i)).*1.0./(abs(zeta_p(i)).^2+abs(y-eta_p(i)).^2+abs(x-xi_p(i)).^2).^(3.0./2.0);
             infl_loc(3,2,i) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta);
         % b1    

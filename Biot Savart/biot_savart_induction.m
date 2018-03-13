@@ -6,7 +6,7 @@ matPOINTS(:,:,1) = [0 0 0];
 matPOINTS(:,:,2) = [0 2 0];
 matPOINTS(:,:,3) = [1 0.5 0];
 
-matCOEFF = [0 0 0 1 0 0];
+matCOEFF = [0 1 0 0 0 0];
 
 hFig203 = figure(203);
 clf(203);
@@ -43,12 +43,13 @@ x = -.4:granularity:1.3;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-% fpg = [0.8 0.8 0];
+% fpg = [0.4 0.6 0.2];
 
 %% Calculating induced velocities
 len = size(fpg,1);
 dvenum = ones(len, 1);
 infl_glob = induc(repmat(matPOINTS,len,1,1), fpg);
+% load('matlab.mat')
 
 q_ind = permute(sum(infl_glob.*repmat(reshape(matCOEFF(dvenum,:)',1,6,[]),3,1,1),2),[2 1 3]);
 q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(-4*pi);
@@ -106,7 +107,7 @@ for i = 1:len
         elseif j == 5
             term = @(x,y) -zeta_p(i).*1.0./(abs(zeta_p(i)).^2+abs(y-eta_p(i)).^2+abs(x-xi_p(i)).^2).^(3.0./2.0);
             infl_loc(2,2,i) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta);               
-        elseif i == 6
+        elseif j == 6
             term = @(x,y) -(y-eta_p(i)).*1.0./(abs(zeta_p(i)).^2+abs(y-eta_p(i)).^2+abs(x-xi_p(i)).^2).^(3.0./2.0);
             infl_loc(3,2,i) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta);
         % b1    

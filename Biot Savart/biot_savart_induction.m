@@ -5,7 +5,7 @@ matPOINTS(:,:,1) = [0 0 0];
 matPOINTS(:,:,2) = [0 2 0];
 matPOINTS(:,:,3) = [1 0.5 0];
 
-matCOEFF = [0 0 1 1 0 0];
+matCOEFF = [0 0 0 1 0 0];
 
 hFig203 = figure(203);
 clf(203);
@@ -41,7 +41,7 @@ x = -.4:granularity:1.3;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-% fpg = [0.4 1.4 0];
+% fpg = [0.8 0.8 0];
 
 len = size(fpg,1);
 dvenum = ones(len, 1);
@@ -79,11 +79,11 @@ eta_3 = matPOINTS(:,2,3);
 margin = 1e-5;
 le_eta = eta_2 + (fpl(:,1) - xi_2).*((eta_3 - eta_2)./(xi_3 - xi_2));
 te_eta = eta_1 + (fpl(:,1) - xi_1).*((eta_3 - eta_1)./(xi_3 - xi_1));
-idx_on_element = fpl(:,2) >= te_eta & fpl(:,2) <= le_eta & fpl(:,1) >= xi_1 & fpl(:,1) <= xi_3 & abs(fpl(:,3)) <= margin;
+idx_on_element = fpl(:,2) >= te_eta - margin & fpl(:,2) <= le_eta + margin & fpl(:,1) >= xi_1 & fpl(:,1) <= xi_3 & abs(fpl(:,3)) <= margin;
 idx_on_edge = idx_on_element & ((le_eta - margin <= fpl(:,2) & fpl(:,2) <= le_eta + margin) | (te_eta - margin <= fpl(:,2) & fpl(:,2) <= te_eta + margin));
 
-fpl(idx_on_element,3) = fpl(idx_on_element,3) + 100*margin;
-fpl(idx_on_edge,2) = fpl(idx_on_edge,2) + 100*margin;
+fpl(idx_on_element,3) = fpl(idx_on_element,3) + 10*margin;
+fpl(idx_on_edge,2) = fpl(idx_on_edge,2) + 1000*margin;
 
 xi_p = fpl(:,1);
 eta_p = fpl(:,2);
@@ -134,5 +134,7 @@ close(h);
 
 % Only using the tangential velocities for points on the element
 infl_loc(1:2,:,idx_on_element) = infl_loc(1:2,:,idx_on_element).*0;
+% Zero it all for singular edges
+infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
 
 end

@@ -1,4 +1,4 @@
-function [vecR] = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matELST, matCENTER, matDVECT, matUINF, vecLE, vecLEDVE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST, matWVSCOMB, matWCENTER)
+function [vecR] = fcnRWING(strATYPE, valDLEN, valTIMESTEP, matELST, matCENTER, matDVECT, vecUINF, vecLE, vecLEDVE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matVNORM, matVLST, matWVSCOMB, matWCENTER)
 % Resultant
 % Kinematic resultant is the freestream (and wake-induced velocities summed) dotted with the
 % norm of the point we are influencing on, multiplied by 4*pi
@@ -11,6 +11,8 @@ normals = matDVECT(:,:,3);
 % normals = matVNORM;
 
 len = length(normals(:,1));
+
+matUINF = repmat(vecUINF,len,1);
 
 if valTIMESTEP < 1;
     % Flow tangency at control points goes at the bottom of the resultant

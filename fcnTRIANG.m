@@ -16,8 +16,8 @@ function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
 %   SDEG - Currently unused. Split degree. No split in the wing has degree 2, as the maximum number of HDVEs per edge is 2.
 %   PLEX - Matrix of local eta-xi coordinates of vertices 
 %   DVECT - Normal vectors
-%   ALIGN - Gives alignment of eta and xi axis between adjacent HDVEs in EATT rows. ALIGN(:,:,1) is alignment of eta in terms of eta and xi of the adjacent HDVE
-            % ALIGN(:,:,2) is alignment of xi in terms of eta and xi in adjacent HDVE.
+%   ALIGN - Gives alignment of eta and xi axis between adjacent HDVEs in EATT rows. ALIGN(:,:,1) is alignment of xi in terms of xi and eta of the adjacent HDVE
+            % ALIGN(:,:,2) is alignment of eta in terms of xi and eta in adjacent HDVE.
 %   VATT - NELE x ? matrix of which elements are attached to which vertices
 %   VNORM - NELE x 3 matrix of the averaged normals of all elements attached to a vertex (used for flow tangency)
 % This function was written to work with the panel code, and lifting surface with and without a split (of SDEG 3). Modelling
@@ -160,7 +160,7 @@ if isempty(find(isnan(matADJE))) == 0 && strcmp(ATYPE,'PC')
     disp('Problem with geometry in fcnTRIANG.')
 end
 
-%% Local HDVE Eta-Xi Axis
+%% Local HDVE Xi-eta Axis
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
 [matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER);
 
@@ -171,10 +171,10 @@ matALIGN = repmat(zeros(size(matEATT)),1,1,2);
 % Projecting vector from DVE onto adjacent DVE
 idx = all(matEATT,2); % All edges that split 2 DVEs
 
-% Eta direction of DVE projected onto adjacent DVE
+% Xi direction of DVE projected onto adjacent DVE
 vec1 = matDVECT(matEATT(idx,1),:,1) - repmat((dot(matDVECT(matEATT(idx,1),:,1),matDVECT(matEATT(idx,2),:,3), 2)./(sqrt(sum(abs(matDVECT(matEATT(idx,2),:,3).^2),2)).^2)),1,3).*matDVECT(matEATT(idx,2),:,3);
 
-% Xi direction of DVE projected onto adjacent DVE
+% Eta direction of DVE projected onto adjacent DVE
 vec2 = matDVECT(matEATT(idx,1),:,2) - repmat((dot(matDVECT(matEATT(idx,1),:,2),matDVECT(matEATT(idx,2),:,3), 2)./(sqrt(sum(abs(matDVECT(matEATT(idx,2),:,3).^2),2)).^2)),1,3).*matDVECT(matEATT(idx,2),:,3);
 
 % If any of the projected vectors are equal to the normal, then take the cross product of the other projected vector and the normal
@@ -184,11 +184,11 @@ idx2 = ~any(vec2,2);
 vec2(idx2,:) = cross(vec1(idx2,:),matDVECT(matEATT(idx2,2),:,3)); 
 
 % Finding local eta, xi of projections on adjacent DVE
-matALIGN(idx,1,1) = dot(vec2,matDVECT(matEATT(idx,2),:,1),2);
-matALIGN(idx,2,1) = dot(vec2,matDVECT(matEATT(idx,2),:,2),2);
+matALIGN(idx,1,2) = dot(vec2,matDVECT(matEATT(idx,2),:,1),2);
+matALIGN(idx,2,2) = dot(vec2,matDVECT(matEATT(idx,2),:,2),2);
 
-matALIGN(idx,1,2) = dot(vec1,matDVECT(matEATT(idx,2),:,1),2);
-matALIGN(idx,2,2) = dot(vec1,matDVECT(matEATT(idx,2),:,2),2);
+matALIGN(idx,1,1) = dot(vec1,matDVECT(matEATT(idx,2),:,1),2);
+matALIGN(idx,2,1) = dot(vec1,matDVECT(matEATT(idx,2),:,2),2);
 
 %% Vertex attachements and normal averages
 

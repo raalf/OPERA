@@ -9,7 +9,7 @@ a = 1;
 b = 1;
 c = 1;
 
-[x,y,z] = ellipsoid(0,0,0,b,a,c,20);
+[x,y,z] = ellipsoid(0,0,0,b,a,c,3);
 [V,S] = alphavol([x(:), y(:), z(:)]);
 
 TR = triangulation(S.bnd, [x(:), y(:), z(:)]);
@@ -17,6 +17,8 @@ matPOINTS = permute(reshape(TR.Points([TR.ConnectivityList(:,1) TR.ConnectivityL
 
 [~, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
+
+[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
 
 flagRELAX = 0;
 vecSYM = [];

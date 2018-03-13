@@ -13,9 +13,12 @@ function [PLEX, DVECT, ROTANG] = fcnTRITOLEX(P, DNORM, matCENTER)
 % 0 means its perpendicular to the flow
 % matVSCOMB(:,:,1) is for sheets going to positive eta infinity
 % matVSCOMB(:,:,2) is for sheets going to positive xsi infinity
-
 % MODIFIED
 % T.D.K 2017-06-05, 907 E 13TH AVE, DENVER, COLORADO, USA, 80218
+
+% Gutted, rewrote, origin is vertex 1 and one side is aligned with local
+% eta axis
+% T.D.K 2018-03-17. 230 KING ST E, TORONTO, ONTARIO, CANADA, M5A-1K5
 
 % Pre-allocating memory for a turbo-boost in performance
 sp = size(P);
@@ -34,17 +37,14 @@ end
 
 DVECT = zeros(sp(3),3,3);
 
-% Normal
+% Zeta (Normal)
 DVECT(:,:,3) = DNORM;
 
-% Xsi
-% DVECT(:,:,1) = reshape(permute((2.*P(1,:,:) - P(2,:,:) - P(3,:,:)), [2 1 3]), 3,[],1)';
-% DVECT(:,:,1) = DVECT(:,:,1)./sqrt(sum(DVECT(:,:,1).^2,2));
-global_x = repmat([1 0 0],sp(3),1);
-DVECT(:,:,1) = global_x - repmat((dot(global_x,DVECT(:,:,3),2))./(sqrt(sum(DVECT(:,:,3).^2,2))),1,3).*DVECT(:,:,3);
+% Eta (think of it as local y-axis)
+DVECT(:,:,2) = permute((P(2,:,:) - P(1,:,:))./sqrt(sum((P(2,:,:) - P(1,:,:)).^2,2)), [3 2 1]);
 
-% Element "eta" 
-DVECT(:,:,2) = cross(DVECT(:,:,3),DVECT(:,:,1),2);
+% Xsi
+DVECT(:,:,1) = cross(DVECT(:,:,2),DVECT(:,:,3),2);
 
 % Roll, pitch, yaw angles for global/local transformations
 ROLL = -atan2(DVECT(:,2,3), DVECT(:,3,3));
@@ -62,7 +62,6 @@ PLEX = permute(reshape(temp_points2',3,3,sp(3)),[2 1 3]);
 
 %% Translating local coordinates towards origin
 % Translating so that local origin is at the triangle incenter (matCENTER)
-
 temp_center = fcnGLOBSTAR(matCENTER, ROLL, PITCH, YAW);
 PLEX = PLEX - repmat(reshape(temp_center',1,3,[]),3,1,1);
 

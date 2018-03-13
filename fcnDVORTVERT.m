@@ -27,11 +27,17 @@ c2eta = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
 % align = matALIGN(idx,:,:);
 
 zer = a1(:,1).*0;
+% dgamma12 = [a1(:,1), a2(:,1), zer, zer, c2eta(:,1), zer];
+% dgamma22 = [a1(:,2), a2(:,2), zer, zer, c2eta(:,2), zer].*-1;
+% 
+% dgamma13 = [zer, zer, b1(:,1), b2(:,1), c2xsi(:,1), zer];
+% dgamma23 = [zer, zer, b1(:,2), b2(:,2), c2xsi(:,2), zer].*-1;
+
 dgamma12 = [a1(:,1), a2(:,1), zer, zer, c2eta(:,1), zer];
-dgamma22 = [a1(:,2), a2(:,2), zer, zer, c2eta(:,2), zer].*-1;
+dgamma22 = [a1(:,2).*matALIGN(idx,2,1), a2(:,2).*matALIGN(idx,2,1), b1(:,2).*matALIGN(idx,1,1), b2(:,2).*matALIGN(idx,1,1), c2eta(:,2).*matALIGN(idx,2,1), zer].*-1;
 
 dgamma13 = [zer, zer, b1(:,1), b2(:,1), c2xsi(:,1), zer];
-dgamma23 = [zer, zer, b1(:,2), b2(:,2), c2xsi(:,2), zer].*-1;
+dgamma23 = [a1(:,2).*matALIGN(idx,2,2), a2(:,2).*matALIGN(idx,2,2), b1(:,2).*matALIGN(idx,1,2), b2(:,2).*matALIGN(idx,1,2), c2xsi(:,2).*matALIGN(idx,1,2), zer].*-1;
 
 
 lines = nedg*2;

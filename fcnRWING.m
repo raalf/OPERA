@@ -7,6 +7,10 @@ vecR = zeros(valDLEN,1);
 
 points = matCENTER;
 normals = matDVECT(:,:,3);
+
+% points = [matCENTER; matVLST];
+% normals = [matDVECT(:,:,3); matVNORM];
+
 % points = matVLST;
 % normals = matVNORM;
 

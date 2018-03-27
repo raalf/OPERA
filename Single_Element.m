@@ -8,8 +8,8 @@ strFILE = 'inputs/2dve.dat';
 [~, strATYPE, vecSYM, ~, ~, ~, valALPHA, valBETA, ~, ~] = fcnOPREAD(strFILE);
 
 matPOINTS(:,:,1) = [0 0 0];
-matPOINTS(:,:,2) = [0 1 0];
-matPOINTS(:,:,3) = [1 0.5 0];
+matPOINTS(:,:,3) = [0 1 0];
+matPOINTS(:,:,1) = [1 0.5 0];
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
@@ -21,7 +21,7 @@ matCOEFF = [ 2 1 0 0 0 0 ];
 
 %% Plot
 
-[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
+[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 % view([-30 17])
 
@@ -53,7 +53,7 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = [-8 5 1];
 % fpg = [0.8 0.5 -0.2];
 
-[s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
+% [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
 
 % q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
 q_ind = s_ind;

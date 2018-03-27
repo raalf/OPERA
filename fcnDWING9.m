@@ -47,14 +47,33 @@ circ2 = [];
 vort = [];
 vort1 = [];
 vort2 = [];
+vort3 = [];
+vort4 = [];
 
 circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
 circ1 = fcnDCIRC2(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
 circ2 = fcnDCIRC2(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
 
-vort = fcnDVORT(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
-[vort1] = fcnDVORTVERT(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
-[vort2] = fcnDVORTVERT(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
+% vort = fcnDVORT(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
+% [vort1] = fcnDVORTVERT(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
+% [vort2] = fcnDVORTVERT(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
+
+%% Vorticity along edge between elements
+% Unit vector in local ref frame (a for HDVE1, b for HDVE2) from local vertex to local vertex on the edge that forms the border between the two
+
+temp = reshape(permute(matPLEX,[1 3 2]),[],3,1);
+
+e1vec = temp(matEATT(idx,1).*3 + vnuma(:,2) - 3,:) - temp(matEATT(idx,1).*3 + vnuma(:,1) - 3,:);
+e2vec = temp(matEATT(idx,2).*3 + vnumb(:,2) - 3,:) - temp(matEATT(idx,2).*3 + vnumb(:,1) - 3,:);
+e1vec = e1vec(:,1:2)./repmat(sqrt(e1vec(:,1).^2 + e1vec(:,2).^2),1,2);
+e2vec = e2vec(:,1:2)./repmat(sqrt(e2vec(:,1).^2 + e2vec(:,2).^2),1,2);
+
+vort1 = fcnDVORTEDGE(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, e1vec, e2vec);
+vort2 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, e1vec, e2vec);
+
+% vort3 = fcnDVORTEDGE(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, [-e1vec(:,2) e1vec(:,1)], [-e2vec(:,2) e2vec(:,1)]);
+% vort4 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, [-e1vec(:,2) e1vec(:,1)], [-e2vec(:,2) e2vec(:,1)]);
+
 
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
@@ -86,8 +105,12 @@ end
 % Points we are influencing
 fpg = matCENTER;
 normals = matDVECT(:,:,3);
+
 % fpg = matVLST;
 % normals = matVNORM;
+
+% fpg = [matCENTER; matVLST];
+% normals = [matDVECT(:,:,3); matVNORM];
 
 % fpg = matVLST;
 % normals = matVNORM;
@@ -117,8 +140,8 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*
 
 %% Piecing together D-matrix
 
-% D = [circ1; circ2; vort1; vort2; circ_tip; king_kong];
-D = [circ; circ1; circ2; vort; vort1; vort2; circ_tip; king_kong];
+D = [circ; circ1; circ2; vort1; vort2; vort3; vort4; circ_tip; king_kong];
+% D = [circ; circ1; circ2; vort; circ_tip; king_kong];
 
 % D = [circ; circ1; circ2; vort; circ_tip; king_kong];
 % D = [circ; vort; circ_tip; king_kong];

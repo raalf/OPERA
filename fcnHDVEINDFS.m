@@ -16,7 +16,7 @@ eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 margin = 1e-5;
 le_eta = eta_2 + (fpl(:,1) - xi_2).*((eta_3 - eta_2)./(xi_3 - xi_2));
 te_eta = eta_1 + (fpl(:,1) - xi_1).*((eta_3 - eta_1)./(xi_3 - xi_1));
-idx_on_element = fpl(:,2) >= te_eta - margin & fpl(:,2) <= le_eta + margin & fpl(:,1) >= xi_1 & fpl(:,1) <= xi_3 & abs(fpl(:,3)) <= margin;
+idx_on_element = fpl(:,2) >= te_eta - margin & fpl(:,2) <= le_eta + margin & fpl(:,1) >= xi_1 - margin & fpl(:,1) <= xi_3 + margin & abs(fpl(:,3)) <= margin;
 idx_on_edge = idx_on_element & ((xi_1 - margin <= fpl(:,1) & fpl(:,1) <= xi_1 + margin) | (le_eta - margin <= fpl(:,2) & fpl(:,2) <= le_eta + margin) | (te_eta - margin <= fpl(:,2) & fpl(:,2) <= te_eta + margin));
 
 fpl(idx_on_element,3) = fpl(idx_on_element,3) + 10*margin;

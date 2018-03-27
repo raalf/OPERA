@@ -18,6 +18,7 @@ disp('====================================================================');
 % strFILE = 'inputs/standard_cirrus.dat';
 strFILE = 'inputs/2dve.dat';
 % strFILE = 'inputs/4dve.dat';
+% strFILE = 'inputs/4dve_nosym.dat';
 % strFILE = 'inputs/nonplanar.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);

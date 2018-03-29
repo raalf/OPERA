@@ -56,12 +56,12 @@ ROTANG(:,3) = YAW;
 
 %% Local coordinates
 temp_points = reshape(permute(P,[1 3 2]),[],size(P,2),1);
-temp_points2 = fcnGLOBSTAR(temp_points, reshape(repmat(ROLL,1,3)',[],1),reshape(repmat(PITCH,1,3)',[],1), reshape(repmat(YAW,1,3)',[],1));
+temp_points2 = fcnGLOBSTAR(temp_points, [reshape(repmat(ROLL,1,3)',[],1) reshape(repmat(PITCH,1,3)',[],1) reshape(repmat(YAW,1,3)',[],1)]);
 PLEX = permute(reshape(temp_points2',3,3,sp(3)),[2 1 3]);
 
 %% Translating local coordinates towards origin
 % Translating so that local origin is at the triangle incenter (matCENTER)
-temp_center = fcnGLOBSTAR(matCENTER, ROLL, PITCH, YAW);
+temp_center = fcnGLOBSTAR(matCENTER, ROTANG);
 PLEX = PLEX - repmat(reshape(temp_center',1,3,[]),3,1,1);
 
 %% Finding local leading and trailing edges of HDVEs (matVSCOMB)

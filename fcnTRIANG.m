@@ -1,5 +1,5 @@
 function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(POINTS)
+            matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(POINTS)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -16,9 +16,6 @@ function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
 %   SDEG - Currently unused. Split degree. No split in the wing has degree 2, as the maximum number of HDVEs per edge is 2.
 %   PLEX - Matrix of local eta-xi coordinates of vertices 
 %   DVECT - Normal vectors
-%   ALIGN - Vector representation of (xsi,eta) in terms of neighbouring
-%   (xi,eta). Depth is edge number, column is for (xsi, eta) of reference
-%   element, row is (xsi,eta) combo from neighbouring element
 %   VATT - NELE x ? matrix of which elements are attached to which vertices
 %   VNORM - NELE x 3 matrix of the averaged normals of all elements attached to a vertex (used for flow tangency)
 % This function was written to work with the panel code, and lifting surface with and without a split (of SDEG 3). Modelling
@@ -117,7 +114,6 @@ matEIDX(matEIDX==0) = nedg;
 matEIDX = reshape(matEIDX,[],3);
 
 %% Computing ELOC
-
 [i3,~,~] = find(matEATT>0); % Finding indices of nonzero elements in EATT
 [i,j,~] = find(matEIDX(matEATT(matEATT>0),:) == repmat(i3,1,3)); % Finding where these indices are equal to whats in EIDX
 
@@ -126,7 +122,6 @@ matELOC(matEATT>0,1) = temp31(:,2); % ELOC is column 2, indexing it appropriatel
 matELOC = reshape(matELOC,nedg,[]);
 
 %% Computing the adjaceny matrix (which DVEs are adjacent to which, columns are sensitive to edge number)
-
 SDEG = length(matEATT(1,:)); % The degree of the split
 
 % Neighbouring elements along the first local edge of each HDVE
@@ -165,44 +160,7 @@ end
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
 [matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER);
 
-%% Finding DVE Alignment Matrix ALIGN
-
-matALIGN_temp = repmat(zeros(size(matEATT)),1,1,2);
-matALIGN = zeros(2,2,size(matALIGN_temp,1));
-
-% Projecting vector from DVE onto adjacent DVE
-idx = all(matEATT,2); % All edges that split 2 DVEs
-
-% Xi direction of DVE projected onto adjacent DVE
-vec1 = matDVECT(matEATT(idx,1),:,1) - repmat((dot(matDVECT(matEATT(idx,1),:,1),matDVECT(matEATT(idx,2),:,3), 2)./(sqrt(sum(abs(matDVECT(matEATT(idx,2),:,3).^2),2)).^2)),1,3).*matDVECT(matEATT(idx,2),:,3);
-
-% Eta direction of DVE projected onto adjacent DVE
-vec2 = matDVECT(matEATT(idx,1),:,2) - repmat((dot(matDVECT(matEATT(idx,1),:,2),matDVECT(matEATT(idx,2),:,3), 2)./(sqrt(sum(abs(matDVECT(matEATT(idx,2),:,3).^2),2)).^2)),1,3).*matDVECT(matEATT(idx,2),:,3);
-
-% If any of the projected vectors are equal to the normal, then take the cross product of the other projected vector and the normal
-idx1 = ~any(vec1,2);
-vec1(idx1,:) = cross(matDVECT(matEATT(idx1,2),:,3),vec2(idx1,:)); 
-idx2 = ~any(vec2,2);
-vec2(idx2,:) = cross(vec1(idx2,:),matDVECT(matEATT(idx2,2),:,3)); 
-
-% Finding local eta, xi of projections on adjacent DVE
-matALIGN_temp(idx,1,2) = dot(vec2,matDVECT(matEATT(idx,2),:,1),2);
-matALIGN_temp(idx,2,2) = dot(vec2,matDVECT(matEATT(idx,2),:,2),2);
-
-matALIGN_temp(idx,1,1) = dot(vec1,matDVECT(matEATT(idx,2),:,1),2);
-matALIGN_temp(idx,2,1) = dot(vec1,matDVECT(matEATT(idx,2),:,2),2);
-
-% Gotta express the vectors (xi and eta) in terms of the linear combination
-% of vectors in the neighbouring element
-temp = permute(matALIGN_temp, [2 3 1]);
-[~,idx3] = find(any(any(temp,2)));
-for i = 1:length(idx3)
-matALIGN(:,1,idx3(i)) = temp(:,:,idx3(i))\[1 0]';
-matALIGN(:,2,idx3(i)) = temp(:,:,idx3(i))\[0 1]';
-end
-
 %% Vertex attachements and normal averages
-
 matVATT = vertexAttachments(TR);
 
 % Turning the cell array VATT into a matrix - A.Y. Method 2016-09-20

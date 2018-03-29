@@ -1,4 +1,4 @@
-function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM)
+function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG)
 
 lambda_mid = [ ...
     0.5 0.5 0; ... % Edge 1 mid-point
@@ -44,22 +44,17 @@ vnumb(:,2) = tb(rb);
 circ = [];
 circ1 = [];
 circ2 = [];
-vort = [];
+
+circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC);
+circ1 = fcnDCIRC2(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
+circ2 = fcnDCIRC2(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
+
+%% Vorticity along edge between elements
+% Unit vector in local ref frame (a for HDVE1, b for HDVE2) from local vertex to local vertex on the edge that forms the border between the two
 vort1 = [];
 vort2 = [];
 vort3 = [];
 vort4 = [];
-
-circ = fcnDCIRC(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
-circ1 = fcnDCIRC2(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
-circ2 = fcnDCIRC2(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC);
-
-% vort = fcnDVORT(idx, nedg, lambda_mid, valNELE, matPLEX, matEATT, matELOC, matALIGN);
-% [vort1] = fcnDVORTVERT(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
-% [vort2] = fcnDVORTVERT(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, matELOC, matALIGN);
-
-%% Vorticity along edge between elements
-% Unit vector in local ref frame (a for HDVE1, b for HDVE2) from local vertex to local vertex on the edge that forms the border between the two
 
 temp = reshape(permute(matPLEX,[1 3 2]),[],3,1);
 
@@ -99,24 +94,11 @@ end
 
 %% Kinematic conditions at vertices
 % Flow tangency is to be enforced at all control points on the surface HDVEs
-
 % In the D-Matrix, dot (a1,a2,b1,b2,c3) of our influencing HDVE with the normal of the point we are influencing on
 
 % Points we are influencing
 fpg = matCENTER;
 normals = matDVECT(:,:,3);
-
-% fpg = matVLST;
-% normals = matVNORM;
-
-% fpg = [matCENTER; matVLST];
-% normals = [matDVECT(:,:,3); matVNORM];
-
-% fpg = matVLST;
-% normals = matVNORM;
-
-% fpg = [matCENTER; (matVLST(matELST(vecLE,1),:) + matVLST(matELST(vecLE,2),:))./2];
-% normals = [matDVECT(:,:,3); matDVECT(vecLEDVE,:,3)];
 
 % List of DVEs we are influencing from (one for each of the above fieldpoints)
 len = length(fpg(:,1));
@@ -125,7 +107,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[infl_glob] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matCENTER);
+[infl_glob] = fcnHDVEINDFS(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 
@@ -139,16 +121,7 @@ king_kong = zeros(len, valNELE*6);
 king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
 
 %% Piecing together D-matrix
-
 D = [circ; circ1; circ2; vort1; vort2; vort3; vort4; circ_tip; king_kong];
-% D = [circ; circ1; circ2; vort; circ_tip; king_kong];
-
-% D = [circ; circ1; circ2; vort; circ_tip; king_kong];
-% D = [circ; vort; circ_tip; king_kong];
-% D = [circ; vort_edge1; vort_edge2; vort_perp1; vort_perp2; circ_tip; king_kong];
-
-% D(abs(D) < 1e-4) = zeros(length(D(abs(D) < 1e-10)), 1);
-
 
 end
 

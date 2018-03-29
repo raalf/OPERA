@@ -1,23 +1,21 @@
-function [xsi] = fcnGLOBSTAR(points, roll, pitch, yaw)
+function [xsi] = fcnGLOBSTAR(points, rotation_angles)
 % Transforms a point from global to local reference frame
 % Input in RADIANS
 
 % INPUT:
 %   points - n x 3 matrix of (x,y,z) points in global coordinates
-%   roll - n x 1 vector of roll (nu) angles in radians
-%   pitch - n x 1 vector of pitch (eps) angles in radians
-%   yaw - n x 1 vector of yaw (psi) angles in radians
+%   rotation_angles - n x 3 matrix, where colums are (roll, pitch, yaw)
 % OUTPUT:
 %   xsi - n x 3 matrix of "points" in local reference frame
 
 len = length(points(:,1));
 
-cnu = cos(roll);
-snu = sin(roll);
-ceps = cos(pitch);
-seps = sin(pitch);
-cpsi = cos(yaw);
-spsi = sin(yaw);
+cnu = cos(rotation_angles(:,1));
+snu = sin(rotation_angles(:,1));
+ceps = cos(rotation_angles(:,2));
+seps = sin(rotation_angles(:,2));
+cpsi = cos(rotation_angles(:,3));
+spsi = sin(rotation_angles(:,3));
 
 xsi = zeros(len,3);
 xsi(:,1) = points(:,1).*(cpsi.*ceps) + points(:,2).*(cpsi.*seps.*snu+spsi.*cnu) + points(:,3).*(-cpsi.*seps.*cnu+spsi.*snu);

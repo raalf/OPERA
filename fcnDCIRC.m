@@ -1,4 +1,4 @@
-function [circ] = fcnDCIRC(idx, nedg, lambda, valNELE, matPLEX, matEATT, matELOC, matALIGN)
+function [circ] = fcnDCIRC(idx, nedg, lambda, valNELE, matPLEX, matEATT, matELOC)
 % Calculates circulation equations for the D-matrix
 
 % A1 A2 B1 B2 C2 C3
@@ -30,6 +30,5 @@ gamma1 = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)];
 gamma2 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)].*-1;
 circ = fcnCREATEDSECT(sparse(nedg, valNELE*6), nedg, 6, matEATT(idx,1), matEATT(idx,2), gamma1, gamma2);
 
-  
 end
 

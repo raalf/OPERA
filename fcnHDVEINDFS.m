@@ -1,6 +1,6 @@
-function [infl_glob] = fcnHDVEINDFS(dvenum, fpg, matDVE, matDVECT, matVLST, matPLEX, dvetype, matROTANG, matCENTER)
+function [infl_glob] = fcnHDVEINDFS(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER)
 
-fpl = fcnGLOBSTAR(fpg - matCENTER(dvenum,:), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
+fpl = fcnGLOBSTAR(fpg - matCENTER(dvenum,:), matROTANG(dvenum,:));
 
 %%
 xi_1 = permute(matPLEX(1,1,dvenum),[3 2 1]);
@@ -103,7 +103,7 @@ end
 
 %%
 dvenum = reshape(repmat(dvenum,1,6,1)',[],1,1);
-infl_tot = fcnSTARGLOB(reshape(permute(infl_loc,[2 3 1]),[],3,1), matROTANG(dvenum,1), matROTANG(dvenum,2), matROTANG(dvenum,3));
+infl_tot = fcnSTARGLOB(reshape(permute(infl_loc,[2 3 1]),[],3,1), matROTANG(dvenum,:));
 infl_tot(isnan(infl_tot)) = 0;
 
 infl_glob = reshape(infl_tot',3,6,[]);

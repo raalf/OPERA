@@ -28,11 +28,11 @@ c2eta = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
 
 zer = a1(:,1).*0;
 
-dgamma12 = [a1(:,1), a2(:,1), zer, zer, zer, zer];
-dgamma22 = [a1(:,2).*permute(matALIGN(2,2,idx),[3 2 1]), a2(:,2).*permute(matALIGN(2,2,idx),[3 2 1]), b1(:,2).*permute(matALIGN(1,2,idx),[3 2 1]), b2(:,2).*permute(matALIGN(1,2,idx),[3 2 1]), (c2xi(:,1).*permute(matALIGN(2,2,idx),[3 2 1]) + c2eta(:,1).*permute(matALIGN(1,2,idx),[3 2 1])), zer].*-1;
+dgamma12 = [-a1(:,1), -a2(:,1), zer, zer, zer, zer];
+dgamma22 = [-a1(:,2).*permute(matALIGN(2,2,idx),[3 2 1]), -a2(:,2).*permute(matALIGN(2,2,idx),[3 2 1]), b1(:,2).*permute(matALIGN(1,2,idx),[3 2 1]), b2(:,2).*permute(matALIGN(1,2,idx),[3 2 1]), (-c2xi(:,1).*permute(matALIGN(2,2,idx),[3 2 1]) + c2eta(:,1).*permute(matALIGN(1,2,idx),[3 2 1])), zer].*-1;
 
-dgamma13 = [a1(:,1), a2(:,1), zer, zer, zer, zer];
-dgamma23 = [a1(:,2).*permute(matALIGN(2,1,idx),[3 2 1]), a2(:,2).*permute(matALIGN(2,1,idx),[3 2 1]), b1(:,2).*permute(matALIGN(1,1,idx),[3 2 1]), b2(:,2).*permute(matALIGN(1,1,idx),[3 2 1]), (c2xi(:,1).*permute(matALIGN(2,1,idx),[3 2 1]) + c2eta(:,1).*permute(matALIGN(1,1,idx),[3 2 1])), zer].*-1;
+dgamma13 = [-a1(:,1), -a2(:,1), zer, zer, zer, zer];
+dgamma23 = [-a1(:,2).*permute(matALIGN(2,1,idx),[3 2 1]), -a2(:,2).*permute(matALIGN(2,1,idx),[3 2 1]), b1(:,2).*permute(matALIGN(1,1,idx),[3 2 1]), b2(:,2).*permute(matALIGN(1,1,idx),[3 2 1]), (-c2xi(:,1).*permute(matALIGN(2,1,idx),[3 2 1]) + c2eta(:,1).*permute(matALIGN(1,1,idx),[3 2 1])), zer].*-1;
 
 
 lines = nedg*2;

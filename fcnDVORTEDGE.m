@@ -25,8 +25,8 @@ c2eta = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
 
 zer = a1(:,1).*0;
 
-dgamma1 = [a1(:,1).*e1vec(:,2), a2(:,1).*e1vec(:,2), b1(:,1).*e1vec(:,1), b2(:,1).*e1vec(:,1), (c2xi(:,1).*e1vec(:,2) + c2eta(:,1).*e1vec(:,1)), zer];
-dgamma2 = [a1(:,2).*e2vec(:,2), a2(:,2).*e2vec(:,2), b1(:,2).*e2vec(:,1), b2(:,2).*e2vec(:,1), (c2xi(:,2).*e2vec(:,2) + c2eta(:,2).*e2vec(:,1)), zer];
+dgamma1 = [-a1(:,1).*e1vec(:,2), -a2(:,1).*e1vec(:,2), b1(:,1).*e1vec(:,1), b2(:,1).*e1vec(:,1), (-c2xi(:,1).*e1vec(:,2) + c2eta(:,1).*e1vec(:,1)), zer];
+dgamma2 = [-a1(:,2).*e2vec(:,2), -a2(:,2).*e2vec(:,2), b1(:,2).*e2vec(:,1), b2(:,2).*e2vec(:,1), (-c2xi(:,2).*e2vec(:,2) + c2eta(:,2).*e2vec(:,1)), zer].*-1;
 
 % Row indices of the rows where vorticity equations will go
 rows = reshape([repmat([1:nedg]',1,6)]',[],1);

@@ -47,9 +47,8 @@ DVECT(:,:,2) = permute((P(2,:,:) - P(1,:,:))./sqrt(sum((P(2,:,:) - P(1,:,:)).^2,
 DVECT(:,:,1) = cross(DVECT(:,:,2),DVECT(:,:,3),2);
 
 % Roll, pitch, yaw angles for global/local transformations
-ROLL = -atan2(DVECT(:,2,3), DVECT(:,3,3));
-PITCH = asin(DVECT(:,1,3));
-YAW = atan2(DVECT(:,2,1), DVECT(:,1,1));
+% [YAW, PITCH, ROLL] = dcm2angle(permute(DVECT, [3 2 1]), 'ZXY');
+[ROLL, PITCH, YAW] = dcm2angle(permute(DVECT, [3 2 1]), 'XYZ', 'ZeroR3');
 
 ROTANG(:,1) = ROLL;
 ROTANG(:,2) = PITCH;

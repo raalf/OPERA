@@ -1,0 +1,25 @@
+clc
+clear
+
+load('matlab.mat')
+
+opera_sphere_vel(:,2) = sqrt(sum((q_inds + matUINF).^2,2))./sqrt(sum(matUINF.^2,2));
+
+matCENTER - (matCENTER
+
+hFig213 = figure(213);
+clf(213);
+
+% idx_cp = matVLST(:,2) == 0;
+% 
+% theta = acosd(-matVLST(idx_cp,1));
+
+% scatter(theta, matVLSTCP(idx_cp), 'ok');
+hold on
+load('panair_sphere_vel.mat');
+plot(panair_sphere_vel(:,1), panair_sphere_vel(:,2), '--b');
+grid minor
+box on
+axis tight
+xlabel('Theta (Degrees)', 'FontSize',15);
+ylabel('Velocity Ratio (V/V_{inf})','FontSize',15);

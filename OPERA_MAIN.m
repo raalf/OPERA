@@ -14,22 +14,20 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 %
-% strFILE = 'inputs/simple_wing.dat';
+strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
 % strFILE = 'inputs/2dve.dat';
 % strFILE = 'inputs/4dve.dat';
 % strFILE = 'inputs/4dve_nosym.dat';
-strFILE = 'inputs/nonplanar.dat';
+% strFILE = 'inputs/nonplanar.dat';
 
-[matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
+[matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 
 valTIMESTEP = 0;
 flagRELAX = 0;
-
-valMAXTIME = 0;
-valALPHA = 20
+valMAXTIME = 1;
 
 vecUINF = fcnUINFWING(valALPHA, 0);
 matUINF = repmat(vecUINF,valNELE,1);
@@ -96,8 +94,8 @@ for valTIMESTEP = 1:valMAXTIME
     % Generating new wake elements
     if any(vecTE)
         [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
-            matWPLEX, matWDVECT, matWALIGN, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG, matWVSCOMB] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, ...
-            matCOEFF, valWSIZE, matWCOEFF, vecTE, matEATT, vecTEDVE, vecSPANDIR, valWNELE, matPLEX, matELOC, matVLST, matELST, matDVE);
+        matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, ...
+        vecTE, vecTEDVE, matPLEX, matELOC, matELST, matDVE)
         
         % Rebuild wing resultant
         vecR = fcnRWING(valDLEN, valTIMESTEP, matCENTER, matDVECT, vecUINF, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
@@ -112,7 +110,7 @@ for valTIMESTEP = 1:valMAXTIME
 end
 
 %% Plot
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 20);
 
 

@@ -27,7 +27,7 @@ strFILE = 'inputs/simple_wing.dat';
 
 valTIMESTEP = 0;
 flagRELAX = 0;
-valMAXTIME = 1;
+valMAXTIME = 2;
 
 vecUINF = fcnUINFWING(valALPHA, 0);
 matUINF = repmat(vecUINF,valNELE,1);
@@ -69,7 +69,7 @@ matWVLST = [];
 matWROTANG = [];
 
 % Building wing resultant
-vecR = fcnRWING(valDLEN, 0, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
+vecR = fcnRWING(valDLEN, 0, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
 
 % Solving for wing coefficients
 [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
@@ -89,30 +89,48 @@ for valTIMESTEP = 1:valMAXTIME
     valWSIZE = length(vecTE);
     
     % Moving the wing
-    [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, matVLST, matCENTER, matELST, vecTE);
+    [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(matUINF, valDELTIME, matVLST, matCENTER, matELST, vecTE);
     
     % Generating new wake elements
     if any(vecTE)
         [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
-        matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, ...
-        vecTE, vecTEDVE, matPLEX, matELOC, matELST, matDVE)
+            matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, ...
+            vecTE, vecTEDVE, matPLEX, matELOC, matELST, matDVE);
         
         % Rebuild wing resultant
-        vecR = fcnRWING(valDLEN, valTIMESTEP, matCENTER, matDVECT, vecUINF, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
+        vecR = fcnRWING(valDLEN, valTIMESTEP, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
         matCOEFF = fcnSOLVED(matD, vecR, valNELE);
         
         % Resolving wake D-matrix (steady)
         vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
         vecWLE = matWEIDX(vecWLEDVE,1);
-        matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, vecSPANDIR, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWCOEFF, matWALIGN, matWEIDX);
+        matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX);
         matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1);
+        
+        if flagRELAX == 1 && valTIMESTEP > 2
+            [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG] = ...
+                fcnRELAX(vecUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
+                matROTANG, matWROTANG, matCENTER, matWCENTER);
+            
+            % Resolving wake D-matrix (steady)
+            vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
+            vecWLE = matWEIDX(vecWLEDVE,1);
+            matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX);
+            matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1);
+            
+            % Rebuild wing resultant
+            vecR = fcnRWING(valDLEN, valTIMESTEP, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
+            matCOEFF = fcnSOLVED(matD, vecR, valNELE);
+            
+        end
     end
 end
 
 %% Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
+[hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 20);
-
+[hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), vecUINF, matWROTANG, 'b', 20);
 
 
 

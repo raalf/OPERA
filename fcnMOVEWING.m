@@ -1,4 +1,4 @@
-function [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(valALPHA, valBETA, valDELTIME, matVLST, matCENTER, matELST, vecTE)
+function [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(matUINF, valDELTIME, matVLST, matCENTER, matELST, vecTE)
 % This function moves a wing (NOT rotor) by translating all of the vertices
 % in the VLST and the in-centers of each triangle in CENTER.
 
@@ -29,11 +29,8 @@ te_flip(:,:,2) = matVLST(matELST(vecTE,2),:)';
 idx_flip = [te_flip(2,:,1) > te_flip(2,:,2)]'; % Finding out which trailing edges go from out to in, so we know what to flip
 idx_flip2 = logical([zeros(length(idx_flip),1); idx_flip]); % idx_flip1 is the first point, idx_flip2 is the second point
 
-% Won't work for rotors
-uinf = 1;
-uinf = [uinf*cos(valALPHA)*cos(valBETA) uinf*sin(valBETA) uinf*sin(valALPHA)*cos(valBETA)];
-
-translation = valDELTIME.*uinf;
+% NO-NO for RO-RO-ROTORSSSSSSSSS
+translation = valDELTIME.*matUINF(1,:);
 
 % Old trailing edge vertices
 old_te = matVLST(matELST(vecTE,:),:);
@@ -43,8 +40,8 @@ temp = old_te(idx_flip,:);
 old_te(idx_flip,:) = old_te(idx_flip2,:);
 old_te(idx_flip2,:) = temp;
 
-matVLST = matVLST - repmat(translation, length(matVLST(:,1)), 1);
-matCENTER = matCENTER - repmat(translation, length(matCENTER(:,1)), 1);
+matVLST = matVLST - translation;
+matCENTER = matCENTER - translation;
 
 % New trailing edge vertices
 new_te = matVLST(matELST(vecTE,:),:);

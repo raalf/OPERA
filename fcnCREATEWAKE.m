@@ -1,6 +1,6 @@
 function [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
     matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, ...
-    vecTE, vecTEDVE, matPLEX, matELOC, matELST, matDVE)
+    vecTE, vecTEDVE, matPLEX, matELOC, matELST, matDVE, matWCOEFF)
 % This function creates wake elements, and finds the fcnTRIANG values associated with the wake.
 % All new values are calculated for the entire wake every timestep, as most of them will change
 % as the wing moves and as the wake is relaxed. Currently unsure of the time penalty.
@@ -32,8 +32,9 @@ else
     vecWLE = matWEIDX(vecWLEDVE,1);
     
     matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX);
-    
+    matNEWWAKECOEFF = matNEWWAKECOEFF(end - valWSIZE*2 + 1:end,:);
     matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1); % Steady
+    matWCOEFF(1:(end - valWSIZE*2),[3 4 5]) = matWCOEFF(1:(end - valWSIZE*2),[3 4 5]).*0
 %     matWCOEFF = [matWCOEFF; matNEWWAKECOEFF];
 end
 

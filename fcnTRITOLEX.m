@@ -64,32 +64,4 @@ PLEX = permute(reshape(temp_points2',3,3,sp(3)),[2 1 3]);
 temp_center = fcnGLOBSTAR(matCENTER, ROTANG);
 PLEX = PLEX - repmat(reshape(temp_center',1,3,[]),3,1,1);
 
-%% Finding local leading and trailing edges of HDVEs (matVSCOMB)
-matVSCOMB = zeros(sp(3),3,2);
-
-eta = zeros(1,3,sp(3));
-xsi = zeros(1,3,sp(3));
-
-% Edge vectors by going around in order
-edge = [PLEX(1,:,:) - PLEX(2,:,:); PLEX(2,:,:) - PLEX(3,:,:); PLEX(3,:,:) - PLEX(1,:,:)];
-
-% Finding edge normals and normalizing
-edge_normal = [edge(:,2,:) -edge(:,1,:) edge(:,3,:)];
-edge_normal = edge_normal./(sqrt(sum(edge_normal(:,1,:).^2 + edge_normal(:,2,:).^2,2)));
-
-check_normal = dot(edge_normal(1,:,:), edge(3,:,:));
-check_normal(check_normal > 0) = 1; % Here we need to flip the normals
-check_normal(check_normal <= 0) = 0;
-
-edge_normal(:,:,check_normal == 1) = -edge_normal(:,:,check_normal ==1);
-
-eta(permute(edge_normal(:,1,:) > 0, [2 1 3])) = -1;
-eta(permute(edge_normal(:,1,:) < 0, [2 1 3])) = 1;
-matVSCOMB(:,:,1) = reshape(permute(eta, [2 1 3]), size(eta, 2), [])';
-
-xsi(permute(edge_normal(:,2,:) > 0, [2 1 3])) = -1;
-xsi(permute(edge_normal(:,2,:) < 0, [2 1 3])) = 1;
-matVSCOMB(:,:,2) = reshape(permute(xsi, [2 1 3]), size(xsi, 2), [])';
-
-
 end

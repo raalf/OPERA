@@ -28,8 +28,8 @@ if verbose == 1
         text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',20);
     end
     
-    quiver3(matWCENTER(:,1),matWCENTER(:,2),matWCENTER(:,3), matWDVECT(:,1,1), matWDVECT(:,2,1), matWDVECT(:,3,1), 0.25, 'b') % eta
-    quiver3(matWCENTER(:,1),matWCENTER(:,2),matWCENTER(:,3), matWDVECT(:,1,2), matWDVECT(:,2,2), matWDVECT(:,3,2), 0.25, 'k') % xi
+    quiver3(matWCENTER(:,1),matWCENTER(:,2),matWCENTER(:,3), matWDVECT(:,1,1), matWDVECT(:,2,1), matWDVECT(:,3,1), 0.25, 'k'); % xsi
+    quiver3(matWCENTER(:,1),matWCENTER(:,2),matWCENTER(:,3), matWDVECT(:,1,2), matWDVECT(:,2,2), matWDVECT(:,3,2), 0.25, 'b'); % eta
     quiver3(matWCENTER(:,1),matWCENTER(:,2),matWCENTER(:,3), matWDVECT(:,1,3), matWDVECT(:,2,3), matWDVECT(:,3,3), 0.25, 'm') % zeta (normal)
     
 end

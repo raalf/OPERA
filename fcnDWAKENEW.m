@@ -38,12 +38,14 @@ b1 = 0.5.*(b2.^2);
 c2 = a2.*b2;
 c3 = ones(len,2);
 
+% res1 = [];
 % The resultant is the circulation at the trailing edge of the wing, found using the coefficients A1 A2 B1 B2 C3 we solved for in DWING/Resultant
-res1 = -sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
+res1 = sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
 
 % These are the wake coefficients (spanwise) that we need to solve for, B1, B2 and C3
-gamma1 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)];
+gamma1 = -[a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)];
 
+% circ1 = [];
 circ1 = fcnCREATEDSECT(sparse(len, valWNELE*6), len, 6, vecWLEDVE, [], gamma1, []);
 
 %% Vertices to set wake circulation opposite to wing (along TE)
@@ -76,9 +78,9 @@ c2 = a2.*b2;
 c3 = ones(len,2);
 
 % The resultant is the circulation at the trailing edge of the wing, found using the coefficients A1 A2 B1 B2 C3 we solved for in DWING/Resultant
-res2 = -sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
+res2 = sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
 % These are the wake coefficients (spanwise) that we need to solve for, B1, B2 and C3
-gamma2 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)]; % Wake only changes in the spanwise direction, which is always local xsi
+gamma2 = -[a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)]; % Wake only changes in the spanwise direction, which is always local xsi
 
 circ2 = fcnCREATEDSECT(sparse(len, valWNELE*6), len, 6, vecWLEDVE, [], gamma2, []);
 
@@ -95,10 +97,10 @@ c2 = a2.*b2;
 c3 = ones(len,2);
 
 % The resultant is the circulation at the trailing edge of the wing, found using the coefficients A1 A2 B1 B2 C3 we solved for in DWING/Resultant
-res3 = -sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
+res3 = sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
 
 % These are the wake coefficients (spanwise) that we need to solve for, B1, B2 and C3
-gamma3 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)]; % Wake only changes in the spanwise direction, which is always local xsi
+gamma3 = -[a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)]; % Wake only changes in the spanwise direction, which is always local xsi
 
 circ3 = fcnCREATEDSECT(sparse(len, valWNELE*6), len, 6, vecWLEDVE, [], gamma3, []);
 

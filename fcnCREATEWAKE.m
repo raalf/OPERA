@@ -19,8 +19,10 @@ if valTIMESTEP <= 1
     
     vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
     vecWLE = matWEIDX(vecWLEDVE,1);
+    vecWTEDVE = [(valWNELE - valWSIZE + 1):valWNELE]';
+    vecWTE = matWEIDX(vecWTEDVE,1);
     
-    matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX);
+    matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX, vecWTEDVE, vecWTE);
     
     matWCOEFF = matNEWWAKECOEFF;
     

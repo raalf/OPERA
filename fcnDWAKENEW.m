@@ -1,4 +1,4 @@
-function [matNEWWAKECOEFF] = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX)
+function [matNEWWAKECOEFF] = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX, vecWTEDVE, vecWTE)
 % This function finds the coefficients of the post-trailing edge elements, by setting the spanwise component equal to the opposite of the circulation along the trailing edge of the wing (spanwise)
 
 lambda_mid = [ ...
@@ -15,7 +15,7 @@ lambda_vert = [ ...
 
 len = length(vecWLEDVE);
 
-aftdves = [valWNELE - valWSIZE + 1:valWNELE]'; % aft row of post-TE wake HDVEs 
+aftdves = [valWNELE - valWSIZE + 1:valWNELE]'; % aft row of post-TE wake HDVEs
 
 %% Circulation at TE of wing/LE of wake Prelim
 % (x,y) of all three vertices of HDVEs at trailing edge of the wing and the corresponding leading edge of the post te wake HDVE
@@ -169,9 +169,25 @@ resv2 = zeros(nedg, 1);
 resv3 = zeros(nedg, 1);
 resv4 = zeros(nedg, 1);
 
+%% Circulation at tips
+idx = ~all(matWEATT,2); % All edges that are attached to only 1 HDVE
+idx(vecWLE) = 0;
+idx(vecWTE) = 0;
+
+nedg = length(matWEATT(idx,1));
+
+% Finding the two local vertex numbers of the edge endpoints
+vnumc = nonzeros(matWELOC(idx,:));
+vnumc = repmat(vnumc,1,2);
+vnumc(:,2) = vnumc(:,2) + 1;
+vnumc(vnumc(:,2) == 4,2) = 1;
+
+circ_tip = fcnDCIRCTIP(idx, nedg, lambda_vert, lambda_mid, valWNELE, matWPLEX, matWEATT, matWELOC, vnumc);
+res_tip = zeros(nedg*3,1);
+
 %%
-d_wake = [circ1; circ2; circ3; circ4; circ5; circ6; vort1; vort2; vort3; vort4];
-res_wake = [res1; res2; res3; res4; res5; res6; resv1; resv2; resv3; resv4];
+d_wake = [circ1; circ2; circ3; circ4; circ5; circ6; vort1; vort2; vort3; vort4; circ_tip];
+res_wake = [res1; res2; res3; res4; res5; res6; resv1; resv2; resv3; resv4; res_tip];
 
 matNEWWAKECOEFF = d_wake\res_wake;
 matNEWWAKECOEFF = reshape(matNEWWAKECOEFF,6,[],1)';

@@ -147,7 +147,7 @@ for i = 1:valPANELS
             z is panel number
     %}
     
-    matGEOM(1,:,i) = fscanf(fp,'%lf',5);
+    matGEOM(1,:,i) = fscanf(fp,'%lf',7);
     matGEOM(2,:,i) = fscanf(fp,'%lf');
     
 end

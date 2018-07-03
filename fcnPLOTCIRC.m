@@ -2,7 +2,7 @@ function [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVEC
 
 for i = 1:valNELE
     corners = fcnGLOBSTAR(matVLST(matDVE(i,:),:) - matCENTER(i,:), [repmat(matROTANG(i,1),3,1) repmat(matROTANG(i,2),3,1) repmat(matROTANG(i,3),3,1)]);
-    points = polygrid(corners(:,1), corners(:,2), ppa);
+    points = fcnPOLYGRID(corners(:,1), corners(:,2), ppa);
     
     len = size(points,1);
 
@@ -28,33 +28,6 @@ for i = 1:valNELE
 end
 
 
-function [inPoints] = polygrid( xv, yv, N)
 
-%Find the bounding rectangle
-	lower_x = min(xv);
-	higher_x = max(xv);
-
-	lower_y = min(yv);
-	higher_y = max(yv);
-%Create a grid of points within the bounding rectangle
-
-	inc_x = (higher_x - lower_x)/N;
-	inc_y = (higher_y - lower_y)/N;
-
-	
-	interval_x = lower_x:inc_x:higher_x;
-	interval_y = lower_y:inc_y:higher_y;
-	[bigGridX, bigGridY] = meshgrid(interval_x, interval_y);
-	
-%Filter grid to get only points in polygon
-	[in,on] = inpolygon(bigGridX(:), bigGridY(:), xv, yv);
-    in = in | on;
-    
-%Return the co-ordinates of the points that are in the polygon
-	inPoints = [bigGridX(in), bigGridY(in)];
-
-end
-
-end
 
 

@@ -22,7 +22,7 @@ if valTIMESTEP <= 1
     vecWTEDVE = [(valWNELE - valWSIZE + 1):valWNELE]';
     vecWTE = matWEIDX(vecWTEDVE,1);
     
-    matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX, vecWTEDVE, vecWTE);
+    matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX, vecWTEDVE, vecWTE, matWCOEFF);
     
     matWCOEFF = matNEWWAKECOEFF;
     
@@ -35,7 +35,7 @@ else
     vecWTEDVE = [(valWNELE - valWSIZE + 1):valWNELE]';
     vecWTE = matWEIDX(vecWTEDVE,1);
     
-    matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX, vecWTEDVE, vecWTE);
+    matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX, vecWTEDVE, vecWTE, matWCOEFF);
     matNEWWAKECOEFF = matNEWWAKECOEFF(end - valWSIZE*2 + 1:end,:);
 %     matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1); % Steady
 %     matWCOEFF(1:(end - valWSIZE*2),[3 4 5]) = matWCOEFF(1:(end - valWSIZE*2),[3 4 5]).*0

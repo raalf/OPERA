@@ -1,4 +1,4 @@
-function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG)
+function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE)
 
 lambda_mid = [ ...
     0.5 0.5 0; ... % Edge 1 mid-point
@@ -92,6 +92,25 @@ if strcmp(strATYPE,'THIN') == 1
     circ_tip = fcnDCIRCTIP(idx, nedg, lambda_vert, lambda_mid, valNELE, matPLEX, matEATT, matELOC, vnumc);  
 end
 
+%% Trailing edge vorticity
+vort5 = [];
+vort6 = [];
+vnuma = [];
+vnumb = [];
+
+% % [ta,tb,~] = find(matDVE(vecTEDVE,:) == repmat(matELST(vecTE,1),1,3));
+% % [~,rb,] = sort(ta);
+% % vnuma(:,1) = tb(rb); 
+% % 
+% % [ta,tb,~] = find(matDVE(vecTEDVE,:) == repmat(matELST(vecTE,2),1,3));
+% % [~,rb,] = sort(ta);
+% % vnuma(:,2) = tb(rb);
+% % 
+% % % e1vec = temp(nonzeros(matEATT(vecTE,:)).*3 + vnuma(:,2) - 3,:) - temp(nonzeros(matEATT(vecTE,:)).*3 + vnuma(:,1) - 3,:);
+% % e1vec = vecSPANDIR;
+% % % vort5 = fcnDVORTTE(vecTE, vnuma(:,1), length(vecTE), lambda_vert, valNELE, matPLEX, matEATT, e1vec);
+% % % vort6 = fcnDVORTTE(vecTE, vnuma(:,2), length(vecTE), lambda_vert, valNELE, matPLEX, matEATT, e1vec);
+
 %% Kinematic conditions at vertices
 % Flow tangency is to be enforced at all control points on the surface HDVEs
 % In the D-Matrix, dot (a1,a2,b1,b2,c3) of our influencing HDVE with the normal of the point we are influencing on
@@ -121,7 +140,7 @@ king_kong = zeros(len, valNELE*6);
 king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
 
 %% Piecing together D-matrix
-D = [circ; circ1; circ2; vort1; vort2; vort3; vort4; circ_tip; king_kong];
+D = [circ; circ1; circ2; vort1; vort2; vort3; vort4; vort5; vort6; circ_tip; king_kong];
 
 end
 

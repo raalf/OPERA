@@ -14,7 +14,7 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 %
-strFILE = 'inputs/simple_wing2.dat';
+% strFILE = 'inputs/simple_wing2.dat';
 % strFILE = 'inputs/KORDY30.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
 % strFILE = 'inputs/2dve.dat';
@@ -22,7 +22,14 @@ strFILE = 'inputs/simple_wing2.dat';
 % strFILE = 'inputs/4dve_nosym.dat';
 % strFILE = 'inputs/nonplanar.dat';
 
-[matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
+% [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
+matPOINTS = fcnSTLREAD('CAD Geom/panel_wing.stl');
+valALPHA = 10;
+valBETA = 0;
+matTEPOINTS = [];
+matLEPOINTS = [];
+strATYPE = 'PANEL';
+vecSYM = [];
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 
@@ -33,9 +40,14 @@ valDENSITY = 1.225
 vecUINF = fcnUINFWING(valALPHA, 0);
 matUINF = repmat(vecUINF,valNELE,1);
 
-[vecTE, vecLE] = fcnTELE(matTEPOINTS, matLEPOINTS, matVLST, matELST);
+if ~isempty(matTEPOINTS) && ~isempty(matLEPOINTS)
+    [vecTE, vecLE] = fcnTELE(matTEPOINTS, matLEPOINTS, matVLST, matELST);
+else
+    vecTE = [];
+    vecLE = [];
+end
 
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl')
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl')
 view([33, 28])
 
 %% D-Matrix Creation

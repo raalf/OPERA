@@ -9,7 +9,7 @@ a = 1;
 b = 1;
 c = 1;
 
-[x,y,z] = ellipsoid(0,0,0,b,a,c,15);
+[x,y,z] = ellipsoid(0,0,0,b,a,c,20);
 [V,S] = alphavol([x(:), y(:), z(:)]);
 
 TR = triangulation(S.bnd, [x(:), y(:), z(:)]);
@@ -60,7 +60,7 @@ matWVLST = [];
 matWROTANG = [];
 
 % Building wing resultant
-vecR = fcnRWING(valDLEN, 0, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
+vecR = fcnRWING(valDLEN, 0, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
 
 % Solving for wing coefficients
 [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);

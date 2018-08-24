@@ -13,7 +13,7 @@ eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 
 % Checking which elements are on the element, moving them off by a small
 % amount
-margin = 1e-4;
+margin = 1e-2;
 le_eta = eta_2 + (fpl(:,1) - xi_2).*((eta_3 - eta_2)./(xi_3 - xi_2));
 te_eta = eta_1 + (fpl(:,1) - xi_1).*((eta_3 - eta_1)./(xi_3 - xi_1));
 idx_on_element = fpl(:,2) >= te_eta - margin & fpl(:,2) <= le_eta + margin & fpl(:,1) >= xi_1 - margin & fpl(:,1) <= xi_3 + margin & abs(fpl(:,3)) <= margin;
@@ -33,6 +33,8 @@ len = size(fpl,1);
 
 infl_loc = zeros(3,6,len);
 parfor i = 1:len
+% for i = 1:len
+
     le_eta = @(x) eta_2(i) + (x - xi_2(i)).*((eta_3(i) - eta_2(i))./(xi_3(i) - xi_2(i)));
     te_eta = @(x) eta_1(i) + (x - xi_1(i)).*((eta_3(i) - eta_1(i))./(xi_3(i) - xi_1(i)));
     
@@ -42,7 +44,7 @@ parfor i = 1:len
             % a1
             if j == 2
                 term = @(x,y) -y.*zeta_p(i).*1.0./(abs(zeta_p(i)).^2+abs(y-eta_p(i)).^2+abs(x-xi_p(i)).^2).^(3.0./2.0);
-                tmp(2,1) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta);
+                tmp(2,1) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta);            
             elseif j == 3
                 term = @(x,y) -y.*(y-eta_p(i)).*1.0./(abs(zeta_p(i)).^2+abs(y-eta_p(i)).^2+abs(x-xi_p(i)).^2).^(3.0./2.0);
                 tmp(3,1) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta);

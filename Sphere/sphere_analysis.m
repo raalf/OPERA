@@ -1,7 +1,7 @@
 clc
 clear
 
-load('opera_sphere_25.mat')
+load('opera_sphere_15.mat')
 %% Plot with Streamlines
 hFig1 = figure(1);
 clf(1);

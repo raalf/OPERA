@@ -79,7 +79,7 @@ circ_tip = [];
 if strcmp(strATYPE,'THIN') == 1
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
     idx(vecTE) = 0;
-    idx(vecLE) = 0;
+%     idx(vecLE) = 0;
     
     nedg = length(matEATT(idx,1));
     

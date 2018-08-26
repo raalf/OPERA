@@ -14,7 +14,7 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 %
-% strFILE = 'inputs/simple_wing2.dat';
+strFILE = 'inputs/simple_wing2.dat';
 % strFILE = 'inputs/KORDY30.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
 % strFILE = 'inputs/2dve.dat';
@@ -22,14 +22,7 @@ disp('====================================================================');
 % strFILE = 'inputs/4dve_nosym.dat';
 % strFILE = 'inputs/nonplanar.dat';
 
-% [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
-matPOINTS = fcnSTLREAD('CAD Geom/panel_wing.stl');
-valALPHA = 10;
-valBETA = 0;
-matTEPOINTS = [];
-matLEPOINTS = [];
-strATYPE = 'PANEL';
-vecSYM = [];
+[matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 
@@ -171,7 +164,7 @@ end
 
 %% Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 20);
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 20);
 
 if valTIMESTEP > 0
     [hFig1] = fcnPLOTWAKE(1, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);

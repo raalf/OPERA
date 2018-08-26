@@ -5,15 +5,17 @@ clc
 
 %% Geometry
 
-a = 1;
-b = 1;
-c = 1;
+% a = 1;
+% b = 1;
+% c = 1;
+% 
+% [x,y,z] = ellipsoid(0,0,0,b,a,c,15);
+% [V,S] = alphavol([x(:), y(:), z(:)]);
+% 
+% TR = triangulation(S.bnd, [x(:), y(:), z(:)]);
+% matPOINTS = permute(reshape(TR.Points([TR.ConnectivityList(:,1) TR.ConnectivityList(:,3) TR.ConnectivityList(:,2)],:)',3,[],3),[2 1 3]);
 
-[x,y,z] = ellipsoid(0,0,0,b,a,c,20);
-[V,S] = alphavol([x(:), y(:), z(:)]);
-
-TR = triangulation(S.bnd, [x(:), y(:), z(:)]);
-matPOINTS = permute(reshape(TR.Points([TR.ConnectivityList(:,1) TR.ConnectivityList(:,3) TR.ConnectivityList(:,2)],:)',3,[],3),[2 1 3]);
+matPOINTS = fcnSTLREAD('CAD Geom/panel_wing.stl');
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 

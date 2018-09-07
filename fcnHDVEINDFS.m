@@ -29,8 +29,10 @@ zeta_p = fpl(:,3);
 
 len = size(fpl,1);
 
-% count = 1;
-% h = waitbar(count/len,'Please wait...');
+count = 1;
+D = parallel.pool.DataQueue;
+h = waitbar(0, 'Please wait ...');
+afterEach(D, @nUpdateWaitbar);
 
 infl_loc = zeros(3,6,len);
 parfor i = 1:len
@@ -84,6 +86,8 @@ parfor i = 1:len
             
             infl_loc(:,:,i) = tmp;
         end
+        
+        send(D, i);
     catch
         i
         j
@@ -98,6 +102,11 @@ parfor i = 1:len
     
 end
 % close(h);
+
+    function nUpdateWaitbar(~)
+        waitbar(count/len, h);
+        count = count + 1;
+    end
 
 % Only using the tangential velocities for points on the element
 % infl_loc(1:2,:,idx_on_element) = infl_loc(1:2,:,idx_on_element).*0;

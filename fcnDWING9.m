@@ -76,10 +76,10 @@ vort4 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, ma
 % These are found by looking at the free edges that are NOT symmetry or trailing edge
 % Evaluated at the mid-point of each edge which is used by only 1 HDVE (and not at the trailing edge)
 circ_tip = [];
-if strcmp(strATYPE,'THIN') == 1
+% if strcmp(strATYPE,'THIN') == 1
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
     idx(vecTE) = 0;
-%     idx(vecLE) = 0;
+    idx(vecLE) = 0;
     
     nedg = length(matEATT(idx,1));
     
@@ -90,7 +90,7 @@ if strcmp(strATYPE,'THIN') == 1
     vnumc(vnumc(:,2) == 4,2) = 1;
     
     circ_tip = fcnDCIRCTIP(idx, nedg, lambda_vert, lambda_mid, valNELE, matPLEX, matEATT, matELOC, vnumc);  
-end
+% end
 
 %% Trailing edge vorticity
 vort5 = [];

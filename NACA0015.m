@@ -27,7 +27,7 @@ vecSPANDIR = [];
 vecTE = [];
 vecLE = [];
 
-matD = fcnDWING9([], matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG);
+matD = fcnDWING9('2D', matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG);
 
 valDLEN = length(matD);
 
@@ -60,24 +60,24 @@ vecR = fcnRWING(valDLEN, 0, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, m
 
 %% Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 20);
+% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 20);
 
-% %% Plot
-% 
-% hFig1 = figure(1);
-% hold on
-% q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-% q_ind = q_inds + matUINF(1,:);
-% fcolor = sqrt(sum(q_ind.^2,2));
-% p = patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceVertexCData',fcolor,'LineWidth',2);
-% p.FaceColor = 'flat';
-% % quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'g')
-% hold off
-% colorbar;
-% grid on
-% box on
-% axis equal
-% 
+%% Plot
+
+hFig1 = figure(1);
+hold on
+q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+q_ind = q_inds + matUINF(1,:);
+fcolor = sqrt(sum(q_ind.^2,2));
+p = patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceVertexCData',fcolor,'LineWidth',2);
+p.FaceColor = 'flat';
+% quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'g')
+hold off
+colorbar;
+grid on
+box on
+axis equal
+
 % granularity = .5;
 % x = -1.5:granularity:1.5;
 % % y = -3:granularity:3;

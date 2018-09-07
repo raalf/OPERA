@@ -76,7 +76,10 @@ vort4 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, ma
 % These are found by looking at the free edges that are NOT symmetry or trailing edge
 % Evaluated at the mid-point of each edge which is used by only 1 HDVE (and not at the trailing edge)
 circ_tip = [];
-% if strcmp(strATYPE,'THIN') == 1
+vort_tip1 = [];
+vort_tip2 = [];
+
+if strcmp(strATYPE,'THIN') == 1
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
     idx(vecTE) = 0;
     idx(vecLE) = 0;
@@ -90,7 +93,32 @@ circ_tip = [];
     vnumc(vnumc(:,2) == 4,2) = 1;
     
     circ_tip = fcnDCIRCTIP(idx, nedg, lambda_vert, lambda_mid, valNELE, matPLEX, matEATT, matELOC, vnumc);  
-% end
+
+elseif strcmp(strATYPE,'2D') == 1
+
+    vnuma = [];
+    
+    idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
+    idx(vecTE) = 0;
+    idx(vecLE) = 0;
+    
+    nedg = length(matEATT(idx,1));
+    
+    [ta,tb,~] = find(matDVE(nonzeros(matEATT(idx,:)),:) == repmat(matELST(idx,1),1,3));
+    [~,rb,] = sort(ta);
+    vnuma(:,1) = tb(rb); 
+
+    [ta,tb,~] = find(matDVE(nonzeros(matEATT(idx,:)),:) == repmat(matELST(idx,2),1,3));
+    [~,rb,] = sort(ta);
+    vnuma(:,2) = tb(rb);
+
+    e1vec = temp(nonzeros(matEATT(idx,:)).*3 + vnuma(:,2) - 3,:) - temp(nonzeros(matEATT(idx,:)).*3 + vnuma(:,1) - 3,:);
+    e1vec = e1vec./sqrt(sum(e1vec.^2,2));
+    e1vec = [-e1vec(:,2), e1vec(:,1), e1vec(:,3)];
+    vort_tip1 = fcnDVORTTE(idx, vnuma(:,1), sum(idx), lambda_vert, valNELE, matPLEX, matEATT, e1vec);
+    vort_tip2 = fcnDVORTTE(idx, vnuma(:,2), sum(idx), lambda_vert, valNELE, matPLEX, matEATT, e1vec);
+    
+end
 
 %% Trailing edge vorticity
 vort5 = [];
@@ -140,7 +168,7 @@ king_kong = zeros(len, valNELE*6);
 king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
 
 %% Piecing together D-matrix
-D = [circ; circ1; circ2; vort1; vort2; vort3; vort4; vort5; vort6; circ_tip; king_kong];
+D = [circ; circ1; circ2; vort1; vort2; vort3; vort4; vort5; vort6; vort_tip1; vort_tip2; circ_tip; king_kong];
 
 end
 

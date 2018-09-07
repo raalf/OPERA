@@ -101,7 +101,7 @@ parfor i = 1:len
 %     count = count + 1;
     
 end
-% close(h);
+close(h);
 
     function nUpdateWaitbar(~)
         waitbar(count/len, h);

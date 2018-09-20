@@ -13,15 +13,15 @@ eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 
 % Checking which elements are on the element, moving them off by a small
 % amount
-margin = 1e-3;
+margin = 1e-7;
 le_eta = eta_2 + (fpl(:,1) - xi_2).*((eta_3 - eta_2)./(xi_3 - xi_2));
 te_eta = eta_1 + (fpl(:,1) - xi_1).*((eta_3 - eta_1)./(xi_3 - xi_1));
 idx_on_element = fpl(:,2) >= te_eta - margin & fpl(:,2) <= le_eta + margin & fpl(:,1) >= xi_1 - margin & fpl(:,1) <= xi_3 + margin & abs(fpl(:,3)) <= margin;
-idx_on_edge = idx_on_element & ((xi_1 - margin <= fpl(:,1) & fpl(:,1) <= xi_1 + margin) | (le_eta - margin <= fpl(:,2) & fpl(:,2) <= le_eta + margin) | (te_eta - margin <= fpl(:,2) & fpl(:,2) <= te_eta + margin));
+% idx_on_edge = idx_on_element & ((xi_1 - margin <= fpl(:,1) & fpl(:,1) <= xi_1 + margin) | (le_eta - margin <= fpl(:,2) & fpl(:,2) <= le_eta + margin) | (te_eta - margin <= fpl(:,2) & fpl(:,2) <= te_eta + margin));
 
-fpl(idx_on_element,3) = fpl(idx_on_element,3).*0 + margin;
+fpl(idx_on_element,3) = fpl(idx_on_element,3).*0 + 1e-4;
 % fpl(idx_on_edge,:) = fpl(idx_on_edge,:) - margin.*fpl(idx_on_edge,:);
-fpl(idx_on_edge,3) = fpl(idx_on_edge,3) + margin;
+% fpl(idx_on_edge,3) = fpl(idx_on_edge,3) + margin;
 
 xi_p = fpl(:,1);
 eta_p = fpl(:,2);
@@ -46,7 +46,7 @@ parfor i = 1:len
     denom = @(x,y) ((abs(zeta_p(i)).^2 + abs(y-eta_p(i)).^2 + abs(x-xi_p(i)).^2).^(3/2));
     tmp = zeros(3,6);
     
-    if abs(zeta_p(i)) >= margin
+    if idx_on_element(i) == false
         % A1
         term = @(x,y) (y.*zeta_p(i))./denom(x,y);
         tmp(2,1) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta);
@@ -68,7 +68,6 @@ parfor i = 1:len
     % A1
     term = @(x,y) (y.*(y - eta_p(i)))./denom(x,y);
     tmp(3,1) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta);
-%     tmp(3,1) = integral(@(x)term(x,y), te_eta, le_eta);
     % A2
     term = @(x,y) (y - eta_p(i))./denom(x,y);
     tmp(3,2) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta);
@@ -94,7 +93,7 @@ close(h);
     end
 
 % Only using the normal velocities for points on the element
-infl_loc(1:2,:,idx_on_element) = infl_loc(1:2,:,idx_on_element).*0;
+% infl_loc(1:2,:,idx_on_element) = infl_loc(1:2,:,idx_on_element).*0;
 
 %%
 dvenum = reshape(repmat(dvenum,1,6,1)',[],1,1);

@@ -147,6 +147,8 @@ vnumb = [];
 fpg = matCENTER;
 normals = matDVECT(:,:,3);
 
+% fpg = matCENTER + (matDVECT(:,:,3)./10000).*-1;
+
 % List of DVEs we are influencing from (one for each of the above fieldpoints)
 len = length(fpg(:,1));
 dvenum = reshape(repmat(1:valNELE,len,1),[],1);
@@ -154,7 +156,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[infl_glob] = fcnHDVEINDFS(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER);
+[infl_glob] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 

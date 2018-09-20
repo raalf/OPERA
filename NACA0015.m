@@ -4,8 +4,14 @@ clc
 % profile -memory on
 
 %% Geometry
+% matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_low.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_high.stl');
 
-matPOINTS = fcnSTLREAD('CAD Geom/naca0015_low.stl');
+matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_low.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_high.stl');
+
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 
@@ -62,22 +68,40 @@ vecR = fcnRWING(valDLEN, 0, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, m
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 20);
 
-%% Plot
 
 hFig1 = figure(1);
 hold on
-q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+% fpg = matCENTER + (matDVECT(:,:,3)./10000).*-1;
+fpg = matCENTER;
+q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF(1,:);
 fcolor = sqrt(sum(q_ind.^2,2));
+fcolor = 1 - fcolor.^2;
+
+% velocities = [matCOEFF(:,4), matCOEFF(:,2), matCOEFF(:,1).*0];
+% fcolor = 1 - (sqrt(sum(velocities.^2,2)) + 1).^2;
+
 p = patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceVertexCData',fcolor,'LineWidth',2);
 p.FaceColor = 'flat';
-% quiver3(matCENTER(:,1),matCENTER(:,2),matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'g')
+quiver3(fpg(:,1),fpg(:,2),fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'g')
+quiver3(fpg(:,1),fpg(:,2),fpg(:,3), q_inds(:,1), q_inds(:,2), q_inds(:,3), 'r')
 hold off
 colorbar;
 grid on
 box on
 axis equal
+view([-42 31])
 
+
+hFig2 = figure(2);
+clf(2)
+scatter(fpg(:,1), fcolor, 'xk');
+xlabel('Chord Position (m)','FontSize',15);
+ylabel('C_p','FontSize',15);
+set(gca,'Ydir','reverse')
+grid minor
+box on
+axis tight
 % granularity = .5;
 % x = -1.5:granularity:1.5;
 % % y = -3:granularity:3;

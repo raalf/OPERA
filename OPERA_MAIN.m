@@ -14,8 +14,8 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 %
-strFILE = 'inputs/simple_wing2.dat';
-% strFILE = 'inputs/KORDY30.dat';
+% strFILE = 'inputs/simple_wing2.dat';
+strFILE = 'inputs/KORDY30.dat';
 % strFILE = 'inputs/standard_cirrus.dat';
 % strFILE = 'inputs/2dve.dat';
 % strFILE = 'inputs/4dve.dat';

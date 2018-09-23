@@ -8,9 +8,13 @@ clc
 % matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_high.stl');
 
-matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_low.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_low.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_high.stl');
+
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
+matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
+
 
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
@@ -25,6 +29,7 @@ valDELTIME = 0.05;
 % valALPHA = atand(1/8)
 valALPHA = 0;
 matUINF = repmat([1 0 0], valNELE, 1);
+% matUINF = repmat([0 0 1], valNELE, 1);
 
 %% D-Matrix Creation
 vecTEDVE = [];
@@ -74,7 +79,7 @@ hold on
 % fpg = matCENTER + (matDVECT(:,:,3)./10000).*-1;
 fpg = matCENTER;
 q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-q_ind = q_inds + matUINF(1,:);
+q_ind = q_inds + matUINF;
 fcolor = sqrt(sum(q_ind.^2,2));
 fcolor = 1 - fcolor.^2;
 

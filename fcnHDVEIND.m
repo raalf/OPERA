@@ -41,8 +41,8 @@ D = parallel.pool.DataQueue;
 h = waitbar(0, 'Please wait ...');
 afterEach(D, @nUpdateWaitbar);
 
-AbsTol = 1e-9;
-RelTol = 1e-9;
+AbsTol = 1e-7;
+RelTol = 1e-7;
 
 infl_loc = zeros(3,6,len);
 parfor i = 1:len
@@ -53,76 +53,78 @@ parfor i = 1:len
     tmp = zeros(3,6);
     
     if idx_on_element(i) == false
-        denom = @(x,y) ((abs(zeta_p(i)).^2 + abs(y-eta_p(i)).^2 + abs(xi_p(i)-x).^2).^(3/2));
+        denom = @(x,y) (((abs(zeta_p(i)).^2) + (abs(y - eta_p(i)).^2) + (abs(xi_p(i) - x).^2)).^(3/2));
 %         disp(['Off Element Totally: ', num2str(i)])
+                
         % A1
         term = @(x,y) (y.*zeta_p(i))./denom(x,y);
-        tmp(2,1) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(2,1) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
         % A2
         term = @(x,y) zeta_p(i)./denom(x,y);
-        tmp(2,2) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(2,2) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
         % B1
         term = @(x,y) (x.*zeta_p(i))./denom(x,y);
-        tmp(1,3) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(1,3) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
         % B2
         term = @(x,y) zeta_p(i)./denom(x,y);
-        tmp(1,4) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(1,4) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
         % C2
         term = @(x,y) (y.*zeta_p(i))./denom(x,y);
-        tmp(1,5) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(1,5) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
         term = @(x,y) (x.*zeta_p(i))./denom(x,y);
-        tmp(2,5) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(2,5) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
         
         % A1
         term = @(x,y) -(y.*(eta_p(i)-y))./denom(x,y);
-        tmp(3,1) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(3,1) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
         % A2
         term = @(x,y) (y - eta_p(i))./denom(x,y);
-        tmp(3,2) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(3,2) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
         % B1
         term = @(x,y) -(x.*(xi_p(i)-x))./denom(x,y);
-        tmp(3,3) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(3,3) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
         % B2
         term = @(x,y) (x - xi_p(i))./denom(x,y);
-        tmp(3,4) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(3,4) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
         % C2
         term = @(x,y) (-x.*(eta_p(i) - y) - y.*(xi_p(i) - x))./denom(x,y);
-        tmp(3,5) = integral2(term, xi_1(i), xi_3(i), te_eta, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
-        
+        tmp(3,5) = integral2(term, xi_1(i), xi_3(i), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        %}
     elseif idx_on_element(i) == true && idx_on_edge(i) == false
         denom = @(x,y) ((abs(y-eta_p(i)).^2 + abs(xi_p(i)-x).^2).^(3/2));
-        margin_edge = 2e-10;
+%         margin_edge = 2e-2;
+        margin_edge = 1e-8;
 %         disp(['On Element: ', num2str(i)])
         % A1
-        term = @(x,y) -(y.*(eta_p(i)-y))./denom(x,y);
-        tmp(3,1) =  integral2(term, xi_1(i), xi_p(i), te_eta, eta_p(i),'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_p(i), xi_3(i), te_eta, eta_p(i),'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_1(i), xi_p(i), eta_p(i), le_eta,'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_p(i), xi_3(i), eta_p(i), le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        term = @(x,y) -(y.*(eta_p(i)-y))./denom(x,y);        
+        tmp(3,1) =  integral2(term, xi_1(i), xi_p(i) - margin_edge, le_eta, eta_p(i) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_p(i) + margin_edge, xi_3(i), le_eta, eta_p(i) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_1(i), xi_p(i) - margin_edge, eta_p(i) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_p(i) + margin_edge, xi_3(i), eta_p(i) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated');
         % A2
         term = @(x,y) (y - eta_p(i))./denom(x,y);
-        tmp(3,2) =  integral2(term, xi_1(i), xi_p(i), te_eta, eta_p(i) - margin_edge,'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_p(i), xi_3(i), te_eta, eta_p(i) - margin_edge,'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_1(i), xi_p(i), eta_p(i) + margin_edge, le_eta,'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_p(i), xi_3(i), eta_p(i) + margin_edge, le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(3,2) =  integral2(term, xi_1(i), xi_p(i) - margin_edge, le_eta, eta_p(i) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_p(i) + margin_edge, xi_3(i), le_eta, eta_p(i) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_1(i), xi_p(i) - margin_edge, eta_p(i) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_p(i) + margin_edge, xi_3(i), eta_p(i) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated');
         % B1
         term = @(x,y) -(x.*(xi_p(i)-x))./denom(x,y);
-        tmp(3,3) =  integral2(term, xi_1(i), xi_p(i), te_eta, eta_p(i),'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_p(i), xi_3(i), te_eta, eta_p(i),'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_1(i), xi_p(i), eta_p(i), le_eta,'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_p(i), xi_3(i), eta_p(i), le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(3,3) =  integral2(term, xi_1(i), xi_p(i) - margin_edge, le_eta, eta_p(i) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_p(i) + margin_edge, xi_3(i), le_eta, eta_p(i) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_1(i), xi_p(i) - margin_edge, eta_p(i) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_p(i) + margin_edge, xi_3(i), eta_p(i) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated');
         % B2
         term = @(x,y) (x - xi_p(i))./denom(x,y);
-        tmp(3,4) =  integral2(term, xi_1(i), xi_p(i) - margin_edge, te_eta, eta_p(i),'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_p(i) + margin_edge, xi_3(i), te_eta, eta_p(i),'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_1(i), xi_p(i) - margin_edge, eta_p(i), le_eta,'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_p(i) + margin_edge, xi_3(i), eta_p(i), le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(3,4) =  integral2(term, xi_1(i), xi_p(i) - margin_edge, le_eta, eta_p(i) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_p(i) + margin_edge, xi_3(i), le_eta, eta_p(i) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_1(i), xi_p(i) - margin_edge, eta_p(i) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_p(i) + margin_edge, xi_3(i), eta_p(i) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated');
         % C2
         term = @(x,y) (-x.*(eta_p(i) - y) - y.*(xi_p(i) - x))./denom(x,y);
-        tmp(3,5) =  integral2(term, xi_1(i), xi_p(i), te_eta, eta_p(i),'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_p(i), xi_3(i), te_eta, eta_p(i),'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_1(i), xi_p(i), eta_p(i), le_eta,'AbsTol',AbsTol','RelTol',RelTol) + ...
-            integral2(term, xi_p(i), xi_3(i), eta_p(i), le_eta,'AbsTol',AbsTol','RelTol',RelTol);
+        tmp(3,5) =  integral2(term, xi_1(i), xi_p(i) - margin_edge, le_eta, eta_p(i) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_p(i) + margin_edge, xi_3(i), le_eta, eta_p(i) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_1(i), xi_p(i) - margin_edge, eta_p(i) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
+            integral2(term, xi_p(i) + margin_edge, xi_3(i), eta_p(i) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated');
     end
     
     infl_loc(:,:,i) = tmp;

@@ -14,7 +14,7 @@ clc
 
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
 matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
-
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
 
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
@@ -73,7 +73,6 @@ vecR = fcnRWING(valDLEN, 0, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, m
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 20);
 
-
 hFig1 = figure(1);
 hold on
 % fpg = matCENTER + (matDVECT(:,:,3)./10000).*-1;
@@ -81,7 +80,7 @@ fpg = matCENTER;
 q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF;
 fcolor = sqrt(sum(q_ind.^2,2));
-fcolor = 1 - fcolor.^2;
+fcolor = 1 - fcolor.^(2);
 
 % velocities = [matCOEFF(:,4), matCOEFF(:,2), matCOEFF(:,1).*0];
 % fcolor = 1 - (sqrt(sum(velocities.^2,2)) + 1).^2;

@@ -21,7 +21,7 @@ matPOINTS(:,:,3) = [1 0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [ 0 1 0 0 0 0 ];
+matCOEFF = [ 1 1 1 1 1 1 ];
 % matCOEFF = [-45.0959  -41.0083   -5.1624   -0.0404    0.3831    4.1836];
 % matCOEFF = [-9.1923   45.1363    6.4033    5.5270   -1.4800   -2.9934];
 
@@ -33,7 +33,7 @@ matCOEFF = [ 0 1 0 0 0 0 ];
 
 granularity = 0.1;
 x = 0.1:granularity:.9;
-y = x.*0 + 0.5
+y = x.*0 + 0.5;
 z = x.*0;
 
 % granularity = 0.01;
@@ -61,7 +61,7 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
 % fpg = matCENTER + [1.1 0.1 0]
 
-% fpg = [-8 5 1];
+fpg = [-1 1 0];
 % fpg = [0.8 0.5 -0.2];
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);

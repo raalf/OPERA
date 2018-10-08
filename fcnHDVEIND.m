@@ -49,23 +49,23 @@ J_1 = fcnJ_1(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE);
 J_2 = fcnJ_2(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE);
 J_3 = fcnJ_3(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE);
 J_4 = fcnJ_4(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE);
-
+J_5 = [];
 J_6 = fcnJ_6(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE);
 infl_new = zeros(3,6,len);
 
-infl_new(1,3,:) = reshape(z_m.*J_2,1,1,[]);
-infl_new(1,4,:) = reshape(z_m.*J_1,1,1,[]);
-infl_new(1,5,:) = reshape(z_m.*J_4,1,1,[]);
+infl_new(1,3,:) = reshape(J_2.*z_m,1,1,[]);
+infl_new(1,4,:) = reshape(J_1.*z_m,1,1,[]);
+infl_new(1,5,:) = reshape(J_4.*z_m,1,1,[]);
 
-infl_new(2,1,:) = reshape(z_m.*J_4,1,1,[]);
-infl_new(2,2,:) = reshape(z_m.*J_1,1,1,[]);
-infl_new(2,5,:) = reshape(z_m.*J_2,1,1,[]);
+infl_new(2,1,:) = reshape(J_4.*z_m,1,1,[]);
+infl_new(2,2,:) = reshape(J_1.*z_m,1,1,[]);
+infl_new(2,5,:) = reshape(J_2.*z_m,1,1,[]);
 
-% infl_new(3,2,:) = (reshape(z_m.*-J_1.*y_m ,1,1,[]) + reshape(z_m.*J_4,1,1,[]));
-% infl_new(3,3,:) = (reshape(z_m.*-J_2.*x_m,1,1,[]) + reshape(z_m.*J_3,1,1,[]));
-% infl_new(3,4,:) = (reshape(z_m.*-J_1.*x_m,1,1,[]) + reshape(z_m.*J_2,1,1,[]));
-
-% infl_new(3,5,:) = (reshape(z_m.*-J_2.*y_m,1,1,[]) - reshape(z_m.*J_4.*x_m,1,1,[]) +  reshape(z_m.*2.*J_6,1,1,[]));
+infl_new(3,1,:) = (reshape(-J_4.*y_m ,1,1,[]));% + reshape(J_5,1,1,[]));
+infl_new(3,2,:) = (reshape(-J_1.*y_m ,1,1,[]) + reshape(J_4,1,1,[]));
+infl_new(3,3,:) = (reshape(-J_2.*x_m,1,1,[]) + reshape(J_3,1,1,[]));
+infl_new(3,4,:) = (reshape(-J_1.*x_m,1,1,[]) + reshape(J_2,1,1,[]));
+infl_new(3,5,:) = (reshape(-J_2.*y_m,1,1,[]) - reshape(J_4.*x_m,1,1,[]) +  reshape(2.*J_6,1,1,[]));
 
 infl_new(isnan(infl_new)) = 0;
 infl_loc = real(infl_new);
@@ -183,9 +183,10 @@ toc
 dvenum = reshape(repmat(dvenum,1,6,1)',[],1,1);
 
 infl_tot = fcnSTARGLOB(reshape(permute(infl_loc,[2 3 1]),[],3,1), matROTANG(dvenum,:));
-% infl_tot(isnan(infl_tot)) = 0;
+infl_tot(isnan(infl_tot)) = 0;
 
 infl_glob = reshape(infl_tot',3,6,[]);
+% infl_glob(isnan(infl_glob)) = 0;
 end
 
 function J_1 = fcnJ_1(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE)

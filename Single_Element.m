@@ -12,8 +12,8 @@ valBETA = 0;
 vecSYM = [];
 
 matPOINTS(:,:,1) = [0 0 0];
-matPOINTS(:,:,3) = [0 1 0];
-matPOINTS(:,:,1) = [1 0.5 0];
+matPOINTS(:,:,2) = [0 1 0];
+matPOINTS(:,:,3) = [1 0.5 0];
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
@@ -21,8 +21,8 @@ matPOINTS(:,:,1) = [1 0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-% matCOEFF = [ 2 1 0 0 0 0 ];
-matCOEFF = [-45.0959  -41.0083   -5.1624   -0.0404    0.3831    4.1836];
+matCOEFF = [ 0 1 0 0 0 0 ];
+% matCOEFF = [-45.0959  -41.0083   -5.1624   -0.0404    0.3831    4.1836];
 % matCOEFF = [-9.1923   45.1363    6.4033    5.5270   -1.4800   -2.9934];
 
 %% Plot
@@ -42,7 +42,7 @@ z = x.*0;
 % y = zeros(len,1) + 0.5;
 % x = zeros(len,1) + 0.8;
 
-% granularity = 0.3;
+% granularity = 0.1;
 % z = -2:granularity:2;
 % len = length(z);
 % z(end+1) = 0;
@@ -51,10 +51,10 @@ z = x.*0;
 % x = -.2:granularity:1.2;
 % y = -.2:granularity:.2;
 
-% granularity = 0.5;
-% y = -8:granularity:8;
+% granularity = 0.25;
+% y = -2:granularity:2;
 % z = -1:granularity:1;
-% x = -8:granularity:8;
+% x = -2:granularity:2;
 
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');

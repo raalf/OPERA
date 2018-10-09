@@ -13,9 +13,8 @@ clc
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_high.stl');
 
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
-matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
-% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
-
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
+matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 

@@ -1,0 +1,25 @@
+function J_1s = fcnJ_1s(eta_1,eta_2,eta_3,x_m,xi_1,xi_3,y_m)
+
+t2 = x_m-xi_3;
+t3 = eta_1-eta_3;
+t4 = xi_1-xi_3;
+t5 = 1.0./t4;
+t6 = eta_1-y_m-t3.*t5.*xi_1+t3.*t5.*xi_3;
+t7 = t2.^2;
+t8 = eta_2-eta_3;
+t9 = eta_2-y_m-t5.*t8.*xi_1+t5.*t8.*xi_3;
+t10 = 1.0./t2;
+t11 = xi_3.*y_m;
+t12 = eta_3-y_m;
+t13 = t12.*xi_1;
+t14 = x_m-xi_1;
+t15 = eta_1-y_m;
+t16 = eta_1.*x_m;
+t23 = eta_3.*x_m;
+t17 = t11+t13+t16-t23-eta_1.*xi_3;
+t18 = 1.0./t17;
+t19 = t14.^2;
+t20 = eta_2-y_m;
+t21 = 1.0./t14;
+t22 = eta_2.*x_m;
+J_1s = (t4.*t21.*sqrt(t19+t20.^2))./(t11+t13+t22-t23-eta_2.*xi_3)+t4.*t10.*t18.*sqrt(t7+t6.^2)-t4.*t18.*t21.*sqrt(t19+t15.^2)-(t4.*t10.*sqrt(t7+t9.^2))./(t11+t13+t22-eta_3.*x_m-eta_2.*xi_3);

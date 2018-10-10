@@ -21,7 +21,7 @@ matPOINTS(:,:,3) = [1 0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [ 0 1 0 0 0 0 ];
+matCOEFF = [ 1 0 0 0 0 0 ];
 % matCOEFF = [-45.0959  -41.0083   -5.1624   -0.0404    0.3831    4.1836];
 % matCOEFF = [-9.1923   45.1363    6.4033    5.5270   -1.4800   -2.9934];
 
@@ -31,16 +31,16 @@ matCOEFF = [ 0 1 0 0 0 0 ];
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 % view([-30 17])
 
-% granularity = 0.1;
-% x = 0.1:granularity:.9;
-% y = x.*0 + 0.5;
-% z = x.*0;
-
 granularity = 0.01;
-z = -.25:granularity:.25;
-len = length(z);
-y = zeros(len,1) + 0.2;
-x = zeros(len,1) + 0.8;
+y = [0:granularity:.44, .56:granularity:1];
+x = y.*0 + 0.9;
+z = x.*0;
+
+% granularity = 0.1;
+% z = -.25:granularity:.25;
+% len = length(z);
+% y = zeros(len,1) + 0.2;
+% x = zeros(len,1) + 0.8;
 
 % granularity = 0.1;
 % z = -2:granularity:2;
@@ -67,7 +67,7 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = matCENTER + [0 0 0]
 
 % fpg = [-1 1 0.9];
-fpg = [0.8 0.2 0];
+% fpg = [0.8 0.2 0];
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 
@@ -76,7 +76,7 @@ q_ind = s_ind;
 
 figure(1);
 hold on
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),0)
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 hold off
 
 

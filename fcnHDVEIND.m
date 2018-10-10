@@ -1,5 +1,7 @@
 function [infl_glob] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER)
 warning('on')
+cutoff = 1e-7;
+
 fpl = fcnGLOBSTAR(fpg - matCENTER(dvenum,:), matROTANG(dvenum,:));
 len = size(fpl,1);
 
@@ -17,19 +19,9 @@ eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 le_eta = eta_2 + (fpl(:,1) - xi_2).*((eta_3 - eta_2)./(xi_3 - xi_2));
 te_eta = eta_1 + (fpl(:,1) - xi_1).*((eta_3 - eta_1)./(xi_3 - xi_1));
 
-% tester = abs(fpl(:,3)) < 1e-3;
-% fpl(tester,3) = 1e-5
 margin_edge = 1e-10;
 margin_on_element = 1e-10;
 idx_on_element = fpl(:,2) >= te_eta - margin_edge & fpl(:,2) <= le_eta + margin_edge & fpl(:,1) >= xi_1 - margin_edge & fpl(:,1) <= xi_3 + margin_edge & abs(fpl(:,3)) <= margin_on_element;
-
-% margin_above_below_element = 1e-3;
-% idx_above_below_element = fpl(:,2) >= te_eta - margin_edge & fpl(:,2) <= le_eta + margin_edge & fpl(:,1) >= xi_1 - margin_edge & fpl(:,1) <= xi_3 + margin_edge & abs(fpl(:,3)) > margin_on_element & abs(fpl(:,3)) <= margin_above_below_element;
-idx_on_edge = idx_on_element & ((xi_1 - margin_edge <= fpl(:,1) & fpl(:,1) <= xi_1 + margin_edge) | (le_eta - margin_edge <= fpl(:,2) & fpl(:,2) <= le_eta + margin_edge) | (te_eta - margin_edge <= fpl(:,2) & fpl(:,2) <= te_eta + margin_edge));
-
-% fpl(idx_on_element,3) = fpl(idx_on_element,3).*0 + 1e-4;
-% fpl(idx_on_edge,:) = fpl(idx_on_edge,:) - margin.*fpl(idx_on_edge,:);
-% fpl(idx_on_edge,3) = fpl(idx_on_edge,3) + margin;
 
 xi_p = fpl(:,1);
 eta_p = fpl(:,2);
@@ -45,21 +37,37 @@ D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
 E = (eta_3 - eta_1)./(xi_3 - xi_1);
 D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
 
+% Out of element plane
 J_1 = fcnJ_1(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE);
 J_2 = fcnJ_2(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE);
 J_3 = fcnJ_3(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE);
 J_4 = fcnJ_4(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE);
-J_5 = [];
+J_5 = J_1.*0;
 J_6 = fcnJ_6(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE);
 
+% In plane of element (not on element)
 idx = fpl(:,3) == 0;
-J_1(idx) = fcnJ_1ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx));
-J_2(idx) = fcnJ_2ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx));
-J_3(idx) = fcnJ_3ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx));
-J_4(idx) = fcnJ_4ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx));
-J_5 = [];
-J_6(idx) = fcnJ_6ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx));
+idx_case1 = eta_3 <= eta_1;
+idx_case2 = eta_1 < eta_3 & eta_3 < eta_2;
+idx_case3 = eta_2 <= eta_3;
+J_1(idx) = fcnJ_1ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff);
+J_2(idx) = fcnJ_2ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff);
+J_3(idx) = fcnJ_3ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff);
+J_4(idx) = fcnJ_4ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff);
+J_5(idx & idx_case1) = fcnJ_51ip(x_m(idx & idx_case1), y_m(idx & idx_case1), xi_1(idx & idx_case1), eta_1(idx & idx_case1), eta_2(idx & idx_case1), eta_3(idx & idx_case1), C(idx & idx_case1), D_LE(idx & idx_case1), E(idx & idx_case1), D_TE(idx & idx_case1), cutoff);
+J_5(idx & idx_case2) = fcnJ_52ip(x_m(idx & idx_case2), y_m(idx & idx_case2), xi_1(idx & idx_case2), eta_1(idx & idx_case2), eta_2(idx & idx_case2), eta_3(idx & idx_case2), C(idx & idx_case2), D_LE(idx & idx_case2), E(idx & idx_case2), D_TE(idx & idx_case2), cutoff);
+J_5(idx & idx_case3) = fcnJ_53ip(x_m(idx & idx_case3), y_m(idx & idx_case3), xi_1(idx & idx_case3), eta_1(idx & idx_case3), eta_2(idx & idx_case3), eta_3(idx & idx_case3), C(idx & idx_case3), D_LE(idx & idx_case3), E(idx & idx_case3), D_TE(idx & idx_case3), cutoff);
+J_6(idx) = fcnJ_6ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff);
 
+% On element
+J_1(idx_on_element) = 0;
+J_2(idx_on_element) = 0;
+J_3(idx_on_element) = 0;
+J_4(idx_on_element) = 0;
+J_5(idx_on_element) = 0;
+J_6(idx_on_element) = 0;
+
+% Compiling
 infl_new = zeros(3,6,len);
 
 infl_new(1,3,:) = reshape(J_2.*z_m,1,1,[]);
@@ -70,7 +78,7 @@ infl_new(2,1,:) = reshape(J_4.*z_m,1,1,[]);
 infl_new(2,2,:) = reshape(J_1.*z_m,1,1,[]);
 infl_new(2,5,:) = reshape(J_2.*z_m,1,1,[]);
 
-infl_new(3,1,:) = (reshape(-J_4.*y_m ,1,1,[]));% + reshape(J_5,1,1,[]));
+infl_new(3,1,:) = (reshape(-J_4.*y_m ,1,1,[]) + reshape(J_5,1,1,[]));
 infl_new(3,2,:) = (reshape(-J_1.*y_m ,1,1,[]) + reshape(J_4,1,1,[]));
 infl_new(3,3,:) = (reshape(-J_2.*x_m,1,1,[]) + reshape(J_3,1,1,[]));
 infl_new(3,4,:) = (reshape(-J_1.*x_m,1,1,[]) + reshape(J_2,1,1,[]));
@@ -80,114 +88,6 @@ infl_new(isnan(infl_new)) = 0;
 infl_loc = real(infl_new);
 
 toc
-%%
-% count = 1;
-% D = parallel.pool.DataQueue;
-% h = waitbar(0, 'Please wait ...');
-% afterEach(D, @nUpdateWaitbar);
-% 
-% AbsTol = 1e-7;
-% RelTol = 1e-7;
-% 
-% infl_loc = zeros(3,6,len);
-% 
-% parfor r = 1:len
-% % for i = 1:len
-%     le_eta = @(x) eta_2(r) + (x - xi_2(r)).*((eta_3(r) - eta_2(r))./(xi_3(r) - xi_2(r)));
-%     te_eta = @(x) eta_1(r) + (x - xi_1(r)).*((eta_3(r) - eta_1(r))./(xi_3(r) - xi_1(r)));
-%     
-%     tmp = zeros(3,6);
-%     
-%     if idx_on_element(r) == false
-%         %{
-%         denom = @(x,y) (((abs(zeta_p(r)).^2) + (abs(y - eta_p(r)).^2) + (abs(xi_p(r) - x).^2)).^(3/2));
-% %         disp(['Off Element Totally: ', num2str(r)])
-%                 
-%         % A1
-%         term = @(x,y) (y.*zeta_p(r))./denom(x,y);
-%         tmp(2,1) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         % A2
-%         term = @(x,y) zeta_p(r)./denom(x,y);
-%         tmp(2,2) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         % B1
-%         term = @(x,y) (x.*zeta_p(r))./denom(x,y);
-%         tmp(1,3) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         % B2
-%         term = @(x,y) zeta_p(r)./denom(x,y);
-%         tmp(1,4) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         % C2
-%         term = @(x,y) (y.*zeta_p(r))./denom(x,y);
-%         tmp(1,5) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         term = @(x,y) (x.*zeta_p(r))./denom(x,y);
-%         tmp(2,5) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         
-%         % A1
-%         term = @(x,y) -(y.*(eta_p(r)-y))./denom(x,y);
-%         tmp(3,1) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         % A2
-%         term = @(x,y) (y - eta_p(r))./denom(x,y);
-%         tmp(3,2) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         % B1
-%         term = @(x,y) -(x.*(xi_p(r)-x))./denom(x,y);
-%         tmp(3,3) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         % B2
-%         term = @(x,y) (x - xi_p(r))./denom(x,y);
-%         tmp(3,4) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         % C2
-%         term = @(x,y) (-x.*(eta_p(r) - y) - y.*(xi_p(r) - x))./denom(x,y);
-%         tmp(3,5) = integral2(term, xi_1(r), xi_3(r), le_eta, te_eta,'AbsTol',AbsTol','RelTol',RelTol);
-%         %}
-%     elseif idx_on_element(r) == true && idx_on_edge(r) == false
-%         denom = @(x,y) ((abs(y-eta_p(r)).^2 + abs(xi_p(r)-x).^2).^(3/2));
-% %         margin_edge = 2e-2;
-%         margin_edge = 1e-8;
-% %         disp(['On Element: ', num2str(r)])
-%         % A1
-% %         term = @(x,y) -(y.*(eta_p(r)-y))./denom(x,y);        
-% %         tmp(3,1) =  integral2(term, xi_1(r), xi_p(r) - margin_edge, le_eta, eta_p(r) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_p(r) + margin_edge, xi_3(r), le_eta, eta_p(r) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_1(r), xi_p(r) - margin_edge, eta_p(r) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_p(r) + margin_edge, xi_3(r), eta_p(r) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated');
-%         % A2
-% %         term = @(x,y) (y - eta_p(r))./denom(x,y);
-% %         tmp(3,2) =  integral2(term, xi_1(r), xi_p(r) - margin_edge, le_eta, eta_p(r) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_p(r) + margin_edge, xi_3(r), le_eta, eta_p(r) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_1(r), xi_p(r) - margin_edge, eta_p(r) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_p(r) + margin_edge, xi_3(r), eta_p(r) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated');
-%         % B1
-% %         term = @(x,y) -(x.*(xi_p(r)-x))./denom(x,y);
-% %         tmp(3,3) =  integral2(term, xi_1(r), xi_p(r) - margin_edge, le_eta, eta_p(r) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_p(r) + margin_edge, xi_3(r), le_eta, eta_p(r) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_1(r), xi_p(r) - margin_edge, eta_p(r) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_p(r) + margin_edge, xi_3(r), eta_p(r) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated');
-%         % B2
-% %         term = @(x,y) (x - xi_p(r))./denom(x,y);
-% %         tmp(3,4) =  integral2(term, xi_1(r), xi_p(r) - margin_edge, le_eta, eta_p(r) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_p(r) + margin_edge, xi_3(r), le_eta, eta_p(r) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_1(r), xi_p(r) - margin_edge, eta_p(r) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_p(r) + margin_edge, xi_3(r), eta_p(r) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated');
-%         % C2
-% %         term = @(x,y) (-x.*(eta_p(r) - y) - y.*(xi_p(r) - x))./denom(x,y);
-% %         tmp(3,5) =  integral2(term, xi_1(r), xi_p(r) - margin_edge, le_eta, eta_p(r) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_p(r) + margin_edge, xi_3(r), le_eta, eta_p(r) + margin_edge,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_1(r), xi_p
-% (r) - margin_edge, eta_p(r) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated') + ...
-% %             integral2(term, xi_p(r) + margin_edge, xi_3(r), eta_p(r) - margin_edge, te_eta,'AbsTol',AbsTol','RelTol',RelTol, 'method', 'iterated');
-%     end
-%     
-%     infl_loc(:,:,r) = tmp;
-%     
-%     send(D, r);
-% end
-% close(h);
-% 
-%     function nUpdateWaitbar(~)
-%         waitbar(count/len, h);
-%         count = count + 1;
-%     end
-% 
-% % Only using the normal velocities for points on the element
-% % infl_loc(1:2,:,tester) = infl_loc(1:2,:,tester).*0;
 
 %%
 dvenum = reshape(repmat(dvenum,1,6,1)',[],1,1);
@@ -197,7 +97,7 @@ infl_tot(isnan(infl_tot)) = 0;
 infl_tot(isinf(infl_tot)) = 0;
 
 infl_glob = reshape(infl_tot',3,6,[]);
-% infl_glob(isnan(infl_glob)) = 0;
+
 end
 
 function J_1 = fcnJ_1(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE)
@@ -284,9 +184,13 @@ t199 = log(t167 .* (t61 .* t183 + (t4 .* (t63 + t186 + xi_1 - x_m)) + t68 + i .*
 J_1 = 0.1e1 ./ 0.2e1.*i ./ t4 ./ t35 ./ t43 .* (-t82 .* t39 .* t36 + t107 .* t39 .* t36 + (t29 .* (t15 .* (-D_LE + y_m + i .* t154 - t2) .* (t135 - t152) + t35 .* (t169 - t177) .* (i .* t154 + t2 - y_m + D_LE)) + (i .* t37 + t19 - y_m + D_TE) .* (t193 - t199) .* t36) .* t43) ./ t29 ./ t15;
 end
 
-function J_1ip = fcnJ_1ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m)
+function J_1ip = fcnJ_1ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff)
 t2 = E .* x_m;
+t4 = sign(t2 + D_TE - y_m);
 t5 = C .* x_m;
+t7 = sign(t5 + D_LE - y_m);
+t9 = sign((-t4 + t7));
+t10 = inf .* t9;
 t11 = E .^ 2;
 t12 = xi_3 .^ 2;
 t14 = E .* D_TE;
@@ -317,8 +221,18 @@ t73 = D_LE .* x_m .* y_m;
 t77 = D_TE .* x_m .* y_m;
 t80 = t26 .* x_m;
 t82 = D_LE .* xi_3 .* y_m + D_TE .* xi_3 .* y_m - xi_3 .* t23 .* t51 + t61 .* t2 - t24 .* t56 - t24 .* t63 - t26 .* xi_3 + t61 .* t5 - xi_3 .* t69 + t53 + t57 - t60 + t64 - t67 + t70 - t73 - t77 + t80;
+t82(abs(t82) < cutoff) = 0;
+
+% t85 = piecewise(x_m == xi_3, -t10, 0.1e1 ./ t82 .* (x_m .* t28 .* C - x_m .* t43 .* E + D_LE .* t28 - D_TE .* t43 - y_m .* t28 + y_m .* t43));
 t85 = 0.1e1 ./ t82 .* (x_m .* t28 .* C - x_m .* t43 .* E + D_LE .* t28 - D_TE .* t43 - y_m .* t28 + y_m .* t43);
-t89 = 0;
+t85(x_m == xi_3) = -t10(x_m == xi_3);
+
+t88 = x_m < xi_3 & xi_1 < x_m;
+
+% t89 = piecewise(t88, -t10, 0);
+t89 = t2.*0;
+t89(t88) = -t10(t88);
+
 t91 = xi_1 .^ 2;
 t98 = x_m .* xi_1;
 t99 = 0.2e1 .* t98;
@@ -326,8 +240,14 @@ t101 = sqrt(-0.2e1 .* E .* xi_1 .* y_m + t91 .* t11 + 0.2e1 .* xi_1 .* t14 + t20
 t111 = sqrt(-0.2e1 .* C .* xi_1 .* y_m + t91 .* t31 + 0.2e1 .* xi_1 .* t33 + t23 + t26 + t39 - t41 + t91 - t99);
 t122 = xi_1 .* y_m;
 t132 = D_LE .* xi_1 .* y_m + D_TE .* xi_1 .* y_m - xi_1 .* t23 .* t51 + t122 .* t2 + t122 .* t5 - t26 .* xi_1 - t98 .* t56 - t98 .* t63 - xi_1 .* t69 + t53 + t57 - t60 + t64 - t67 + t70 - t73 - t77 + t80;
+t132(abs(t132) < cutoff) = 0;
+
+% t135 = piecewise(x_m == xi_1, t10, 0.1e1 ./ t132 .* (x_m .* t101 .* C - x_m .* t111 .* E + D_LE .* t101 - D_TE .* t111 - y_m .* t101 + y_m .* t111));
 t135 = 0.1e1 ./ t132 .* (x_m .* t101 .* C - x_m .* t111 .* E + D_LE .* t101 - D_TE .* t111 - y_m .* t101 + y_m .* t111);
+t135(x_m == xi_1) = t10(x_m == xi_1);
+
 J_1ip = t85 + t89 - t135;
+J_1ip(isnan(J_1ip) | isinf(J_1ip)) = 0;
 end
 
 function J_2 = fcnJ_2(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE)
@@ -430,13 +350,15 @@ t276 = log(0.2e1);
 J_2 = -i ./ t4 .* t146 .* t165 .* (t102 .* t15 .* t65 .* t61 - t128 .* t15 .* t65 .* t61 + (t41 .* (t15 .* (i .* t21 .* (t64 .* (t148 - t159) .* C - E .* t60 .* (t167 - t171)) .* t4 - (t203 - t211) .* t64 .* t60 .* ((x_m .* t184) + t180 - t182 + t187)) - (t230 - t238) .* (-(x_m .* t184) + t180 + t182 - t187) .* t64 .* t60 .* t21) - (t267 - t275 - t276) .* t15 .* t64 .* t60 .* (-(x_m .* t51) + t46 + t49 - t55) .* t21) .* t34) ./ t41 ./ t34 ./ t21 ./ t15;
 end
 
-function J_2ip = fcnJ_2ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m)
+function J_2ip = fcnJ_2ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff)
 t2 = (E .* x_m);
 t3 = t2 + D_TE - y_m;
 t4 = sign(t3);
 t5 = (C .* x_m);
 t6 = t5 + D_LE - y_m;
 t7 = sign(t6);
+t12 = sign(t6 .* t3 .* (-t4 + t7) .* x_m);
+t13 = inf .* t12;
 t14 = (D_TE .* C);
 t15 = t4 .* E;
 t16 = t15 .* t14;
@@ -562,8 +484,18 @@ t339 = x_m .* t165;
 t342 = D_LE .* x_m .* y_m;
 t346 = D_TE .* x_m .* y_m;
 t349 = (D_LE .* xi_3 .* y_m) + (D_TE .* xi_3 .* y_m) + (t136 .* t2) + (t136 .* t5) - t74 .* t14 - t74 .* t154 - (xi_3 .* t165) - t85 .* t34 + t284 - t287 + t327 + t329 - t332 + t334 - t337 + t339 - t342 - t346;
+t349(abs(t349) < cutoff) = 0;
+
+% t353 = piecewise(x_m == xi_3, t13, -0.1e1 ./ t349 .* t326 .* t7 .* t4 .* (t150 + t207 + t265 + t319));
 t353 = -0.1e1 ./ t349 .* t326 .* t7 .* t4 .* (t150 + t207 + t265 + t319);
-t357 = 0;
+t353(x_m == xi_3) = t13(x_m == xi_3);
+
+t356 = x_m < xi_3 & xi_1 < x_m;
+
+% t357 = piecewise(t356, t13, 0);
+t357 = t2.*0;
+t357(t356) = t13(t356);
+
 t362 = asinh(t49 .* (xi_1 .* t17 + t45 - t46 - x_m + xi_1));
 t370 = asinh(t27 .* (xi_1 .* t21 + t23 - t24 - x_m + xi_1));
 t376 = t73 .* t43 .* t35;
@@ -630,8 +562,13 @@ t597 = t485 .* t23;
 t600 = t481 .* t165;
 t605 = -t256 .* t429 .* t34 + t267 .* t414 .* t14 - t263 .* t429 .* t14 - t270 .* t7 .* t544 + t270 .* t4 .* t548 - t534 .* t56 .* t490 .* t112 + t534 .* t20 .* t485 .* t116 - t403 .* t56 .* t490 .* t120 + t454 .* t496 .* t35 .* t378 + t376 .* t495 - t383 .* t500 + t387 .* t486 - t380 .* t491 + t403 .* t20 .* t485 .* t192 - t546 .* t35 .* t385 + t496 .* t35 .* t526 + t516 .* t597 - t518 .* t597 - t125 .* t35 .* t600 + t443 .* t35 .* t600;
 t620 = D_LE .* xi_1 .* y_m + D_TE .* xi_1 .* y_m - t403 .* t14 - t403 .* t154 - xi_1 .* t165 + t454 .* t2 - t534 .* t34 + t454 .* t5 + t284 + t327 + t329 - t332 + t334 - t337 + t339 - t342 - t346 - t393;
+t620(abs(t620) < cutoff) = 0;
+% t624 = piecewise(x_m == xi_1, -t13, -0.1e1 ./ t620 .* t326 .* t7 .* t4 .* (t453 + t513 + t563 + t605));
 t624 = -0.1e1 ./ t620 .* t326 .* t7 .* t4 .* (t453 + t513 + t563 + t605);
+t624(x_m == xi_1) = -t13(x_m == xi_1);
+
 J_2ip = t353 + t357 - t624;
+J_2ip(isnan(J_2ip) | isinf(J_2ip)) = 0;
 end
 
 function J_3 = fcnJ_3(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE)
@@ -751,20 +688,29 @@ t336 = log(0.2e1);
 J_3 = -0.3e1 ./ 0.2e1.*i ./ t4 ./ t54 .* (-t114 .* t78 .* t55 .* t50 + t141 .* t78 .* t55 .* t50 + (-t159 .* t150 .* t149 + t169 .* t150 .* t149 - (0.4e1 ./ 0.3e1) .* t54 .* ((0.3e1 ./ 0.4e1) .* t219 .* t150 .* t190 - (0.3e1 ./ 0.4e1) .* t239 .* t150 .* t190 - (0.3e1 ./ 0.4e1) .* t258 .* t246 .* t49 + (0.3e1 ./ 0.4e1) .* t269 .* t246 .* t49 + t15 .* (t286 .* t281 .* t4 .* t223 + i .* t300 .* t295 .* t49 + i .* t307 .* t281 .* t4 .* t21 - (0.3e1 ./ 0.4e1) .* t25 .* (0.4e1 ./ 0.3e1.*i .* t315 .* t295 .* t24 .* t21 + (0.2e1 ./ 0.3e1.*i .* t92 .* t320 .* t4 .* t21 + t229 .* E .* t4 .* t24 .* t323 + t126 .* t320 .* t4 .* t323 + (0.2e1 ./ 0.3e1.*i .* t4 .* t21 .* t199 .* E + t336 .* t44 .* t189) .* t24) .* t45)))) .* t41) ./ t46 ./ t41 ./ t26 ./ t21 ./ t15;
 end
 
-function J_3ip = fcnJ_3ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m)
+function J_3ip = fcnJ_3ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff)
 t2 = (C .* x_m);
 t3 = t2 + D_LE - y_m;
 t4 = sign(t3);
+t5 = t4 .* E;
 t6 = (x_m .^ 2);
 t7 = (C .* t6);
 t9 = E .* x_m;
 t10 = t9 + D_TE - y_m;
 t11 = sign(t10);
+t12 = t11 .* C;
 t13 = E .* t6;
+t15 = D_TE .* t4;
 t17 = x_m .* D_TE;
+t19 = y_m .* t4;
 t21 = x_m .* y_m;
 t23 = x_m .* D_LE;
+t25 = D_LE .* t11;
+t28 = y_m .* t11;
 t36 = y_m .^ 2;
+t39 = D_LE .* t15 - D_LE .* t19 - D_TE .* t25 + D_TE .* t28 - t36 .* t11 - t13 .* t12 - t17 .* t12 + t21 .* t12 + t2 .* t15 - y_m .* t15 - t2 .* t19 - t21 .* t5 + t23 .* t5 - t9 .* t25 + y_m .* t25 + t9 .* t28 + t36 .* t4 + t7 .* t5;
+t40 = sign(t39);
+t41 = inf .* t40;
 t42 = C .^ 2;
 t43 = t42 .* C;
 t44 = E .^ 2;
@@ -1119,9 +1065,21 @@ t1532 = x_m .* t253;
 t1534 = y_m .* t23;
 t1537 = y_m .* t17;
 t1540 = D_LE .* xi_3 .* y_m + D_TE .* xi_3 .* y_m - t314 .* t198 + t260 .* t2 - xi_3 .* t253 + t260 .* t9 - t64 .* t352 - t64 .* t380 + t1522 + t1524 - t1526 + t1528 - t1530 + t1532 - t1534 - t1537 + t307 - t479;
+t1540(abs(t1540) < cutoff) = 0;
+
 t1543 = 0.1e1 ./ t49 ./ t48;
 t1546 = 0.1e1 ./ t46 ./ t45;
+
+% t1549 = piecewise(x_m == xi_3, t41, -t1546 .* t1543 ./ t1540 .* t4 .* t11 .* (t1145 + t816 + t860 + t1338 + t695 + t903 + t1106 + t458 + t1446 + t413 + t312 + t949 + t507 + t1179 + t777 + t1480 + t1259 + t987 + t1061 + t368 + t172 + t1514 + t738 + t647 + t557 + t602 + t1218 + t242 + t1020 + t1375 + t1298 + t1413));
 t1549 = -t1546 .* t1543 ./ t1540 .* t4 .* t11 .* (t1145 + t816 + t860 + t1338 + t695 + t903 + t1106 + t458 + t1446 + t413 + t312 + t949 + t507 + t1179 + t777 + t1480 + t1259 + t987 + t1061 + t368 + t172 + t1514 + t738 + t647 + t557 + t602 + t1218 + t242 + t1020 + t1375 + t1298 + t1413);
+t1549(x_m == xi_3) = t41(x_m == xi_3);
+
+t1552 = x_m < xi_3 & xi_1 < x_m;
+
+% t1553 = piecewise(t1552, t41, 0);
+t1553 = t2.*0;
+t1553(t1552) = t41(t1552);
+
 t1555 = C .* xi_1;
 t1558 = xi_1 .^ 2;
 t1564 = x_m .* xi_1;
@@ -1333,8 +1291,14 @@ t2877 = 0.2e1 .* t1685 .* t2004 .* t166 + 0.2e1 .* t158 .* t1808 .* t166 + 0.2e1
 t2881 = t1658 .* t402;
 t2909 = t1721 .* t1958 .* t1171 - t186 .* t1813 .* t1171 - t158 .* t245 .* t1595 + t158 .* t1808 .* t674 + 0.2e1 .* t158 .* t245 .* t2092 - 0.2e1 .* t1680 .* t1678 .* t198 - 0.3e1 .* t1685 .* t245 .* t1903 - t1721 .* t1872 .* t674 + 0.2e1 .* t2176 .* t230 .* t341 - t1721 .* t2881 - 0.2e1 .* t1995 .* t796 + 0.2e1 .* t2009 .* t957 - 0.2e1 .* t2013 .* t2671 + t405 .* t2881;
 t2927 = D_LE .* xi_1 .* y_m + D_TE .* xi_1 .* y_m - t1564 .* t352 - t1564 .* t380 + t1626 .* t2 + t1626 .* t9 - t1711 .* t198 - xi_1 .* t253 + t1522 + t1524 - t1526 + t1528 - t1530 + t1532 - t1534 - t1537 - t1769 + t307;
+t2927(abs(t2927) < cutoff) = 0;
+
+% t2932 = piecewise(x_m == xi_1, -t41, -t1546 .* t1543 ./ t2927 .* t4 .* t11 .* (t2613 + t1984 + t2358 + t2838 + t2435 + t2113 + t2762 + t2280 + t1640 + t1799 + t2909 + t2235 + t1938 + t2192 + t2023 + t2720 + t2150 + t2320 + t2877 + t2684 + t2508 + t1754 + t2544 + t2067 + t2396 + t1696 + t2580 + t2651 + t1846 + t2469 + t2801 + t1891));
 t2932 = -t1546 .* t1543 ./ t2927 .* t4 .* t11 .* (t2613 + t1984 + t2358 + t2838 + t2435 + t2113 + t2762 + t2280 + t1640 + t1799 + t2909 + t2235 + t1938 + t2192 + t2023 + t2720 + t2150 + t2320 + t2877 + t2684 + t2508 + t1754 + t2544 + t2067 + t2396 + t1696 + t2580 + t2651 + t1846 + t2469 + t2801 + t1891);
-J_3ip = t1549 - t2932;
+t2932(x_m == xi_1) = -t41(x_m == xi_1);
+
+J_3ip = t1549 + t1553 - t2932;
+J_3ip(isnan(J_3ip) | isinf(J_3ip)) = 0;
 end
 
 function J_4 = fcnJ_4(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE)
@@ -1429,11 +1393,15 @@ t248 = log(0.2e1);
 J_4 = 0.1e1 ./ 0.2e1.*i ./ t4 .* t152 ./ t42 ./ t49 .* t134 ./ t21 .* (-t89 .* t45 .* t43 .* t30 + t115 .* t45 .* t43 .* t30 + t49 .* (t42 .* (t15 .* (2.*i .* t21 .* (t28 .* (t136 - t147) - (t154 - t158) .* t24) .* t4 + y_m .* (t181 - t189) .* t28 .* t24 .* (i .* t164 - t2 - D_LE + y_m)) + y_m .* (i .* t164 + t2 + D_LE - y_m) .* t28 .* t24 .* (t204 - t212) .* t21) + t15 .* y_m .* (i .* t44 + t32 + D_TE - y_m) .* t28 .* t24 .* t21 .* (t239 - t247 - t248))) ./ t15;
 end
 
-function J_4ip = fcnJ_4ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m)
+function J_4ip = fcnJ_4ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff)
 t2 = (E .* x_m);
 t3 = t2 + D_TE - y_m;
+t4 = sign(t3);
 t5 = (C .* x_m);
 t6 = t5 + D_LE - y_m;
+t7 = sign(t6);
+t10 = sign(((t4 - t7) .* y_m));
+t11 = inf .* t10;
 t12 = (C .^ 2);
 t13 = (xi_3 .^ 2);
 t15 = (C .* D_LE);
@@ -1511,7 +1479,18 @@ t193 = x_m .* t117;
 t196 = D_LE .* x_m .* y_m;
 t200 = D_TE .* x_m .* y_m;
 t203 = (D_LE .* xi_3 .* y_m) + (D_TE .* xi_3 .* y_m) - (xi_3 .* t24 .* t40) - (xi_3 .* t117) + (t186 .* t2) + (t186 .* t5) - (t25 .* t53) - (t25 .* t63) - t162 + t164 + t179 + t182 - t185 + t188 - t191 + t193 - t196 - t200;
+t203(abs(t203) < cutoff) = 0;
+
+% t207 = piecewise(x_m == xi_3, t11, -0.1e1 ./ t203 .* t178 .* t176 .* (t38 .* t33 .* t29 .* E + xi_3 .* t77 .* t33 .* t40 - xi_3 .* t50 .* t36 .* t40 + t82 .* t33 .* t53 + t82 .* t33 .* t63 - t56 .* t36 .* t53 - t56 .* t36 .* t63 + t61 .* t49 .* t58 + t61 .* t49 .* t66 - t61 .* t76 .* t84 + t133 + xi_3 .* t130 .* t117 + t141 .* t118 .* t40 - t141 .* t130 .* t40 - t115 .* t150 + t145 .* t121 - t137 .* t53 - t137 .* t63 + t139 .* t90 + t145 .* t147 + t151 .* t150 + t173));
 t207 = -0.1e1 ./ t203 .* t178 .* t176 .* (t38 .* t33 .* t29 .* E + xi_3 .* t77 .* t33 .* t40 - xi_3 .* t50 .* t36 .* t40 + t82 .* t33 .* t53 + t82 .* t33 .* t63 - t56 .* t36 .* t53 - t56 .* t36 .* t63 + t61 .* t49 .* t58 + t61 .* t49 .* t66 - t61 .* t76 .* t84 + t133 + xi_3 .* t130 .* t117 + t141 .* t118 .* t40 - t141 .* t130 .* t40 - t115 .* t150 + t145 .* t121 - t137 .* t53 - t137 .* t63 + t139 .* t90 + t145 .* t147 + t151 .* t150 + t173);
+t207(x_m == xi_3) = t11(x_m == xi_3);
+
+t210 = x_m < xi_3 & xi_1 < x_m;
+
+% t211 = piecewise(t210, t11, 0);
+t211 = t2.*0;
+t211(t210) = t11(t210);
+
 t216 = asinh(t47 .* (xi_1 .* t31 + t43 - t44 - x_m + xi_1));
 t217 = t216 .* C;
 t219 = xi_1 .* t60;
@@ -1547,8 +1526,504 @@ t333 = t27 .* xi_1;
 t342 = y_m .* t272 .* t36 .* t113 - y_m .* t260 .* t36 .* t150 + t27 .* t260 .* t108 - t27 .* t272 .* t108 + x_m .* t281 .* t117 + t164 .* t281 - t164 .* t284 + t320 .* t225 - t333 .* t281 + t333 .* t284 + t312 .* t306;
 t349 = xi_1 .* y_m;
 t358 = D_LE .* xi_1 .* y_m + D_TE .* xi_1 .* y_m - xi_1 .* t24 .* t40 - xi_1 .* t117 + t349 .* t2 - t257 .* t53 - t257 .* t63 + t349 .* t5 + t164 + t179 + t182 - t185 + t188 - t191 + t193 - t196 - t200 - t333;
+t358(abs(t358) < cutoff) = 0;
+
+% t362 = piecewise(x_m == xi_1, -t11, -0.1e1 ./ t358 .* t178 .* t176 .* (-y_m .* x_m .* t260 .* t36 .* t84 + y_m .* x_m .* t272 .* t36 .* t90 - xi_1 .* t242 .* t216 .* t40 + xi_1 .* t246 .* t224 .* t40 - t229 .* t216 .* t63 + t219 .* t36 .* t217 - t219 .* t33 .* t225 + t219 .* t36 .* t235 - t219 .* t33 .* t238 + t233 .* t224 .* t63 + t302 + xi_1 .* t284 .* t117 + t141 .* t281 .* t40 - t292 .* t235 + t320 .* t238 + t295 .* t304 - t298 .* t304 - t300 .* t63 - t38 .* t306 + t312 .* t310 - t38 .* t310 + t342));
 t362 = -0.1e1 ./ t358 .* t178 .* t176 .* (-y_m .* x_m .* t260 .* t36 .* t84 + y_m .* x_m .* t272 .* t36 .* t90 - xi_1 .* t242 .* t216 .* t40 + xi_1 .* t246 .* t224 .* t40 - t229 .* t216 .* t63 + t219 .* t36 .* t217 - t219 .* t33 .* t225 + t219 .* t36 .* t235 - t219 .* t33 .* t238 + t233 .* t224 .* t63 + t302 + xi_1 .* t284 .* t117 + t141 .* t281 .* t40 - t292 .* t235 + t320 .* t238 + t295 .* t304 - t298 .* t304 - t300 .* t63 - t38 .* t306 + t312 .* t310 - t38 .* t310 + t342);
-J_4ip = t207 - t362;
+t362(x_m == xi_1) = -t11(x_m == xi_1);
+
+J_4ip = t207 + t211 - t362;
+
+J_4ip(isnan(J_4ip) | isinf(J_4ip)) = 0;
+end
+
+function J_51ip = fcnJ_51ip(x_m, y_m, xi_1, eta_1, eta_2, eta_3, C, D_LE, E, D_TE, cutoff)
+t2 = y_m == eta_3;
+t3 = (C .* x_m);
+t4 = t3 + D_LE - y_m;
+t4(abs(t4) < cutoff) = 0;
+t5 = sign(t4);
+t6 = (E .* x_m);
+t7 = t6 + D_TE - y_m;
+t7(abs(t7) < cutoff) = 0;
+t8 = sign(t7);
+t12 = sign(t4 .* t7 .* (t5 - t8));
+t13 = inf .* t12;
+t14 = (C .^ 2);
+t15 = t14 + 1;
+t16 = sqrt(t15);
+t17 = t16 .* t15;
+t18 = 0.1e1 ./ t17;
+t19 = t18 .* t8;
+t20 = (E .^ 2);
+t21 = t20 + 1;
+t22 = sqrt(t21);
+t23 = t22 .* t21;
+t25 = t16 .* t23 .* t8;
+t27 = (y_m .^ 2);
+t28 = t27 .* (t14 + 2);
+t31 = (t3 + D_LE);
+t35 = (eta_3 .^ 2);
+t38 = (x_m .^ 2);
+t39 = -2 .* eta_3 .* y_m + t27 + t35 + t38;
+t41 = D_LE - eta_3;
+t45 = t41 .^ 2;
+t47 = sqrt((2 .* C .* t41 .* x_m + t14 .* t39 + t45));
+t53 = t17 .* t8 .* t22;
+t55 = t27 .* (t20 + 2);
+t58 = (t6 + D_TE);
+t63 = D_TE - eta_3;
+t67 = t63 .^ 2;
+t69 = sqrt((2 .* E .* t63 .* x_m + t20 .* t39 + t67));
+t80 = (x_m .* t20 .* E + t20 .* D_TE - 3 .* y_m .* t20 - 2 .* y_m) .* t8;
+t81 = t5 .* t17;
+t82 = y_m - eta_3;
+t86 = 0.1e1 ./ t7;
+t88 = abs(t86 ./ E);
+t90 = asinh(t88 .* (t20 .* t82 + D_TE - eta_3 + t6));
+t96 = 0.1e1 ./ t4;
+t98 = abs(t96 ./ C);
+t100 = asinh(t98 .* (t14 .* t82 + D_LE - eta_3 + t3));
+t105 = y_m .* (-3 .* t14 - 2) + t31 .* t14;
+t112 = atanh(0.1e1 ./ t47 .* t5 .* (t3 + D_LE - eta_3));
+t122 = atanh(0.1e1 ./ t69 .* t8 .* (t6 + D_TE - eta_3));
+t124 = y_m .* t5;
+t136 = 0.1e1 ./ t23;
+t141 = t96 .* t86;
+t144 = 0.2e1 .* t141 ./ t82 .* t5 .* t136 .* (t47 .* t7 .* t5 .* (t28 + y_m .* (-t3 - D_LE - eta_3) + t31 .* eta_3) .* t25 ./ 0.2e1 + (-t69 .* (t55 + y_m .* (-t6 - D_TE - eta_3) + t58 .* eta_3) .* t5 .* t53 ./ 0.2e1 + t7 .* t82 .* (t90 .* t81 .* t80 ./ 0.2e1 + (t8 .* (-t5 .* t105 .* t100 - 0.2e1 .* y_m .* t112 .* t17) + 0.2e1 .* t124 .* t122 .* t17) .* t23 ./ 0.2e1)) .* t4) .* t19;
+
+% t145 = piecewise(t2, -t13, t144);
+t145 = t144;
+t145(t2) = -t13(t2);
+
+t147 = eta_1 < y_m;
+t149 = t2.*0;
+t150 = y_m == eta_1;
+t154 = t28 + y_m .* (-t3 - D_LE - eta_1) + t31 .* eta_1;
+t156 = eta_1 .^ 2;
+t158 = 2 .* eta_1 .* y_m;
+t159 = t156 - t158 + t38 + t27;
+t161 = D_LE - eta_1;
+t165 = t161 .^ 2;
+t167 = sqrt((2 .* C .* t161 .* x_m + t14 .* t159 + t165));
+t178 = D_TE - eta_1;
+t182 = t178 .^ 2;
+t184 = sqrt((2 .* E .* t178 .* x_m + t20 .* t159 + t182));
+t188 = -eta_1 + y_m;
+t192 = asinh(t88 .* (t20 .* t188 + D_TE - eta_1 + t6));
+t198 = asinh(t98 .* (t14 .* t188 + D_LE - eta_1 + t3));
+t200 = t5 .* t105 .* t198;
+t205 = atanh(0.1e1 ./ t167 .* t5 .* (t3 + D_LE - eta_1));
+t207 = y_m .* t17 .* t205;
+t215 = atanh(0.1e1 ./ t184 .* t8 .* (t6 + D_TE - eta_1));
+t230 = 1 ./ t188;
+t234 = 0.2e1 .* t141 .* t230 .* t5 .* t136 .* (t167 .* t7 .* t5 .* t154 .* t25 ./ 0.2e1 + (-t184 .* (t55 + y_m .* (-t6 - D_TE - eta_1) + t58 .* eta_1) .* t5 .* t53 ./ 0.2e1 + t7 .* t188 .* (t192 .* t81 .* t80 ./ 0.2e1 + (t8 .* (-t200 - 0.2e1 .* t207) + 0.2e1 .* t124 .* t215 .* t17) .* t23 ./ 0.2e1)) .* t4) .* t19;
+
+% t235 = piecewise(t150, t13, t234);
+t235 = t234;
+t235(t150) = t13(t150);
+
+% t239 = piecewise(t150, -t13, t234);
+t239 = t234;
+t239(t150) = -t13(t150);
+
+t242 = y_m < eta_1 & eta_3 < y_m;
+t243 = t2.*0;
+t243(t242) = -t13(t242);
+
+% t244 = piecewise(t2, t13, t144);
+t244 = t144;
+t244(t2) = t13(t2);
+
+% t246 = piecewise(eta_1 < eta_3, t145 + t149 - t235, eta_3 == eta_1, 0, eta_3 < eta_1, -t239 - t243 + t244);
+t246 = t2.*0;
+t246(eta_1 < eta_3) = t145(eta_1 < eta_3) + t149(eta_1 < eta_3) - t235(eta_1 < eta_3);
+t246(eta_3 < eta_1) = -t239(eta_3 < eta_1) - t243(eta_3 < eta_1) + t244(eta_3 < eta_1);
+
+t248 = x_m - xi_1;
+t249 = sign(t248);
+t253 = sign(t4 .* (t249 + t5) .* t248);
+t254 = inf .* t253;
+t256 = t249 .* t18 .* t5;
+t258 = t249 .* t16 .* t5;
+t264 = (eta_2 .^ 2);
+t266 = 2 .* eta_2 .* y_m;
+t269 = D_LE - eta_2;
+t273 = t269 .^ 2;
+t275 = sqrt((t14 .* (t264 - t266 + t38 + t27) + 2 .* C .* t269 .* x_m + t273));
+t279 = y_m - eta_2;
+t282 = t248 .* t17;
+t284 = 2 .* x_m .* xi_1;
+t285 = xi_1 .^ 2;
+t287 = sqrt((t264 - t266 + t38 - t284 + t285 + t27));
+t289 = abs(t248);
+t291 = atanh(t289 ./ t287);
+t298 = 1 ./ t289;
+t300 = asinh(-(t298 .* t279));
+t307 = asinh(t98 .* (t14 .* t279 + D_LE - eta_2 + t3));
+t315 = atanh(0.1e1 ./ t275 .* t5 .* (t3 + D_LE - eta_2));
+t329 = t96 ./ t248;
+
+% t333 = piecewise(y_m == eta_2, t254, -0.2e1 .* t329 ./ t279 .* (-t275 .* (t28 + y_m .* (-t3 - D_LE - eta_2) + t31 .* eta_2) .* t248 .* t258 ./ 0.2e1 + t4 .* (t291 .* t282 .* t5 .* t279 .* y_m + t249 .* (-t27 .* t287 .* t81 ./ 0.2e1 + t248 .* (-t300 .* t248 .* t81 ./ 0.2e1 + t5 .* t105 .* t307 ./ 0.2e1 + y_m .* t17 .* t315) .* t279))) .* t256);
+t333 = -0.2e1 .* t329 ./ t279 .* (-t275 .* (t28 + y_m .* (-t3 - D_LE - eta_2) + t31 .* eta_2) .* t248 .* t258 ./ 0.2e1 + t4 .* (t291 .* t282 .* t5 .* t279 .* y_m + t249 .* (-t27 .* t287 .* t81 ./ 0.2e1 + t248 .* (-t300 .* t248 .* t81 ./ 0.2e1 + t5 .* t105 .* t307 ./ 0.2e1 + y_m .* t17 .* t315) .* t279))) .* t256;
+t333(y_m == eta_2) = t254(y_m == eta_2);
+
+t335 = y_m < eta_2 & t147;
+
+% t336 = piecewise(t335, t254, 0);
+t336 = t2.*0;
+t336(t335) = t254(t335);
+
+t344 = sqrt((t156 - t158 + t38 - t284 + t285 + t27));
+t347 = atanh(t289 ./ t344);
+t355 = asinh(-(t298 .* t188));
+
+% t372 = piecewise(t150, -t254, -0.2e1 .* t329 .* t230 .* (-t167 .* t154 .* t248 .* t258 ./ 0.2e1 + t4 .* (t347 .* t282 .* t5 .* t188 .* y_m + t249 .* (-t27 .* t344 .* t81 ./ 0.2e1 + t248 .* (-t355 .* t248 .* t81 ./ 0.2e1 + t200 ./ 0.2e1 + t207) .* t188))) .* t256);
+t372 = -0.2e1 .* t329 .* t230 .* (-t167 .* t154 .* t248 .* t258 ./ 0.2e1 + t4 .* (t347 .* t282 .* t5 .* t188 .* y_m + t249 .* (-t27 .* t344 .* t81 ./ 0.2e1 + t248 .* (-t355 .* t248 .* t81 ./ 0.2e1 + t200 ./ 0.2e1 + t207) .* t188))) .* t256;
+t372(t150) = -t254(t150);
+
+J_51ip = t246 - t333 - t336 + t372;
+J_51ip(isnan(J_51ip) | isinf(J_51ip)) = 0;
+end
+
+function J_52ip = fcnJ_52ip(x_m, y_m, xi_1, eta_1, eta_2, eta_3, C, D_LE, E, D_TE, cutoff)
+t2 = y_m == eta_1;
+t3 = x_m - xi_1;
+t4 = sign(t3);
+t5 = (E .* x_m);
+t6 = t5 + D_TE - y_m;
+t6(abs(t6) < cutoff) = 0;
+t7 = sign(t6);
+t11 = sign(t6 .* (t4 - t7) .* t3);
+t12 = inf .* t11;
+t13 = t7 .* t4;
+t14 = (E .^ 2);
+t15 = t14 + 1;
+t16 = sqrt(t15);
+t17 = t16 .* t15;
+t19 = 0.1e1 ./ t17 .* t13;
+t20 = t3 .* t4;
+t21 = t7 .* t20;
+t23 = (y_m .^ 2);
+t24 = t23 .* (t14 + 2);
+t27 = (t5 + D_TE);
+t31 = (eta_1 .^ 2);
+t33 = 2 .* eta_1 .* y_m;
+t34 = (x_m .^ 2);
+t37 = D_TE - eta_1;
+t41 = t37 .^ 2;
+t43 = sqrt((t14 .* (t31 - t33 + t34 + t23) + 2 .* E .* t37 .* x_m + t41));
+t47 = -eta_1 + y_m;
+t56 = (x_m .* t14 .* E + t14 .* D_TE - 3 .* y_m .* t14 - 2 .* y_m) .* t3;
+t60 = 0.1e1 ./ t6;
+t62 = abs(t60 ./ E);
+t64 = asinh(t62 .* (t14 .* t47 + D_TE - eta_1 + t5));
+t68 = y_m .* t7;
+t69 = t3 .* t47;
+t71 = 2 .* x_m .* xi_1;
+t72 = xi_1 .^ 2;
+t74 = sqrt((t31 - t33 + t34 - t71 + t72 + t23));
+t76 = abs(t3);
+t78 = atanh(t76 ./ t74);
+t84 = t3 .* t7;
+t86 = 0.1e1 ./ t76;
+t88 = asinh(-t86 .* t47);
+t95 = atanh(0.1e1 ./ t43 .* t7 .* (t5 + D_TE - eta_1));
+t108 = 0.1e1 ./ t3;
+t109 = t60 .* t108;
+t112 = 0.2e1 .* t109 ./ t47 .* (-t43 .* t16 .* (t24 + y_m .* (-t5 - D_TE - eta_1) + t27 .* eta_1) .* t21 ./ 0.2e1 + t6 .* (t64 .* t56 .* t47 .* t13 ./ 0.2e1 + (-t78 .* t69 .* t68 + (t23 .* t74 .* t7 ./ 0.2e1 + (t88 .* t84 ./ 0.2e1 + y_m .* t95) .* t69) .* t4) .* t17)) .* t19;
+
+% t113 = piecewise(t2, -t12, t112);
+t113 = t112;
+t113(t2) = -t12(t2);
+
+t115 = eta_3 < y_m;
+t116 = y_m < eta_1 & t115;
+
+% t117 = piecewise(t116, -t12, 0);
+t117 = t2.*0;
+t117(t116) = -t12(t116);
+
+t118 = y_m == eta_3;
+t124 = eta_3 .^ 2;
+t126 = 2 .* eta_3 .* y_m;
+t127 = t124 - t126 + t34 + t23;
+t129 = D_TE - eta_3;
+t133 = t129 .^ 2;
+t135 = sqrt((2 .* E .* t129 .* x_m + t14 .* t127 + t133));
+t139 = y_m - eta_3;
+t144 = asinh(t62 .* (t14 .* t139 + D_TE - eta_3 + t5));
+t148 = t3 .* t139;
+t150 = sqrt((t124 - t126 + t34 - t71 + t72 + t23));
+t153 = atanh(t76 ./ t150);
+t161 = asinh(-t86 .* t139);
+t168 = atanh(0.1e1 ./ t135 .* t7 .* (t5 + D_TE - eta_3));
+t179 = 1 ./ t139;
+t183 = 0.2e1 .* t109 .* t179 .* (-t135 .* t16 .* (t24 + y_m .* (-t5 - D_TE - eta_3) + t27 .* eta_3) .* t21 ./ 0.2e1 + t6 .* (t144 .* t56 .* t139 .* t13 ./ 0.2e1 + (-t153 .* t148 .* t68 + (t23 .* t150 .* t7 ./ 0.2e1 + (t161 .* t84 ./ 0.2e1 + y_m .* t168) .* t148) .* t4) .* t17)) .* t19;
+
+% t184 = piecewise(t118, t12, t183);
+t184 = t183;
+t184(t118) = t12(t118);
+
+% t188 = piecewise(t118, -t12, t183);
+t188 = t183;
+t188(t118) = -t12(t118);
+
+t189 = y_m < eta_3;
+t191 = t189 & eta_1 < y_m;
+
+% t192 = piecewise(t191, -t12, 0);
+t192 = t2.*0;
+t192(t191) = -t12(t191);
+
+% t193 = piecewise(t2, t12, t112);
+t193 = t112;
+t193(t2) = t12(t2);
+
+% t195 = piecewise(eta_3 < eta_1, t113 + t117 - t184, eta_1 == eta_3, 0, eta_1 < eta_3, -t188 - t192 + t193);
+t195 = t113 + t117 - t184;
+t195(eta_1 == eta_3) = t195(eta_1 == eta_3).*0;
+t195(eta_1 < eta_3) = -t188(eta_1 < eta_3) - t192(eta_1 < eta_3) + t193(eta_1 < eta_3);
+
+t197 = C .* x_m;
+t198 = t197 + D_LE - y_m;
+t198(abs(t198) < cutoff) = 0;
+
+t199 = sign(t198);
+t203 = sign(t198 .* (t199 + t4) .* t3);
+t204 = inf .* t203;
+t205 = t199 .* t20;
+t206 = C .^ 2;
+t208 = t23 .* (t206 + 2);
+t211 = t197 + D_LE;
+t214 = t206 + 1;
+t215 = sqrt(t214);
+t218 = D_LE - eta_3;
+t222 = t218 .^ 2;
+t224 = sqrt((2 .* C .* t218 .* x_m + t206 .* t127 + t222));
+t229 = t199 .* t3 .* y_m;
+t230 = t215 .* t214;
+t234 = t199 .* t230;
+t238 = t199 .* t3;
+t243 = 1 ./ t198;
+t245 = abs(t243 ./ C);
+t249 = asinh(((t206 .* t139 + D_LE - eta_3 + t197) .* t245));
+t254 = y_m .* (-3 .* t206 - 2) + t211 .* t206;
+t262 = atanh(0.1e1 ./ t224 .* t199 .* (t197 + D_LE - eta_3));
+t275 = 0.1e1 ./ t230;
+t277 = t243 .* t108;
+t280 = 0.2e1 .* t277 .* t179 .* t275 .* t199 .* (-t224 .* t215 .* (t208 + y_m .* (-t197 - D_LE - eta_3) + t211 .* eta_3) .* t205 ./ 0.2e1 + t198 .* (t153 .* t230 .* t139 .* t229 + (-t23 .* t150 .* t234 ./ 0.2e1 + t139 .* t3 .* (-t161 .* t230 .* t238 ./ 0.2e1 + t199 .* t254 .* t249 ./ 0.2e1 + y_m .* t262 .* t230)) .* t4)) .* t4;
+
+% t281 = piecewise(t118, t204, -t280);
+t281 = -t280;
+t281(t118) = t204(t118);
+
+t283 = t189 & eta_2 < y_m;
+
+% t284 = piecewise(t283, t204, 0);
+t284 = t2.*0;
+t284(t283) = t204(t283);
+
+t285 = y_m == eta_2;
+t291 = eta_2 .^ 2;
+t293 = 2 .* eta_2 .* y_m;
+t296 = D_LE - eta_2;
+t300 = t296 .^ 2;
+t302 = sqrt((t206 .* (t291 - t293 + t34 + t23) + 2 .* C .* t296 .* x_m + t300));
+t306 = y_m - eta_2;
+t309 = sqrt((t291 - t293 + t34 - t71 + t72 + t23));
+t312 = atanh(t76 ./ t309);
+t320 = asinh(-t86 .* t306);
+t327 = asinh(((t206 .* t306 + D_LE - eta_2 + t197) .* t245));
+t335 = atanh(0.1e1 ./ t302 .* t199 .* (t197 + D_LE - eta_2));
+t352 = 0.2e1 .* t277 ./ t306 .* t275 .* t199 .* (-t302 .* t215 .* (t208 + y_m .* (-t197 - D_LE - eta_2) + t211 .* eta_2) .* t205 ./ 0.2e1 + t198 .* (t312 .* t230 .* t306 .* t229 + (-t23 .* t309 .* t234 ./ 0.2e1 + t306 .* t3 .* (-t320 .* t230 .* t238 ./ 0.2e1 + t199 .* t254 .* t327 ./ 0.2e1 + y_m .* t335 .* t230)) .* t4)) .* t4;
+
+% t353 = piecewise(t285, -t204, -t352);
+t353 = -t352;
+t353(t285) = -t204(t285);
+
+% t357 = piecewise(t285, t204, -t352);
+t357 = -t352;
+t357(t285) = t204(t285);
+
+t359 = y_m < eta_2 & t115;
+
+% t360 = piecewise(t359, t204, 0);
+t360 = t2.*0;
+t360(t359) = t204(t359);
+
+% t361 = piecewise(t118, -t204, -t280);
+t361 = -t280;
+t361(t118) = -t204(t118);
+
+% t363 = piecewise(eta_2 < eta_3, t281 + t284 - t353, eta_3 == eta_2, 0, eta_3 < eta_2, -t357 - t360 + t361);
+t363 = t281 + t284 - t353;
+t363(eta_3 == eta_2) = t363(eta_3 == eta_2).*0;
+t363(eta_3 < eta_2) = -t357(eta_3 < eta_2) - t360(eta_3 < eta_2) + t361(eta_3 < eta_2);
+
+J_52ip = real(t195 + t363);
+J_52ip(isnan(J_52ip) | isinf(J_52ip)) = 0;
+end
+
+function J_53ip = fcnJ_53ip(x_m, y_m, xi_1, eta_1, eta_2, eta_3, C, D_LE, E, D_TE, cutoff)
+t1 = y_m == eta_2;
+t2 = x_m - xi_1;
+t3 = sign(t2);
+t4 = (E .* x_m);
+t5 = t4 + D_TE - y_m;
+t5(abs(t5) < cutoff) = 0;
+t6 = sign(t5);
+t10 = sign(t5 .* (t3 - t6) .* t2);
+t11 = inf .* t10;
+t12 = (E .^ 2);
+t13 = t12 + 1;
+t14 = sqrt(t13);
+t15 = t14 .* t13;
+t16 = 0.1e1 ./ t15;
+t18 = t6 .* t16 .* t3;
+t20 = (y_m .^ 2);
+t21 = t20 .* (t12 + 2);
+t24 = (t4 + D_TE);
+t26 = t21 + y_m .* (-t4 - D_TE - eta_2) + t24 .* eta_2;
+t29 = t6 .* t14;
+t30 = eta_2 .^ 2;
+t32 = 2 .* eta_2 .* y_m;
+t33 = (x_m .^ 2);
+t34 = t30 - t32 + t33 + t20;
+t36 = D_TE - eta_2;
+t40 = t36 .^ 2;
+t42 = sqrt((2 .* E .* t36 .* x_m + t12 .* t34 + t40));
+t46 = t6 .* t3;
+t47 = y_m - eta_2;
+t55 = x_m .* t12 .* E + t12 .* D_TE - 3 .* t12 .* y_m - 2 .* y_m;
+t56 = t55 .* t2;
+t58 = 0.1e1 ./ t5;
+t60 = abs(t58 ./ E);
+t64 = asinh((t12 .* t47 + D_TE - eta_2 + t4) .* t60);
+t68 = y_m .* t6;
+t69 = t2 .* t47;
+t71 = 2 .* x_m .* xi_1;
+t72 = xi_1 .^ 2;
+t74 = sqrt((t30 - t32 + t33 - t71 + t72 + t20));
+t76 = abs(t2);
+t78 = atanh(t76 ./ t74);
+t84 = t2 .* t6;
+t86 = 0.1e1 ./ t76;
+t88 = asinh(-t86 .* t47);
+t95 = atanh(0.1e1 ./ t42 .* t6 .* (t4 + D_TE - eta_2));
+t106 = 1 ./ t47;
+t109 = t58 ./ t2;
+
+% t113 = piecewise(t1, -t11, 0.2e1 .* t109 .* t106 .* (-t42 .* t29 .* t2 .* t26 .* t3 ./ 0.2e1 + (t64 .* t56 .* t47 .* t46 ./ 0.2e1 + t15 .* (-t78 .* t69 .* t68 + t3 .* (t20 .* t74 .* t6 ./ 0.2e1 + (t88 .* t84 ./ 0.2e1 + y_m .* t95) .* t69))) .* t5) .* t18);
+t113 = 0.2e1 .* t109 .* t106 .* (-t42 .* t29 .* t2 .* t26 .* t3 ./ 0.2e1 + (t64 .* t56 .* t47 .* t46 ./ 0.2e1 + t15 .* (-t78 .* t69 .* t68 + t3 .* (t20 .* t74 .* t6 ./ 0.2e1 + (t88 .* t84 ./ 0.2e1 + y_m .* t95) .* t69))) .* t5) .* t18;
+t113(t1) = -t11(t1);
+
+t114 = y_m < eta_2;
+t116 = t114 & eta_1 < y_m;
+
+% t117 = piecewise(t116, -t11, 0);
+t117 = t2.*0;
+t117(t116) = -t11(t116);
+
+t126 = eta_1 .^ 2;
+t128 = 2 .* eta_1 .* y_m;
+t131 = D_TE - eta_1;
+t135 = t131 .^ 2;
+t137 = sqrt((t12 .* (t126 - t128 + t33 + t20) + 2 .* E .* t131 .* x_m + t135));
+t141 = -eta_1 + y_m;
+t146 = asinh(t60 .* (t12 .* t141 + D_TE - eta_1 + t4));
+t150 = t2 .* t141;
+t152 = sqrt((t126 - t128 + t33 - t71 + t72 + t20));
+t155 = atanh(t76 ./ t152);
+t163 = asinh(-t86 .* t141);
+t170 = atanh(0.1e1 ./ t137 .* t6 .* (t4 + D_TE - eta_1));
+
+% t186 = piecewise(y_m == eta_1, t11, 0.2e1 .* t109 ./ t141 .* (-t137 .* t14 .* (t21 + y_m .* (-t4 - D_TE - eta_1) + t24 .* eta_1) .* t6 .* t2 .* t3 ./ 0.2e1 + t5 .* (t146 .* t56 .* t141 .* t46 ./ 0.2e1 + (-t155 .* t150 .* t68 + (t20 .* t152 .* t6 ./ 0.2e1 + (t163 .* t84 ./ 0.2e1 + y_m .* t170) .* t150) .* t3) .* t15)) .* t18);
+t186 = 0.2e1 .* t109 ./ t141 .* (-t137 .* t14 .* (t21 + y_m .* (-t4 - D_TE - eta_1) + t24 .* eta_1) .* t6 .* t2 .* t3 ./ 0.2e1 + t5 .* (t146 .* t56 .* t141 .* t46 ./ 0.2e1 + (-t155 .* t150 .* t68 + (t20 .* t152 .* t6 ./ 0.2e1 + (t163 .* t84 ./ 0.2e1 + y_m .* t170) .* t150) .* t3) .* t15)) .* t18;
+t186(y_m == eta_1) = t11(y_m == eta_1); 
+
+t188 = C .* x_m;
+t189 = t188 + D_LE - y_m;
+t189(abs(t189) < cutoff) = 0;
+
+t190 = sign(t189);
+t194 = sign(t189 .* t5 .* (t190 - t6));
+t195 = inf .* t194;
+t196 = t190 .* t16;
+t197 = C .^ 2;
+t198 = t197 + 1;
+t199 = sqrt(t198);
+t200 = t199 .* t198;
+t201 = 0.1e1 ./ t200;
+t202 = t190 .* t189;
+t207 = t15 .* t190;
+t209 = t20 .* (t197 + 2);
+t212 = t188 + D_LE;
+t216 = t199 .* t6;
+t218 = D_LE - eta_2;
+t222 = t218 .^ 2;
+t224 = sqrt((2 .* C .* t218 .* x_m + t197 .* t34 + t222));
+t227 = t55 .* t190;
+t228 = t200 .* t6;
+t232 = 1 ./ t189;
+t234 = abs(t232 ./ C);
+t238 = asinh(((t197 .* t47 + D_LE - eta_2 + t188) .* t234));
+t243 = y_m .* (-3 .* t197 - 2) + t212 .* t197;
+t255 = atanh(0.1e1 ./ t224 .* t190 .* (t188 + D_LE - eta_2));
+t270 = t232 .* t58;
+t272 = t270 .* t106 .* t6 .* (t42 .* t200 .* t29 .* t26 .* t202 + t5 .* (-t224 .* t216 .* (t209 + y_m .* (-t188 - D_LE - eta_2) + t212 .* eta_2) .* t207 + t47 .* (-t64 .* t228 .* t227 + (t190 .* (-0.2e1 .* y_m .* t95 .* t200 + t6 .* t243 .* t238) + 0.2e1 .* t68 .* t255 .* t200) .* t15) .* t189)) .* t201 .* t196;
+
+% t273 = piecewise(t1, -t195, -t272);
+t273 = -t272;
+t273(t1) = -t195(t1);
+
+t275 = t114 & eta_3 < y_m;
+
+% t276 = piecewise(t275, -t195, 0);
+t276 = t2.*0;
+t276(t275) = -t195(t275);
+
+t277 = y_m == eta_3;
+t283 = eta_3 .^ 2;
+t286 = -2 .* eta_3 .* y_m + t20 + t283 + t33;
+t288 = D_TE - eta_3;
+t292 = t288 .^ 2;
+t294 = sqrt((2 .* E .* t288 .* x_m + t12 .* t286 + t292));
+t304 = D_LE - eta_3;
+t308 = t304 .^ 2;
+t310 = sqrt((2 .* C .* t304 .* x_m + t197 .* t286 + t308));
+t313 = y_m - eta_3;
+t317 = asinh(t60 .* (t12 .* t313 + D_TE - eta_3 + t4));
+t323 = asinh(((t197 .* t313 + D_LE - eta_3 + t188) .* t234));
+t330 = atanh(0.1e1 ./ t294 .* t6 .* (t4 + D_TE - eta_3));
+t340 = atanh(0.1e1 ./ t310 .* t190 .* (t188 + D_LE - eta_3));
+t357 = t270 ./ t313 .* t6 .* (t294 .* t200 .* t29 .* (t21 + y_m .* (-t4 - D_TE - eta_3) + t24 .* eta_3) .* t202 + t5 .* (-t310 .* t216 .* (t209 + y_m .* (-t188 - D_LE - eta_3) + t212 .* eta_3) .* t207 + t313 .* (-t317 .* t228 .* t227 + (t190 .* (-0.2e1 .* y_m .* t330 .* t200 + t6 .* t243 .* t323) + 0.2e1 .* t68 .* t340 .* t200) .* t15) .* t189)) .* t201 .* t196;
+
+% t358 = piecewise(t277, t195, -t357);
+t358 = -t357;
+t358(t277) = t195(t277);
+
+% t362 = piecewise(t277, -t195, -t357);
+t362 = -t357;
+t362(t277) = -t195(t277);
+
+t365 = y_m < eta_3 & eta_2 < y_m;
+
+% t366 = piecewise(t365, -t195, 0);
+t366 = t2.*0;
+t366(t365) = -t195(t365);
+
+% t367 = piecewise(t1, t195, -t272);
+t367 = -t272;
+t367(t1) = t195(t1);
+
+% t369 = piecewise(eta_3 < eta_2, t273 + t276 - t358, eta_2 == eta_3, 0, eta_2 < eta_3, -t362 - t366 + t367);
+t369 = t273 + t276 - t358;
+t369(eta_2 == eta_3) = t2.*0;
+t369(eta_2 < eta_3) = -t362(eta_2 < eta_3) - t366(eta_2 < eta_3) + t367(eta_2 < eta_3);
+
+J_53ip = -t113 - t117 + t186 + t369;
+J_53ip(isnan(J_53ip) | isinf(J_53ip)) = 0;
 end
 
 function J_6 = fcnJ_6(x_m, y_m, z_m, xi_1, xi_3, C, D_LE, E, D_TE)
@@ -1664,7 +2139,7 @@ t308 = log(0.2e1);
 J_6 = -i ./ t4 .* (-t109 .* t71 .* t57 .* t56 + t136 .* t71 .* t57 .* t56 + (-t153 .* t15 .* t144 .* t140 + t164 .* t15 .* t144 .* t140 - (t205 .* t175 .* t140 - t224 .* t175 .* t140 - t243 .* t231 .* t228 + t253 .* t231 .* t228 + (t266 .* t57 .* t260 .* t256 + i .* t279 .* t274 .* t272 .* t46 + i .* t286 .* t57 .* t260 .* t4 - t45 .* (i .* t293 .* t274 .* t272 .* t44 + t33 .* (t86 .* t15 .* t32 .* t256 + i .* t214 .* t15 .* t4 .* t44 + i .* t121 .* t15 .* t32 .* t4 + (-i .* t274 .* t185 + t308 .* t174 .* t32 .* y_m) .* t44))) .* t52) .* t41) .* t29) ./ t52 ./ t46 ./ t41 ./ t34 ./ t29 ./ t15;
 end
 
-function J_6ip = fcnJ_6ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m)
+function J_6ip = fcnJ_6ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff)
 t2 = x_m .* y_m;
 t3 = E .* x_m;
 t4 = t3 + D_TE - y_m;
@@ -1672,6 +2147,8 @@ t5 = sign(t4);
 t6 = C .* x_m;
 t7 = t6 + D_LE - y_m;
 t8 = sign(t7);
+t13 = sign(t7 .* t4 .* (-t5 + t8) .* t2);
+t14 = inf .* t13;
 t15 = D_LE .^ 2;
 t16 = C .* t15;
 t17 = C .^ 2;
@@ -2105,9 +2582,21 @@ t1223 = x_m .* t129;
 t1226 = D_LE .* x_m .* y_m;
 t1229 = y_m .* t234;
 t1231 = D_LE .* xi_3 .* y_m - xi_3 .* t129 + t134 .* t3 + t134 .* t6 - t72 .* t137 - t72 .* t227 - t448 .* t306 + y_m .* t892 + t1212 + t1214 - t1217 + t1219 - t1221 + t1223 - t1226 - t1229 - t187 + t191;
+t1231(abs(t1231) < cutoff) = 0;
+
 t1234 = 0.1e1 ./ t50 ./ t49;
 t1237 = 0.1e1 ./ t31 ./ t30;
+
+% t1240 = piecewise(x_m == xi_3, t14, -t1237 .* t1234 ./ t1231 .* t8 .* t5 .* (t141 + t237 + t1181 + t788 + t430 + t934 + t1100 + t962 + t720 + t1204 + t549 + t820 + t987 + t614 + t753 + t581 + t852 + t285 + t683 + t907 + t1153 + t1046 + t507 + t1125 + t194 + t652 + t468 + t374 + t873 + t1073 + t1017 + t327));
 t1240 = -t1237 .* t1234 ./ t1231 .* t8 .* t5 .* (t141 + t237 + t1181 + t788 + t430 + t934 + t1100 + t962 + t720 + t1204 + t549 + t820 + t987 + t614 + t753 + t581 + t852 + t285 + t683 + t907 + t1153 + t1046 + t507 + t1125 + t194 + t652 + t468 + t374 + t873 + t1073 + t1017 + t327);
+t1240(x_m == xi_3) = t14(x_m == xi_3); 
+
+t1243 = x_m < xi_3 & xi_1 < x_m;
+
+% t1244 = piecewise(t1243, t14, 0);
+t1244 = t2.*0;
+t1244(t1243) = t14(t1243);
+
 t1249 = asinh(t43 .* (xi_1 .* t29 + t39 - t40 - x_m + xi_1));
 t1250 = t1249 .* t8;
 t1256 = asinh(t23 .* (xi_1 .* t17 + t19 - t20 - x_m + xi_1));
@@ -2339,8 +2828,14 @@ t2237 = t52 .* t1249 .* t129 + t257 .* t1249 .* t227 - t34 .* t1256 .* t129 + t2
 t2248 = t1256 .* t172;
 t2267 = t257 .* t1249 .* t137 + t257 .* t1249 .* t173 + t310 .* t1249 .* t484 - t261 .* t1256 .* t137 - t261 .* t1256 .* t227 - t314 .* t1256 .* t365 - t266 .* t1297 .* t268 - t1341 .* t245 .* t2248 - t274 .* t255 .* t1351 + t279 .* t255 .* t1354 + t304 .* t28 .* t1533 - t274 .* t255 .* t1918 + t266 .* t5 .* t2079 + t606 .* x_m .* t2248;
 t2285 = D_LE .* xi_1 .* y_m + D_TE .* xi_1 .* y_m - t1272 .* t137 - t1272 .* t227 - xi_1 .* t129 + t1372 .* t3 + t1372 .* t6 - t1787 .* t306 + t1212 + t1214 - t1217 + t1219 - t1221 + t1223 - t1226 - t1229 - t1282 + t191;
+t2285(abs(t2285) < cutoff) = 0;
+
+% t2290 = piecewise(x_m == xi_1, -t14, -t1237 .* t1234 ./ t2285 .* t8 .* t5 .* (t1313 + t1361 + t1406 + t1449 + t1486 + t1516 + t1546 + t1573 + t1601 + t1627 + t1659 + t1686 + t1721 + t1747 + t1770 + t1802 + t1833 + t1857 + t1886 + t1913 + t1944 + t1980 + t2015 + t2048 + t2074 + t2099 + t2128 + t2153 + t2186 + t2210 + t2237 + t2267));
 t2290 = -t1237 .* t1234 ./ t2285 .* t8 .* t5 .* (t1313 + t1361 + t1406 + t1449 + t1486 + t1516 + t1546 + t1573 + t1601 + t1627 + t1659 + t1686 + t1721 + t1747 + t1770 + t1802 + t1833 + t1857 + t1886 + t1913 + t1944 + t1980 + t2015 + t2048 + t2074 + t2099 + t2128 + t2153 + t2186 + t2210 + t2237 + t2267);
-J_6ip = t1240 - t2290;
+t2290(x_m == xi_1) = -t14(x_m == xi_1);
+
+J_6ip = t1240 + t1244 - t2290;
+J_6ip(isnan(J_6ip) | isinf(J_6ip)) = 0;
 end
 
 

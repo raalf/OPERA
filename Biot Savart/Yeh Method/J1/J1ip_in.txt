@@ -34,9 +34,9 @@ t73 = cg1 * cg7 * cg13;
 t77 = cg3 * cg7 * cg13;
 t80 = t26 * cg7;
 t82 = cg1 * cg11 * cg13 + cg3 * cg11 * cg13 - cg11 * t23 * t51 + t61 * t2 - t24 * t56 - t24 * t63 - t26 * cg11 + t61 * t5 - cg11 * t69 + t53 + t57 - t60 + t64 - t67 + t70 - t73 - t77 + t80;
-t85 = 0.1e1 / t82 * (cg7 * t28 * cg - cg7 * t43 * cg5 + cg1 * t28 - cg3 * t43 - cg13 * t28 + cg13 * t43);
+t85 = piecewise(cg7 == cg11, -t10, 0.1e1 / t82 * (cg7 * t28 * cg - cg7 * t43 * cg5 + cg1 * t28 - cg3 * t43 - cg13 * t28 + cg13 * t43));
 t88 = And(cg7 < cg11, cg9 < cg7);
-t89 = 0;
+t89 = piecewise(t88, -t10, 0);
 t91 = cg9 ^ 2;
 t98 = cg7 * cg9;
 t99 = 0.2e1 * t98;
@@ -44,5 +44,5 @@ t101 = sqrt(-0.2e1 * cg5 * cg9 * cg13 + t91 * t11 + 0.2e1 * cg9 * t14 + t20 - t2
 t111 = sqrt(-0.2e1 * cg * cg9 * cg13 + t91 * t31 + 0.2e1 * cg9 * t33 + t23 + t26 + t39 - t41 + t91 - t99);
 t122 = cg9 * cg13;
 t132 = cg1 * cg9 * cg13 + cg3 * cg9 * cg13 - cg9 * t23 * t51 + t122 * t2 + t122 * t5 - t26 * cg9 - t98 * t56 - t98 * t63 - cg9 * t69 + t53 + t57 - t60 + t64 - t67 + t70 - t73 - t77 + t80;
-t135 = 0.1e1 / t132 * (cg7 * t101 * cg - cg7 * t111 * cg5 + cg1 * t101 - cg3 * t111 - cg13 * t101 + cg13 * t111);
+t135 = piecewise(cg7 == cg9, t10, 0.1e1 / t132 * (cg7 * t101 * cg - cg7 * t111 * cg5 + cg1 * t101 - cg3 * t111 - cg13 * t101 + cg13 * t111));
 J_1 = t85 + t89 - t135;

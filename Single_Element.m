@@ -21,7 +21,7 @@ matPOINTS(:,:,3) = [1 0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [ 0 1 0 1 1 0 ];
+matCOEFF = [ 0 1 0 0 0 0 ];
 % matCOEFF = [-45.0959  -41.0083   -5.1624   -0.0404    0.3831    4.1836];
 % matCOEFF = [-9.1923   45.1363    6.4033    5.5270   -1.4800   -2.9934];
 

@@ -5,17 +5,17 @@ clc
 
 %% Geometry
 
-% a = 1;
-% b = 1;
-% c = 1;
-% 
-% [x,y,z] = ellipsoid(0,0,0,b,a,c,15);
-% [V,S] = alphavol([x(:), y(:), z(:)]);
-% 
-% TR = triangulation(S.bnd, [x(:), y(:), z(:)]);
-% matPOINTS = permute(reshape(TR.Points([TR.ConnectivityList(:,1) TR.ConnectivityList(:,3) TR.ConnectivityList(:,2)],:)',3,[],3),[2 1 3]);
+a = 1;
+b = 1;
+c = 1;
 
-matPOINTS = fcnSTLREAD('CAD Geom/panel_wing.stl');
+[x,y,z] = ellipsoid(0,0,0,b,a,c,15);
+[V,S] = alphavol([x(:), y(:), z(:)]);
+
+TR = triangulation(S.bnd, [x(:), y(:), z(:)]);
+matPOINTS = permute(reshape(TR.Points([TR.ConnectivityList(:,1) TR.ConnectivityList(:,3) TR.ConnectivityList(:,2)],:)',3,[],3),[2 1 3]);
+
+% matPOINTS = fcnSTLREAD('CAD Geom/panel_wing.stl');
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 
@@ -28,7 +28,7 @@ valMAXTIME = 5;
 valDELTIME = 0.05;
 % valALPHA = atand(1/8)
 valALPHA = 0;
-matUINF = repmat([1 0 0], valNELE, 1);
+matUINF = repmat([0 0 1], valNELE, 1);
 
 %% D-Matrix Creation
 vecTEDVE = [];

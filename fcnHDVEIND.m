@@ -1,6 +1,6 @@
 function [infl_glob] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER)
 warning('on')
-cutoff = 1e-10;
+cutoff = 1e-14;
 
 fpl = fcnGLOBSTAR(fpg - matCENTER(dvenum,:), matROTANG(dvenum,:));
 len = size(fpl,1);
@@ -61,7 +61,7 @@ J_5(idx & idx_case3) = fcnJ_53ip(x_m(idx & idx_case3), y_m(idx & idx_case3), xi_
 J_6(idx) = fcnJ_6ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
 
 % On element
-m_inf = 1e+00;
+m_inf = 1e+0;
 idx = fpl(:,3) == 0 & idx_on_element;
 idx_case1 = eta_3 <= eta_1;
 idx_case2 = eta_1 < eta_3 & eta_3 < eta_2;

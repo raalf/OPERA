@@ -28,7 +28,7 @@ valMAXTIME = 5;
 valDELTIME = 0.05;
 % valALPHA = atand(1/8)
 valALPHA = 0;
-matUINF = repmat([0 0 1], valNELE, 1);
+matUINF = repmat([1 0 0], valNELE, 1);
 
 %% D-Matrix Creation
 vecTEDVE = [];

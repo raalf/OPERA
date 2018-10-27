@@ -10,11 +10,18 @@ clc
 
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_low.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even.stl');
-% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_high.stl');
+matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_high.stl');
 % 
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
-matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
+
+% R = rotz(90);
+% for i = 1:size(matPOINTS,1)
+%     for j = 1:size(matPOINTS,3)
+%         matPOINTS(i,:,j) = matPOINTS(i,:,j)*R;
+%     end
+% end
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 
@@ -28,7 +35,7 @@ valDELTIME = 0.05;
 % valALPHA = atand(1/8)
 valALPHA = 0;
 matUINF = repmat([1 0 0], valNELE, 1);
-% matUINF = repmat([0 0 1], valNELE, 1);
+% matUINF = repmat([0 1 0], valNELE, 1);
 
 %% D-Matrix Creation
 vecTEDVE = [];
@@ -105,12 +112,15 @@ set(gca,'Ydir','reverse')
 grid minor
 box on
 axis tight
-% granularity = .5;
+
+% granularity = .1;
 % x = -1.5:granularity:1.5;
 % % y = -3:granularity:3;
 % y = -1.5:granularity:1.5;
+% % y = 0;
 % z = -1.5:granularity:1.5;
 % [X,Y,Z] = meshgrid(x,y,z);
+% y = x.*0 + 0.0125/2;
 % 
 % s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 % q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);

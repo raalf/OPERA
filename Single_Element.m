@@ -21,9 +21,9 @@ matPOINTS(:,:,3) = [1 0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [ 0 1 0 0 0 0 ];
-% matCOEFF = [-45.0959  -41.0083   -5.1624   -0.0404    0.3831    4.1836];
-% matCOEFF = [-9.1923   45.1363    6.4033    5.5270   -1.4800   -2.9934];
+matCOEFF = [ 1 1 0 0 0 0 ];
+% matCOEFF = [5.3047    0.0219    5.8048   -0.0268   -0.8324   -5.0658];
+% matCOEFF = [-4.0788    1.5006   -2.0544    3.6226   -2.2158   -1.0943];
 
 %% Plot
 
@@ -56,15 +56,15 @@ matCOEFF = [ 0 1 0 0 0 0 ];
 % x = -.2:granularity:1.2;
 % y = -.2:granularity:.2;
 
-% granularity = 0.25;
-% y = -2:granularity:2;
-% z = -1:granularity:1;
-% x = -2:granularity:2;
-
-granularity = 0.1;
-y = 0:granularity:1;
+granularity = 0.25;
+y = -.5:granularity:1.5;
 z = -1:granularity:1;
-x = -0:granularity:1;
+x = -0.5:granularity:1.5;
+
+% granularity = 0.1;
+% y = 0:granularity:1;
+% z = -1:granularity:1;
+% x = -0:granularity:1;
 
 % granularity = 0.05;
 % y = -0.5:granularity:1.5;
@@ -92,7 +92,7 @@ q_ind = s_ind;
 
 figure(1);
 hold on
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),1)
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 hold off
 
 

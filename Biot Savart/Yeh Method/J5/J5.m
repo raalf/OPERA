@@ -1,7 +1,7 @@
 clc
 clear
 
-str = fileread('J1_in.txt');
+str = fileread('J5_in.txt');
 
 % C~ -> cg, D__LE~ -> cg1, D__TE~ -> cg3, E~ -> cg5, x__m~ -> cg7, xi__1~ -> cg9, xi__3~ -> cg11, y__m~ -> cg13, z__m~ -> cg15
 tmp_exp = {'cg15','cg13','cg11','cg5','cg1','cg3',  'cg7','cg9','cg'};
@@ -13,6 +13,6 @@ str = regexprep(str, expression, replace)
 
 str = strrep(str,char(10),'');  % remove LF characters
 
-fid = fopen('J1_out.txt','wt');
+fid = fopen('J5_out.txt','wt');
 fprintf(fid, str);
 fclose(fid);

@@ -1,7 +1,7 @@
 clc
 clear
 
-fcn = 'J4'
+fcn = 'J5'
 str = fileread([fcn, '/', fcn, '_in.txt']);
 
 k = regexp(str,'[\r]');

@@ -9,12 +9,12 @@ clc
 % matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_high.stl');
 
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_low.stl');
-matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_high.stl');
 % 
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
-% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
+matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
 
 % R = rotz(90);
 % for i = 1:size(matPOINTS,1)
@@ -87,7 +87,7 @@ q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF;
 fcolor = sqrt(sum(q_ind.^2,2));
 fcolor = 1 - fcolor.^(2);
-
+% fcolor = matCOEFF(:,6);
 % velocities = [matCOEFF(:,4), matCOEFF(:,2), matCOEFF(:,1).*0];
 % fcolor = 1 - (sqrt(sum(velocities.^2,2)) + 1).^2;
 

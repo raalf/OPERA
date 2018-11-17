@@ -34,6 +34,19 @@ idx_on_element = y_m >= te_eta - margin_edge & y_m <= le_eta + margin_edge & x_m
 %% Calculating Influence
 tic
 
+% J_1
+N_A = -C.*x_m - D_LE + y_m;
+N_B = -E.*x_m - D_TE + y_m;
+alpha = z_m.^2;
+J_1 = (fcnH_1(C, N_A, alpha, (x_m - xi_1)) - fcnH_1(C, N_A, alpha, (x_m - xi_3))) - (fcnH_1(E, N_B, alpha, (x_m - xi_1)) - fcnH_1(E, N_B, alpha, (x_m - xi_3)));
+
+
+
+
+
+
+
+
 % Out of element plane
 J_A0 = fcnJ_A0(x_m, y_m, z_m, xi_1, xi_3, C, D_LE);
 J_A1 = fcnJ_A1(x_m, y_m, z_m, xi_1, xi_3, C, D_LE);

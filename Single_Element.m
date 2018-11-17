@@ -56,9 +56,14 @@ matCOEFF = [1 0 0 0 0 0 ];
 % x = -.2:granularity:1.2;
 % y = -.2:granularity:.2;
 
+% granularity = 0.25;
+% y = -.5:granularity:1.5;
+% z = -1:granularity:1.5;
+% x = -2.5:granularity:1.5;
+
 granularity = 0.25;
 y = -.5:granularity:1.5;
-z = -1:granularity:1.5;
+z = 0.25:granularity:1.5;
 x = -2.5:granularity:1.5;
 
 % granularity = 0.1;

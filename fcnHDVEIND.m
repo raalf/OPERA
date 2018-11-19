@@ -35,12 +35,29 @@ idx_on_element = y_m >= te_eta - margin_edge & y_m <= le_eta + margin_edge & x_m
 tic
 
 % J_1
-N_A = -C.*x_m - D_LE + y_m;
-N_B = -E.*x_m - D_TE + y_m;
 alpha = z_m.^2;
-J_1 = (fcnH_1(C, N_A, alpha, (x_m - xi_1)) - fcnH_1(C, N_A, alpha, (x_m - xi_3))) - (fcnH_1(E, N_B, alpha, (x_m - xi_1)) - fcnH_1(E, N_B, alpha, (x_m - xi_3)));
+N_A = -C.*x_m - D_LE + y_m;
+S_A = C.^2 + 1;
+T_A = 2.*C.*N_A;
+u_A = N_A.^2 + alpha;
 
+N_B = -E.*x_m - D_TE + y_m;
+S_B = E.^2 + 1;
+T_B = 2.*E.*N_B;
+u_B = N_B.^2 + alpha;
 
+F1 = (x_m - xi_1);
+F2 = (x_m - xi_3);
+J_1 = -fcnH_1(C, N_A, S_A, T_A, u_A, alpha, F1, F2) + fcnH_1(E, N_B, S_B, T_B, u_B, alpha, F1, F2);
+
+q_a = y_m - 2.*C.*x_m - D_LE;
+r_a = -x_m.*N_A;
+
+q_b = y_m - 2.*E.*x_m - D_TE;
+r_b = -x_m.*N_B;
+% J_2 = -C.*fcnH_2(S_A, T_A, u_A, F1, F2) + E.*fcnH_2(S_B, T_B, u_B, F1, F2)
+% J_2 = (-fcnH_1(q_a, r_a, S_A, T_A, u_A, alpha, F1, F2) - C.*fcnH_2(S_A, T_A, u_A, F1, F2)) + (fcnH_1(q_b, r_b, S_B, T_B, u_B, alpha, F1, F2) + E.*fcnH_2(S_B, T_B, u_B, F1, F2));
+% J_1 = J_1.*0;
 
 
 
@@ -58,7 +75,7 @@ J_B1 = fcnJ_B1(x_m, y_m, z_m, xi_1, xi_3, E, D_TE);
 J_B2 = fcnJ_B2(x_m, y_m, z_m, xi_1, xi_3, E, D_TE);
 J_B3 = fcnJ_B3(x_m, y_m, z_m, xi_1, xi_3, E, D_TE);
 
-J_1 = -C.*J_A1 - D_LE.*J_A0 + D_TE.*J_B0 + E.*J_B1 + J_A0.*y_m - J_B0.*y_m;
+% J_1 = -C.*J_A1 - D_LE.*J_A0 + D_TE.*J_B0 + E.*J_B1 + J_A0.*y_m - J_B0.*y_m;
 J_2 = -C.*J_A2 - D_LE.*J_A1 + D_TE.*J_B1 + E.*J_B2 + J_A1.*y_m - J_B1.*y_m;
 J_3 = -C.*J_A3 - D_LE.*J_A2 + D_TE.*J_B2 + E.*J_B3 + J_A2.*y_m - J_B2.*y_m;
 J_4 = -C.*J_A1.*y_m - D_LE.*J_A0.*y_m + D_TE.*J_B0.*y_m + E.*J_B1.*y_m + J_A0.*x_m.^2 + J_A0.*y_m.^2 + J_A0.*z_m.^2 - J_B0.*x_m.^2 - J_B0.*y_m.^2 - J_B0.*z_m.^2 - 2.*J_A1.*x_m + 2.*J_B1.*x_m + J_A2 - J_B2;

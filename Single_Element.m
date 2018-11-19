@@ -21,7 +21,7 @@ matPOINTS(:,:,3) = [1 0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [1 0 0 0 0 0 ];
+matCOEFF = [0 0 0 1 0 0 ];
 % matCOEFF = [5.3047    0.0219    5.8048   -0.0268   -0.8324   -5.0658];
 % matCOEFF = [-4.0788    1.5006   -2.0544    3.6226   -2.2158   -1.0943];
 
@@ -57,7 +57,7 @@ matCOEFF = [1 0 0 0 0 0 ];
 % y = -.2:granularity:.2;
 
 % granularity = 0.25;
-% y = -.5:granularity:1.5;
+% y = -.5:granularity:3.5;
 % z = -1:granularity:1.5;
 % x = -2.5:granularity:1.5;
 
@@ -86,10 +86,11 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = [-0.5 -0.25 0]
 % fpg = [-2 -1 0]
 % fpg = [-0.8 -0.4 0]
-% fpg = [0.5 0.95 0]
+% fpg = [-1.5 -0.25 0.75; -1.5 -0.5 0.75 ]
+% fpg = [-1.5 -0.5 0.75 ]
 
 % fpg = [-2.25 0.5 0.25];
-% fpg = [0.5 0.8 0.5];
+fpg = [-0.75 0.5 1.5];
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 
@@ -98,7 +99,8 @@ q_ind = s_ind;
 
 figure(1);
 hold on
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),0)
+% scatter3(fpg(:,1), fpg(:,2), fpg(:,3),500,'xr')
 hold off
 
 

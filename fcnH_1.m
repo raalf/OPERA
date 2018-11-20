@@ -15,43 +15,28 @@ len = size(N,1);
 b = T./S;
 a = u./S;
 
-tau = (2.*sqrt((a - alpha).^2 + alpha.*(b.^2)))./(-b);
-lambda = -M.*((a - alpha)./b) + ((M.*tau)./2) + N;
-mu = -M.*((a - alpha)./b) - ((M.*tau)./2) + N;
-phi = (((a - alpha)./b) + (-tau./2)).^2 - alpha;
-psi = phi - sqrt((a - alpha).^2 + (alpha.*(b.^2)));
-p = ((((a - alpha)./b) + (tau./2)).^2 + alpha)./phi;
-q = ((((a - alpha)./b) + (tau./2)).^2 + sqrt((a - alpha).^2 + (alpha.*(b.^2))) + alpha)./psi;
+W = sqrt(alpha.^2 + (b.^2 - 2.*a).*alpha + a.^2);
+K = W + a - alpha;
+L = K./(b.^2);
+G = a./(b.^2);
+D = alpha./(b.^2);
 
-% idx = (abs(t) > 1e10) | (N == 0) | (q < -(t.^2) | q.^2 < -(t.^2)) | ((q > p) & (p < 0));  % Correction
-% tau(idx) = nan; % Correction
-% lambda(idx) = nan; % Correction
-% mu(idx) = nan;  % Correction
-% phi(idx) = nan; % Correction
-% psi(idx) = nan; % Correction
-% p(idx) = nan; % Correction
-% q(idx) = nan; % Correction
-% t(idx) = nan; % Correction
+p = 1 - ((2.*a)./K) + ((2.*alpha)./K);
+q = ((6.*D - 6.*G + 2.*L + 1).*K + (4.*G - 1).*a + (4.*D - 8.*G + 1).*alpha)./...
+    ((2.*D - 2.*G + 2.*L - 1).*K + a - alpha);
 
-tdt = nan(len,2);
-dt = nan(len,2);
+mu = -M.*K + 2.*M.*a - 2.*M.*alpha - N.*b;
+lambda = K.*M - N.*b;
 
-%% At F1
-t(:,1) = (((a - alpha)./b) + (tau./2) + F1)./(((a - alpha)./-b) + (tau./2) - F1);
-t(:,2) = (((a - alpha)./b) + (tau./2) + F2)./(((a - alpha)./-b) + (tau./2) - F2);
+t1 = (-F1.*b + sqrt(alpha.*b.^2 + a.^2 - 2.*a.*alpha + alpha.^2) - a + alpha)./...
+     (F1.*b + sqrt(alpha.*b.^2 + a.^2 - 2.*a.*alpha + alpha.^2) + a - alpha);
 
-idx = p > q;
-tdt(idx,:) = (1./(sqrt(p(idx) - q(idx)))).*atan2(real(sqrt(t(idx,:).^2 + q(idx))), sqrt(p(idx) - q(idx)));
-dt(idx,:) = (1./(2.*sqrt(p(idx)).*sqrt(q(idx) - p(idx)))).*log((sqrt(p(idx)).*(sqrt((t(idx,:).^2) + q(idx))) + t(idx,:).*(sqrt(p(idx) - q(idx))))./(sqrt(p(idx)).*(sqrt((t(idx,:).^2) + q(idx))) - t(idx,:).*(sqrt(p(idx) - q(idx)))));
+t2 = (-F2.*b + sqrt(alpha.*b.^2 + a.^2 - 2.*a.*alpha + alpha.^2) - a + alpha)./...
+     (F2.*b + sqrt(alpha.*b.^2 + a.^2 - 2.*a.*alpha + alpha.^2) + a - alpha); 
+ 
+t1(abs(t1) > 1e+10,1) = sign(t1(abs(t1) > 1e+10)).*1e+10;
+t2(abs(t2) > 1e+10,1) = sign(t2(abs(t2) > 1e+10)).*1e+10;
 
-idx = q > p;
-tdt(idx) = (-1./(2.*sqrt(q(idx) - p(idx)))).*log((sqrt(q(idx) - p(idx)) + sqrt(t(idx).^2 + q(idx)))./(sqrt(q(idx) - p(idx)) - sqrt(t(idx).^2 + q(idx))));
-dt(idx) = (1./(sqrt(p(idx)).*sqrt(q(idx) - p(idx)))).*atan2(real(t(idx).*sqrt(q(idx) - p(idx))), real(sqrt(p(idx)).*sqrt(t(idx).^2 + q(idx).^2)));
+I = lambda.*-(1./K).*fcnH_3(p, q, t1, t2) + mu.*(1./K).*fcnH_4(p, q, t1, t2);
 
-I1 = sign(t(:,1) + 1).*(tau./(phi.*sqrt(S.*psi))).*(lambda.*tdt(:,1) + mu.*dt(:,1));
-I2 = sign(t(:,2) + 1).*(tau./(phi.*sqrt(S.*psi))).*(lambda.*tdt(:,2) + mu.*dt(:,2));
-
-%%
-I = I2 - I1;
-I = real(I);
 end

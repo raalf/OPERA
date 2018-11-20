@@ -63,8 +63,13 @@ matCOEFF = [0 0 0 1 0 0 ];
 
 granularity = 0.25;
 y = -.5:granularity:1.5;
-z = 0.25:granularity:1.5;
+z = -1.5:granularity:1.5;
 x = -2.5:granularity:1.5;
+
+% granularity = 1.5;
+% y = -4.5:granularity:5.5;
+% z = -4.5:granularity:5.5;
+% x = -5:granularity:5;
 
 % granularity = 0.1;
 % y = 0:granularity:1;
@@ -90,7 +95,7 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = [-1.5 -0.5 0.75 ]
 
 % fpg = [-2.25 0.5 0.25];
-fpg = [-0.75 0.5 1.5];
+fpg = [1.5 -0.5 0.25];
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 

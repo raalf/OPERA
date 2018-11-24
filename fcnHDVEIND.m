@@ -32,9 +32,6 @@ margin_on_element = 1e-10;
 idx_on_element = y_m >= te_eta - margin_edge & y_m <= le_eta + margin_edge & x_m >= xi_1 - margin_edge & x_m <= xi_3 + margin_edge & abs(z_m) <= margin_on_element;
 
 %% Calculating Influence
-tic
-
-% J_1
 alpha = z_m.^2;
 N_A = -C.*x_m - D_LE + y_m;
 S_A = C.^2 + 1;
@@ -48,74 +45,58 @@ u_B = N_B.^2 + alpha;
 
 F1 = (x_m - xi_1);
 F2 = (x_m - xi_3);
-% J_1 = -fcnH_1(C, N_A, S_A, T_A, u_A, alpha, F1, F2) + fcnH_1(E, N_B, S_B, T_B, u_B, alpha, F1, F2);
 
+%% J_1
+H_1_LE = fcnH_1(C, N_A, S_A, T_A, u_A, alpha, F1, F2);
+H_1_TE = fcnH_1(E, N_B, S_B, T_B, u_B, alpha, F1, F2);
+J_1 = -H_1_LE + H_1_TE;
+
+%% J_2
 q_a = y_m - 2.*C.*x_m - D_LE;
 r_a = -x_m.*N_A;
 
 q_b = y_m - 2.*E.*x_m - D_TE;
 r_b = -x_m.*N_B;
-% J_2 = -C.*fcnH_2(S_A, T_A, u_A, F1, F2) + E.*fcnH_2(S_B, T_B, u_B, F1, F2)
-J_2 = (-fcnH_1(q_a, r_a - C.*alpha, S_A, T_A, u_A, alpha, F1, F2) - C.*fcnH_2(S_A, T_A, u_A, F1, F2)) + (fcnH_1(q_b, r_b - E.*alpha, S_B, T_B, u_B, alpha, F1, F2) + E.*fcnH_2(S_B, T_B, u_B, F1, F2));
-J_1 = J_1.*0;
 
+H_2_LE = fcnH_2(S_A, T_A, u_A, F1, F2);
+H_2_TE = fcnH_2(S_B, T_B, u_B, F1, F2);
+J_2 = (fcnH_1(q_a, r_a - C.*alpha, S_A, T_A, u_A, alpha, F1, F2) + C.*H_2_LE) - ...
+      (fcnH_1(q_b, r_b - E.*alpha, S_B, T_B, u_B, alpha, F1, F2) + E.*H_2_TE);
 
+%% J_3
+H_6_LE = fcnH_6(S_A, T_A, u_A, F1, F2);
+H_6_TE = fcnH_6(S_B, T_B, u_B, F1, F2);
 
+J_3 = -(fcnH_1((C.*x_m.^2 - C.*alpha + 2.*r_a), (-r_a.*x_m - (-2.*C.*x_m + N_A).*alpha), S_A, T_A, u_A, alpha, F1, F2) + (-2.*C.*x_m + N_A).*H_2_LE + C.*H_6_LE) + ...
+      (fcnH_1((E.*x_m.^2 - E.*alpha + 2.*r_b), (-r_b.*x_m - (-2.*E.*x_m + N_B).*alpha), S_B, T_B, u_B, alpha, F1, F2) + (-2.*E.*x_m + N_B).*H_2_TE + E.*H_6_TE);
 
+%% J_4
+J_4 = (y_m.*H_1_LE + fcnH_1(0, 1, S_A, T_A, u_A, alpha, F1, F2)) - ...
+      (y_m.*H_1_TE + fcnH_1(0, 1, S_B, T_B, u_B, alpha, F1, F2));
 
+%% J_5
+J_5 = -((-y_m.^2).*H_1_LE + (N_A - 2.*y_m).*H_2_LE + C.*H_6_LE - fcnH_7(C, N_A, alpha, F1, F2)) + ...
+       ((-y_m.^2).*H_1_TE + (N_B - 2.*y_m).*H_2_TE + E.*H_6_TE - fcnH_7(E, N_B, alpha, F1, F2));
 
-% Out of element plane
-J_A0 = fcnJ_A0(x_m, y_m, z_m, xi_1, xi_3, C, D_LE);
-J_A1 = fcnJ_A1(x_m, y_m, z_m, xi_1, xi_3, C, D_LE);
-J_A2 = fcnJ_A2(x_m, y_m, z_m, xi_1, xi_3, C, D_LE);
-J_A3 = fcnJ_A3(x_m, y_m, z_m, xi_1, xi_3, C, D_LE);
+%% J_6
+J_6 = -((C.*y_m - x_m).*H_2_LE + H_6_LE + fcnH_1((-C.*x_m.*y_m + N_A.*y_m), (-C.*alpha.*y_m - N_A.*x_m.*y_m), S_A, T_A, u_A, alpha, F1, F2)) + ...
+       ((E.*y_m - x_m).*H_2_TE + H_6_TE + fcnH_1((-E.*x_m.*y_m + N_B.*y_m), (-E.*alpha.*y_m - N_B.*x_m.*y_m), S_B, T_B, u_B, alpha, F1, F2));
 
-J_B0 = fcnJ_B0(x_m, y_m, z_m, xi_1, xi_3, E, D_TE);
-J_B1 = fcnJ_B1(x_m, y_m, z_m, xi_1, xi_3, E, D_TE);
-J_B2 = fcnJ_B2(x_m, y_m, z_m, xi_1, xi_3, E, D_TE);
-J_B3 = fcnJ_B3(x_m, y_m, z_m, xi_1, xi_3, E, D_TE);
+%%
+% J_1 = J_1.*0;
+% J_2 = J_2.*0;
+% J_3 = J_3.*0;
+% J_4 = J_4.*0;
+% J_5 = J_5.*0;
+% J_6 = J_6.*0;
+   
+J_1(idx_on_element) = J_1(idx_on_element).*0;
+J_2(idx_on_element) = J_1(idx_on_element).*0;
+J_3(idx_on_element) = J_1(idx_on_element).*0;
+J_4(idx_on_element) = J_1(idx_on_element).*0;
+J_5(idx_on_element) = J_1(idx_on_element).*0;
+J_6(idx_on_element) = J_1(idx_on_element).*0;
 
-% J_1 = -C.*J_A1 - D_LE.*J_A0 + D_TE.*J_B0 + E.*J_B1 + J_A0.*y_m - J_B0.*y_m;
-% J_2 = -C.*J_A2 - D_LE.*J_A1 + D_TE.*J_B1 + E.*J_B2 + J_A1.*y_m - J_B1.*y_m;
-J_3 = -C.*J_A3 - D_LE.*J_A2 + D_TE.*J_B2 + E.*J_B3 + J_A2.*y_m - J_B2.*y_m;
-J_4 = -C.*J_A1.*y_m - D_LE.*J_A0.*y_m + D_TE.*J_B0.*y_m + E.*J_B1.*y_m + J_A0.*x_m.^2 + J_A0.*y_m.^2 + J_A0.*z_m.^2 - J_B0.*x_m.^2 - J_B0.*y_m.^2 - J_B0.*z_m.^2 - 2.*J_A1.*x_m + 2.*J_B1.*x_m + J_A2 - J_B2;
-J_5 = (0.5.*((2.*J_A0-2.*J_B0).*y_m+2.*C.*J_A1+2.*D_LE.*J_A0-2.*D_TE.*J_B0-2.*E.*J_B1)).*x_m.^2+(0.5.*((-4.*J_A1+4.*J_B1).*y_m-4.*C.*J_A2+4.*E.*J_B2-4.*D_LE.*J_A1+4.*D_TE.*J_B1)).*x_m ...
-    +(0.5.*(2.*J_A0-2.*J_B0)).*y_m.^3+(0.5.*(-2.*C.*J_A1-2.*D_LE.*J_A0+2.*D_TE.*J_B0+2.*E.*J_B1)).*y_m.^2+(0.5.*((2.*J_A0-2.*J_B0).*z_m.^2-2.*J_B2+2.*J_A2)).*y_m ...
-    +(0.5.*(2.*C.*J_A1+2.*D_LE.*J_A0-2.*D_TE.*J_B0-2.*E.*J_B1)).*z_m.^2+J_A3.*C-J_B2.*D_TE-J_B3.*E+J_A2.*D_LE ...
-    - (0.5.*fcnJ_D(x_m, y_m, z_m, xi_1, xi_3, C, D_LE)) + (0.5.*fcnJ_D(x_m, y_m, z_m, xi_1, xi_3, E, D_TE)) - (0.5.*fcnJ_C(x_m, y_m, z_m, xi_1, xi_3, C, D_LE)) + (0.5.*fcnJ_C(x_m, y_m, z_m, xi_1, xi_3, E, D_TE));
-% J_5 = J_4.*0;
-J_6 = -C.*J_A2.*y_m - D_LE.*J_A1.*y_m + D_TE.*J_B1.*y_m + E.*J_B2.*y_m + J_A1.*x_m.^2 + J_A1.*y_m.^2 + J_A1.*z_m.^2 - J_B1.*x_m.^2 - J_B1.*y_m.^2 - J_B1.*z_m.^2 - 2.*J_A2.*x_m + 2.*J_B2.*x_m + J_A3 - J_B3;
-
-
-% % In plane of element (not on element)
-% m_inf = 0;
-% idx = fpl(:,3) == 0 & ~idx_on_element;
-% idx_case1 = eta_3 <= eta_1;
-% idx_case2 = eta_1 < eta_3 & eta_3 < eta_2;
-% idx_case3 = eta_2 <= eta_3;
-% J_1(idx) = fcnJ_1ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
-% J_2(idx) = fcnJ_2ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
-% J_3(idx) = fcnJ_3ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
-% J_4(idx) = fcnJ_4ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
-% J_5(idx & idx_case1) = fcnJ_51ip(x_m(idx & idx_case1), y_m(idx & idx_case1), xi_1(idx & idx_case1), eta_1(idx & idx_case1), eta_2(idx & idx_case1), eta_3(idx & idx_case1), C(idx & idx_case1), D_LE(idx & idx_case1), E(idx & idx_case1), D_TE(idx & idx_case1), cutoff, m_inf);
-% J_5(idx & idx_case2) = fcnJ_52ip(x_m(idx & idx_case2), y_m(idx & idx_case2), xi_1(idx & idx_case2), eta_1(idx & idx_case2), eta_2(idx & idx_case2), eta_3(idx & idx_case2), C(idx & idx_case2), D_LE(idx & idx_case2), E(idx & idx_case2), D_TE(idx & idx_case2), cutoff, m_inf);
-% J_5(idx & idx_case3) = fcnJ_53ip(x_m(idx & idx_case3), y_m(idx & idx_case3), xi_1(idx & idx_case3), eta_1(idx & idx_case3), eta_2(idx & idx_case3), eta_3(idx & idx_case3), C(idx & idx_case3), D_LE(idx & idx_case3), E(idx & idx_case3), D_TE(idx & idx_case3), cutoff, m_inf);
-% J_6(idx) = fcnJ_6ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
-
-% % On element
-% m_inf = 1;
-% idx = fpl(:,3) == 0 & idx_on_element;
-% idx_case1 = eta_3 <= eta_1;
-% idx_case2 = eta_1 < eta_3 & eta_3 < eta_2;
-% idx_case3 = eta_2 <= eta_3;
-% J_1(idx) = fcnJ_1ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
-% J_2(idx) = fcnJ_2ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
-% J_3(idx) = fcnJ_3ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
-% J_4(idx) = fcnJ_4ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
-% J_5(idx & idx_case1) = fcnJ_51ip(x_m(idx & idx_case1), y_m(idx & idx_case1), xi_1(idx & idx_case1), eta_1(idx & idx_case1), eta_2(idx & idx_case1), eta_3(idx & idx_case1), C(idx & idx_case1), D_LE(idx & idx_case1), E(idx & idx_case1), D_TE(idx & idx_case1), cutoff, m_inf);
-% J_5(idx & idx_case2) = fcnJ_52ip(x_m(idx & idx_case2), y_m(idx & idx_case2), xi_1(idx & idx_case2), eta_1(idx & idx_case2), eta_2(idx & idx_case2), eta_3(idx & idx_case2), C(idx & idx_case2), D_LE(idx & idx_case2), E(idx & idx_case2), D_TE(idx & idx_case2), cutoff, m_inf);
-% J_5(idx & idx_case3) = fcnJ_53ip(x_m(idx & idx_case3), y_m(idx & idx_case3), xi_1(idx & idx_case3), eta_1(idx & idx_case3), eta_2(idx & idx_case3), eta_3(idx & idx_case3), C(idx & idx_case3), D_LE(idx & idx_case3), E(idx & idx_case3), D_TE(idx & idx_case3), cutoff, m_inf);
-% J_6(idx) = fcnJ_6ip(E(idx), C(idx), D_LE(idx), D_TE(idx), x_m(idx), xi_1(idx), xi_3(idx), y_m(idx), cutoff, m_inf);
 
 % Whoopsie
 J_1(isnan(J_1) | isinf(J_1)) = 0;
@@ -143,7 +124,6 @@ infl_new(3,4,:) = (reshape(-J_1.*x_m,1,1,[]) + reshape(J_2,1,1,[]));
 infl_new(3,5,:) = (reshape(-J_2.*y_m,1,1,[]) - reshape(J_4.*x_m,1,1,[]) +  reshape(2.*J_6,1,1,[]));
 
 infl_loc = real(infl_new);
-toc
 
 %% Transforming and Outputting
 dvenum = reshape(repmat(dvenum,1,6,1)',[],1,1);
@@ -154,37 +134,4 @@ infl_tot(isinf(infl_tot)) = 0;
 
 infl_glob = reshape(infl_tot',3,6,[]);
 
-end
-
-function J_1ip = fcnJ_1ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff, m_inf)
-J_1ip = E.*nan;
-end
-
-function J_2ip = fcnJ_2ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff, m_inf)
-J_2ip = E.*nan;
-end
-
-function J_3ip = fcnJ_3ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff, m_inf)
-J_3ip = E.*nan;
-end
-
-function J_4ip = fcnJ_4ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff, m_inf)
-J_4ip = E.*nan;
-end
-
-function J_5ip = fcnJ_5ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff, m_inf)
-J_5ip = E.*nan;
-end
-
-function J_6ip = fcnJ_6ip(E, C, D_LE, D_TE, x_m, xi_1, xi_3, y_m, cutoff, m_inf)
-J_6ip = E.*nan;
-end
-
-function out = fcnPIECEWISE(cond,val1,val2)
-out = val2;
-out(cond) = val1(cond);
-end
-
-function out = fcnAND(cond1, cond2)
-out = cond1 & cond2;
 end

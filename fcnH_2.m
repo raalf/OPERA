@@ -4,7 +4,7 @@ function I = fcnH_2(C, B, A, X1, X2)
 %  X2
 %   /
 %  |            1
-%  |  -------------------- dF
+%  |  -------------------- dX
 % /           2
 %  X1 sqrt(C X  + B X + A)
 %
@@ -20,6 +20,12 @@ delta = 4.*A.*C - B.^2;
 X = [X1 X2];
 
 I1 = nan(len,2);
+
+%% C > 0
+idx = C > 0;
+if any(idx)
+    I1(idx,:) = (1./sqrt(C(idx))).*log( (2.*sqrt(C(idx).*sqrt(C(idx).*X(idx,:).^2 + B(idx).*X(idx,:) + A(idx)))+ 2.*C(idx).*X(idx,:) + B(idx))./(sqrt(delta(idx))));
+end
 
 %% C > 0 & delta > 0 & abs(B) > 0
 idx = C > 0 & delta > 0 & abs(B) > zer;

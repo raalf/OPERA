@@ -4,7 +4,7 @@ clc
 % profile -memory on
 
 %% Geometry
-% matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_low.stl');
+matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_low.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_high.stl');
 
@@ -14,7 +14,7 @@ clc
 % 
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
-matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
 
 % R = rotz(90);
 % for i = 1:size(matPOINTS,1)

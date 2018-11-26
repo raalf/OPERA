@@ -1,4 +1,4 @@
-function [PLEX, DVECT, ROTANG] = fcnTRITOLEX(P, DNORM, matCENTER)
+function [PLEX, DVECT, ROTANG] = fcnTRITOLEX(P, DNORM, matCONTROL)
 % This function converts a nx3x3 matrix from global (X,Y,Z)
 % to local (eta,xi,zeta) coordinates, where the depth n is vertex number
 % and columns are (X,Y,Z), rows are HDVE number
@@ -61,7 +61,7 @@ PLEX = permute(reshape(temp_points2',3,3,sp(3)),[2 1 3]);
 
 %% Translating local coordinates towards origin
 % Translating so that local origin is at the triangle incenter (matCENTER)
-temp_center = fcnGLOBSTAR(matCENTER, ROTANG);
+temp_center = fcnGLOBSTAR(matCONTROL, ROTANG);
 PLEX = PLEX - repmat(reshape(temp_center',1,3,[]),3,1,1);
 
 idx_wrong = reshape(PLEX(3,1,:),[],1,1) <= reshape(PLEX(1,1,:),[],1,1);

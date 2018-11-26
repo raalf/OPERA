@@ -1,8 +1,9 @@
-function [infl_glob] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER)
+function [infl_glob] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL)
 warning('on')
 cutoff = 1e-14;
 
-fpl = fcnGLOBSTAR(fpg - matCENTER(dvenum,:), matROTANG(dvenum,:));
+fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
+
 len = size(fpl,1);
 
 x_m = fpl(:,1);
@@ -60,7 +61,7 @@ r_b = -x_m.*N_B;
 
 H_2_LE = fcnH_2(S_A, T_A, u_A, F1, F2);
 H_2_TE = fcnH_2(S_B, T_B, u_B, F1, F2);
-J_2 = (fcnH_1(q_a, r_a - C.*alpha, S_A, T_A, u_A, alpha, F1, F2) + C.*H_2_LE) - ...
+J_2 = -(fcnH_1(q_a, r_a - C.*alpha, S_A, T_A, u_A, alpha, F1, F2) + C.*H_2_LE) + ...
       (fcnH_1(q_b, r_b - E.*alpha, S_B, T_B, u_B, alpha, F1, F2) + E.*H_2_TE);
 
 %% J_3
@@ -68,12 +69,12 @@ H_6_LE = fcnH_6(S_A, T_A, u_A, F1, F2);
 H_6_TE = fcnH_6(S_B, T_B, u_B, F1, F2);
 
 J_3 = -(fcnH_1((C.*x_m.^2 - C.*alpha + 2.*r_a), (-r_a.*x_m - (-2.*C.*x_m + N_A).*alpha), S_A, T_A, u_A, alpha, F1, F2) + (-2.*C.*x_m + N_A).*H_2_LE + C.*H_6_LE) + ...
-      (fcnH_1((E.*x_m.^2 - E.*alpha + 2.*r_b), (-r_b.*x_m - (-2.*E.*x_m + N_B).*alpha), S_B, T_B, u_B, alpha, F1, F2) + (-2.*E.*x_m + N_B).*H_2_TE + E.*H_6_TE);
-
+      (fcnH_1((E.*x_m.^2 - E.*alpha + 2.*r_b), (-r_b.*x_m - (-2.*E.*x_m + N_B).*alpha), S_B, T_B, u_B, alpha, F1, F2) + (-2.*E.*x_m + N_B).*H_2_TE + E.*H_6_TE);  
+  
 %% J_4
-J_4 = (y_m.*H_1_LE + fcnH_1(0, 1, S_A, T_A, u_A, alpha, F1, F2)) - ...
-      (y_m.*H_1_TE + fcnH_1(0, 1, S_B, T_B, u_B, alpha, F1, F2));
-
+J_4 = -(y_m.*H_1_LE + H_2_LE) + ...
+      (y_m.*H_1_TE + H_2_TE);
+  
 %% J_5
 J_5 = -((-y_m.^2).*H_1_LE + (N_A - 2.*y_m).*H_2_LE + C.*H_6_LE - fcnH_7(C, N_A, alpha, F1, F2)) + ...
        ((-y_m.^2).*H_1_TE + (N_B - 2.*y_m).*H_2_TE + E.*H_6_TE - fcnH_7(E, N_B, alpha, F1, F2));
@@ -90,21 +91,20 @@ J_6 = -((C.*y_m - x_m).*H_2_LE + H_6_LE + fcnH_1((-C.*x_m.*y_m + N_A.*y_m), (-C.
 % J_5 = J_5.*0;
 % J_6 = J_6.*0;
    
-J_1(idx_on_element) = J_1(idx_on_element).*0;
-J_2(idx_on_element) = J_1(idx_on_element).*0;
-J_3(idx_on_element) = J_1(idx_on_element).*0;
-J_4(idx_on_element) = J_1(idx_on_element).*0;
-J_5(idx_on_element) = J_1(idx_on_element).*0;
-J_6(idx_on_element) = J_1(idx_on_element).*0;
+% J_1(idx_on_element) = J_1(idx_on_element).*0;
+% J_2(idx_on_element) = J_1(idx_on_element).*0;
+% J_3(idx_on_element) = J_1(idx_on_element).*0;
+% J_4(idx_on_element) = J_1(idx_on_element).*0;
+% J_5(idx_on_element) = J_1(idx_on_element).*0;
+% J_6(idx_on_element) = J_1(idx_on_element).*0;
 
-
-% Whoopsie
-J_1(isnan(J_1) | isinf(J_1)) = 0;
-J_2(isnan(J_2) | isinf(J_2)) = 0;
-J_3(isnan(J_3) | isinf(J_3)) = 0;
-J_4(isnan(J_4) | isinf(J_4)) = 0;
-J_5(isnan(J_5) | isinf(J_5)) = 0;
-J_6(isnan(J_6) | isinf(J_6)) = 0;
+% % Whoopsie
+% J_1(isnan(J_1) | isinf(J_1)) = 0;
+% J_2(isnan(J_2) | isinf(J_2)) = 0;
+% J_3(isnan(J_3) | isinf(J_3)) = 0;
+% J_4(isnan(J_4) | isinf(J_4)) = 0;
+% J_5(isnan(J_5) | isinf(J_5)) = 0;
+% J_6(isnan(J_6) | isinf(J_6)) = 0;
 
 % Compiling
 infl_new = zeros(3,6,len);

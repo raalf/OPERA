@@ -1,5 +1,5 @@
 clear
-clc
+% clc
 
 %% Preamble
 
@@ -7,34 +7,63 @@ strFILE = 'inputs/2dve.dat';
 
 % [~, strATYPE, vecSYM, ~, ~, ~, valALPHA, valBETA, ~, ~] = fcnOPREAD(strFILE);
 strATYPE = 'what';
-valALPHA = 0;
+valALPHA = 10;
 valBETA = 0;
 vecSYM = [];
 
-% matPOINTS(:,:,1) = [0 -0.5 0];
-% matPOINTS(:,:,2) = [0  0.5 0];
-% matPOINTS(:,:,3) = [1  0   0];
-
-matPOINTS(:,:,1) = [0  0.5 0];
-matPOINTS(:,:,2) = [1  0.5 0];
-matPOINTS(:,:,3) = [1 -0.5 0];
-
+matPOINTS(:,:,1) = [0 -0.5 0; 0  0.5 0];
+matPOINTS(:,:,2) = [0  0.5 0; 1  0.5 0];
+matPOINTS(:,:,3) = [1 -0.5 0; 1 -0.5 0];
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS);
 
-vecUINF = fcnUINFWING(valALPHA, 0);
+matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 
 %% Coefficients
-matCOEFF = [0 1.1304 0 0 0 0 ];
-% matCOEFF = [5.3047    0.0219    5.8048   -0.0268   -0.8324   -5.0658];
-% matCOEFF = [-4.0788    1.5006   -2.0544    3.6226   -2.2158   -1.0943];
+matCOEFF = zeros(2,6);
+
+%% Kinematic conditions at vertices
+% Flow tangency is to be enforced at all control points on the surface HDVEs
+% In the D-Matrix, dot (a1,a2,b1,b2,c3) of our influencing HDVE with the normal of the point we are influencing on
+
+% Points we are influencing
+fpg = matCENTER;
+normals = matDVECT(:,:,3);
+
+% fpg = matCENTER + (matDVECT(:,:,3)./10000).*-1;
+
+% List of DVEs we are influencing from (one for each of the above fieldpoints)
+len = length(fpg(:,1));
+dvenum = reshape(repmat(1:valNELE,len,1),[],1);
+dvetype = ones(size(dvenum));
+
+fpg = repmat(fpg,valNELE,1);
+
+[infl_glob] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL);
+
+normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
+
+% Dotting a1, a2, b1, b2, c3 with the normals of the field points
+temp60 = [dot(permute(infl_glob(:,1,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,2,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,3,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,4,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,5,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,6,:),[3 1 2]),normals,2)];
+
+% Reshaping and inserting into the bottom of the D-Matrix
+rows = [1:len]';
+
+king_kong = zeros(len, valNELE*6);
+king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
+matD = [king_kong(:,4) king_kong(:,8)]
+
+vecR = 4*pi.*dot(matUINF, matDVECT(:,:,3), 2);
+coeff = matD\vecR
+
+matCOEFF(1,4) = coeff(1)
+matCOEFF(2,2) = coeff(2)
+
 
 %% Plot
 
-vecUINF = [cosd(10) 0 sind(10)]
-
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
+[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 % view([-30 17])
 
@@ -72,7 +101,7 @@ vecUINF = [cosd(10) 0 sind(10)]
 % y = -.5:granularity:1.5;
 % z = -1:granularity:1;
 % x = -2.5:granularity:1.5;
-% z(z==0) = [];
+% % z(z==0) = [];
 
 granularity = 0.25;
 y = -.625:granularity:.625;
@@ -104,15 +133,15 @@ x = -.5:granularity:1.5;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 fpg = [fpg; matCENTER];
-% fpg = matCENTER 
+% fpg = matCENTER + [0 0 0]
 % fpg = [0.5 0.5 0]
 % fpg = [-1.25 2.25 1.5; -1.0 2.25 1.5];
 % fpg = [-1.25 2.25 1.5];
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 
-% q_ind = s_ind + repmat(vecUINF, length(s_ind(:,1)),1);
-q_ind = s_ind;
+q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
+% q_ind = s_ind;
 
 figure(1);
 hold on

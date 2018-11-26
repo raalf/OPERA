@@ -4,7 +4,7 @@ clc
 % profile -memory on
 
 %% Geometry
-matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_low.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_low.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_high.stl');
 
@@ -13,7 +13,7 @@ matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_low.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_high.stl');
 % 
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
-% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
+matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
 
 % R = rotz(90);
@@ -23,9 +23,9 @@ matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_low.stl');
 %     end
 % end
 
-[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
+[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS);
 
-[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
 
 flagRELAX = 0;
 vecSYM = [];
@@ -44,7 +44,7 @@ vecSPANDIR = [];
 vecTE = [];
 vecLE = [];
 
-matD = fcnDWING9('2D', matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG);
+matD = fcnDWING9('2D', matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL);
 
 valDLEN = length(matD);
 
@@ -69,21 +69,21 @@ matWVLST = [];
 matWROTANG = [];
 
 % Building wing resultant
-vecR = fcnRWING(valDLEN, 0, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
+vecR = fcnRWING(valDLEN, 0, matCONTROL, matDVECT, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
 
 % Solving for wing coefficients
 [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
 
 
 %% Plot
-[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
+[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 20);
 
 hFig1 = figure(1);
 hold on
 % fpg = matCENTER + (matDVECT(:,:,3)./10000).*-1;
 fpg = matCENTER;
-q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 q_ind = q_inds + matUINF;
 fcolor = sqrt(sum(q_ind.^2,2));
 fcolor = 1 - fcolor.^(2);
@@ -113,7 +113,7 @@ grid minor
 box on
 axis tight
 
-% granularity = .1;
+% granularity = .5;
 % x = -1.5:granularity:1.5;
 % % y = -3:granularity:3;
 % y = -1.5:granularity:1.5;
@@ -122,7 +122,7 @@ axis tight
 % [X,Y,Z] = meshgrid(x,y,z);
 % y = x.*0 + 0.0125/2;
 % 
-% s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+% s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 % q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
 % Xq = reshape(q_ind(:,1), size(X));
 % Yq = reshape(q_ind(:,2), size(Y));

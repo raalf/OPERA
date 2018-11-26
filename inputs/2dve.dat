@@ -27,5 +27,5 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon
-0.000000	0.000000	0.000000	1.000000	0.000000
-0.000000	1.000000	0.000000	1.000000	0.000000
+0.000000	0.000000	0.000000	1.000000	0.000000 0 0
+0.000000	1.000000	0.000000	1.000000	0.000000 0 0

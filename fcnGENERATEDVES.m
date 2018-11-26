@@ -63,7 +63,7 @@ vecDVEWING  = nan(valNELE,1);
 vecEnd      = cumsum(vecN.*vecM);
 
 %% Assign Wing to Panel
-panelEdges = reshape(permute(matGEOM,[1 3 2]),[],5);
+panelEdges = reshape(permute(matGEOM,[1 3 2]),[],7);
 [~,tempB,tempC] = unique(panelEdges,'rows','stable');
 panelEdgesIdx = reshape(tempC,2,[])';
 edge2wing = [(1:length(tempB))',nan(length(tempB),1)];
@@ -97,13 +97,15 @@ for i = 1:valPANELS
     tchord = matGEOM(2,4,i); tepsilon = deg2rad(matGEOM(2,5,i));
     rLE = matGEOM(1,1:3,i);
     tLE = matGEOM(2,1:3,i);
+    rcamber = matGEOM(1,6:7,i);
+    tcamber = matGEOM(2,6:7,i);
     
     % Read panel corners
     % For DVE generation. Twist angle is handled along with dihedral angle
     panel4corners = reshape(fcnPANELCORNERS(rLE,tLE,rchord,tchord,repsilon,tepsilon),3,4)';
     
     % fcnPANEL2DVE takes four corners of a panel and outputs vertices of non-planer DVEs
-    [~, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE( panel4corners, i, vecN, vecM );
+    [~, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE( panel4corners, i, vecN, vecM, rcamber, tcamber, repsilon, tepsilon, rchord, tchord);
     
     % Saving the TE and LE points so we can define those edges later on
     if vecPANELTE(i) == 1

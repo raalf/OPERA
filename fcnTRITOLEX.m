@@ -1,4 +1,4 @@
-function [PLEX, DVECT, ROTANG] = fcnTRITOLEX(P, DNORM, matCENTER)
+function [PLEX, DVECT, ROTANG] = fcnTRITOLEX(P, DNORM, matCONTROL)
 % This function converts a nx3x3 matrix from global (X,Y,Z)
 % to local (eta,xi,zeta) coordinates, where the depth n is vertex number
 % and columns are (X,Y,Z), rows are HDVE number
@@ -61,35 +61,12 @@ PLEX = permute(reshape(temp_points2',3,3,sp(3)),[2 1 3]);
 
 %% Translating local coordinates towards origin
 % Translating so that local origin is at the triangle incenter (matCENTER)
-temp_center = fcnGLOBSTAR(matCENTER, ROTANG);
+temp_center = fcnGLOBSTAR(matCONTROL, ROTANG);
 PLEX = PLEX - repmat(reshape(temp_center',1,3,[]),3,1,1);
 
-%% Finding local leading and trailing edges of HDVEs (matVSCOMB)
-matVSCOMB = zeros(sp(3),3,2);
-
-eta = zeros(1,3,sp(3));
-xsi = zeros(1,3,sp(3));
-
-% Edge vectors by going around in order
-edge = [PLEX(1,:,:) - PLEX(2,:,:); PLEX(2,:,:) - PLEX(3,:,:); PLEX(3,:,:) - PLEX(1,:,:)];
-
-% Finding edge normals and normalizing
-edge_normal = [edge(:,2,:) -edge(:,1,:) edge(:,3,:)];
-edge_normal = edge_normal./(sqrt(sum(edge_normal(:,1,:).^2 + edge_normal(:,2,:).^2,2)));
-
-check_normal = dot(edge_normal(1,:,:), edge(3,:,:));
-check_normal(check_normal > 0) = 1; % Here we need to flip the normals
-check_normal(check_normal <= 0) = 0;
-
-edge_normal(:,:,check_normal == 1) = -edge_normal(:,:,check_normal ==1);
-
-eta(permute(edge_normal(:,1,:) > 0, [2 1 3])) = -1;
-eta(permute(edge_normal(:,1,:) < 0, [2 1 3])) = 1;
-matVSCOMB(:,:,1) = reshape(permute(eta, [2 1 3]), size(eta, 2), [])';
-
-xsi(permute(edge_normal(:,2,:) > 0, [2 1 3])) = -1;
-xsi(permute(edge_normal(:,2,:) < 0, [2 1 3])) = 1;
-matVSCOMB(:,:,2) = reshape(permute(xsi, [2 1 3]), size(xsi, 2), [])';
-
+idx_wrong = reshape(PLEX(3,1,:),[],1,1) <= reshape(PLEX(1,1,:),[],1,1);
+if any(idx_wrong)
+   disp('Issue in TRITOLEX, xi_3 <= xi_1') 
+end
 
 end

@@ -1,4 +1,4 @@
-function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG)
+function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL)
 
 lambda_mid = [ ...
     0.5 0.5 0; ... % Edge 1 mid-point
@@ -76,6 +76,9 @@ vort4 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, ma
 % These are found by looking at the free edges that are NOT symmetry or trailing edge
 % Evaluated at the mid-point of each edge which is used by only 1 HDVE (and not at the trailing edge)
 circ_tip = [];
+vort_tip1 = [];
+vort_tip2 = [];
+
 if strcmp(strATYPE,'THIN') == 1
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
     idx(vecTE) = 0;
@@ -90,7 +93,51 @@ if strcmp(strATYPE,'THIN') == 1
     vnumc(vnumc(:,2) == 4,2) = 1;
     
     circ_tip = fcnDCIRCTIP(idx, nedg, lambda_vert, lambda_mid, valNELE, matPLEX, matEATT, matELOC, vnumc);  
+
+elseif strcmp(strATYPE,'2D') == 1
+
+    vnuma = [];
+    
+    idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
+    idx(vecTE) = 0;
+    idx(vecLE) = 0;
+    
+    nedg = length(matEATT(idx,1));
+    
+    [ta,tb,~] = find(matDVE(nonzeros(matEATT(idx,:)),:) == repmat(matELST(idx,1),1,3));
+    [~,rb,] = sort(ta);
+    vnuma(:,1) = tb(rb); 
+
+    [ta,tb,~] = find(matDVE(nonzeros(matEATT(idx,:)),:) == repmat(matELST(idx,2),1,3));
+    [~,rb,] = sort(ta);
+    vnuma(:,2) = tb(rb);
+
+    e1vec = temp(nonzeros(matEATT(idx,:)).*3 + vnuma(:,2) - 3,:) - temp(nonzeros(matEATT(idx,:)).*3 + vnuma(:,1) - 3,:);
+    e1vec = e1vec./sqrt(sum(e1vec.^2,2));
+    e1vec = [-e1vec(:,2), e1vec(:,1), e1vec(:,3)];
+    vort_tip1 = fcnDVORTTE(idx, vnuma(:,1), sum(idx), lambda_vert, valNELE, matPLEX, matEATT, e1vec);
+    vort_tip2 = fcnDVORTTE(idx, vnuma(:,2), sum(idx), lambda_vert, valNELE, matPLEX, matEATT, e1vec);
+    
 end
+
+%% Trailing edge vorticity
+vort5 = [];
+vort6 = [];
+vnuma = [];
+vnumb = [];
+
+% % [ta,tb,~] = find(matDVE(vecTEDVE,:) == repmat(matELST(vecTE,1),1,3));
+% % [~,rb,] = sort(ta);
+% % vnuma(:,1) = tb(rb); 
+% % 
+% % [ta,tb,~] = find(matDVE(vecTEDVE,:) == repmat(matELST(vecTE,2),1,3));
+% % [~,rb,] = sort(ta);
+% % vnuma(:,2) = tb(rb);
+% % 
+% % % e1vec = temp(nonzeros(matEATT(vecTE,:)).*3 + vnuma(:,2) - 3,:) - temp(nonzeros(matEATT(vecTE,:)).*3 + vnuma(:,1) - 3,:);
+% % e1vec = vecSPANDIR;
+% % % vort5 = fcnDVORTTE(vecTE, vnuma(:,1), length(vecTE), lambda_vert, valNELE, matPLEX, matEATT, e1vec);
+% % % vort6 = fcnDVORTTE(vecTE, vnuma(:,2), length(vecTE), lambda_vert, valNELE, matPLEX, matEATT, e1vec);
 
 %% Kinematic conditions at vertices
 % Flow tangency is to be enforced at all control points on the surface HDVEs
@@ -100,6 +147,8 @@ end
 fpg = matCENTER;
 normals = matDVECT(:,:,3);
 
+% fpg = matCENTER + (matDVECT(:,:,3)./10000).*-1;
+
 % List of DVEs we are influencing from (one for each of the above fieldpoints)
 len = length(fpg(:,1));
 dvenum = reshape(repmat(1:valNELE,len,1),[],1);
@@ -107,7 +156,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[infl_glob] = fcnHDVEINDFS(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER);
+[infl_glob] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 
@@ -121,7 +170,7 @@ king_kong = zeros(len, valNELE*6);
 king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
 
 %% Piecing together D-matrix
-D = [circ; circ1; circ2; vort1; vort2; vort3; vort4; circ_tip; king_kong];
+D = [circ; circ1; circ2; vort1; vort2; vort3; vort4; vort5; vort6; vort_tip1; vort_tip2; circ_tip; king_kong];
 
 end
 

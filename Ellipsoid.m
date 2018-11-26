@@ -15,8 +15,9 @@ c = 1;
 TR = triangulation(S.bnd, [x(:), y(:), z(:)]);
 matPOINTS = permute(reshape(TR.Points([TR.ConnectivityList(:,1) TR.ConnectivityList(:,3) TR.ConnectivityList(:,2)],:)',3,[],3),[2 1 3]);
 
-[~, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-    matELOC, matPLEX, matDVECT, matALIGN, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
+% matPOINTS = fcnSTLREAD('CAD Geom/panel_wing.stl');
+
+[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
 
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
 
@@ -27,6 +28,7 @@ valMAXTIME = 5;
 valDELTIME = 0.05;
 % valALPHA = atand(1/8)
 valALPHA = 0;
+matUINF = repmat([1 0 0], valNELE, 1);
 
 %% D-Matrix Creation
 vecTEDVE = [];
@@ -35,12 +37,11 @@ vecSPANDIR = [];
 vecTE = [];
 vecLE = [];
 
-matD = fcnDWING9([], matEATT, matPLEX, valNELE, matELOC, matELST, matALIGN, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matVATT, vecTEDVE, vecSPANDIR, matROTANG, matVNORM);
+matD = fcnDWING9([], matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG);
 
 valDLEN = length(matD);
 
 %% Preparing to timestep
-valTIMESTEP = 0;
 matWADJE = [];
 matWELST = [];
 matWDVE = [];
@@ -58,12 +59,10 @@ matWAKEGEOM = [];
 valWSIZE = [];
 matWCOEFF = [];
 matWVLST = [];
-
-vecUINF = fcnUINFWING(valALPHA, 0);
-matUINF = repmat(vecUINF,valNELE,1);
+matWROTANG = [];
 
 % Building wing resultant
-vecR = fcnRWING([], valDLEN, 0, matELST, matCENTER, matDVECT, matUINF(1,:), vecLE, vecLEDVE, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, [], matVNORM, matVLST);
+vecR = fcnRWING(valDLEN, 0, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
 
 % Solving for wing coefficients
 [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
@@ -72,7 +71,7 @@ vecR = fcnRWING([], valDLEN, 0, matELST, matCENTER, matDVECT, matUINF(1,:), vecL
 
 hFig1 = figure(1);
 hold on
-q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
+q_inds = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF(1,:);
 fcolor = sqrt(sum(q_ind.^2,2));
 p = patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceVertexCData',fcolor,'LineWidth',2);
@@ -91,7 +90,7 @@ y = -1.5:granularity:1.5;
 z = -1.5:granularity:1.5;
 [X,Y,Z] = meshgrid(x,y,z);
 
-s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)],valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, matROTANG, matCENTER);
+s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
 Xq = reshape(q_ind(:,1), size(X));
 Yq = reshape(q_ind(:,2), size(Y));

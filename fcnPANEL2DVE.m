@@ -1,4 +1,4 @@
-function [ CP, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE( panel4corners, i, vecN, vecM )
+function [ CP, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE( panel4corners, i, vecN, vecM, rcamber, tcamber, repsilon, tepsilon, rchord, tchord)
 %fcnPANEL2DVE Summary of this function goes here
 %   fcnPANEL2DVE takes four corners of a panel and outputs vertices of non-planer DVEs
 
@@ -21,6 +21,16 @@ function [ CP, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE( panel4corn
     chordY(:,2) = linspace(panelY(1,2),panelY(2,2),M+1)';
     chordZ(:,2) = linspace(panelZ(1,2),panelZ(2,2),M+1)';
     
+    % split max camber location in spanwise dir
+    camberLOC(:,1) = linspace(rcamber(1,1), tcamber(1,1), N+1)';
+    camberMAX(:,1) = linspace(rcamber(1,2), tcamber(1,2), N+1)';
+
+    % split max camber location to chordwise elements
+    epsilon = linspace(repsilon, tepsilon, N+1)';
+    
+    % split chord into chordwise elements
+    chord = linspace(rchord, tchord, N+1)';
+    
     % linspace spanwise elemenets at each chordwise station
     
     % Preallocate the memories for point matrices
@@ -39,6 +49,31 @@ function [ CP, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE( panel4corn
         PX2(j,:) = interp1(chordbase,chordX(j,:),spanwise); % X coordinates of all points
         PY2(j,:) = interp1(chordbase,chordY(j,:),spanwise); % Y coordinates of all points
         PZ2(j,:) = interp1(chordbase,chordZ(j,:),spanwise); % Z coordinates of all points
+        
+        span_dir = panel4corners(2,:) - panel4corners(1,:);
+        span_dir = span_dir./norm(span_dir);
+        % Adding in camber
+        if j > 1
+           x = PX2(j,:) - PX2(1,:);
+           idx_for = x <= (camberLOC.*chord)';
+           idx_aft = x > (camberLOC.*chord)';
+           
+           % Local airfoil z-translation for camber
+           % http://airfoiltools.com/airfoil/naca4digit
+           x = x./chord';
+           norm_trans(idx_for) = (camberMAX(idx_for)'./(camberLOC(idx_for)'.^2)).*(2.*camberLOC(idx_for)'.*x(idx_for) - x(idx_for).^2);
+           norm_trans(idx_aft) = (camberMAX(idx_aft)'./((1 - camberLOC(idx_aft)').^2)).*(1 - 2.*camberLOC(idx_aft)' + 2.*camberLOC(idx_aft)'.*x(idx_aft) - x(idx_aft).^2);
+           norm_trans = norm_trans.*chord';
+           
+           chordwise_dir = [PX2(j,:) - PX2(1,:); PY2(j,:) - PY2(1,:); PZ2(j,:) - PZ2(1,:)]';
+           chordwise_dir = chordwise_dir./(sqrt(sum(chordwise_dir.^2,2)));
+           
+           norm_dir = cross(chordwise_dir, repmat(span_dir, size(chordwise_dir,1),1), 2);
+           
+           PX2(j,:) = PX2(j,:) + norm_dir(:,1)'.*norm_trans;
+           PY2(j,:) = PY2(j,:) + norm_dir(:,2)'.*norm_trans;
+           PZ2(j,:) = PZ2(j,:) + norm_dir(:,3)'.*norm_trans;
+        end
     end
     
     % DVE Parameters Calculation

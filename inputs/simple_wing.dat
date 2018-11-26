@@ -7,10 +7,10 @@ Lifting Surface:	 	strATYPE = THIN
 Analysis Type:			strA2TYPE = WING
 
 Maximum Timesteps: 		valMAXTIME = 0
-Timestep Size: 			valDELTIME = 0.5
+Timestep Size: 			valDELTIME = 0.25
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
-Angles of Attack: 		seqALPHA = 30
+Angles of Attack: 		seqALPHA = 10
 Angles of Sideslip: 	seqBETA = 0
 
 GEOMETRY
@@ -21,11 +21,11 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 1. 
-Number of chordwise elements: 	vecM 		= 3.
-Symmetry about YZ Plane:		strSYM 		= YES
+Number of spanwise elements:	vecN 		= 4. 
+Number of chordwise elements: 	vecM 		= 4.
+Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
-xleft		yleft		zleft		chord		epsilon
-0.000000	0.000000	0.000000	1.000000	0.000000
-0.000000	2.000000	0.000000	1.000000	0.000000
+xleft		yleft		zleft		chord		epsilon		camber_p	camber_m
+0.000000	-2.000000	0.000000	1.000000	0.000000	0.400000	0.04000
+0.000000	2.000000	0.000000	1.000000	0.000000	0.400000	0.04000

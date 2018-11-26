@@ -25,7 +25,6 @@ b1 = 0.5.*(b2.^2);
 c2 = a2.*b2;
 c3 = ones(nedg,2);
 
-
 gamma1 = [a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)];
 gamma2 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)].*-1;
 circ = fcnCREATEDSECT(sparse(nedg, valNELE*6), nedg, 6, matEATT(idx,1), matEATT(idx,2), gamma1, gamma2);

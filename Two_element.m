@@ -21,7 +21,7 @@ matPOINTS(:,:,3) = [1 -0.5 0; 1 -0.5 0];
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 
 %% Coefficients
-matCOEFF = zeros(2,6);
+matCOEFF = zeros(2,3);
 
 %% Kinematic conditions at vertices
 % Flow tangency is to be enforced at all control points on the surface HDVEs
@@ -45,21 +45,23 @@ fpg = repmat(fpg,valNELE,1);
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 
 % Dotting a1, a2, b1, b2, c3 with the normals of the field points
-temp60 = [dot(permute(infl_glob(:,1,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,2,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,3,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,4,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,5,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,6,:),[3 1 2]),normals,2)];
+temp60 = [dot(permute(infl_glob(:,1,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,2,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,3,:),[3 1 2]),normals,2)];
 
 % Reshaping and inserting into the bottom of the D-Matrix
 rows = [1:len]';
 
-king_kong = zeros(len, valNELE*6);
-king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
-matD = [king_kong(:,4) king_kong(:,8)]
+king_kong = zeros(len, valNELE*3);
+king_kong(rows,:) = reshape(permute(reshape(temp60',3,[],valNELE),[2 1 3]),[],3*valNELE,1);
+% matD = [king_kong(:,4) king_kong(:,8)]
+% 
+% vecR = 4*pi.*dot(matUINF, matDVECT(:,:,3), 2);
+% coeff = matD\vecR
+% 
+% matCOEFF(1,1) = coeff(1)
+% matCOEFF(2,2) = coeff(2)
 
-vecR = 4*pi.*dot(matUINF, matDVECT(:,:,3), 2);
-coeff = matD\vecR
-
-matCOEFF(1,4) = coeff(1)
-matCOEFF(2,2) = coeff(2)
-
+matCOEFF(1,:) = [1 0 0];
+matCOEFF(2,:) = [1 0 0];
 
 %% Plot
 

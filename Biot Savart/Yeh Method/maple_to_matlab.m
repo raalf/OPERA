@@ -1,7 +1,7 @@
-clc
+% clc
 clear
 
-fcn = 'J5'
+fcn = 'yeh_ip5'
 str = fileread([fcn, '/', fcn, '_in.txt']);
 
 k = regexp(str,'[\r]');

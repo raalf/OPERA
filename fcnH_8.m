@@ -1,0 +1,22 @@
+function I = fcnH_8(x_m, y_m, C, D_TE, E, G, xi_1, xi_3)
+xi = [xi_1 xi_3];
+t1 = C .^ 2;
+t10 = asinh(0.1e1 ./ (C .* x_m + D_TE - y_m) .* (xi .* t1 + (-y_m + D_TE) .* C + xi - x_m));
+t12 = (E .^ 2);
+t14 = sqrt((t12 + 1));
+t16 = E .* xi + G;
+t18 = xi .^ 2;
+t22 = x_m .^ 2;
+t25 = y_m .^ 2;
+t27 = sqrt(t18 .* t12 - 0.2e1 .* y_m .* t16 - 0.2e1 .* x_m .* xi + t18 + t22 + t25);
+t30 = atanh(0.1e1 ./ t27 .* (t16 - y_m));
+t32 = sqrt(t1 + 0.1e1);
+t35 = C .* xi;
+t37 = D_TE .^ 2;
+t45 = (-x_m + xi) .^ 2;
+t47 = sqrt(t37 + D_TE .* (0.2e1 .* t35 - 0.2e1 .* y_m) + t25 - 0.2e1 .* y_m .* t35 + t18 .* t1 + t45);
+t50 = atanh(0.1e1 ./ t47 .* (t35 + D_TE - y_m));
+t60 = asinh((-G - E .* y_m + xi .* t12 - x_m + xi) ./ (E .* x_m + G - y_m));
+tm = 0.1e1 ./ t14 ./ t32 .* (t14 .* t10 .* C - t32 .* t60 .* E + t14 .* t32 .* t30 - t14 .* t32 .* t50);
+I = tm(:,2) - tm(:,1);
+end

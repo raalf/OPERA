@@ -57,10 +57,12 @@ matD = [king_kong(:,4) king_kong(:,8)]
 vecR = 4*pi.*dot(matUINF, matDVECT(:,:,3), 2);
 coeff = matD\vecR
 
-matCOEFF(1,4) = coeff(1)
-matCOEFF(2,2) = coeff(2)
+% matCOEFF(1,4) = coeff(1)
+% matCOEFF(2,2) = coeff(1)
 
-
+matUINF = matUINF.*0
+matCOEFF(1,:) = [0 0 0 1 0 0];
+matCOEFF(2,:) = [0 0 0 0 0 0];
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
@@ -107,7 +109,7 @@ granularity = 0.25;
 y = -.625:granularity:.625;
 z = -.5:granularity:.5;
 x = -.5:granularity:1.5;
-% z(z==0) = [];
+z(z==0) = [];
 
 % granularity = 0.25;
 % y = -.75:granularity:0.75;

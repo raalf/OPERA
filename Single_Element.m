@@ -26,7 +26,7 @@ matPOINTS(:,:,3) = [1 -0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [0 1.1304 0 0 0 0 ];
+matCOEFF = [-1 1 0 0 0 0 ];
 % matCOEFF = [5.3047    0.0219    5.8048   -0.0268   -0.8324   -5.0658];
 % matCOEFF = [-4.0788    1.5006   -2.0544    3.6226   -2.2158   -1.0943];
 
@@ -78,7 +78,7 @@ granularity = 0.25;
 y = -.625:granularity:.625;
 z = -.5:granularity:.5;
 x = -.5:granularity:1.5;
-% z(z==0) = [];
+z(z==0) = [];
 
 % granularity = 0.25;
 % y = -.75:granularity:0.75;
@@ -103,7 +103,8 @@ x = -.5:granularity:1.5;
 
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-fpg = [fpg; matCENTER];
+
+% fpg = [fpg; matCENTER];
 % fpg = matCENTER 
 % fpg = [0.5 0.5 0]
 % fpg = [-1.25 2.25 1.5; -1.0 2.25 1.5];

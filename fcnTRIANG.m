@@ -49,7 +49,8 @@ DNORM = -faceNormal(TR);
 % matDVE(:,:,2) = faceNormal(TR); % Normal
 % matCENTER = incenter(TR); % incenter of triangle
 matCENTER = (matVLST(matDVE(:,1),:) + matVLST(matDVE(:,2),:) + matVLST(matDVE(:,3),:))./3;
-matCONTROL = matVLST(matDVE(:,2),:);
+% matCONTROL = matVLST(matDVE(:,2),:);
+matCONTROL = matCENTER;
 
 %% Finding edge attachement matrix (which DVEs share which edge)
 

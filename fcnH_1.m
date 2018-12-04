@@ -44,10 +44,10 @@ function I = fcnH_1(M, N, S, T, u, alpha, F1, F2)
 %%
 len = size(N,1);
 I = nan(len,1);
-tol = 8e-4;
+tol = 1e-14;
 for q = 1:len
     num_eqn = @(F) (N(q) + M(q).*F)./((F.^2 + alpha(q)).*sqrt(S(q).*F.^2 + T(q).*F + u(q)));
-    if sign(F1(q)) ~= sign(F2(q)) && abs(alpha(q)) < 1e-5
+    if sign(F1(q)) ~= sign(F2(q)) && abs(alpha(q)) < tol
         I(q) = integral(num_eqn, F1(q), sign(F1(q)).*tol) + integral(num_eqn, sign(F2(q)).*tol, F2(q));
     else 
         I(q) = integral(num_eqn, F1(q), F2(q));

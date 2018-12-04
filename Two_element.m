@@ -62,7 +62,7 @@ coeff = matD\vecR
 
 matUINF = matUINF.*0
 matCOEFF(1,:) = [0 0 0 1 0 0];
-matCOEFF(2,:) = [0 0 0 0 0 0];
+matCOEFF(2,:) = [0 1 0 0 0 0];
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
@@ -109,7 +109,7 @@ granularity = 0.25;
 y = -.625:granularity:.625;
 z = -.5:granularity:.5;
 x = -.5:granularity:1.5;
-z(z==0) = [];
+% z(z==0) = [];
 
 % granularity = 0.25;
 % y = -.75:granularity:0.75;

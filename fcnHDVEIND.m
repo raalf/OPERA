@@ -31,7 +31,11 @@ te_eta = E.*x_m + D_TE;
 margin_edge = 1e-10;
 margin_on_element = 1e-10;
 idx_on_element = y_m >= te_eta - margin_edge & y_m <= le_eta + margin_edge & x_m >= xi_1 - margin_edge & x_m <= xi_3 + margin_edge & abs(z_m) <= margin_on_element;
-
+idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_1 - margin_edge <= x_m & x_m <= xi_3 + margin_edge)) | ...
+                (abs(y_m - le_eta) < margin_edge & (xi_1 - margin_edge <= x_m & x_m <= xi_3 + margin_edge)) | ...
+                (abs(x_m - xi_1) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge)) | ...
+                (abs(x_m - xi_3) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge));
+            
 %% Calculating Influence
 alpha = z_m.^2;
 N_A = -C.*x_m - D_LE + y_m;
@@ -82,7 +86,7 @@ J_5 = -J_5;
 %% J_6
 J_6 = -((C.*y_m - x_m).*H_2_LE + H_6_LE + fcnH_1((-C.*x_m.*y_m + N_A.*y_m), (-C.*alpha.*y_m - N_A.*x_m.*y_m), S_A, T_A, u_A, alpha, F1, F2)) + ...
        ((E.*y_m - x_m).*H_2_TE + H_6_TE + fcnH_1((-E.*x_m.*y_m + N_B.*y_m), (-E.*alpha.*y_m - N_B.*x_m.*y_m), S_B, T_B, u_B, alpha, F1, F2));
-
+J_6 = -J_6;
 %%
 % J_1 = J_1.*0;
 % J_2 = J_2.*0;
@@ -109,7 +113,7 @@ J_6 = -((C.*y_m - x_m).*H_2_LE + H_6_LE + fcnH_1((-C.*x_m.*y_m + N_A.*y_m), (-C.
 % Compiling
 infl_new = zeros(3,6,len);
 
-infl_new(1,3,:) = reshape(J_2.*z_m,1,1,[]);
+infl_new(1,3,:) = reshape(-J_2.*z_m,1,1,[]);
 infl_new(1,4,:) = reshape(J_1.*z_m,1,1,[]);
 infl_new(1,5,:) = reshape(J_4.*z_m,1,1,[]);
 
@@ -119,7 +123,7 @@ infl_new(2,5,:) = reshape(J_2.*z_m,1,1,[]);
 
 infl_new(3,1,:) = (reshape(-J_4.*y_m ,1,1,[]) + reshape(J_5,1,1,[]));
 infl_new(3,2,:) = (reshape(-J_1.*y_m ,1,1,[]) + reshape(J_4,1,1,[]));
-infl_new(3,3,:) = (reshape(-J_2.*x_m,1,1,[]) + reshape(J_3,1,1,[]));
+infl_new(3,3,:) = (reshape(J_2.*x_m,1,1,[]) + reshape(-J_3,1,1,[]));
 infl_new(3,4,:) = (reshape(-J_1.*x_m,1,1,[]) + reshape(J_2,1,1,[]));
 infl_new(3,5,:) = (reshape(-J_2.*y_m,1,1,[]) - reshape(J_4.*x_m,1,1,[]) +  reshape(2.*J_6,1,1,[]));
 

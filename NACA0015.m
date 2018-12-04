@@ -12,8 +12,8 @@ clc
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_high.stl');
 % 
-% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
-matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
+matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
 
 % R = rotz(90);

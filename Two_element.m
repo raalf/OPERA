@@ -52,7 +52,8 @@ rows = [1:len]';
 
 king_kong = zeros(len, valNELE*6);
 king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
-matD = [king_kong(:,4) king_kong(:,8)]
+% matD = [king_kong(:,4) king_kong(:,8)]
+matD = king_kong;
 
 vecR = 4*pi.*dot(matUINF, matDVECT(:,:,3), 2);
 coeff = matD\vecR
@@ -61,8 +62,11 @@ coeff = matD\vecR
 % matCOEFF(2,2) = coeff(1)
 
 matUINF = matUINF.*0
-matCOEFF(1,:) = [0 0 0 1 0 0];
-matCOEFF(2,:) = [0 1 0 0 0 0];
+% matCOEFF(1,:) = [0 0 -3 1 0 0];
+% matCOEFF(2,:) = [1 -1 0 0 0 0];
+
+% matCOEFF(1,:) = [1 0 0 0 0 0];
+% matCOEFF(2,:) = [0 0 1 0 0 0];
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');

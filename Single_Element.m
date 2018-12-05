@@ -26,7 +26,7 @@ matPOINTS(:,:,3) = [1 -0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-matCOEFF = [0 0 1 0 0 0 ];
+matCOEFF = [0 0 0 0 1 0 ];
 % matCOEFF = [5.3047    0.0219    5.8048   -0.0268   -0.8324   -5.0658];
 % matCOEFF = [-4.0788    1.5006   -2.0544    3.6226   -2.2158   -1.0943];
 
@@ -71,7 +71,7 @@ x = zeros(len,1) + 0.8;
 granularity = 0.25;
 y = -.5:granularity:1.5;
 z = -1:granularity:1;
-x = -2.5:granularity:1.5;
+x = -0.5:granularity:1.5;
 z(z==0) = [];
 
 % granularity = 0.25;

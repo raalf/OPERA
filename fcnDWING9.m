@@ -69,7 +69,6 @@ vort2 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, ma
 vort3 = fcnDVORTEDGE(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valNELE, matPLEX, matEATT, [-e1vec(:,2) e1vec(:,1)], [-e2vec(:,2) e2vec(:,1)]);
 vort4 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valNELE, matPLEX, matEATT, [-e1vec(:,2) e1vec(:,1)], [-e2vec(:,2) e2vec(:,1)]);
 
-
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
 % Circulation is set to zero at the wing tips
@@ -171,6 +170,7 @@ king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*
 
 %% Piecing together D-matrix
 D = [circ; circ1; circ2; vort1; vort2; vort3; vort4; vort5; vort6; vort_tip1; vort_tip2; circ_tip; king_kong];
+% D = [circ; circ1; circ2; vort1; vort2; vort3; vort4; vort5; vort6; vort_tip1; vort_tip2; circ_tip; king_kong];
 
 end
 

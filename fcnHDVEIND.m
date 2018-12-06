@@ -113,7 +113,7 @@ J_6 = -((C.*y_m - x_m).*H_2_LE + H_6_LE + fcnH_1((-C.*x_m.*y_m + N_A.*y_m), (-C.
 % Compiling
 infl_new = zeros(3,6,len);
 
-infl_new(1,3,:) = reshape(-J_2.*z_m,1,1,[]);
+infl_new(1,3,:) = reshape(J_2.*z_m,1,1,[]);
 infl_new(1,4,:) = reshape(J_1.*z_m,1,1,[]);
 infl_new(1,5,:) = reshape(J_4.*z_m,1,1,[]);
 
@@ -123,7 +123,7 @@ infl_new(2,5,:) = reshape(-J_2.*z_m,1,1,[]);
 
 infl_new(3,1,:) = (reshape(J_4.*y_m ,1,1,[]) + reshape(J_5,1,1,[]));
 infl_new(3,2,:) = (reshape(J_1.*y_m ,1,1,[]) + reshape(-J_4,1,1,[]));
-infl_new(3,3,:) = (reshape(J_2.*x_m,1,1,[]) + reshape(J_3,1,1,[]));
+infl_new(3,3,:) = (reshape(-J_2.*x_m,1,1,[]) + reshape(-J_3,1,1,[]));
 infl_new(3,4,:) = (reshape(-J_1.*x_m,1,1,[]) + reshape(-J_2,1,1,[]));
 infl_new(3,5,:) = (reshape(-J_2.*y_m,1,1,[]) - reshape(J_4.*x_m,1,1,[]) +  reshape(2.*-J_6,1,1,[]));
 

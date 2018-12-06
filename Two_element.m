@@ -23,50 +23,26 @@ matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 %% Coefficients
 matCOEFF = zeros(2,6);
 
-%% Kinematic conditions at vertices
-% Flow tangency is to be enforced at all control points on the surface HDVEs
-% In the D-Matrix, dot (a1,a2,b1,b2,c3) of our influencing HDVE with the normal of the point we are influencing on
-
-% Points we are influencing
-fpg = matCENTER;
-normals = matDVECT(:,:,3);
-
-% fpg = matCENTER + (matDVECT(:,:,3)./10000).*-1;
-
-% List of DVEs we are influencing from (one for each of the above fieldpoints)
-len = length(fpg(:,1));
-dvenum = reshape(repmat(1:valNELE,len,1),[],1);
-dvetype = ones(size(dvenum));
-
-fpg = repmat(fpg,valNELE,1);
-
-[infl_glob] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL);
-
-normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
-
-% Dotting a1, a2, b1, b2, c3 with the normals of the field points
-temp60 = [dot(permute(infl_glob(:,1,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,2,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,3,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,4,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,5,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,6,:),[3 1 2]),normals,2)];
-
-% Reshaping and inserting into the bottom of the D-Matrix
-rows = [1:len]';
-
-king_kong = zeros(len, valNELE*6);
-king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
-% matD = [king_kong(:,4) king_kong(:,8)]
-matD = king_kong;
+%% Boundary Conditions
+vecTE = 5;
+vecLE = 1;
+vecTEDVE = 2;
+vecSPANDIR = repmat([0 1 0],2,1);
+matD = fcnDWING9('2D', matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL);
 
 vecR = 4*pi.*dot(matUINF, matDVECT(:,:,3), 2);
-coeff = matD\vecR
+vecR = [zeros(size(matD,1) - 2, 1); vecR];
 
-% matCOEFF(1,4) = coeff(1)
-% matCOEFF(2,2) = coeff(1)
+[matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
 
-matUINF = matUINF.*0
-% matCOEFF(1,:) = [0 0 -3 1 0 0];
+% matCOEFF(2,2) = -matCOEFF(2,2)
+
+% matCOEFF(1,:) = [0 0 2.5 1 0 0];
 % matCOEFF(2,:) = [1 -1 0 0 0 0];
 
-% matCOEFF(1,:) = [1 0 0 0 0 0];
-% matCOEFF(2,:) = [0 0 1 0 0 0];
+% matCOEFF(1,:) = [0 0 0 0 0 0];
+% matCOEFF(2,:) = [0 0 0 0 0 0];
+
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
@@ -113,7 +89,7 @@ granularity = 0.25;
 y = -.625:granularity:.625;
 z = -.5:granularity:.5;
 x = -.5:granularity:1.5;
-% z(z==0) = [];
+z(z==0) = [];
 
 % granularity = 0.25;
 % y = -.75:granularity:0.75;
@@ -147,7 +123,7 @@ fpg = [fpg; matCENTER];
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 
 q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
-% q_ind = s_ind;
+q_ind = s_ind;
 
 figure(1);
 hold on

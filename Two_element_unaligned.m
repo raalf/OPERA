@@ -11,23 +11,21 @@ valALPHA = 10;
 valBETA = 0;
 vecSYM = [];
 
-matPOINTS(:,:,1) = [0 -0.5 0; 0  0.5 0];
-matPOINTS(:,:,2) = [0  0.5 0; 1  0.5 0];
-matPOINTS(:,:,3) = [1 -0.5 0; 1 -0.5 0];
+matPOINTS(:,:,1) = [0 -0.5 0; 1  -0.5 0];
+matPOINTS(:,:,2) = [0  0.5 0; 0  0.5 0];
+matPOINTS(:,:,3) = [1 -0.5 0; 1 0.5 0];
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS);
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 
-%% Coefficients
-matCOEFF = zeros(2,6);
-
 %% Boundary Conditions
 vecTE = 5;
 vecLE = 1;
 vecTEDVE = 2;
 vecSPANDIR = repmat([0 1 0],2,1);
+vecSPANDIR = vecSPANDIR - (dot(vecSPANDIR, matDVECT(:,:,3),2)).*matDVECT(:,:,3);
 matD = fcnDWING9('2D', matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL);
 
 vecR = 4*pi.*dot(matUINF, matDVECT(:,:,3), 2);

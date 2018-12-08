@@ -1,50 +1,31 @@
 clear
 % clc
 
-%% Preamble
+strFILE = 'inputs/4dve.dat';
 
-strFILE = 'inputs/2dve.dat';
-
-% [~, strATYPE, vecSYM, ~, ~, ~, valALPHA, valBETA, ~, ~] = fcnOPREAD(strFILE);
+[matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 strATYPE = 'what';
 valALPHA = 10;
 valBETA = 0;
 vecSYM = [];
 
-matPOINTS(:,:,1) = [0 -0.5 0; 0  0.5 0];
-matPOINTS(:,:,2) = [0  0.5 0; 1  0.5 0];
-matPOINTS(:,:,3) = [1 -0.5 0; 1 -0.5 0];
-
-[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-    matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS);
+[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS);
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 
-%% Coefficients
-matCOEFF = zeros(2,6);
-
 %% Boundary Conditions
-vecTE = 5;
-vecLE = 1;
-vecTEDVE = 2;
-vecSPANDIR = repmat([0 1 0],2,1);
+vecTE = [8; 9];
+vecLE = [1; 3];
+vecTEDVE = [4; 2];
+vecSPANDIR = repmat([0 1 0],valNELE,1);
 matD = fcnDWING9('2D', matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL);
 
 vecR = 4*pi.*dot(matUINF, matDVECT(:,:,3), 2);
-vecR = [zeros(size(matD,1) - 2, 1); vecR];
+vecR = [zeros(size(matD,1) - valNELE, 1); vecR];
 
 [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
 
-% matCOEFF(2,2) = -matCOEFF(2,2)
-
-% matCOEFF(1,:) = [0 0 2.5 1 0];
-% matCOEFF(2,:) = [1 -1 0 0 0];
-
-% matCOEFF(1,:) = [0 0 0 0 0];
-% matCOEFF(2,:) = [0 0 0 0 0];
-
 %% Plot
-
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 10);
 % view([-30 17])
@@ -130,10 +111,3 @@ hold on
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 % scatter3(fpg(:,1), fpg(:,2), fpg(:,3),500,'xr')
 hold off
-
-
-
-
-
-
-

@@ -8,7 +8,7 @@ for i = 1:valNELE
 
 %     % points(:,2) is eta in local, points(:,1) is xsi
 %     circ = 0.5.*matCOEFF(i,1).*points(:,2).^2 + matCOEFF(i,2).*points(:,2) + 0.5.*matCOEFF(i,3).*points(:,1).^2 + matCOEFF(i,4).*points(:,1) + matCOEFF(i,5).*points(:,1).*points(:,2) + matCOEFF(i,6);
-    circ = sum([0.5.*points(:,2).^2 points(:,2) 0.5.*points(:,1).^2 points(:,1) points(:,1).*points(:,2) ones(size(points(:,1)))].*matCOEFF(i,:),2);
+    circ = sum([0.5.*points(:,2).^2 points(:,2) 0.5.*points(:,1).^2 points(:,1) ones(size(points(:,1)))].*matCOEFF(i,:),2);
 %     vort = [matCOEFF(i,3).*points(:,1) + matCOEFF(i,4) + matCOEFF(i,5).*points(:,2), matCOEFF(i,1).*points(:,2) + matCOEFF(i,2) + matCOEFF(i,5).*points(:,1), points(:,2).*0];
     
     len = size(circ,1);

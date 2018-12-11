@@ -4,7 +4,7 @@ clc
 % profile -memory on
 
 %% Geometry
-% matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_low.stl');
+matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_low.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/naca0015_2d_high.stl');
 
@@ -12,7 +12,7 @@ clc
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_high.stl');
 % 
-matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
+% matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_low.stl');
 % matPOINTS = fcnSTLREAD('CAD Geom/circle_2d_even_half_veryhigh.stl');
 
@@ -40,7 +40,8 @@ matUINF = repmat([1 0 0], valNELE, 1);
 %% D-Matrix Creation
 vecTEDVE = [];
 vecLEDVE = [];
-vecSPANDIR = [];
+vecSPANDIR = repmat([0 1 0],valNELE,1);
+vecSPANDIR = vecSPANDIR - (dot(vecSPANDIR, matDVECT(:,:,3),2)).*matDVECT(:,:,3);
 vecTE = [];
 vecLE = [];
 

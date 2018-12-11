@@ -22,10 +22,8 @@ xi_in_ngbr = xi_in_ngbr./(sqrt(sum(xi_in_ngbr.^2, 2)));
 theta = acos(dot(xi_in_ngbr, repmat([1 0 0], size(xi_in_ngbr,1), 1), 2));
 
 vort = [];
-% vort = fcnDVORTEDGE(idx, repmat(vnum_mid,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER);
-
 % vort = [fcnDVORTEDGE(idx, repmat(vnum_a,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
-        fcnDVORTEDGE(idx, repmat(vnum_mid,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
+%         fcnDVORTEDGE(idx, repmat(vnum_mid,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
 %         fcnDVORTEDGE(idx, repmat(vnum_b,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
 
 %% Circulation equations at wing tip (and LE?)
@@ -56,15 +54,28 @@ elseif strcmp(strATYPE,'2D') == 1
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
     idx(vecTE) = 0;
     idx(vecLE) = 0;
+    
+    dvenum = [1:valNELE]';
+    theta = acos(dot(matDVECT(dvenum,:,2), vecSPANDIR(dvenum,:),2));
+        
+    pts(:,:,1) = matCENTER(dvenum,:) + vecSPANDIR(dvenum,:);
+    pts(:,:,2) = matCENTER(dvenum,:) + matDVECT(dvenum,:,2);
+    pts(:,:,3) = matCENTER(dvenum,:) + matDVECT(dvenum,:,1);
+%     vort_tip = [fcnDVORTTE(idx, pts(:,:,1), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
+%                 fcnDVORTTE(idx, pts(:,:,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
+%                 fcnDVORTTE(idx, pts(:,:,3), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
+    
+    vort_tip = [fcnDVORTTE(idx, pts(:,:,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
+                fcnDVORTTE(idx, pts(:,:,3), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
 
-    dvenum = repmat(nonzeros(matEATT(idx,:)), 1, 2);
-    vnum_a = (matVLST(matELST(idx,1),:) + matVLST(matELST(idx,2),:))./2;  
-%     vnum_b = vnum_a + (dot(vecSPANDIR(dvenum(:,1),:), matCENTER(dvenum(:,1),:) - vnum_a,2)./(sqrt(sum(vecSPANDIR(dvenum(:,1),:).^2,2))).^2).*vecSPANDIR(dvenum(:,1),:);
-    vnum_b = vnum_a + vecSPANDIR(dvenum(:,1),:);
-    vnum_mid = (vnum_a + vnum_b)./2;
-       
-    vort_tip = [fcnDCIRC(idx, cat(3, vnum_a, vnum_mid), dvenum, valNELE, matROTANG, matEATT, matCONTROL); ...
-                fcnDCIRC(idx, cat(3, vnum_mid, vnum_b), dvenum, valNELE, matROTANG, matEATT, matCONTROL)];     
+%     dvenum = repmat(nonzeros(matEATT(idx,:)), 1, 2);
+%     vnum_a = (matVLST(matELST(idx,1),:) + matVLST(matELST(idx,2),:))./2;  
+% %     vnum_b = vnum_a + (dot(vecSPANDIR(dvenum(:,1),:), matCENTER(dvenum(:,1),:) - vnum_a,2)./(sqrt(sum(vecSPANDIR(dvenum(:,1),:).^2,2))).^2).*vecSPANDIR(dvenum(:,1),:);
+%     vnum_b = vnum_a + vecSPANDIR(dvenum(:,1),:);
+%     vnum_mid = (vnum_a + vnum_b)./2;
+%        
+%     vort_tip = [fcnDCIRC(idx, cat(3, vnum_a, vnum_mid), dvenum, valNELE, matROTANG, matEATT, matCONTROL); ...
+%                 fcnDCIRC(idx, cat(3, vnum_mid, vnum_b), dvenum, valNELE, matROTANG, matEATT, matCONTROL)];     
 end
 
 %% Trailing edge vorticity

@@ -11,9 +11,9 @@ valALPHA = 10;
 valBETA = 0;
 vecSYM = [];
 
-matPOINTS(:,:,1) = [0 -0.5 0; 1  -0.5 0];
-matPOINTS(:,:,2) = [0  0.5 0; 0  0.5 0];
-matPOINTS(:,:,3) = [1 -0.5 0; 1 0.5 0];
+matPOINTS(:,:,1) = [1 -0.5 0; 1  -0.5 0];
+matPOINTS(:,:,2) = [0 -0.5 0; 0  0.5 0];
+matPOINTS(:,:,3) = [0  0.5 0; 1 0.5 0];
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS);

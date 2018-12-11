@@ -56,7 +56,7 @@ elseif strcmp(strATYPE,'2D') == 1
     idx(vecLE) = 0;
     
     dvenum = [1:valNELE]';
-    theta = acos(dot(matDVECT(dvenum,:,2), vecSPANDIR(dvenum,:),2));
+    theta = acos(dot(matDVECT(dvenum,:,1), vecSPANDIR(dvenum,:),2));
         
     pts(:,:,1) = matCENTER(dvenum,:) + vecSPANDIR(dvenum,:);
     pts(:,:,2) = matCENTER(dvenum,:) + matDVECT(dvenum,:,2);
@@ -65,7 +65,8 @@ elseif strcmp(strATYPE,'2D') == 1
 %                 fcnDVORTTE(idx, pts(:,:,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
 %                 fcnDVORTTE(idx, pts(:,:,3), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
     
-    vort_tip = [fcnDVORTTE(idx, pts(:,:,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
+    vort_tip = [fcnDVORTTE(idx, pts(:,:,1), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
+%                 fcnDVORTTE(idx, pts(:,:,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
                 fcnDVORTTE(idx, pts(:,:,3), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
 
 %     dvenum = repmat(nonzeros(matEATT(idx,:)), 1, 2);

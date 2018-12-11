@@ -106,7 +106,7 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = matCENTER 
 % fpg = [0.5 0.5 0]
 % fpg = [-1.25 2.25 1.5; -1.0 2.25 1.5];
-fpg = [0 0 0];
+fpg = [1 0 0];
 
 [s_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 

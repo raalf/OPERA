@@ -5,11 +5,11 @@ nedg = size(pts,1);
 pts_one = fcnGLOBSTAR(pts(:,:,1) - matCENTER(dvenum(:,1),:), matROTANG(dvenum(:,1),:));
 
 a2 = ones(nedg,2);
-a1 = pts_one(:,2);
-
+% a1 = pts_one(:,2);
+a1 = a2;
 b2 = ones(nedg,2);
-b1 = pts_one(:,1);
-
+% b1 = pts_one(:,1);
+b1 = b2;
 zer = zeros(nedg,1);
 
 dgamma1 = [zer, a2(:,1).*cos(theta), zer, b2(:,1).*sin(theta), zer];

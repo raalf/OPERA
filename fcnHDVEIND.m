@@ -19,6 +19,14 @@ eta_1 = permute(matPLEX(1,2,dvenum),[3 2 1]);
 eta_2 = permute(matPLEX(2,2,dvenum),[3 2 1]);
 eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 
+idx_flp = xi_2 == xi_3;
+xi_tmp(idx_flp) = xi_3(idx_flp);
+xi_3(idx_flp) = xi_1(idx_flp);
+xi_1(idx_flp) = xi_tmp(idx_flp);
+eta_tmp(idx_flp) = eta_3(idx_flp);
+eta_3(idx_flp) = eta_1(idx_flp);
+eta_1(idx_flp) = eta_tmp(idx_flp);
+
 % Checking which elements are on the element
 C = (eta_3 - eta_2)./(xi_3 - xi_2);
 D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
@@ -121,6 +129,8 @@ infl_new(3,3,:) = -(reshape(-J_2.*x_m,1,1,[]) + reshape(-J_3,1,1,[]));
 infl_new(3,4,:) = (reshape(-J_1.*x_m,1,1,[]) + reshape(-J_2,1,1,[]));
 
 infl_loc = real(infl_new);
+
+infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
 
 %% Transforming and Outputting
 dvenum = reshape(repmat(dvenum,1,5,1)',[],1,1);

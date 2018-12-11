@@ -15,9 +15,13 @@ I = nan(len,1);
 tol = 1e-14;
 for q = 1:len
     num_eqn = @(F) asinh((N(q) + M(q).*F)./sqrt((F.^2 + alpha(q))));
-    if sign(F1(q)) ~= sign(F2(q)) && abs(alpha(q)) < tol
+    if sign(F1(q)) ~= sign(F2(q)) && abs(alpha(q)) < tol && abs(F2(q)) > 0 && abs(F1(q)) > 0
         I(q) = integral(num_eqn, F1(q), sign(F1(q)).*tol) + integral(num_eqn, sign(F2(q)).*tol, F2(q));
-    else
+    elseif sign(F1(q)) ~= sign(F2(q)) && abs(alpha(q)) < tol && abs(F2(q)) < tol
+        I(q) = integral(num_eqn, F1(q), sign(F1(q)).*tol);
+    elseif sign(F1(q)) ~= sign(F2(q)) && abs(alpha(q)) < tol && abs(F1(q)) < tol
+        I(q) = integral(num_eqn, sign(F2(q)).*tol, F2(q));
+    else 
         I(q) = integral(num_eqn, F1(q), F2(q));
     end
 end

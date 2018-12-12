@@ -1,4 +1,4 @@
-function [infl_glob] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL)
+function [infl_loc] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL)
 warning('on')
 cutoff = 1e-14;
 
@@ -19,7 +19,7 @@ eta_1 = permute(matPLEX(1,2,dvenum),[3 2 1]);
 eta_2 = permute(matPLEX(2,2,dvenum),[3 2 1]);
 eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 
-idx_flp = xi_2 == xi_3;
+idx_flp = abs(xi_2 - xi_3) < 1e-3;
 xi_tmp(idx_flp) = xi_3(idx_flp);
 xi_3(idx_flp) = xi_1(idx_flp);
 xi_1(idx_flp) = xi_tmp(idx_flp);
@@ -36,13 +36,15 @@ D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
 le_eta = C.*x_m + D_LE;
 te_eta = E.*x_m + D_TE;
 
-margin_edge = 1e-10;
+margin_edge = 1e-5;
 margin_on_element = 1e-10;
-idx_on_element = y_m >= te_eta - margin_edge & y_m <= le_eta + margin_edge & x_m >= xi_1 - margin_edge & x_m <= xi_3 + margin_edge & abs(z_m) <= margin_on_element;
-idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_1 - margin_edge <= x_m & x_m <= xi_3 + margin_edge)) | ...
-                (abs(y_m - le_eta) < margin_edge & (xi_1 - margin_edge <= x_m & x_m <= xi_3 + margin_edge)) | ...
-                (abs(x_m - xi_1) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge)) | ...
-                (abs(x_m - xi_3) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge));
+xi_left = min([xi_1, xi_3],[],2);
+xi_right = max([xi_1, xi_3],[],2);
+idx_on_element = y_m >= te_eta - margin_edge & y_m <= le_eta + margin_edge & x_m >= xi_left - margin_edge & x_m <= xi_right + margin_edge & abs(z_m) <= margin_on_element;
+idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m & x_m <= xi_right + margin_edge) & abs(z_m) <= margin_on_element) | ...
+                (abs(y_m - le_eta) < margin_edge & (xi_left - margin_edge <= x_m & x_m <= xi_right + margin_edge) & abs(z_m) <= margin_on_element) | ...
+                (abs(x_m - xi_left) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element) | ...
+                (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
             
 %% Calculating Influence
 alpha = z_m.^2;
@@ -132,13 +134,6 @@ infl_loc = real(infl_new);
 
 infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
 
-%% Transforming and Outputting
-dvenum = reshape(repmat(dvenum,1,5,1)',[],1,1);
-infl_tot = fcnSTARGLOB(reshape(permute(infl_loc,[2 3 1]),[],3,1), matROTANG(dvenum,:));
-
-infl_tot(isnan(infl_tot)) = 0;
-infl_tot(isinf(infl_tot)) = 0;
-
-infl_glob = reshape(infl_tot',3,5,[]);
+infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*nan;
 
 end

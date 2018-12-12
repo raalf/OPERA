@@ -14,47 +14,36 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 %
-% strFILE = 'inputs/simple_wing2.dat';
-% strFILE = 'inputs/KORDY30.dat';
-% strFILE = 'inputs/standard_cirrus.dat';
+strFILE = 'inputs/simple_wing2d.dat';
 % strFILE = 'inputs/2dve.dat';
-% strFILE = 'inputs/4dve.dat';
-% strFILE = 'inputs/4dve_nosym.dat';
-% strFILE = 'inputs/nonplanar.dat';
 
-% [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
+[matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
-matPOINTS = fcnSTLREAD('CAD Geom/master_airscrew.stl');
-[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG] = fcnTRIANG(matPOINTS);
+% matPOINTS = fcnSTLREAD('CAD Geom/master_airscrew.stl');
+[TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS);
 
-flagRELAX = 0
-valMAXTIME = 0
-valDENSITY = 1.225
+flagRELAX = 0;
+valMAXTIME = 0;
+valDENSITY = 1.225;
 
-% vecUINF = fcnUINFWING(valALPHA, 0);
-% matUINF = repmat(vecUINF,valNELE,1);
-% 
-% if ~isempty(matTEPOINTS) && ~isempty(matLEPOINTS)
-%     [vecTE, vecLE] = fcnTELE(matTEPOINTS, matLEPOINTS, matVLST, matELST);
-% else
-%     vecTE = [];
-%     vecLE = [];
-% end
+matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 
-[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl')
+[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
 view([33, 28])
 
 %% D-Matrix Creation
 vecTEDVE = [];
-vecSPANDIR = [];
-
+vecSPANDIR = repmat([0 1 0],valNELE,1);
+vecSPANDIR = vecSPANDIR - (dot(vecSPANDIR, matDVECT(:,:,3),2)).*matDVECT(:,:,3);
+vecLE = [];
+vecTE = [];
 vecLEDVE = nonzeros(sort(matEATT(vecLE,:),2,'descend'));
 if ~isempty(vecTE)
     vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend')); % A vector of trailing edge HDVEs, which corresponds to vecTE edges
     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,:)); % Spanwise direction for each HDVE (may change with rotor stuff)
 end
 
-matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE);
+matD = fcnDWING9(strATYPE{1}, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL);
 
 valDLEN = length(matD);
 
@@ -110,70 +99,84 @@ for valTIMESTEP = 1:valMAXTIME
         % Rebuild wing resultant
         vecR = fcnRWING(valDLEN, valTIMESTEP, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
         matCOEFF = fcnSOLVED(matD, vecR, valNELE);
-        
-        %         % Resolving wake D-matrix (steady)
-        %         vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
-        %         vecWLE = matWEIDX(vecWLEDVE,1);
-        %         %         matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX);
-        %         %         matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1);
-        
-%         if flagRELAX == 1 && valTIMESTEP > 2
-%             [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG] = ...
-%                 fcnRELAX(vecUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
-%                 matROTANG, matWROTANG, matCENTER, matWCENTER);
-%             
-%             %                     % Resolving wake D-matrix (steady)
-%             %                     vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
-%             %                     vecWLE = matWEIDX(vecWLEDVE,1);
-%             %                     matNEWWAKECOEFF = fcnDWAKENEW(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX);
-%             %                     matWCOEFF = repmat(matNEWWAKECOEFF,valTIMESTEP,1);
-%             %
-%             %                     % Rebuild wing resultant
-%             %                     vecR = fcnRWING(valDLEN, valTIMESTEP, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
-%             %                     matCOEFF = fcnSOLVED(matD, vecR, valNELE);
-%             
-%         end
+       
     end
-    
-    %% forces
-%     for i = 1:valNELE
-%         corners = fcnGLOBSTAR(matVLST(matDVE(i,:),:) - matCENTER(i,:), [repmat(matROTANG(i,1),3,1) repmat(matROTANG(i,2),3,1) repmat(matROTANG(i,3),3,1)]);
-%         points = fcnPOLYGRID(corners(:,1), corners(:,2), 20);
-%         circ = sum([0.5.*points(:,2).^2 points(:,2) 0.5.*points(:,1).^2 points(:,1) points(:,1).*points(:,2) ones(size(points(:,1)))].*matCOEFF(i,:),2);
-%         
-%         xi_1 = permute(matPLEX(1,1,i),[3 2 1]);
-%         xi_2 = permute(matPLEX(2,1,i),[3 2 1]);
-%         xi_3 = permute(matPLEX(3,1,i),[3 2 1]);
-% 
-%         eta_1 = permute(matPLEX(1,2,i),[3 2 1]);
-%         eta_2 = permute(matPLEX(2,2,i),[3 2 1]);
-%         eta_3 = permute(matPLEX(3,2,i),[3 2 1]);
-%         
-%         le_eta = @(x) eta_2 + (x - xi_2).*((eta_3 - eta_2)./(xi_3 - xi_2));
-%         te_eta = @(x) eta_1 + (x - xi_1).*((eta_3 - eta_1)./(xi_3 - xi_1));
-%         
-%         f_circ = scatteredInterpolant(points(:,1), points(:,2), circ, 'linear');
-% %         circ_total = integral2(@(x,y) f_circ(x,y).*-valDENSITY.*norm(matUINF(i,:)), xi_1, xi_3, te_eta, le_eta);
-%         circ_total(valTIMESTEP, i) = integral2(@(x,y) f_circ(x,y).*-valDENSITY.*norm(matUINF(i,:)), xi_1, xi_3, te_eta, le_eta);
-% 
-%         
-%         
-%     end
-        
+         
 end
-
 
 %% Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 20);
+% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 1);
 
+fpg = matCENTER;
+% fpg = [0.517421410544609,0.0333333333333333,0.497066892276738;0.482578589455391,0.0333333333333333,-0.497066892276738;0.482578589455391,0.0166666666666667,0.497066892276738;0.517421410544609,0.0166666666666667,-0.497066892276738]
+
+% fpg = [0.4826 0.01667 0.4971]
+q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
+q_ind = q_inds + matUINF;
+
+% q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
+% q_ind = -fcnSTARGLOB([zeros(size(matCOEFF(:,2),1),1) matCOEFF(:,2)./8 zeros(size(matCOEFF(:,2),1),1)], matROTANG);
+
+fcolor = sqrt(sum(q_ind.^2,2));
+fcolor = 1 - fcolor.^(2);
+
+% fcolor = [matCOEFF(:,2)./2 zeros(size(matCOEFF(:,2),1),2)] + matUINF;
+% fcolor = sqrt(sum(fcolor.^2,2));
+% velocities = [matCOEFF(:,2), matCOEFF(:,4), matCOEFF(:,1).*0];
+% fcolor = 1 - (sqrt(sum(velocities.^2,2)) + 1).^2;
+
+hold on
+p = patch('Faces',matDVE(:,:,1),'Vertices',matVLST,'FaceVertexCData',fcolor,'LineWidth',2);
+p.FaceColor = 'flat';
+quiver3(fpg(:,1),fpg(:,2),fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'g')
+quiver3(fpg(:,1),fpg(:,2),fpg(:,3), q_inds(:,1), q_inds(:,2), q_inds(:,3), 'r')
+hold off
+colorbar;
+grid on
+box on
+axis equal
+hold off
+colorbar;
 if valTIMESTEP > 0
     [hFig1] = fcnPLOTWAKE(1, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), vecUINF, matWROTANG, 'b', 20);
 end
-
 view([33, 28])
 toc
+
+% granularity = .1;
+% x = -0.5:granularity:1.5;
+% % y = -3:granularity:3;
+% y = -1.5:granularity:1.5;
+% % y = 0;
+% z = -0.2:granularity:0.2;
+% [X,Y,Z] = meshgrid(x,y,z);
+% y = x.*0 + 0.025;
+% 
+% s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
+% q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
+% Xq = reshape(q_ind(:,1), size(X));
+% Yq = reshape(q_ind(:,2), size(Y));
+% Zq = reshape(q_ind(:,3), size(Z));
+% 
+% [Xs,Ys,Zs] = meshgrid(-0.5,y,z);
+% hold on
+% streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
+% % quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
+% hold off
+
+hFig20 = figure(20);
+clf(20);
+scatter(matCENTER(:,1), fcolor,'xr')
+hold on
+theta = linspace(0, pi, 100);
+plot(((1 - cos(theta)))./2, 1 - 4.*sin(theta).^2,'--ok')
+hold off
+set(gca,'Ydir','reverse')
+grid minor
+box on
+axis tight
 
 
 

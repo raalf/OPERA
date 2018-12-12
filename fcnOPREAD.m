@@ -16,6 +16,7 @@ while(ch~='=');
     ch = fscanf(fp,'%c',1);
 end
 strA2TYPE = fscanf(fp,'%s',1);
+strATYPE = {strATYPE, strA2TYPE};
 
 % Maximum timesteps
 ch = fscanf(fp,'%c',1);
@@ -69,7 +70,7 @@ valPANELS = fscanf(fp,'%lf');
 
 vecN = zeros(valPANELS,1);
 vecM = zeros(valPANELS,1);
-vecAIRFOIL = zeros(valPANELS,1);
+strAIRFOIL = [];
 vecSYM = zeros(valPANELS,1);
 
 for i = 1:valPANELS
@@ -112,7 +113,7 @@ for i = 1:valPANELS
     else
         vecPANELTE(i) = 0;
     end
-
+    
     % Reading leading edge information
     ch = fscanf(fp,'%c',1);
     while(ch~='=');
@@ -146,13 +147,19 @@ for i = 1:valPANELS
                 6 boundary condition
             z is panel number
     %}
-    
-    matGEOM(1,:,i) = fscanf(fp,'%lf',7);
-    matGEOM(2,:,i) = fscanf(fp,'%lf');
+
+    matGEOM(1,:,i) = fscanf(fp,'%lf',5);
+    try
+        strAIRFOIL{i,1} = strtrim(fgetl(fp));
+    end
+        matGEOM(2,:,i) = fscanf(fp,'%lf',5);
+    try
+        strAIRFOIL{i,2} = strtrim(fgetl(fp));
+    end
     
 end
 
-[matPOINTS, matTEPOINTS, matLEPOINTS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE);
+[matPOINTS, matTEPOINTS, matLEPOINTS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL);
 
 
 end

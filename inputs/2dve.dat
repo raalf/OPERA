@@ -3,8 +3,8 @@ ALL UNITS IN SI
 
 ANALYSIS PARAMETERS
 
-Lifting Surface:	 	strATYPE = THIN
-Analysis Type:			strA2TYPE = WING
+Analysis Type:	 	strATYPE = 2D
+Lifting Surface:	strA2TYPE = THIN
 
 Maximum Timesteps: 		valMAXTIME = 0
 Timestep Size: 			valDELTIME = 0.5
@@ -26,6 +26,6 @@ Number of chordwise elements: 	vecM 		= 1.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
-xleft		yleft		zleft		chord		epsilon
-0.000000	0.000000	0.000000	1.000000	0.000000 0 0
-0.000000	1.000000	0.000000	1.000000	0.000000 0 0
+xleft		yleft		zleft		chord		epsilon		airfoil
+0.000000	0.000000	0.000000	1.000000	0.000000 
+0.000000	1.000000	0.000000	1.000000	0.000000 

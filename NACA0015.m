@@ -114,26 +114,26 @@ grid minor
 box on
 axis tight
 
-% granularity = .5;
-% x = -1.5:granularity:1.5;
-% % y = -3:granularity:3;
-% y = -1.5:granularity:1.5;
-% % y = 0;
-% z = -1.5:granularity:1.5;
-% [X,Y,Z] = meshgrid(x,y,z);
-% y = x.*0 + 0.0125/2;
-% 
-% s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
-% q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
-% Xq = reshape(q_ind(:,1), size(X));
-% Yq = reshape(q_ind(:,2), size(Y));
-% Zq = reshape(q_ind(:,3), size(Z));
-% 
-% [Xs,Ys,Zs] = meshgrid(-1.5,y,z);
-% hold on
-% streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
-% % quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
-% hold off
+granularity = .5;
+x = -1.5:granularity:1.5;
+% y = -3:granularity:3;
+y = -1.5:granularity:1.5;
+% y = 0;
+z = -1.5:granularity:1.5;
+[X,Y,Z] = meshgrid(x,y,z);
+y = x.*0 + 0.0125/2;
+
+s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
+q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
+Xq = reshape(q_ind(:,1), size(X));
+Yq = reshape(q_ind(:,2), size(Y));
+Zq = reshape(q_ind(:,3), size(Z));
+
+[Xs,Ys,Zs] = meshgrid(-1.5,y,z);
+hold on
+streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
+% quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
+hold off
 
 
 

@@ -1,4 +1,4 @@
-function [matPOINTS, matTEPOINTS, matLEPOINTS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE)
+function [matPOINTS, matTEPOINTS, matLEPOINTS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL)
 
 % This function has been taken from VAP2 and repurposed for OPERA. It takes panel corner points and discretizes
 % the panel into quadralateral DVEs, which I then subdivide into triangles to match STL format.
@@ -63,7 +63,7 @@ vecDVEWING  = nan(valNELE,1);
 vecEnd      = cumsum(vecN.*vecM);
 
 %% Assign Wing to Panel
-panelEdges = reshape(permute(matGEOM,[1 3 2]),[],7);
+panelEdges = reshape(permute(matGEOM,[1 3 2]),[],5);
 [~,tempB,tempC] = unique(panelEdges,'rows','stable');
 panelEdgesIdx = reshape(tempC,2,[])';
 edge2wing = [(1:length(tempB))',nan(length(tempB),1)];
@@ -97,25 +97,55 @@ for i = 1:valPANELS
     tchord = matGEOM(2,4,i); tepsilon = deg2rad(matGEOM(2,5,i));
     rLE = matGEOM(1,1:3,i);
     tLE = matGEOM(2,1:3,i);
-    rcamber = matGEOM(1,6:7,i);
-    tcamber = matGEOM(2,6:7,i);
     
     % Read panel corners
     % For DVE generation. Twist angle is handled along with dihedral angle
     panel4corners = reshape(fcnPANELCORNERS(rLE,tLE,rchord,tchord,repsilon,tepsilon),3,4)';
     
+    if strcmpi(strATYPE{2}, 'PANEL') || size(strAIRFOIL,2) > 1
+        % root
+        airfoil(i,1).coord = dlmread(['airfoils/', strAIRFOIL{i,1}, '.dat'],'',1,0);
+        airfoil(i,1).coord = airfoil(i,1).coord.*matGEOM(1,4,i);
+        R = rotz(rad2deg(-repsilon));
+        airfoil(i,1).coord = [R(1:2,1:2)*airfoil(i,1).coord']';
+        [~,idx] = min(airfoil(i,1).coord(:,1));
+        airfoil(i,1).le_idx = idx;
+        ac_shift = -airfoil(i,1).coord(idx,:) + matGEOM(1,1:2:3,i);
+        airfoil(i,1).coord = airfoil(i,1).coord + ac_shift;
+        
+        airfoil(i,2).coord = dlmread(['airfoils/', strAIRFOIL{i,2}, '.dat'],'',1,0);
+        airfoil(i,2).coord = airfoil(i,2).coord.*matGEOM(2,4,i);
+        R = rotz(rad2deg(-tepsilon));
+        airfoil(i,2).coord = [R(1:2,1:2)*airfoil(i,2).coord']';
+        [~,idx] = min(airfoil(i,2).coord(:,1));
+        airfoil(i,2).le_idx = idx;
+        ac_shift = -airfoil(i,2).coord(idx,:) + matGEOM(2,1:2:3,i);
+        airfoil(i,2).coord = airfoil(i,2).coord + ac_shift;
+        
+        panel4corners(4,1:2:3) = (airfoil(i,1).coord(1,:) + airfoil(i,1).coord(end,:))./2;
+        panel4corners(3,1:2:3) = (airfoil(i,2).coord(1,:) + airfoil(i,2).coord(end,:))./2;
+    else
+        airfoil = [];
+    end
+    
     % fcnPANEL2DVE takes four corners of a panel and outputs vertices of non-planer DVEs
-    [~, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE( panel4corners, i, vecN, vecM, rcamber, tcamber, repsilon, tepsilon, rchord, tchord);
+    [~, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE(strATYPE, panel4corners, i, vecN, vecM, repsilon, tepsilon, rchord, tchord, airfoil);
+    
+    if strcmpi(strATYPE{2}, 'PANEL')
+        vecM = vecM.*2;
+        vecEnd = vecEnd.*2;
+        valNELE = valNELE*2;
+    end
     
     % Saving the TE and LE points so we can define those edges later on
     if vecPANELTE(i) == 1
-       temp_te(:,:,1) = permute(TE_Left(end,:,:), [2 3 1]);
-       temp_te(:,:,2) = permute(TE_Right(end,:,:), [2 3 1]);
+        temp_te(:,:,1) = permute(TE_Left(end,:,:), [2 3 1]);
+        temp_te(:,:,2) = permute(TE_Right(end,:,:), [2 3 1]);
     end
     
     if vecPANELLE(i) == 1
-       temp_le(:,:,1) = permute(LE_Left(1,:,:), [2 3 1]);
-       temp_le(:,:,2) = permute(LE_Right(1,:,:), [2 3 1]);        
+        temp_le(:,:,1) = permute(LE_Left(1,:,:), [2 3 1]);
+        temp_le(:,:,2) = permute(LE_Right(1,:,:), [2 3 1]);
     end
     
     % WRITE RESULTS
@@ -133,36 +163,40 @@ for i = 1:valPANELS
     P2(idxStart:idxEnd,:) = reshape(permute(LE_Right, [2 1 3]),count,3);
     P3(idxStart:idxEnd,:) = reshape(permute(TE_Right, [2 1 3]),count,3);
     P4(idxStart:idxEnd,:) = reshape(permute(TE_Left, [2 1 3]),count,3);
-     
+    
     % Creating "triangles" from the quadrilaterals on this panel. One triangle is P1-P2-P3, the second is P1-P4-P3
     % for each quadrilateral. This is done in a way that SHOULD keep the normals "upwards" and not mixed
-    temp_points = cat(3, permute(reshape([P3(idxStart:idxEnd,:) P1(idxStart:idxEnd,:) P2(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
+    temp_points = cat(3, permute(reshape([P1(idxStart:idxEnd,:) P2(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
         permute(reshape([P4(idxStart:idxEnd,:) P1(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]));
-      
-    % Dealing with symmetry, assuming the symmetry plane is the YZ plane
-    % This is done in a way that SHOULD keep the normals consistant
-    if vecSYM(valPANELS) ~= 0
-        len = length(P1(idxStart:idxEnd,1));
-        temp_points_sym = cat(3, permute(reshape([P2(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P1(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P3(idxStart:idxEnd,:).*repmat([1 -1 1],len,1)],[],3,3), [3 2 1]), ...
-            permute(reshape([P3(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P1(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P4(idxStart:idxEnd,:).*repmat([1 -1 1],len,1)],[],3,3), [3 2 1]));
-        temp_points = cat(3, temp_points, temp_points_sym);
-        
-        temp_shape = size(temp_le);
-        temp_le = [temp_le; temp_le.*repmat([1 -1 1],temp_shape(1), 1, temp_shape(3))];
-        temp_shape = size(temp_te);
-        temp_te = [temp_te; temp_te.*repmat([1 -1 1],temp_shape(1), 1, temp_shape(3))];
-    end
+    
+    %     % Dealing with symmetry, assuming the symmetry plane is the YZ plane
+    %     % This is done in a way that SHOULD keep the normals consistant
+    %     if vecSYM(valPANELS) ~= 0
+    %         len = length(P1(idxStart:idxEnd,1));
+    %         temp_points_sym = cat(3, permute(reshape([P2(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P1(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P3(idxStart:idxEnd,:).*repmat([1 -1 1],len,1)],[],3,3), [3 2 1]), ...
+    %             permute(reshape([P3(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P1(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P4(idxStart:idxEnd,:).*repmat([1 -1 1],len,1)],[],3,3), [3 2 1]));
+    %         temp_points = cat(3, temp_points, temp_points_sym);
+    %
+    %         temp_shape = size(temp_le);
+    %         temp_le = [temp_le; temp_le.*repmat([1 -1 1],temp_shape(1), 1, temp_shape(3))];
+    %         temp_shape = size(temp_te);
+    %         temp_te = [temp_te; temp_te.*repmat([1 -1 1],temp_shape(1), 1, temp_shape(3))];
+    %     end
     
     points = cat(3, points, temp_points);
     
     matTEPOINTS = [matTEPOINTS; temp_te];
     matLEPOINTS = [matLEPOINTS; temp_le];
-
+    
     
     clear LE_Left LE_Mid LE_Right TE_Right TE_Left ...
         imLEL imLER imTER imTEL ...
         idxStart idxEnd count temp_le temp_te temp_points temp_points_sym
 end
+
+verticeList = [reshape(permute(points,[2 1 3]),3,[],1)'];
+[matVLST,idxVLST,matDVE] = unique(verticeList,'rows');
+matDVE = reshape(matDVE,valNELE*2,3);
 
 matPOINTS = permute(points, [3 2 1]);
 

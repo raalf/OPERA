@@ -22,9 +22,9 @@ xi_in_ngbr = xi_in_ngbr./(sqrt(sum(xi_in_ngbr.^2, 2)));
 theta = acos(dot(xi_in_ngbr, repmat([1 0 0], size(xi_in_ngbr,1), 1), 2));
 
 vort = [];
-% vort = [fcnDVORTEDGE(idx, repmat(vnum_a,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
-%         fcnDVORTEDGE(idx, repmat(vnum_mid,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
-%         fcnDVORTEDGE(idx, repmat(vnum_b,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
+vort = [fcnDVORTEDGE(idx, repmat(vnum_a,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
+        fcnDVORTEDGE(idx, repmat(vnum_mid,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
+        fcnDVORTEDGE(idx, repmat(vnum_b,1,1,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
 
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
@@ -66,7 +66,7 @@ elseif strcmp(strATYPE,'2D') == 1
 %                 fcnDVORTTE(idx, pts(:,:,3), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
     
     vort_tip = [fcnDVORTTE(idx, pts(:,:,1), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
-%                 fcnDVORTTE(idx, pts(:,:,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
+                fcnDVORTTE(idx, pts(:,:,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
                 fcnDVORTTE(idx, pts(:,:,3), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
 
 %     dvenum = repmat(nonzeros(matEATT(idx,:)), 1, 2);
@@ -98,7 +98,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[infl_glob] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL);
+[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 

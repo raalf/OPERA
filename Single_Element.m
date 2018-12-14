@@ -27,7 +27,7 @@ vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
 oldCOEFF = [0 0 1];
-matCOEFF = [0 1 0 0 0];
+matCOEFF = [1 0 0 0 0];
 
 %% Plot
 
@@ -37,15 +37,15 @@ matCOEFF = [0 1 0 0 0];
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 % view([-30 17])
 
+granularity = 0.025;
+y = [-0.2:granularity:0.8];
+x = [0.05, matCENTER(:,1)];
+z = [-0.2:granularity:0.2];
 % granularity = 0.025;
-% y = [-0.2:granularity:0.8];
-% x = [0.05, matCENTER(:,1)];
+% x = [-0.2:granularity:0.8];
+% y = [0.2, matCENTER(:,2)];
 % z = [-0.2:granularity:0.2];
 
-granularity = 0.025;
-x = [-0.2:granularity:0.8];
-y = [0.2, matCENTER(:,2)];
-z = [-0.2:granularity:0.2];
 
 % granularity = 0.05;
 % x = [-1:granularity:1];
@@ -75,7 +75,7 @@ fpg = [fpg; matCENTER];
 
 % fpg = matCENTER
 % fpg = [matCENTER; matCENTER + [0 0 0.1]];
-fpg = [0 0.3 0.5]
+% fpg = [0 0.3 0.5]
 
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 

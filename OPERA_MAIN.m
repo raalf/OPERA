@@ -28,8 +28,8 @@ valDENSITY = 1.225;
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 
-[hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
-view([33, 28])
+% [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
+% view([33, 28])
 
 %% D-Matrix Creation
 vecTEDVE = [];
@@ -108,7 +108,8 @@ end
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 1);
 
-fpg = matCONTROL;
+% fpg = matCENTER - 0.001.*matDVECT(:,:,3);
+fpg = matCENTER;
 
 q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF;
@@ -143,12 +144,12 @@ end
 view([33, 28])
 toc
 
-% granularity = .1;
+% granularity = .05;
 % x = -0.5:granularity:1.5;
 % % y = -3:granularity:3;
 % y = -1.5:granularity:1.5;
 % % y = 0;
-% z = -0.2:granularity:0.2;
+% z = -1:granularity:1;
 % [X,Y,Z] = meshgrid(x,y,z);
 % y = x.*0 + 0.025;
 % 

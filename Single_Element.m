@@ -26,7 +26,6 @@ matPOINTS(:,:,3) = [0.5  0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% Coefficients
-oldCOEFF = [0 0 1];
 matCOEFF = [1 0 0 0 0];
 
 %% Plot
@@ -75,7 +74,7 @@ fpg = [fpg; matCENTER];
 
 % fpg = matCENTER
 % fpg = [matCENTER; matCENTER + [0 0 0.1]];
-% fpg = [0 0.3 0.5]
+fpg = matCENTER + [0.1 0.1 0.4];
 
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 

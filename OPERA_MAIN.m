@@ -13,9 +13,10 @@ disp('| FLIGHT        | |  $$$$$$/| $$      | $$$$$$$$| $$  | $$| $$  | $$');
 disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
-%
-strFILE = 'inputs/simple_wing2d.dat';
+% strFILE = 'inputs/simple_wing2d.dat';
 % strFILE = 'inputs/2dve.dat';
+% strFILE = 'inputs/NACA 4412 2d.dat';
+strFILE = 'inputs/Circle_2d.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -108,17 +109,16 @@ end
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 1);
 
-% fpg = matCENTER - 0.001.*matDVECT(:,:,3);
+% fpg = matCENTER - 0.12.*matDVECT(:,:,3);
 fpg = matCENTER;
 
 q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF;
-
 % q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 % q_ind = -fcnSTARGLOB([zeros(size(matCOEFF(:,2),1),1) matCOEFF(:,2)./8 zeros(size(matCOEFF(:,2),1),1)], matROTANG);
 
 fcolor = sqrt(sum(q_ind.^2,2));
-fcolor = 1 - fcolor.^(2);
+fcolor = 1 - (fcolor.^2);
 
 % fcolor = [matCOEFF(:,2)./2 zeros(size(matCOEFF(:,2),1),2)] + matUINF;
 % fcolor = sqrt(sum(fcolor.^2,2));
@@ -177,5 +177,26 @@ grid minor
 box on
 axis tight
 
-
-
+% granularity = .01;
+% x = 0.5;
+% y = 0.025;
+% z = -1:granularity:1;
+% [X,Y,Z] = meshgrid(x,y,z);
+% 
+% fpg = unique([X(:), Y(:), Z(:)],'rows');
+% fpg = [fpg; [0.505816582783750,0.0333333333333333,0.539444275530215]];
+% s_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+% 
+% hFig21 = figure(21);
+% clf(21);
+% 
+% scatter(s_ind(:,1), fpg(:,3), 'xk');
+% grid minor
+% box on
+% axis tight
+% hold on
+% plot([min(s_ind(:,1)), max(s_ind(:,1))],[0.5 0.5],'-r')
+% plot([min(s_ind(:,1)), max(s_ind(:,1))],[-0.5 -0.5],'-r')
+% hold off
+% xlabel('Tangential Velocity','FontSize',15);
+% ylabel('Z-Location','FontSize',15);

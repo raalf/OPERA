@@ -10,6 +10,9 @@ function I = fcnH_6(C, B, A, X1, X2)
 %
 % Using the method in Table of Integrals, Series, and Products by
 % Gradshteyn & Ryzhik, 7th Edition (page 96, 2.261)
+tol = 1e-10;
+X1(abs(X1) < tol) = sign(X2(abs(X1) < tol)).*tol;
+X2(abs(X2) < tol) = sign(X1(abs(X2) < tol)).*tol;
 
 X = [X1 X2];
 

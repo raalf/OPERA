@@ -37,7 +37,7 @@ le_eta = C.*x_m + D_LE;
 te_eta = E.*x_m + D_TE;
 
 margin_edge = 1e-5;
-margin_on_element = 1e-10;
+margin_on_element = 1e-5;
 xi_left = min([xi_1, xi_3],[],2);
 xi_right = max([xi_1, xi_3],[],2);
 idx_on_element = y_m >= te_eta - margin_edge & y_m <= le_eta + margin_edge & x_m >= xi_left - margin_edge & x_m <= xi_right + margin_edge & abs(z_m) <= margin_on_element;
@@ -45,7 +45,7 @@ idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m
                 (abs(y_m - le_eta) < margin_edge & (xi_left - margin_edge <= x_m & x_m <= xi_right + margin_edge) & abs(z_m) <= margin_on_element) | ...
                 (abs(x_m - xi_left) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element) | ...
                 (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
-            
+                        
 %% Calculating Influence
 alpha = z_m.^2;
 N_A = -C.*x_m - D_LE + y_m;
@@ -94,28 +94,6 @@ J_5 = -((-y_m.^2).*H_1_LE + (N_A - 2.*y_m).*H_2_LE + C.*H_6_LE - fcnH_7(C, N_A, 
        ((-y_m.^2).*H_1_TE + (N_B - 2.*y_m).*H_2_TE + E.*H_6_TE - fcnH_7(E, N_B, alpha, F1, F2));
 
 %%
-% J_1 = J_1.*0;
-% J_2 = J_2.*0;
-% J_3 = J_3.*0;
-% J_4 = J_4.*0;
-% J_5 = J_5.*0;
-% J_6 = J_6.*0;
-   
-% J_1(idx_on_element) = J_1(idx_on_element).*0;
-% J_2(idx_on_element) = J_1(idx_on_element).*0;
-% J_3(idx_on_element) = J_1(idx_on_element).*0;
-% J_4(idx_on_element) = J_1(idx_on_element).*0;
-% J_5(idx_on_element) = J_1(idx_on_element).*0;
-% J_6(idx_on_element) = J_1(idx_on_element).*0;
-
-% % Whoopsie
-% J_1(isnan(J_1) | isinf(J_1)) = 0;
-% J_2(isnan(J_2) | isinf(J_2)) = 0;
-% J_3(isnan(J_3) | isinf(J_3)) = 0;
-% J_4(isnan(J_4) | isinf(J_4)) = 0;
-% J_5(isnan(J_5) | isinf(J_5)) = 0;
-% J_6(isnan(J_6) | isinf(J_6)) = 0;
-
 % Compiling
 infl_new = zeros(3,5,len);
 

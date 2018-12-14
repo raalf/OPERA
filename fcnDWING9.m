@@ -86,7 +86,7 @@ end
 % In the D-Matrix, dot (a1,a2,b1,b2,c3) of our influencing HDVE with the normal of the point we are influencing on
 
 % Points we are influencing
-fpg = matCENTER;
+fpg = matCONTROL;
 normals = matDVECT(:,:,3);
 
 % fpg = matCENTER + (matDVECT(:,:,3)./10000).*-1;
@@ -98,7 +98,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL);
+[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER);
 
 normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
 

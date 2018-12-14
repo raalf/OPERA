@@ -1,7 +1,7 @@
 clc
 clear
 
-fcn = 'J5'
+fcn = 'J1ip'
 str = fileread([fcn, '/', fcn, '_in.txt']);
 
 k = regexp(str,'[\r]');
@@ -12,6 +12,7 @@ k = strfind(header, ':') + 1;
 var_name = [];
 prev = false;
 j = 1;
+names = [];
 while true
     valid = ~strcmp(header(k),'-') & ~strcmp(header(k),'>') & ~strcmp(header(k),' ') & ~strcmp(header(k),'~') & ~strcmp(header(k),',');
     if valid && k == length(header)
@@ -42,7 +43,7 @@ var_exp = names(end-1:-2:1);
 
 expression = [{'__','/','*','\^'} tmp_exp];
 replace = [{'_','./','.*','.^'} var_exp];
-body = regexprep(body, expression, replace)
+body = regexprep(body, expression, replace);
 
 body = strrep(body,char(10),'');  % remove LF characters
 

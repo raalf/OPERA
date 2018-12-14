@@ -15,8 +15,8 @@ disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/simple_wing2d.dat';
 % strFILE = 'inputs/2dve.dat';
-strFILE = 'inputs/NACA 4412 2d.dat';
-% strFILE = 'inputs/Circle_2d.dat';
+% strFILE = 'inputs/NACA 4412 2d.dat';
+strFILE = 'inputs/Circle_2d.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -107,10 +107,10 @@ end
 
 %% Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 1);
+% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 1);
 
-fpg = matCENTER + 0.0001.*matDVECT(:,:,3);
-% fpg = matCENTER;
+% fpg = matCENTER + 0.0001.*matDVECT(:,:,3);
+fpg = matCENTER;
 
 q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF;

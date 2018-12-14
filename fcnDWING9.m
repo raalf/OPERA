@@ -1,4 +1,4 @@
-function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL)
+function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL)
 
 %% Circulation equations between elements
 % Evaluated at the mid-point of each edge which splits two HDVEs
@@ -34,22 +34,15 @@ vort = [fcnDVORTEDGE(idx, repmat(vnum_a,1,1,2), theta, dvenum, valNELE, matROTAN
 circ_tip = [];
 vort_tip = [];
 
-if strcmp(strATYPE,'THIN') == 1
-    idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
-    idx(vecTE) = 0;
-    idx(vecLE) = 0;
-    
-    nedg = length(matEATT(idx,1));
-    
-    % Finding the two local vertex numbers of the edge endpoints
-    vnumc = nonzeros(matELOC(idx,:));
-    vnumc = repmat(vnumc,1,2);
-    vnumc(:,2) = vnumc(:,2) + 1;
-    vnumc(vnumc(:,2) == 4,2) = 1;
-    
-    circ_tip = fcnDCIRCTIP(idx, nedg, lambda_vert, lambda_mid, valNELE, matPLEX, matEATT, matELOC, vnumc);  
+if strcmp(strATYPE{2},'THIN') == 1    
+    pts(:,:,1) = matVLST(matELST(vecLE,1),:);
+    pts(:,:,2) = matVLST(matELST(vecLE,2),:);
+    pts(:,:,3) = (pts(:,:,1) + pts(:,:,2))./2;
+    circ_tip = [fcnDCIRCTIP(idx, pts(:,:,1), vecLEDVE, valNELE, matROTANG, matEATT, matCENTER); ...
+                fcnDCIRCTIP(idx, pts(:,:,2), vecLEDVE, valNELE, matROTANG, matEATT, matCENTER); ...
+                fcnDCIRCTIP(idx, pts(:,:,3), vecLEDVE, valNELE, matROTANG, matEATT, matCENTER)];
 
-elseif strcmp(strATYPE,'2D') == 1
+elseif strcmp(strATYPE{1},'2D') == 1
 
     idx = ~all(matEATT,2); % All edges that are attached to only 1 HDVE
     idx(vecTE) = 0;
@@ -61,22 +54,10 @@ elseif strcmp(strATYPE,'2D') == 1
     pts(:,:,1) = matCENTER(dvenum,:) + vecSPANDIR(dvenum,:);
     pts(:,:,2) = matCENTER(dvenum,:) + matDVECT(dvenum,:,2);
     pts(:,:,3) = matCENTER(dvenum,:) + matDVECT(dvenum,:,1);
-%     vort_tip = [fcnDVORTTE(idx, pts(:,:,1), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
-%                 fcnDVORTTE(idx, pts(:,:,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
-%                 fcnDVORTTE(idx, pts(:,:,3), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
     
     vort_tip = [fcnDVORTTE(idx, pts(:,:,1), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
                 fcnDVORTTE(idx, pts(:,:,2), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER); ...
-                fcnDVORTTE(idx, pts(:,:,3), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)];
-
-%     dvenum = repmat(nonzeros(matEATT(idx,:)), 1, 2);
-%     vnum_a = (matVLST(matELST(idx,1),:) + matVLST(matELST(idx,2),:))./2;  
-% %     vnum_b = vnum_a + (dot(vecSPANDIR(dvenum(:,1),:), matCENTER(dvenum(:,1),:) - vnum_a,2)./(sqrt(sum(vecSPANDIR(dvenum(:,1),:).^2,2))).^2).*vecSPANDIR(dvenum(:,1),:);
-%     vnum_b = vnum_a + vecSPANDIR(dvenum(:,1),:);
-%     vnum_mid = (vnum_a + vnum_b)./2;
-%        
-%     vort_tip = [fcnDCIRC(idx, cat(3, vnum_a, vnum_mid), dvenum, valNELE, matROTANG, matEATT, matCONTROL); ...
-%                 fcnDCIRC(idx, cat(3, vnum_mid, vnum_b), dvenum, valNELE, matROTANG, matEATT, matCONTROL)];     
+                fcnDVORTTE(idx, pts(:,:,3), theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)]; 
 end
 
 %% Trailing edge vorticity

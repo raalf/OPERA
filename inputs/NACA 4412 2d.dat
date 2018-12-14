@@ -4,7 +4,7 @@ ALL UNITS IN SI
 ANALYSIS PARAMETERS
 
 Analysis Type:	 	strATYPE = 2D
-Lifting Surface:	strA2TYPE = PANEL
+Lifting Surface:	strA2TYPE = THIN
 
 Maximum Timesteps: 		valMAXTIME = 0
 Timestep Size: 			valDELTIME = 0.25

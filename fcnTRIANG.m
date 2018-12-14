@@ -49,7 +49,6 @@ DNORM = -faceNormal(TR);
 % matDVE(:,:,2) = faceNormal(TR); % Normal
 % matCENTER = incenter(TR); % incenter of triangle
 matCENTER = (matVLST(matDVE(:,1),:) + matVLST(matDVE(:,2),:) + matVLST(matDVE(:,3),:))./3;
-matCONTROL = matCENTER;
 % matCONTROL = (matVLST(matDVE(:,2),:) + matVLST(matDVE(:,1),:) + matCENTER)./3;
 
 %% Finding edge attachement matrix (which DVEs share which edge)
@@ -160,8 +159,8 @@ end
 %% Local HDVE Xi-eta Axis
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
 [matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER);
-
-
+% matCONTROL = matCENTER + 0.001.*matDVECT(:,:,3);
+matCONTROL = matCENTER;
 %% Vertex attachements and normal averages
 matVATT = vertexAttachments(TR);
 

@@ -15,8 +15,8 @@ disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/simple_wing2d.dat';
 % strFILE = 'inputs/2dve.dat';
-% strFILE = 'inputs/NACA 4412 2d.dat';
-strFILE = 'inputs/Circle_2d.dat';
+strFILE = 'inputs/NACA 4412 2d.dat';
+% strFILE = 'inputs/Circle_2d.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
 
@@ -36,7 +36,7 @@ matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 vecTEDVE = [];
 vecSPANDIR = repmat([0 1 0],valNELE,1);
 vecSPANDIR = vecSPANDIR - (dot(vecSPANDIR, matDVECT(:,:,3),2)).*matDVECT(:,:,3);
-vecLE = [];
+vecLE = [1];
 vecTE = [];
 vecLEDVE = nonzeros(sort(matEATT(vecLE,:),2,'descend'));
 if ~isempty(vecTE)
@@ -44,7 +44,7 @@ if ~isempty(vecTE)
     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,:)); % Spanwise direction for each HDVE (may change with rotor stuff)
 end
 
-matD = fcnDWING9(strATYPE{1}, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL);
+matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL);
 
 valDLEN = length(matD);
 
@@ -107,10 +107,10 @@ end
 
 %% Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 1);
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 1);
 
-% fpg = matCENTER - 0.12.*matDVECT(:,:,3);
-fpg = matCENTER;
+fpg = matCENTER + 0.0001.*matDVECT(:,:,3);
+% fpg = matCENTER;
 
 q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF;
@@ -165,17 +165,17 @@ toc
 % % quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
 % hold off
 
-hFig20 = figure(20);
-clf(20);
-scatter(matCENTER(:,1), fcolor,'xr')
-hold on
-theta = linspace(0, pi, 100);
-plot(((1 - cos(theta)))./2, 1 - 4.*sin(theta).^2,'--ok')
-hold off
-set(gca,'Ydir','reverse')
-grid minor
-box on
-axis tight
+% hFig20 = figure(20);
+% clf(20);
+% scatter(matCENTER(:,1), fcolor,'xr')
+% hold on
+% theta = linspace(0, pi, 100);
+% plot(((1 - cos(theta)))./2, 1 - 4.*sin(theta).^2,'--ok')
+% hold off
+% set(gca,'Ydir','reverse')
+% grid minor
+% box on
+% axis tight
 
 % granularity = .01;
 % x = 0.5;
@@ -184,9 +184,8 @@ axis tight
 % [X,Y,Z] = meshgrid(x,y,z);
 % 
 % fpg = unique([X(:), Y(:), Z(:)],'rows');
-% fpg = [fpg; [0.505816582783750,0.0333333333333333,0.539444275530215]];
 % s_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-% 
+% s_ind = s_ind + matUINF(1,:);
 % hFig21 = figure(21);
 % clf(21);
 % 
@@ -200,3 +199,9 @@ axis tight
 % hold off
 % xlabel('Tangential Velocity','FontSize',15);
 % ylabel('Z-Location','FontSize',15);
+% 
+% theta = 90;
+% r = linspace(0.2, 1, 100);
+% hold on
+% scatter(sind(theta).*(1 + (0.5.^2./r.^2)), r, '^b')
+% hold off

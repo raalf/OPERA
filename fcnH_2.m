@@ -1,4 +1,4 @@
-function I = fcnH_2(C, B, A, X1, X2)
+function I = fcnH_2(C, B, A, X1, X2, tol)
 % Solves an integral of the form,
 %
 %  X2
@@ -10,7 +10,6 @@ function I = fcnH_2(C, B, A, X1, X2)
 %
 % Using the method in Table of Integrals, Series, and Products by
 % Gradshteyn & Ryzhik
-tol = 1e-10;
 X1(abs(X1) < tol) = sign(X2(abs(X1) < tol)).*tol;
 X2(abs(X2) < tol) = sign(X1(abs(X2) < tol)).*tol;
 
@@ -55,6 +54,12 @@ end
 idx = C < 0 & A > 0 & abs(B) < tol;
 if any(idx)
     I1(idx,:) = (1./sqrt(-C(idx))).*asin(X(idx,:)).*sqrt(-C(idx)./A(idx)); % Is this right? Or is the last term in the arcsin?
+end
+
+%% C ~= 0, A == 0 & B == 0
+idx = abs(C) > tol & abs(A) <= tol & abs(B) <= tol;
+if any(idx)
+   I1(idx,:) = (X(idx,:).*log(X(idx,:)))./(sqrt(C(idx,:).*X(idx,:).^2)); 
 end
 
 %%

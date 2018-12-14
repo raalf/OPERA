@@ -3,8 +3,8 @@ ALL UNITS IN SI
 
 ANALYSIS PARAMETERS
 
-Lifting Surface:	 	strATYPE = THIN
-Analysis Type:			strA2TYPE = WING
+Analysis Type:	 	strATYPE = 3D
+Lifting Surface:	strA2TYPE = THIN
 
 Maximum Timesteps: 		valMAXTIME = 0
 Timestep Size: 			valDELTIME = 0.25
@@ -21,11 +21,11 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 4. 
-Number of chordwise elements: 	vecM 		= 4.
+Number of spanwise elements:	vecN 		= 10. 
+Number of chordwise elements: 	vecM 		= 10.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
-xleft		yleft		zleft		chord		epsilon		camber_p	camber_m
-0.000000	-2.000000	0.000000	1.000000	0.000000	0.400000	0.04000
-0.000000	2.000000	0.000000	1.000000	0.000000	0.400000	0.04000
+xleft		yleft		zleft		chord		epsilon	 	airfoil
+0.000000	0.000000	0.000000	1.000000	0.000000	NACA 4412
+0.000000	3.000000	0.000000	1.000000	0.000000	NACA 4412

@@ -1,4 +1,4 @@
- function [vort_edge] = fcnDVORTEDGE(idx, pts, theta, dvenum, valNELE, matROTANG, matEATT, matCENTER)
+ function [vort_edge] = fcnDVORTEDGE(idx, pts, dvenum, valNELE, matROTANG, matEATT, matCENTER)
 
 nedg = size(pts,1);
 

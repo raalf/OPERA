@@ -1,4 +1,4 @@
-function I = fcnH_6(C, B, A, X1, X2)
+function I = fcnH_6(C, B, A, X1, X2, tol)
 % Solves an integral of the form,
 %
 %  X2
@@ -10,14 +10,13 @@ function I = fcnH_6(C, B, A, X1, X2)
 %
 % Using the method in Table of Integrals, Series, and Products by
 % Gradshteyn & Ryzhik, 7th Edition (page 96, 2.261)
-tol = 1e-10;
 X1(abs(X1) < tol) = sign(X2(abs(X1) < tol)).*tol;
 X2(abs(X2) < tol) = sign(X1(abs(X2) < tol)).*tol;
 
 X = [X1 X2];
 
 I1 = (sqrt(C.*X.^2 + B.*X + A)./C);
-I = I1(:,2) - I1(:,1) - (B./(2.*C)).*fcnH_2(C, B, A, X1, X2);
+I = I1(:,2) - I1(:,1) - (B./(2.*C)).*fcnH_2(C, B, A, X1, X2, tol);
 
 I = real(I);
 end

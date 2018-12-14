@@ -159,7 +159,7 @@ end
 %% Local HDVE Xi-eta Axis
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
 [matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER);
-% matCONTROL = matCENTER + 0.001.*matDVECT(:,:,3);
+% matCONTROL = matCENTER - 0.001.*matDVECT(:,:,3);
 matCONTROL = matCENTER;
 %% Vertex attachements and normal averages
 matVATT = vertexAttachments(TR);

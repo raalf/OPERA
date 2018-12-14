@@ -1,4 +1,4 @@
-function I = fcnH_7(M, N, alpha, F1, F2)
+function I = fcnH_7(M, N, alpha, F1, F2, tol)
 % Solves an integral of the form,
 %
 %  F2
@@ -11,13 +11,16 @@ function I = fcnH_7(M, N, alpha, F1, F2)
 
 %%
 I = nan(size(M));
-tol = 1e-10;
 F1(abs(F1) < tol) = sign(F2(abs(F1) < tol)).*tol;
 F2(abs(F2) < tol) = sign(F1(abs(F2) < tol)).*tol;
 
 idx_in_plane = sqrt(alpha) < tol;
 I(~idx_in_plane) = fcnH_7op(M(~idx_in_plane), N(~idx_in_plane), alpha(~idx_in_plane), F1(~idx_in_plane), F2(~idx_in_plane));
 I(idx_in_plane) = fcnH_7ip(M(idx_in_plane), N(idx_in_plane), F1(idx_in_plane), F2(idx_in_plane));
+
+I(abs(N) <= tol & abs(M) <= tol) = 0;
+idx = abs(N) <= tol & abs(M) > tol & idx_in_plane;
+I(idx) = F2(idx).*asinh(sign(F2(idx)).*M(idx)) - F1(idx).*asinh(sign(F1(idx)).*M(idx));
 end
 
 function I = fcnH_7op(M, N, alpha, F1, F2)

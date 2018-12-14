@@ -1,4 +1,4 @@
-function I = fcnH_1(M, N, S, T, u, alpha, F1, F2)
+function I = fcnH_1(M, N, S, T, u, alpha, F1, F2, tol)
 % Solves an integral of the form,
 %
 %  F2
@@ -12,7 +12,6 @@ function I = fcnH_1(M, N, S, T, u, alpha, F1, F2)
 % https://books.google.ca/books?id=F7jiBQAAQBAJ&printsec=frontcover#v=onepage&q&f=false
 
 %%
-tol = 1e-10;
 F1(abs(F1) < tol) = sign(F2(abs(F1) < tol)).*tol;
 F2(abs(F2) < tol) = sign(F1(abs(F2) < tol)).*tol;
 
@@ -20,6 +19,11 @@ idx_in_plane = sqrt(alpha) < tol;
 I = nan(size(M));
 I(~idx_in_plane,1) = fcnH_1op(M(~idx_in_plane), N(~idx_in_plane), S(~idx_in_plane), T(~idx_in_plane), u(~idx_in_plane), alpha(~idx_in_plane), F1(~idx_in_plane), F2(~idx_in_plane));
 I(idx_in_plane,1) = fcnH_1ip(M(idx_in_plane), N(idx_in_plane), S(idx_in_plane), T(idx_in_plane), u(idx_in_plane), F1(idx_in_plane), F2(idx_in_plane));
+I(abs(N) <= tol & abs(M) <= tol) = 0;
+
+idx = (abs(N) <= tol & abs(M) > tol & abs(T) < tol & abs(u) < tol & idx_in_plane);
+I(idx) = (-F2(idx)./sqrt(S(idx).*F2(idx).^2)) - (-F1(idx)./sqrt(S(idx).*F1(idx).^2));
+
 end
 
 function I = fcnH_1op(M, N, S, T, u, alpha, F1, F2)

@@ -25,18 +25,18 @@ strFILE = 'inputs/simple_wing.dat';
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS);
 
 flagRELAX = 0;
-valMAXTIME = 0;
+valMAXTIME = 20;
 valDENSITY = 1.225;
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 
-[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
-view([33, 28])
+% [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
+% view([33, 28])
 
 %% D-Matrix Creation
 vecTEDVE = [];
 vecSPANDIR = repmat([0 1 0],valNELE,1);
-vecSPANDIR = vecSPANDIR - (dot(vecSPANDIR, matDVECT(:,:,3),2)).*matDVECT(:,:,3);
+vecSfPANDIR = vecSPANDIR - (dot(vecSPANDIR, matDVECT(:,:,3),2)).*matDVECT(:,:,3);
 vecLE = [];
 vecTE = [];
 
@@ -47,10 +47,17 @@ if ~isempty(matLEPOINTS)
     vecLEDVE = nonzeros(sort(matEATT(vecLE,:),2,'descend'));
 end
 
-if ~isempty(vecTE)
-    vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend')); % A vector of trailing edge HDVEs, which corresponds to vecTE edges
-    vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,:)); % Spanwise direction for each HDVE (may change with rotor stuff)
+if ~isempty(matTEPOINTS)
+    [~, idxte(:,1)] = ismember(matTEPOINTS(:,:,1),matVLST,'rows');
+    [~, idxte(:,2)] = ismember(matTEPOINTS(:,:,2),matVLST,'rows');
+    [~, vecTE] = ismember(idxte, matELST,'rows');
+    vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend'));
 end
+
+% if ~isempty(vecTE)
+%     vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend')); % A vector of trailing edge HDVEs, which corresponds to vecTE edges
+%     vecSPANDIR = fcnGLOBSTAR(repmat([0 1 0], length(vecTEDVE)), matROTANG(vecTEDVE,:)); % Spanwise direction for each HDVE (may change with rotor stuff)
+% end
 
 matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL);
 
@@ -81,6 +88,7 @@ vecR = fcnRWING(valDLEN, 0, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, m
 
 % Solving for wing coefficients
 [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
+matCOEFF_HSTRY(:,:,1) = matCOEFF;
 
 for valTIMESTEP = 1:valMAXTIME
     %% Timestep to solution
@@ -103,19 +111,47 @@ for valTIMESTEP = 1:valMAXTIME
     if any(vecTE)
         [matWAKEGEOM, matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
             matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG] = fcnCREATEWAKE(valTIMESTEP, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, ...
-            vecTE, vecTEDVE, matPLEX, matELOC, matELST, matDVE, matWCOEFF);
+            vecTE, vecTEDVE, matCENTER, matROTANG, matWCOEFF);
         
         % Rebuild wing resultant
         vecR = fcnRWING(valDLEN, valTIMESTEP, matCENTER, matDVECT, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
         matCOEFF = fcnSOLVED(matD, vecR, valNELE);
         
+        matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
     end
+       
+    
     
 end
 
 %% Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 10);
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'r', 10);
+if valTIMESTEP > 0
+    [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
+    [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'b', 20);
+end
+
+hFig21 = figure(21);
+clf(21);
+linestyles = {'--';'-.';'-';':'};
+markers = {'o';'x';'s';'^';'*';'d';'v';'>';'<';'p';'h'};
+colors = {'k';'b';'r';'m'};
+hold on
+for i = 1:5
+    pFig1 = plot(1:valTIMESTEP,abs(reshape(sum(matCOEFF_HSTRY(:,i,2:end) - matCOEFF_HSTRY(:,i,1:end-1),1),[],1,1)),'-ok');
+    pFig1.LineStyle = linestyles{1+mod(i,4),:};
+    pFig1.Marker = markers{1+mod(i,11),:};
+    pFig1.Color = colors{1+mod(i,4),:};
+end
+ylim([0, inf]);
+grid minor
+box on
+hold off
+xlabel('Timestep','FontSize',15)
+ylabel('Coefficient Delta','FontSize',15)
+legend('A_1','A_2','B_1','B_2','C_3','Location','NorthEast')
+
 
 % % fpg = matCENTER + 0.0001.*matDVECT(:,:,3);
 % fpg = matCONTROL;
@@ -145,55 +181,59 @@ end
 % axis equal
 % hold off
 % colorbar;
-% if valTIMESTEP > 0
-%     [hFig1] = fcnPLOTWAKE(1, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-%     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), vecUINF, matWROTANG, 'b', 20);
-% end
 % view([33, 28])
 % toc
 
-granularity = .25;
-x = -0.5:granularity:3;
-% y = -3:granularity:3;
-y = -0.5:granularity:3.5;
-% y = 0;
-z = -1:granularity:1;
-[X,Y,Z] = meshgrid(x,y,z);
+% granularity = .1;
+% x = -0.5:granularity:1.5;
+% % y = -3:granularity:3;
+% y = -1.5:granularity:1.5;
+% % y = 0;
+% z = -1:granularity:1;
+% [X,Y,Z] = meshgrid(x,y,z);
 % y = x.*0 + 0.025;
-
-s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
-q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
-Xq = reshape(q_ind(:,1), size(X));
-Yq = reshape(q_ind(:,2), size(Y));
-Zq = reshape(q_ind(:,3), size(Z));
-
-[Xs,Ys,Zs] = meshgrid(-0.5,y,z);
-hold on
-streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
-% quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
-hold off
-
-% hFig20 = figure(20);
-% clf(20);
-% scatter(matCENTER(:,1), fcolor,'xr')
+%
+% s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
+% q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
+% Xq = reshape(q_ind(:,1), size(X));
+% Yq = reshape(q_ind(:,2), size(Y));
+% Zq = reshape(q_ind(:,3), size(Z));
+%
+% [Xs,Ys,Zs] = meshgrid(-0.5,y,z);
 % hold on
-% theta = linspace(0, pi, 100);
-% plot(((1 - cos(theta)))./2, 1 - 4.*sin(theta).^2,'--ok')
+% streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
+% % quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
 % hold off
-% set(gca,'Ydir','reverse')
-% grid minor
-% box on
-% axis tight
-% 
+%
+% % y = [0.5 1.5 2.5];
+% [Xs,Ys,Zs] = meshgrid(-0.5,y,z);
+% hold on
+% streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
+% % quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
+% hold off
+%
+% % hFig20 = figure(20);
+% % clf(20);
+% % scatter(matCENTER(:,1), fcolor,'xr')
+% % hold on
+% % theta = linspace(0, pi, 100);
+% % plot(((1 - cos(theta)))./2, 1 - 4.*sin(theta).^2,'--ok')
+% % hold off
+% % set(gca,'Ydir','reverse')
+% % grid minor
+% % box on
+% % axis tight
+%
 % granularity = .01;
 % x = 0.5;
 % y = 0.025;
 % z = -1:granularity:1;
 % [X,Y,Z] = meshgrid(x,y,z);
-% 
+%
 % fpg = unique([X(:), Y(:), Z(:)],'rows');
 % s_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 % s_ind = s_ind + matUINF(1,:);
+%
 % hFig21 = figure(21);
 % clf(21);
 %

@@ -63,10 +63,10 @@ else
         chordX(:,2) = (panelX(2,2) - panelX(1,2)).*((1 - (cos(linspace(0,pi,M+1))))./2) + panelX(1,2);
         % Upper surface Z-coordinates
         tmp = fcnLINSPLINE(airfoil(i,2).coord(1:airfoil(i,2).le_idx,1), airfoil(i,2).coord(1:airfoil(i,2).le_idx,2));
-        tmpZ(:,2,1) = tmp(chordX(:,1));
+        tmpZ(:,2,1) = tmp(chordX(:,2));
         % Lower surface Z-coordinates
         tmp = fcnLINSPLINE(airfoil(i,2).coord(airfoil(i,2).le_idx:end,1), airfoil(i,2).coord(airfoil(i,2).le_idx:end,2));
-        tmpZ(:,2,2) = tmp(chordX(:,1));
+        tmpZ(:,2,2) = tmp(chordX(:,2));
         chordZ(:,2) = mean(tmpZ(:,2,:),3);
     end
 end

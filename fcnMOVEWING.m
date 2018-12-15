@@ -55,9 +55,9 @@ new_te(idx_flip2,:) = temp;
 % the normals pointed upwards. If it doesn't, then this needs to be rewritten to ensure that is the case
 
 % These vertices will be used to calculate the wake HDVE geometry
-matNEWWAKE(:,:,1) = [new_te(1:end/2,:); old_te((end/2)+1:end,:)];
-matNEWWAKE(:,:,2) = [new_te((end/2)+1:end,:); old_te(1:end/2,:)];
-matNEWWAKE(:,:,3) = [old_te(1:end/2,:); new_te((end/2)+1:end,:)];
+matNEWWAKE(:,:,2) = [new_te(1:end/2,:); new_te((end/2)+1:end,:)];
+matNEWWAKE(:,:,3) = [new_te((end/2)+1:end,:); old_te((end/2)+1:end,:)];
+matNEWWAKE(:,:,1) = [old_te(1:end/2,:); old_te(1:end/2,:)];
 
 
 

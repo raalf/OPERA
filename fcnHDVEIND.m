@@ -1,6 +1,6 @@
 function [infl_loc] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL)
 warning('on')
-tol = 1e-10;
+tol = 1e-15;
 fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
 
 len = size(fpl,1);
@@ -44,6 +44,8 @@ idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m
                 (abs(y_m - le_eta) < margin_edge & (xi_left - margin_edge <= x_m & x_m <= xi_right + margin_edge) & abs(z_m) <= margin_on_element) | ...
                 (abs(x_m - xi_left) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element) | ...
                 (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
+            
+disp(['Edge calls: ', num2str(sum(idx_on_edge))]);
                         
 %% Calculating Influence
 alpha = z_m.^2;
@@ -120,6 +122,7 @@ infl_loc = real(infl_new);
 infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
 
 idx_nan = find(reshape(sum(any(isnan(infl_new) | isinf(infl_new))),[],1) > 0);
+disp(['Inf or NaN induction: ', num2str(length(idx_nan))]);
 
 % infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
 end

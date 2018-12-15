@@ -71,9 +71,4 @@ PLEX = permute(reshape(temp_points2',3,3,sp(3)),[2 1 3]);
 temp_center = fcnGLOBSTAR(matCONTROL, ROTANG);
 PLEX = PLEX - repmat(reshape(temp_center',1,3,[]),3,1,1);
 
-idx_wrong = reshape(PLEX(3,1,:),[],1,1) <= reshape(PLEX(1,1,:),[],1,1);
-if any(idx_wrong)
-   disp('Issue in TRITOLEX, xi_3 <= xi_1') 
-end
-
 end

@@ -22,7 +22,7 @@ Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
 Number of spanwise elements:	vecN 		= 7. 
-Number of chordwise elements: 	vecM 		= 20.
+Number of chordwise elements: 	vecM 		= 30.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES

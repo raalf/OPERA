@@ -1,4 +1,4 @@
-function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matROTANG, vecSPANDIR, vecTEDVE, matCONTROL)
+function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matROTANG, vecSPANDIR, matKINCON_P, matKINCON_DVE)
 
 %% Circulation equations between elements
 % Evaluated at the mid-point of each edge which splits two HDVEs
@@ -62,22 +62,16 @@ end
 % Flow tangency is to be enforced at all control points on the surface HDVEs
 % In the D-Matrix, dot (a1,a2,b1,b2,c3) of our influencing HDVE with the normal of the point we are influencing on
 
-% Points we are influencing
-fpg = matCONTROL;
-normals = matDVECT(:,:,3);
-
-% fpg = matCENTER + (matDVECT(:,:,3)./10000).*-1;
-
 % List of DVEs we are influencing from (one for each of the above fieldpoints)
-len = length(fpg(:,1));
+len = length(matKINCON_P(:,1));
 dvenum = reshape(repmat(1:valNELE,len,1),[],1);
 dvetype = ones(size(dvenum));
 
-fpg = repmat(fpg,valNELE,1);
+fpg = repmat(matKINCON_P,valNELE,1);
 
 [infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER);
 
-normals = repmat(normals,valNELE,1); % Repeated so we can dot all at once
+normals = repmat(matDVECT(matKINCON_DVE,:,3),valNELE,1); % Repeated so we can dot all at once
 
 % Dotting a1, a2, b1, b2, c3 with the normals of the field points
 temp60 = [dot(permute(infl_glob(:,1,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,2,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,3,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,4,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,5,:),[3 1 2]),normals,2)];

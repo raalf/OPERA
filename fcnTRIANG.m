@@ -1,5 +1,5 @@
 function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(POINTS)
+            matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(POINTS)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -159,8 +159,9 @@ end
 %% Local HDVE Xi-eta Axis
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
 [matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER);
-% matCONTROL = matCENTER - 0.001.*matDVECT(:,:,3);
+% matCONTROL = matCENTER - 0.001.*matDVECT(:,:,3)
 matCONTROL = matCENTER;
+
 %% Vertex attachements and normal averages
 matVATT = vertexAttachments(TR);
 
@@ -186,6 +187,8 @@ matVNORM = [mean(temp51,2) mean(temp52,2) mean(temp53,2)];
 % Normalizing these vectors
 matVNORM = matVNORM./repmat(sqrt(sum(abs(matVNORM).^2,2)), 1,3);
 
+%% Area
+vecDVEAREA = 0.5.*sqrt(sum(cross(matVLST(matDVE(:,2),:) - matVLST(matDVE(:,1),:), matVLST(matDVE(:,3),:) - matVLST(matDVE(:,1),:),2).^2,2));
 % clearvars -except TR ADJE ELST VLST DVE NELE EATT EIDX ELOC PLEX DVECT ALIGN VATT VNORM CENTER
 
 end

@@ -9,6 +9,9 @@ if strcmpi(direction,'B')
 elseif strcmpi(direction,'A')
     dgamma1 = [ones(nedg,1), zer, zer, zer, zer];
     dgamma2 = [zer, ones(nedg,1), zer, zer, zer];
+elseif strcmpi(direction,'C')
+    dgamma1 = [zer, zer, zer, zer, ones(nedg,1)];
+    dgamma2 = [zer, zer, zer, zer, ones(nedg,1)];
 else
     disp('Issue in fcnDVORT1')
 end

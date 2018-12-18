@@ -35,22 +35,23 @@ matCOEFF = [0 1 0 0 0];
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
 [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 % view([-30 17])
-
-granularity = 0.025;
-y = [-0.2:granularity:0.8];
-x = [0.05, matCENTER(:,1)];
-z = [-0.2:granularity:0.2];
+% 
+% granularity = 0.025;
+% y = [-0.2:granularity:0.8];
+% x = [0.05, matCENTER(:,1), 0.4];
+% z = [-0.2:granularity:0.2];
 
 % granularity = 0.025;
 % x = [-0.2:granularity:0.8];
-% y = [0.2, matCENTER(:,2)];
+% y = [0.2, matCENTER(:,2), 0.45];
 % z = [-0.2:granularity:0.2];
 
 
-% granularity = 0.05;
-% x = [-1:granularity:1];
-% y = [-1:granularity:1];
-% z = x.*0;
+
+granularity = 0.025;
+x = [-0.1:granularity:0.6];
+y = [-0.2:granularity:0.6];
+z = x.*0;
 
 % granularity = 0.01;
 % z = -.25:granularity:.25;
@@ -73,9 +74,11 @@ z = [-0.2:granularity:0.2];
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 fpg = [fpg; matCENTER];
 
-% fpg = matCENTER
+% fpg = [matCENTER; matCENTER + [0.1 0 0]];
 % fpg = [matCENTER; matCENTER + [0 0 0.1]];
 % fpg = matCENTER + [0.1 0.1 0.4];
+
+% fpg = [0.25 0.5 0.0]
 
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 

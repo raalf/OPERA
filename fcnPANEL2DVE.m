@@ -1,4 +1,4 @@
-function [ CP, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE(strATYPE, panel4corners, i, vecN, vecM, repsilon, tepsilon, rchord, tchord, airfoil)
+function [ CP, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE(strATYPE, panel4corners, i, vecN, vecM, repsilon, tepsilon, rchord, tchord, airfoil, strSPACING)
 %fcnPANEL2DVE Summary of this function goes here
 %   fcnPANEL2DVE takes four corners of a panel and outputs vertices of non-planer DVEs
 
@@ -12,12 +12,19 @@ panelZ = [panel4corners([1;4],3),panel4corners([2;3],3)];
 N = vecN(i)*2;
 M = vecM(i)*2;
 
+if strcmpi(strSPACING,'COSINE')
+    spacing = ((1 - (cos(linspace(0,pi,M+1))))./2);
+elseif strcmpi(strSPACING,'HALFCOSINE')
+    spacing = (1 - ((cos(linspace(0,pi/2,M+1)))));
+else
+    spacing = linspace(0,1,M+1);
+end
+
 % split Root Chord to chordwise elements
 chordX(:,1) = linspace(panelX(1,1),panelX(2,1),M+1)';
 chordY(:,1) = linspace(panelY(1,1),panelY(2,1),M+1)';
 if strcmpi(strATYPE{2},'PANEL')
-    % Cosine spacing in the chordwise direction to improve LE resolution
-    chordX(:,1) = (panelX(2,1) - panelX(1,1)).*((1 - (cos(linspace(0,pi,M+1))))./2) + panelX(1,1);
+    chordX(:,1) = (panelX(2,1) - panelX(1,1)).*spacing + panelX(1,1);
     % Upper surface Z-coordinates
     tmp = fcnLINSPLINE(airfoil(i,1).coord(1:airfoil(i,1).le_idx,1), airfoil(i,1).coord(1:airfoil(i,1).le_idx,2));
     chordZ(:,1,1) = tmp(chordX(:,1));
@@ -30,7 +37,7 @@ else
         chordZ(:,1) = linspace(panelZ(1,1),panelZ(2,1),M+1)';
     else
         % Cosine spacing in the chordwise direction to improve LE resolution
-        chordX(:,1) = (panelX(2,1) - panelX(1,1)).*((1 - (cos(linspace(0,pi,M+1))))./2) + panelX(1,1);
+        chordX(:,1) = (panelX(2,1) - panelX(1,1)).*spacing + panelX(1,1);
         % Upper surface Z-coordinates
         tmp = fcnLINSPLINE(airfoil(i,1).coord(1:airfoil(i,1).le_idx,1), airfoil(i,1).coord(1:airfoil(i,1).le_idx,2));
         tmpZ(:,1,1) = tmp(chordX(:,1));
@@ -47,7 +54,7 @@ chordX(:,2) = linspace(panelX(1,2),panelX(2,2),M+1)';
 chordY(:,2) = linspace(panelY(1,2),panelY(2,2),M+1)';
 if strcmpi(strATYPE{2},'PANEL')
     % Cosine spacing in the chordwise direction to improve LE resolution
-    chordX(:,2) = (panelX(2,2) - panelX(1,2)).*((1 - (cos(linspace(0,pi,M+1))))./2) + panelX(1,2);
+    chordX(:,2) = (panelX(2,2) - panelX(1,2)).*spacing + panelX(1,2);
     % Upper surface Z-coordinates
     tmp = fcnLINSPLINE(airfoil(i,2).coord(1:airfoil(i,2).le_idx,1), airfoil(i,2).coord(1:airfoil(i,2).le_idx,2));
     chordZ(:,2,1) = tmp(chordX(:,2));
@@ -60,7 +67,7 @@ else
         chordZ(:,2) = linspace(panelZ(1,2),panelZ(2,2),M+1)';
     else
         % Cosine spacing in the chordwise direction to improve LE resolution
-        chordX(:,2) = (panelX(2,2) - panelX(1,2)).*((1 - (cos(linspace(0,pi,M+1))))./2) + panelX(1,2);
+        chordX(:,2) = (panelX(2,2) - panelX(1,2)).*spacing + panelX(1,2);
         % Upper surface Z-coordinates
         tmp = fcnLINSPLINE(airfoil(i,2).coord(1:airfoil(i,2).le_idx,1), airfoil(i,2).coord(1:airfoil(i,2).le_idx,2));
         tmpZ(:,2,1) = tmp(chordX(:,2));

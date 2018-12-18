@@ -1,6 +1,7 @@
 function [infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL)
 
-infl_loc = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL);
+% infl_loc = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL);
+infl_loc = fcnHDVEIND_VS(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL);
 
 %% Transforming and Outputting
 dvenum = reshape(repmat(dvenum,1,5,1)',[],1,1);

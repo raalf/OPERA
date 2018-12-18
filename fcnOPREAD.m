@@ -18,6 +18,13 @@ end
 strA2TYPE = fscanf(fp,'%s',1);
 strATYPE = {strATYPE, strA2TYPE};
 
+% Chordwise element spacing
+ch = fscanf(fp,'%c',1);
+while(ch~='=');
+    ch = fscanf(fp,'%c',1);
+end
+strSPACING = fscanf(fp,'%s',1);
+
 % Maximum timesteps
 ch = fscanf(fp,'%c',1);
 while(ch~='=');
@@ -159,7 +166,7 @@ for i = 1:valPANELS
     
 end
 
-[matPOINTS, matTEPOINTS, matLEPOINTS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL);
+[matPOINTS, matTEPOINTS, matLEPOINTS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING);
 
 
 end

@@ -1,6 +1,6 @@
 function [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG] = ...
                 fcnRELAX(vecUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
-                matROTANG, matWROTANG, matCENTER, matWCENTER)
+                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST)
             
 % Relaxes wake by moving points in the wake vertex list matWVLST, and updating the local vectors in matWDVECT
 
@@ -11,7 +11,8 @@ w_ind = fcnWINDVEL(matWVLST, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG
 %% Identifying trailing edges, we won't relax these points
 
 % Finding vertices common between wing and wake, these are the trailing edge vertices
-[idxTEV, ~] = ismember(matWVLST, matVLST, 'rows');
+dontmove = [matWVLST(matWELST(vecWLE,1),:); matWVLST(matWELST(vecWLE(end),2),:); matWVLST(matWELST(vecWTE,1),:); matWVLST(matWELST(vecWTE(end),2),:)];
+[idxTEV, ~] = ismember(matWVLST, dontmove, 'rows');
 
 % Setting induced velocities at these points to zero
 s_ind(idxTEV,:) = repmat([0 0 0], length(nonzeros(idxTEV)), 1);

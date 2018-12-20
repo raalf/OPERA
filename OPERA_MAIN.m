@@ -164,7 +164,6 @@ if valTIMESTEP > 0
 end
 
 %% Plot
-% matCOEFF(:,3:4) = matCOEFF(:,3:4).*0
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
 % [hFig1, circ_all] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 4);
 if valTIMESTEP > 0
@@ -175,9 +174,7 @@ end
 % quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVENFORCE(:,1), matDVENFORCE(:,2), matDVENFORCE(:,3))
 % hold off
 
-fpg = matCENTER - 0.02.*matDVECT(:,:,3);
-% fpg = matCONTROL + 0.001.*matDVECT(:,:,3);
-% fpg = matCENTER
+fpg = matCONTROL;
 
 q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF;
@@ -207,27 +204,27 @@ colorbar;
 view([33, 28])
 toc
 
-granularity = .1;
-x = -0.5:granularity:1.5;
-% y = -3:granularity:3;
-y = -1.5:granularity:1.5;
-% y = 0;
-z = -1:granularity:1;
-[X,Y,Z] = meshgrid(x,y,z);
-y = x.*0 + 0.025;
-% y = [0.5 1.5 2.5];
-s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
-q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
-Xq = reshape(q_ind(:,1), size(X));
-Yq = reshape(q_ind(:,2), size(Y));
-Zq = reshape(q_ind(:,3), size(Z));
-
-[Xs,Ys,Zs] = meshgrid(-0.5,y,z);
-hold on
-streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
-% quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
-hold off
-
+% granularity = .1;
+% x = -0.5:granularity:1.5;
+% % y = -3:granularity:3;
+% y = -1.5:granularity:1.5;
+% % y = 0;
+% z = -1:granularity:1;
+% [X,Y,Z] = meshgrid(x,y,z);
+% y = x.*0 + 0.025;
+% % y = [0.5 1.5 2.5];
+% s_ind = fcnSDVEVEL([X(:) Y(:) Z(:)], valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
+% q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
+% Xq = reshape(q_ind(:,1), size(X));
+% Yq = reshape(q_ind(:,2), size(Y));
+% Zq = reshape(q_ind(:,3), size(Z));
+% 
+% [Xs,Ys,Zs] = meshgrid(-0.5,y,z);
+% hold on
+% streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
+% % quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
+% hold off
+% 
 % % y = [0.5 1.5 2.5];
 % [Xs,Ys,Zs] = meshgrid(-0.5,y,z);
 % hold on
@@ -247,52 +244,52 @@ hold off
 % % box on
 % % axis tight
 %
-granularity = .001;
-x = 0.4916;
-y = 0.01667;
-z = -2:granularity:2;
-[X,Y,Z] = meshgrid(x,y,z);
-
-fpg = unique([X(:), Y(:), Z(:)],'rows');
-s_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-s_ind = s_ind + matUINF(1,:);
-
-hFig21 = figure(21);
-clf(21);
-
-scatter(s_ind(:,1), fpg(:,3), 'xk');
-grid minor
-box on
-axis tight
-hold on
-plot([min(s_ind(:,1)), max(s_ind(:,1))],[0.5 0.5],'-r')
-plot([min(s_ind(:,1)), max(s_ind(:,1))],[-0.5 -0.5],'-r')
-hold off
-xlabel('Tangential Velocity','FontSize',15);
-ylabel('Z-Location','FontSize',15);
-
-theta = 90;
-r = linspace(0.4, 2, 100);
-hold on
-scatter(sind(theta).*(1 + (0.5.^2./r.^2)), r, '^b')
-hold off
-
-hFig21 = figure(22);
-clf(22);
-
-scatter(s_ind(:,3), fpg(:,3), 'xk');
-grid minor
-box on
-axis tight
-hold on
-plot([min(s_ind(:,3)), max(s_ind(:,3))],[0.5 0.5],'-r')
-plot([min(s_ind(:,3)), max(s_ind(:,3))],[-0.5 -0.5],'-r')
-hold off
-xlabel('Normal Velocity','FontSize',15);
-ylabel('Z-Location','FontSize',15);
-
-theta = 90;
-r = linspace(0.4, 2, 100);
-hold on
-scatter(cosd(theta).*(1 + (0.5.^2./r.^2)), r, '^b')
-hold off
+% granularity = .01;
+% x = 0.4916;
+% y = 0.01667;
+% z = 0.4:granularity:2;
+% [X,Y,Z] = meshgrid(x,y,z);
+% 
+% fpg = unique([X(:), Y(:), Z(:)],'rows');
+% s_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+% s_ind = s_ind + matUINF(1,:);
+% 
+% hFig21 = figure(21);
+% clf(21);
+% 
+% scatter(s_ind(:,1), fpg(:,3), 'xk');
+% grid minor
+% box on
+% axis tight
+% hold on
+% plot([min(s_ind(:,1)), max(s_ind(:,1))],[0.5 0.5],'-r')
+% plot([min(s_ind(:,1)), max(s_ind(:,1))],[-0.5 -0.5],'-r')
+% hold off
+% xlabel('Tangential Velocity','FontSize',15);
+% ylabel('Z-Location','FontSize',15);
+% 
+% theta = 90;
+% r = linspace(0.4, 2, 100);
+% hold on
+% scatter(sind(theta).*(1 + (0.5.^2./r.^2)), r, '^b')
+% hold off
+% % 
+% hFig21 = figure(22);
+% clf(22);
+% 
+% scatter(s_ind(:,3), fpg(:,3), 'xk');
+% grid minor
+% box on
+% axis tight
+% hold on
+% plot([min(s_ind(:,3)), max(s_ind(:,3))],[0.5 0.5],'-r')
+% plot([min(s_ind(:,3)), max(s_ind(:,3))],[-0.5 -0.5],'-r')
+% hold off
+% xlabel('Normal Velocity','FontSize',15);
+% ylabel('Z-Location','FontSize',15);
+% 
+% theta = 90;
+% r = linspace(0.4, 2, 100);
+% hold on
+% scatter(cosd(theta).*(1 + (0.5.^2./r.^2)), r, '^b')
+% hold off

@@ -164,10 +164,14 @@ for i = 1:valPANELS
     P3(idxStart:idxEnd,:) = reshape(permute(TE_Right, [2 1 3]),count,3);
     P4(idxStart:idxEnd,:) = reshape(permute(TE_Left, [2 1 3]),count,3);
     
-    % Creating "triangles" from the quadrilaterals on this panel. One triangle is P1-P2-P3, the second is P1-P4-P3
-    % for each quadrilateral. This is done in a way that SHOULD keep the normals "upwards" and not mixed
-    temp_points = cat(3, permute(reshape([P1(idxStart:idxEnd,:) P2(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
-        permute(reshape([P4(idxStart:idxEnd,:) P1(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]));
+    % Creating "triangles" from the quadrilaterals on this panel. This is done in a way that SHOULD keep the normals "upwards" and not mixed
+    if strcmpi(strATYPE{2}, 'PANEL')
+        temp_points = cat(3, permute(reshape([P1(idxStart:idxEnd,:) P3(idxStart:idxEnd,:) P2(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
+        permute(reshape([P1(idxStart:idxEnd,:) P4(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]));
+    else
+        temp_points = cat(3, permute(reshape([P1(idxStart:idxEnd,:) P2(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
+        permute(reshape([P4(idxStart:idxEnd,:) P1(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]));    
+    end
     
     %     % Dealing with symmetry, assuming the symmetry plane is the YZ plane
     %     % This is done in a way that SHOULD keep the normals consistant

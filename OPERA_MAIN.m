@@ -49,7 +49,14 @@ if ~isempty(matLEPOINTS)
     vecLEDVE = nonzeros(sort(matEATT(vecLE,:),2,'descend'));
 end
 
-if ~isempty(matTEPOINTS)
+if ~isempty(matTEPOINTS) && strcmpi(strATYPE{2},'PANEL')
+    [~, idxte(:,1)] = ismember(matTEPOINTS(:,:,1),matVLST,'rows');
+    [~, idxte(:,2)] = ismember(matTEPOINTS(:,:,2),matVLST,'rows');
+    [~, vecTE] = ismember(idxte, matELST,'rows');
+    vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend'));
+    matKINCON_P = [matCONTROL; ((matVLST(matELST(vecTE,1),:) + matVLST(matELST(vecTE,2),:))./2)];
+    matKINCON_DVE = [[1:valNELE]'; matEATT(vecTE,1)];
+elseif ~isempty(matTEPOINTS) && strcmpi(strATYPE{2},'THIN')
     [~, idxte(:,1)] = ismember(matTEPOINTS(:,:,1),matVLST,'rows');
     [~, idxte(:,2)] = ismember(matTEPOINTS(:,:,2),matVLST,'rows');
     [~, vecTE] = ismember(idxte, matELST,'rows');
@@ -174,7 +181,7 @@ end
 % quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVENFORCE(:,1), matDVENFORCE(:,2), matDVENFORCE(:,3))
 % hold off
 
-fpg = matCONTROL;
+fpg = matCONTROL + 0.0001.*matDVECT(:,:,3);
 
 q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF;
@@ -232,18 +239,18 @@ toc
 % % quiver3(X(:),Y(:),Z(:),q_ind(:,1),q_ind(:,2),q_ind(:,3));
 % hold off
 
-% % hFig20 = figure(20);
-% % clf(20);
-% % scatter(matCENTER(:,1), fcolor,'xr')
-% % hold on
-% % theta = linspace(0, pi, 100);
-% % plot(((1 - cos(theta)))./2, 1 - 4.*sin(theta).^2,'--ok')
-% % hold off
-% % set(gca,'Ydir','reverse')
-% % grid minor
-% % box on
-% % axis tight
-%
+% hFig20 = figure(20);
+% clf(20);
+% scatter(matCENTER(:,1), fcolor,'xr')
+% hold on
+% theta = linspace(0, pi, 100);
+% plot(((1 - cos(theta)))./2, 1 - 4.*sin(theta).^2,'--ok')
+% hold off
+% set(gca,'Ydir','reverse')
+% grid minor
+% box on
+% axis tight
+
 % granularity = .01;
 % x = 0.4916;
 % y = 0.01667;

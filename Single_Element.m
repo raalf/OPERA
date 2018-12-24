@@ -11,13 +11,14 @@ valALPHA = 0;
 valBETA = 0;
 vecSYM = [];
 
-% matPOINTS(:,:,1) = [0 -0.5 0];
-% matPOINTS(:,:,2) = [0  0.5 0];
-% matPOINTS(:,:,3) = [1  0   0];
 
-matPOINTS(:,:,1) = [0 0 0];
-matPOINTS(:,:,2) = [0  0.5 0];
-matPOINTS(:,:,3) = [0.5  0.5 0];
+% matPOINTS(:,:,1) = [0 0 0];
+% matPOINTS(:,:,2) = [0  0.5 0];
+% matPOINTS(:,:,3) = [0.5  0.5 0];
+
+matPOINTS(:,:,1) = [0.5 0 0];
+matPOINTS(:,:,2) = [0  0 0];
+matPOINTS(:,:,3) = [0  0.5 0];
 
 
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
@@ -36,10 +37,10 @@ matCOEFF = [0 0 0 1 0];
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
 % view([-30 17])
 
-granularity = 0.05;
-y = [-0.2:granularity:0.8];
-x = [0.05, matCENTER(:,1), 0.4];
-z = [-0.2:granularity:0.2];
+% granularity = 0.05;
+% y = [-0.2:granularity:0.8];
+% x = [0.05, matCENTER(:,1), 0.4];
+% z = [-0.2:granularity:0.2];
 
 % granularity = 0.025;
 % x = [-0.2:granularity:0.8];
@@ -54,21 +55,17 @@ z = [-0.2:granularity:0.2];
 % z = x.*0;
 
 % granularity = 0.01;
-% z = -.25:granularity:.25;
+% z = -.5:granularity:.5;
 % len = length(z);
-% y = zeros(len,1) + 0.2;
-% x = zeros(len,1) + 0.8;
+% y = zeros(len,1) + matCENTER(:,2);
+% x = zeros(len,1) + matCENTER(:,1);
 
-% granularity = 0.5;
-% y = -.5:granularity:1.5;
-% z = -1:granularity:1;
-% x = -1.5:granularity:1.5;
+granularity = 0.01;
+z = -.5:granularity:.5;
+len = length(z);
+y = zeros(len,1) + matCENTER(:,2);
+x = -0.05:0.06:0.35;
 
-
-% granularity = 0.06125;
-% y = -.1:granularity:0.6;
-% z = -0.5:granularity:0.5;
-% x = -0.1:granularity:0.5;
 
 % z(z==0) = [];
 [X,Y,Z] = meshgrid(x,y,z);
@@ -76,10 +73,11 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
 % fpg = [matCENTER; matCENTER + [0.1 0 0]];
 % fpg = [matCENTER; matCENTER + [0 0 0.1]];
-% fpg = matCENTER + [0.1 0.1 0.4];
+% fpg = matCENTER + [2 1 1];
 
-fpg = [0.2 0 0.02]
-
+% fpg = [0.6 0.5 1.5; 0.23 0.5 0.6]
+% fpg = [-0.1000   -0.1000   -0.2550]
+% fpg = [0    0.1667   -0.2000]
 % fpg = matCENTER
 
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);

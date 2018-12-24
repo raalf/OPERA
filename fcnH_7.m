@@ -21,6 +21,35 @@ I(idx_in_plane) = fcnH_7ip(M(idx_in_plane), N(idx_in_plane), F1(idx_in_plane), F
 I(abs(N) <= tol & abs(M) <= tol) = 0;
 idx = abs(N) <= tol & abs(M) > tol & idx_in_plane;
 I(idx) = F2(idx).*asinh(sign(F2(idx)).*M(idx)) - F1(idx).*asinh(sign(F1(idx)).*M(idx));
+
+% I(abs(M) <= tol & abs(N) > tol) = fcnH_7C(N(abs(M) <= tol & abs(N) > tol), alpha(abs(M) <= tol & abs(N) > tol), F1(abs(M) <= tol & abs(N) > tol), F2(abs(M) <= tol & abs(N) > tol));
+end
+
+function I = fcnH_7C(N, alpha, F1, F2)
+t1 = [F1 F2] .^ 2;
+t2 = t1 + alpha;
+t3 = sqrt(t2);
+t6 = asinh(0.1e1 ./ t3 .* N);
+t8 = N .^ 2;
+t9 = t1 + t8 + alpha;
+t12 = sqrt(0.1e1 ./ t2 .* t9);
+t14 = sqrt(t9);
+t16 = log([F1 F2] + t14);
+t17 = sqrt(-alpha);
+t19 = sign(N);
+t20 = N .* t19;
+t23 = t14 .* t20;
+t24 = [F1 F2] .* t17;
+t30 = log(-0.2e1 ./ (-[F1 F2] + t17) .* (t8 + t23 + alpha + t24));
+t37 = log(0.2e1 ./ ([F1 F2] + t17) .* (t8 + t23 + alpha - t24));
+t47 = t6 .* [F1 F2] + t19 ./ t17 ./ t14 .* (0.2e1 .* t20 .* t17 .* t16 + t30 .* alpha - t37 .* alpha) .* t3 .* t12 ./ 0.2e1;
+
+if size(t47,2) == 2
+    I = t47(:,2) - t47(:,1);   
+else
+    I = [];
+end
+
 end
 
 function I = fcnH_7op(M, N, alpha, F1, F2)

@@ -14,8 +14,8 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/NACA 4412 2d.dat';
-strFILE = 'inputs/Circle_2d.dat';
-% strFILE = 'inputs/simple_wing.dat';
+% strFILE = 'inputs/Circle.dat';
+strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/simple_wing2.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS] = fcnOPREAD(strFILE);
@@ -181,7 +181,8 @@ end
 % quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVENFORCE(:,1), matDVENFORCE(:,2), matDVENFORCE(:,3))
 % hold off
 
-fpg = matCONTROL + 0.0001.*matDVECT(:,:,3);
+fpg = matCONTROL + 1e-2.*matDVECT(:,:,3);
+% fpg = matCONTROL;
 
 q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 q_ind = q_inds + matUINF;

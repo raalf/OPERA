@@ -63,7 +63,8 @@ matCOEFF = [0 0 0 1 0];
 granularity = 0.01;
 z = -.5:granularity:.5;
 len = length(z);
-y = zeros(len,1) + matCENTER(:,2);
+% y = zeros(len,1) + matCENTER(:,2);
+y = 0.01:0.1:0.49;
 x = -0.05:0.06:0.35;
 
 

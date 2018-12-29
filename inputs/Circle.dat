@@ -1,0 +1,32 @@
+OPERA INPUT FILE
+ALL UNITS IN SI
+
+ANALYSIS PARAMETERS
+
+Analysis Type:	 	strATYPE = 3D
+Lifting Surface:	strA2TYPE = PANEL
+Chordwise Spacing:	strSPACING = COSINE
+
+Maximum Timesteps: 		valMAXTIME = 0
+Timestep Size: 			valDELTIME = 0.25
+Relaxed or Fixed Wake: 	strRELAX = FIXED
+
+Angles of Attack: 		seqALPHA = 0
+Angles of Sideslip: 	seqBETA = 0
+
+GEOMETRY
+
+No. of panels:	valPANELS =	1
+
+Defines leading edge of wing, all measured in metres:
+Keep vecM the same for all panels on a wing.
+
+Panel #:1. 
+Number of spanwise elements:	vecN 		= 10. 
+Number of chordwise elements: 	vecM 		= 31.
+Symmetry about YZ Plane:		strSYM 		= NO
+Trailing edge:					strTE 		= NO
+Leading edge:					strLE       = NO
+xleft		yleft		zleft		chord		epsilon	 	airfoil
+0.000000	0.000000	0.000000	1.000000	0.000000	Circle
+0.000000	1.000000	0.000000	1.000000	0.000000	Circle

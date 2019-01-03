@@ -2,7 +2,7 @@ clc
 clear
 
 % letter = {'A','B','C','D','E','F','G','H'}
-letter = {'A','B','C','D'}
+letter = {'A','B','C','D','E','F'}
 
 fn = 0:7;
 

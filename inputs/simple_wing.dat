@@ -11,7 +11,7 @@ Maximum Timesteps: 		valMAXTIME = 0
 Timestep Size: 			valDELTIME = 0.25
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
-Angles of Attack: 		seqALPHA = 10
+Angles of Attack: 		seqALPHA = 20
 Angles of Sideslip: 	seqBETA = 0
 
 GEOMETRY
@@ -22,8 +22,8 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 10. 
-Number of chordwise elements: 	vecM 		= 5.
+Number of spanwise elements:	vecN 		= 5. 
+Number of chordwise elements: 	vecM 		= 10.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES

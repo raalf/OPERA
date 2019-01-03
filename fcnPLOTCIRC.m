@@ -1,5 +1,6 @@
 function [hFig1, circ_all] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, colour, ppa)
 
+set(0,'CurrentFigure',hFig1);
 for i = 1:valNELE
     corners = fcnGLOBSTAR(matVLST(matDVE(i,:),:) - matCENTER(i,:), [repmat(matROTANG(i,1),3,1) repmat(matROTANG(i,2),3,1) repmat(matROTANG(i,3),3,1)]);
     points = fcnPOLYGRID(corners(:,1), corners(:,2), ppa);

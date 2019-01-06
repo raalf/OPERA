@@ -8,10 +8,10 @@ Lifting Surface:	strA2TYPE = THIN
 Chordwise Spacing:	strSPACING = NORMAL
 
 Maximum Timesteps: 		valMAXTIME = 0
-Timestep Size: 			valDELTIME = 0.25
+Timestep Size: 			valDELTIME = 0.1
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
-Angles of Attack: 		seqALPHA = 10
+Angles of Attack: 		seqALPHA = 20
 Angles of Sideslip: 	seqBETA = 0
 
 GEOMETRY

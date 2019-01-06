@@ -24,8 +24,7 @@ strFILE = 'inputs/simple_wing.dat';
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(matPOINTS);
 
 flagRELAX = 0;
-valMAXTIME = 0
-valDELTIME = 0.1
+valMAXTIME = 20
 valDENSITY = 1.225;
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
@@ -56,15 +55,15 @@ if ~isempty(matTEPOINTS) && strcmpi(strATYPE{2},'PANEL')
     [~, idxte(:,2)] = ismember(matTEPOINTS(:,:,2),matVLST,'rows');
     [~, vecTE] = ismember(idxte, matELST,'rows');
     vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend'));
-%     matKINCON_P = [matCONTROL; ((matVLST(matELST(vecTE,1),:) + matVLST(matELST(vecTE,2),:))./2)];
-%     matKINCON_DVE = [[1:valNELE]'; matEATT(vecTE,1)];
+    %     matKINCON_P = [matCONTROL; ((matVLST(matELST(vecTE,1),:) + matVLST(matELST(vecTE,2),:))./2)];
+    %     matKINCON_DVE = [[1:valNELE]'; matEATT(vecTE,1)];
 elseif ~isempty(matTEPOINTS) && strcmpi(strATYPE{2},'THIN')
     [~, idxte(:,1)] = ismember(matTEPOINTS(:,:,1),matVLST,'rows');
     [~, idxte(:,2)] = ismember(matTEPOINTS(:,:,2),matVLST,'rows');
     [~, vecTE] = ismember(idxte, matELST,'rows');
     vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend'));
-%     matKINCON_P = [matCONTROL; ((matVLST(matELST(vecTE,1),:) + matVLST(matELST(vecTE,2),:))./2)];
-%     matKINCON_DVE = [[1:valNELE]'; vecTEDVE];
+    %     matKINCON_P = [matCONTROL; ((matVLST(matELST(vecTE,1),:) + matVLST(matELST(vecTE,2),:))./2)];
+    %     matKINCON_DVE = [[1:valNELE]'; vecTEDVE];
 else
     matKINCON_P = matCONTROL;
     matKINCON_DVE = [1:valNELE]';
@@ -132,18 +131,23 @@ for valTIMESTEP = 1:valMAXTIME
         matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
     end
     
-    if flagRELAX == 1
+    if flagRELAX == 1 && valTIMESTEP > 2
         [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG] = ...
             fcnRELAX(matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
             matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST);
     end
     
-    matDVENFORCE = fcnHDVENFORCE(strATYPE, matUINF, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA);
-    vecDVELIFT = sqrt(sum(matDVENFORCE.^2,2)).*cosd(valALPHA);
-    vecDVEDRAG = sqrt(sum(matDVENFORCE.^2,2)).*sind(valALPHA);
-    matDVELIFTDIR = cross(matUINF, matSPANDIR, 2);
-    vecDVELIFT = dot( matDVELIFTDIR, matDVENFORCE, 2);
-    vecDVEDRAG = dot(cross(matDVELIFTDIR, matSPANDIR, 2), matDVENFORCE, 2);
+    
+    [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
+    view([33, 28])
+    
+    matDVENFORCE = fcnHDVENFORCE(strATYPE, matUINF, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE);
+    vecDVELIFT = sum(matDVENFORCE,1).*cosd(valALPHA);
+    vecDVEDRAG = sum(matDVENFORCE,1).*sind(valALPHA);
+%     matDVELIFTDIR = cross(matUINF, matSPANDIR, 2);
+%     matDVEDRAGDIR = cross(matSPANDIR, matDVELIFTDIR, 2);
+%     vecDVELIFT = dot(matDVENFORCE, matDVELIFTDIR, 2);
+%     vecDVEDRAG = dot(matDVENFORCE, matDVEDRAGDIR, 2);
     CL = sum(vecDVELIFT)./(0.5.*sum(vecDVEAREA));
     CDi = sum(vecDVEDRAG)./(0.5.*sum(vecDVEAREA));
     fprintf('Timestep: %d\t\tCL = %0.5f\t\tCDi = %0.5f\n', valTIMESTEP, CL, CDi);
@@ -157,7 +161,7 @@ if valTIMESTEP > 0
     colors = {'k';'b';'r';'m'};
     hold on
     for i = 1:5
-        pFig1 = plot(1:valTIMESTEP,abs(reshape(sum(matCOEFF_HSTRY(:,i,2:end) - matCOEFF_HSTRY(:,i,1:end-1),1),[],1,1)),'-ok');
+        pFig1 = plot(1:valTIMESTEP, abs(reshape(sum((matCOEFF_HSTRY(:,i,2:end) - matCOEFF_HSTRY(:,i,1:end-1))./matCOEFF_HSTRY(:,i,1:end-1),1),[],1,1)).*100,'-ok');
         pFig1.LineStyle = linestyles{1+mod(i,4),:};
         pFig1.Marker = markers{1+mod(i,11),:};
         pFig1.Color = colors{1+mod(i,4),:};
@@ -167,23 +171,24 @@ if valTIMESTEP > 0
     box on
     hold off
     xlabel('Timestep','FontSize',15)
-    ylabel('Coefficient Delta','FontSize',15)
+    ylabel('Percent Change in Value','FontSize',15)
     legend('A_1','A_2','B_1','B_2','C_3','Location','NorthEast')
     set(gca, 'YScale', 'log')
 end
 
 %% Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1, circ_all] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 4);
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 4);
 if valTIMESTEP > 0
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-        [hFig1,circ_all] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 4);
+    [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 4);
+    hold on
+    quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVENFORCE(:,1), matDVENFORCE(:,2), matDVENFORCE(:,3))
+    hold off
 end
-% hold on
-% quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVENFORCE(:,1), matDVENFORCE(:,2), matDVENFORCE(:,3))
-% hold off
 
-% fpg = matCONTROL + 1e-6.*matDVECT(:,:,3);
+%
+% fpg = matCONTROL - 1e-2.*matDVECT(:,:,3);
 % fpg = matCONTROL;
 
 % q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
@@ -207,28 +212,28 @@ end
 % view([33, 28])
 % toc
 
-granularity = .1;
-x = -0.5:granularity:1.5;
-% y = -3:granularity:3;
-y = 0:granularity:3;
-% y = 1.5;
-z = -1:granularity:1;
-[X,Y,Z] = meshgrid(x,y,z);
-% y = x.*0 + 1.5;
-y = [0.5 1.5 2.5];
-fpg = [X(:) Y(:) Z(:)];
-s_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
-q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
-Xq = reshape(q_ind(:,1), size(X));
-Yq = reshape(q_ind(:,2), size(Y));
-Zq = reshape(q_ind(:,3), size(Z));
-% 
-[Xs,Ys,Zs] = meshgrid(-0.5,y,z);
-hold on
-streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
-% quiver3(fpg(:,1), fpg(:,2), fpg(:,3),q_ind(:,1),q_ind(:,2),q_ind(:,3));
-hold off
-% 
+% granularity = .1;
+% x = -0.5:granularity:1.5;
+% % y = -3:granularity:3;
+% y = 0:granularity:3;
+% % y = 1.5;
+% z = -1:granularity:1;
+% [X,Y,Z] = meshgrid(x,y,z);
+% % y = x.*0 + 1.5;
+% y = [0.5 1.5 2.5];
+% fpg = [X(:) Y(:) Z(:)];
+% s_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
+% q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
+% Xq = reshape(q_ind(:,1), size(X));
+% Yq = reshape(q_ind(:,2), size(Y));
+% Zq = reshape(q_ind(:,3), size(Z));
+% %
+% [Xs,Ys,Zs] = meshgrid(-0.5,y,z);
+% hold on
+% streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
+% % quiver3(fpg(:,1), fpg(:,2), fpg(:,3),q_ind(:,1),q_ind(:,2),q_ind(:,3));
+% hold off
+%
 % % y = [0.5 1.5 2.5];
 % [Xs,Ys,Zs] = meshgrid(-0.5,y,z);
 % hold on
@@ -253,14 +258,14 @@ hold off
 % y = 0.01667;
 % z = 0.4:granularity:2;
 % [X,Y,Z] = meshgrid(x,y,z);
-% 
+%
 % fpg = unique([X(:), Y(:), Z(:)],'rows');
 % s_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 % s_ind = s_ind + matUINF(1,:);
-% 
+%
 % hFig21 = figure(21);
 % clf(21);
-% 
+%
 % scatter(s_ind(:,1), fpg(:,3), 'xk');
 % grid minor
 % box on
@@ -271,16 +276,16 @@ hold off
 % hold off
 % xlabel('Tangential Velocity','FontSize',15);
 % ylabel('Z-Location','FontSize',15);
-% 
+%
 % theta = 90;
 % r = linspace(0.4, 2, 100);
 % hold on
 % scatter(sind(theta).*(1 + (0.5.^2./r.^2)), r, '^b')
 % hold off
-% 
+%
 % hFig21 = figure(22);
 % clf(22);
-% 
+%
 % scatter(s_ind(:,3), fpg(:,3), 'xk');
 % grid minor
 % box on
@@ -291,7 +296,7 @@ hold off
 % hold off
 % xlabel('Normal Velocity','FontSize',15);
 % ylabel('Z-Location','FontSize',15);
-% 
+%
 % theta = 90;
 % r = linspace(0.4, 2, 100);
 % hold on

@@ -4,7 +4,7 @@ function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, 
 % Evaluated at the mid-point of each edge which splits two HDVEs
 idx = all(matEATT,2); % All edges that split 2 DVEs
 
-if strcmpi(strATYPE{2},'PANEL') == 1
+if ~isempty(vecTE)
    idx(vecTE) = false; 
 end
 

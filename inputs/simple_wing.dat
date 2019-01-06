@@ -5,10 +5,10 @@ ANALYSIS PARAMETERS
 
 Analysis Type:	 	strATYPE = 3D
 Lifting Surface:	strA2TYPE = THIN
-Chordwise Spacing:	strSPACING = HALFCOSINE
+Chordwise Spacing:	strSPACING = COSINE
 
 Maximum Timesteps: 		valMAXTIME = 0
-Timestep Size: 			valDELTIME = 0.25
+Timestep Size: 			valDELTIME = 0.025
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
 Angles of Attack: 		seqALPHA = 20
@@ -22,7 +22,7 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 5. 
+Number of spanwise elements:	vecN 		= 10. 
 Number of chordwise elements: 	vecM 		= 10.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES

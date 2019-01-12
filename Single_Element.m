@@ -27,7 +27,7 @@ matPOINTS(:,:,3) = [0  0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% fpl
-fpg = [4 5 -0.00001];
+fpg = [4 5 0]
 fpl = fcnGLOBSTAR(fpg - matCENTER, matROTANG);
 
 %% Coefficients

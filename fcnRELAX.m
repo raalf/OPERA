@@ -6,7 +6,9 @@ function [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, m
 
 %% Finding induced velocities at all wake vertices
 s_ind = fcnSDVEVEL(matWVLST, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-w_ind = fcnWINDVEL(matWVLST, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
+% w_ind = fcnWINDVEL(matWVLST, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
+w_ind = fcnSDVEVEL(matWVLST, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+
 
 %% Identifying trailing edges, we won't relax these points
 

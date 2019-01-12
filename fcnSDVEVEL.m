@@ -1,4 +1,5 @@
 function [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER)
+% T.D.K 2019-01-12 AC1886 OVER IOWA @ 35,000 FT
 
 len = length(fpg(:,1));
 dvenum = reshape(repmat(1:valNELE,len,1),[],1);

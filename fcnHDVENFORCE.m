@@ -5,8 +5,9 @@ if strcmpi(strATYPE{2}, 'THIN') == 1
     
     
     fpg = matCONTROL;
-    q_u = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-    q_u = dot(matDVECT(:,:,3), q_u, 2).*matDVECT(:,:,3);
+%     q_u = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+%     q_u = dot(matDVECT(:,:,3), q_u, 2).*matDVECT(:,:,3);
+    q_u = fpg.*0;
     
     for i = 1:valNELE
         corners = matPLEX(:,:,2);

@@ -56,7 +56,7 @@ idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m
     (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
 % disp(['Edge calls: ', num2str(sum(idx_on_edge))]);
 if any(idx_on_edge)
-    tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)] + (1e-1.*(-[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)]./(sqrt(sum(-[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)].^2,2)))));
+    tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)] + (1e-1.*(-[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)]./(sqrt(sum([x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)].^2,2)))));
     x_m(idx_on_edge) = tmp(:,1);
     y_m(idx_on_edge) = tmp(:,2);
     z_m(idx_on_edge) = tmp(:,3);
@@ -95,16 +95,18 @@ idx_d = abs(T) < tol & abs(u) >= tol & abs(u - alpha) >= tol2 & alpha < tol2;
 idx_e = abs(T) < tol & abs(S - 1) < tol & abs(u - alpha) < tol2 & alpha >= tol2;
 idx_f = abs(T) < tol & abs(S - 1) < tol & abs(u) < tol2 & alpha < tol2;
 
-K0 = fcnK0(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f);
+idx_g = abs(T) < tol & abs(S) >= tol & abs(u) < tol & alpha < tol2;
+
+K0 = fcnK0(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f, idx_g);
 % integral(@(F) 1./(((S(1,1).*F.^2 + T(1,1).*F + u(1,1)).^(3/2)).*((F.^2 + alpha(:,1)).^2)), F_lim(1,1,1), F_lim(1,1,2))
 % integral(@(F) 1./(((S(1,2).*F.^2 + T(1,2).*F + u(1,2)).^(3/2)).*((F.^2 + alpha(:,1)).^2)), F_lim(1,1,1), F_lim(1,1,2))
-K1 = fcnK1(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f);
-K2 = fcnK2(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f);
-K3 = fcnK3(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f);
-K4 = fcnK4(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f);
-K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f);
-K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f);
-K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f);
+K1 = fcnK1(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f, idx_g);
+K2 = fcnK2(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f, idx_g);
+K3 = fcnK3(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f, idx_g);
+K4 = fcnK4(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f, idx_g);
+K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f, idx_g);
+K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f, idx_g);
+K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx_a, idx_b, idx_c, idx_d, idx_e, idx_f, idx_g);
 
 F(:,1) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K3+(6.*N.*S-3.*N).*K2+(-3.*L.*alpha+6.*L.*u).*K1 + ( +N.*alpha+2.*u.*N ).*K0]), 2);
 F(:,2) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(2.*L.*S+L).*K4+(6.*N.*S-3.*N-(2.*L.*S+L).*x_m).*K3+(-3.*L.*alpha+6.*L.*u-(6.*N.*S-3.*N).*x_m).*K2+(N.*alpha+2.*u.*N-(-3.*L.*alpha+6.*L.*u).*x_m).*K1 + ( -(N.*alpha+2.*u.*N).*x_m ).*K0]), 2);
@@ -230,7 +232,12 @@ infl_loc = real(infl_new);
 infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
 
 idx_nan = find(reshape(sum(any(isnan(infl_new) | isinf(infl_new))),[],1) > 0);
+if any(idx_nan)
+   disp('Nan induction in fcnHDVEIND_DB'); 
+end
 % disp(['Inf or NaN induction: ', num2str(length(idx_nan))]);
 infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
 infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
+
+% infl_loc(:,:,:) = infl_loc(:,:,:).*-1;
 end

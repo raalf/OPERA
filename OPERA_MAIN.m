@@ -24,7 +24,7 @@ strFILE = 'inputs/simple_wing.dat';
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(matPOINTS);
 
 flagRELAX = 0;
-valMAXTIME = 10
+valMAXTIME = 40
 valDENSITY = 1.225;
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
@@ -107,7 +107,7 @@ for valTIMESTEP = 1:valMAXTIME
     %   Generate new wake elements
     %   Create and solve WD-Matrix for new elements
     %   Solve wing D-Matrix with wake-induced velocities
-    %   Solve entire WD-Matrix
+    %   Solve entire WD-Matrix (?)
     %   Relaxation procedure (Relax, create W-Matrix and W-Resultant, solve W-Matrix)
     %   Calculate surface normal forces
     %   Calculate DVE normal forces
@@ -138,6 +138,13 @@ for valTIMESTEP = 1:valMAXTIME
         [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG] = ...
             fcnRELAX(matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
             matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST);
+        
+        % Rebuild wing resultant
+%         vecR = fcnRWING(valDLEN, valTIMESTEP, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT);
+%         matCOEFF = fcnSOLVED(matD, vecR, valNELE);
+%         matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
+
+%         matWCOEFF(end - valWSIZE*2 + 1:end, :) = fcnDWAKENEW(valTIMESTEP, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF);
     end
     
     
@@ -145,6 +152,8 @@ for valTIMESTEP = 1:valMAXTIME
 %     view([33, 28])
     
     matDVENFORCE = fcnHDVENFORCE(strATYPE, matUINF, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE);
+%     matDVENFORCE = nan(valNELE, 3);
+
     vecDVELIFT = sum(matDVENFORCE,1).*cosd(valALPHA);
     vecDVEDRAG = sum(matDVENFORCE,1).*sind(valALPHA);
 %     matDVELIFTDIR = cross(matUINF, matSPANDIR, 2);
@@ -190,12 +199,33 @@ if valTIMESTEP > 0
     hold off
 end
 
-%
-% fpg = matCONTROL - 1e-2.*matDVECT(:,:,3);
-% fpg = matCONTROL;
 
+% marg = 1e-2
+% fpg = matCONTROL + marg.*matDVECT(:,:,3);
 % q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-% q_ind = q_inds + matUINF;
+% if valTIMESTEP > 0
+%       q_indw = fcnSDVEVEL(matKINCON_P, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+% %       q_indw = q_inds.*0;
+% else
+%     q_indw = q_inds.*0;
+% end
+% q_indu = q_inds + matUINF + q_indw;
+% 
+% fpg = matCONTROL - marg.*matDVECT(:,:,3);
+% q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+% if valTIMESTEP > 0
+%       q_indw = fcnSDVEVEL(matKINCON_P, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+% %       q_indw = q_inds.*0;
+% else
+%     q_indw = q_inds.*0;
+% end
+% q_indl = q_inds + matUINF + q_indw;
+% 
+% fpg = matCENTER;
+% q_ind = q_indu - q_indl;
+% hold on
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),'r');
+% hold off
 
 % fcolor = sqrt(sum(q_ind.^2,2));
 % fcolor = 1 - (fcolor.^2);
@@ -214,29 +244,30 @@ end
 % colorbar;
 % view([33, 28])
 % toc
-
+% % 
 % granularity = .1;
 % x = -0.5:granularity:1.5;
 % % y = -3:granularity:3;
 % y = 0:granularity:3;
 % % y = 1.5;
 % z = -1:granularity:1;
-% [X,Y,Z] = meshgrid(x,y,z);
+% [X,Y,Z] = meshgrid(x + matCENTER(1,1),y,z + matCENTER(1,3));
 % % y = x.*0 + 1.5;
 % y = [0.5 1.5 2.5];
 % fpg = [X(:) Y(:) Z(:)];
 % s_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
-% q_ind = s_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
+% w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+% q_ind = s_ind + w_ind + repmat(matUINF(1,:), length(s_ind(:,1)),1);
 % Xq = reshape(q_ind(:,1), size(X));
 % Yq = reshape(q_ind(:,2), size(Y));
 % Zq = reshape(q_ind(:,3), size(Z));
 % %
-% [Xs,Ys,Zs] = meshgrid(-0.5,y,z);
+% [Xs,Ys,Zs] = meshgrid(-0.5 + matCENTER(1,1),y,z + matCENTER(1,3));
 % hold on
 % streamline(X,Y,Z,Xq,Yq,Zq,Xs,Ys,Zs);
 % % quiver3(fpg(:,1), fpg(:,2), fpg(:,3),q_ind(:,1),q_ind(:,2),q_ind(:,3));
 % hold off
-%
+
 % % y = [0.5 1.5 2.5];
 % [Xs,Ys,Zs] = meshgrid(-0.5,y,z);
 % hold on

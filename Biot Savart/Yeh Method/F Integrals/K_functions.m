@@ -1,7 +1,7 @@
 clc
 clear
 
-letter = 'F'
+letter = 'G'
 
 fn = 0:7;
 
@@ -35,7 +35,8 @@ fcnheader = sprintf('function I = fcn%s(S, t, u, alpha, F, tol)\n',fcn);
 I = sprintf('\nI = %s(:,:,2) - %s(:,:,1);\n',tnum, tnum);
 fcnfooter = sprintf('\nend\n');
 
-fid = fopen(['G:\GIT\opera\fcn', fcn, '.m'],'wt');
+% fid = fopen(['G:\GIT\opera\fcn', fcn, '.m'],'wt');
+fid = fopen(['C:\Users\travi\OneDrive\Desktop\GIT\opera\fcn', fcn, '.m'],'wt');
 fprintf(fid, [fcnheader body I fcnfooter]);
 fclose(fid);
 

@@ -2,7 +2,7 @@ clc
 clear
 
 % letter = {'A','B','C','D','E','F','G','H'}
-letter = {'A','B','C','D','E','F'}
+letter = {'A','B','C','D','E','F','G'}
 
 fn = 0:7;
 
@@ -33,7 +33,9 @@ footer = sprintf('\n\nend\n');
 
 whole_thing = strjoin(convertCharsToStrings([fcnheader bdy1 bdy2 footer]))
 
-fid = fopen(['G:\GIT\opera\fcn', fcn, '.m'],'wt');
+% fid = fopen(['G:\GIT\opera\fcn', fcn, '.m'],'wt');
+fid = fopen(['C:\Users\travi\OneDrive\Desktop\GIT\opera\fcn', fcn, '.m'],'wt');
+
 fprintf(fid, whole_thing);
 fclose(fid);
 

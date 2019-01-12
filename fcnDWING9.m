@@ -1,4 +1,4 @@
-function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecSYM, matROTANG, vecSPANDIR, matKINCON_P, matKINCON_DVE)
+function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, vecSYM, matROTANG, vecSPANDIR, matKINCON_P, matKINCON_DVE)
 
 %% Circulation equations between elements
 % Evaluated at the mid-point of each edge which splits two HDVEs
@@ -18,6 +18,7 @@ circ = [fcnDCIRC(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); .
         fcnDCIRC(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
         fcnDCIRC(repmat(vnum_b,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
 
+% circ = [fcnDCIRC(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
 %% Vorticity along edge between elements
 % Unit vector in local ref frame (a for HDVE1, b for HDVE2) from local vertex to local vertex on the edge that forms the border between the two
 vort = [fcnDVORTEDGE(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
@@ -31,6 +32,7 @@ vort = [fcnDVORTEDGE(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER
 % Evaluated at the mid-point of each edge which is used by only 1 HDVE (and not at the trailing edge)
 circ_tip = [];
 vort_tip = [];
+vort_te = [];
 
 if strcmpi(strATYPE{2},'THIN') == 1
     pts(:,:,1) = matVLST(matELST(vecLE,1),:);
@@ -40,6 +42,14 @@ if strcmpi(strATYPE{2},'THIN') == 1
     circ_tip = [fcnDCIRC2(pts(:,:,1), vecLEDVE, valNELE, matROTANG, matCENTER); ...
                 fcnDCIRC2(pts(:,:,2), vecLEDVE, valNELE, matROTANG, matCENTER); ...
                 fcnDCIRC2(pts(:,:,3), vecLEDVE, valNELE, matROTANG, matCENTER)];    
+ 
+    pts = [];
+    pts(:,:,1) = matVLST(matELST(vecTE,1),:);
+    pts(:,:,2) = matVLST(matELST(vecTE,2),:);
+    pts(:,:,3) = (pts(:,:,1) + pts(:,:,2))./2;
+    vort_te = [fcnDVORT2(pts(:,:,1), vecTEDVE, valNELE, matCENTER, matROTANG, 'A'); ...
+        fcnDVORT2(pts(:,:,2), vecTEDVE, valNELE, matCENTER, matROTANG, 'A'); ...
+        fcnDVORT2(pts(:,:,3), vecTEDVE, valNELE, matCENTER, matROTANG, 'A')];
 end
             
 if strcmpi(strATYPE{1},'3D') == 1    
@@ -55,7 +65,6 @@ if strcmpi(strATYPE{1},'3D') == 1
                 fcnDCIRC2(pts2(:,:,1), tipdves, valNELE, matROTANG, matCENTER); ...
                 fcnDCIRC2(pts2(:,:,2), tipdves, valNELE, matROTANG, matCENTER); ...
                 fcnDCIRC2(pts2(:,:,3), tipdves, valNELE, matROTANG, matCENTER)];
-    
 elseif strcmpi(strATYPE{1},'2D') == 1
     dvenum = [1:valNELE]';    
     vort_tip = fcnDVORT1(dvenum, valNELE,'B');
@@ -88,7 +97,7 @@ king_kong = zeros(len, valNELE*5);
 king_kong(rows,:) = reshape(permute(reshape(temp60',5,[],valNELE),[2 1 3]),[],5*valNELE,1);
 
 %% Piecing together D-matrix
-D = [circ; vort; vort_tip; circ_tip; king_kong];
-
+D = [circ; vort; vort_tip; vort_te; circ_tip; king_kong];
+% D = [circ; vort; vort_te; king_kong];
 end
 

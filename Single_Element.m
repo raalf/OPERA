@@ -27,11 +27,11 @@ matPOINTS(:,:,3) = [0  0.5 0];
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 %% fpl
-fpg = [-3 -2 -0.1];
+fpg = [4 5 -0.00001];
 fpl = fcnGLOBSTAR(fpg - matCENTER, matROTANG);
 
 %% Coefficients
-matCOEFF = [0 0 0 0 1];
+matCOEFF = [1 1 1 1 1];
 
 syms xi eta real
 mu = 0.5.*matCOEFF(1).*eta.^2 + matCOEFF(2).*eta + 0.5.*matCOEFF(3).*xi.^2 + matCOEFF(4).*xi + matCOEFF(5);
@@ -53,9 +53,12 @@ le = (((eta3 - eta2).*xi)./(xi3 - xi2)) + eta2 - ((xi2.*(eta3 - eta2))./(xi3 - x
 te = (((eta3 - eta1).*xi)./(xi3 - xi1)) + eta1 - ((xi1.*(eta3 - eta1))./(xi3 - xi1));
 
 nint = vpaintegral(int(term, eta, le, te), xi, xi1, xi3);
-v = fcnSTARGLOB((1./(4*pi)).*nint, matROTANG)
+% v = fcnSTARGLOB((1./(4*pi)).*nint, matROTANG)
+infl_loc = fcnHDVEIND_DB(1, 1, fpg, matPLEX, matROTANG, matCENTER);
+q_ind = permute(sum(infl_loc.*repmat(reshape(matCOEFF(1,:)',1,5,[]),3,1,1),2),[2 1 3]);
 
-[q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL)
+abs((nint - q_ind)./q_ind).*100
+% [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL)
 
 %% Plot
 

@@ -3,8 +3,9 @@ ALL UNITS IN SI
 
 ANALYSIS PARAMETERS
 
-Analysis Type:	 	strATYPE = 2D
+Analysis Type:	 	strATYPE = 3D
 Lifting Surface:	strA2TYPE = PANEL
+Chordwise Spacing:	strSPACING = COSINE
 
 Maximum Timesteps: 		valMAXTIME = 0
 Timestep Size: 			valDELTIME = 0.25
@@ -21,11 +22,11 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 1. 
-Number of chordwise elements: 	vecM 		= 45.
+Number of spanwise elements:	vecN 		= 10. 
+Number of chordwise elements: 	vecM 		= 15.
 Symmetry about YZ Plane:		strSYM 		= NO
-Trailing edge:					strTE 		= YES
-Leading edge:					strLE       = YES
+Trailing edge:					strTE 		= NO
+Leading edge:					strLE       = NO
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.000000	0.000000	0.000000	1.000000	0.000000	Circle
-0.000000	0.050000	0.000000	1.000000	0.000000	Circle
+0.000000	4.000000	0.000000	1.000000	0.000000	Circle

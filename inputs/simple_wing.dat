@@ -5,10 +5,10 @@ ANALYSIS PARAMETERS
 
 Analysis Type:	 	strATYPE = 3D
 Lifting Surface:	strA2TYPE = THIN
-Chordwise Spacing:	strSPACING = COSINE
+Chordwise Spacing:	strSPACING = HALFCOSINE
 
 Maximum Timesteps: 		valMAXTIME = 0
-Timestep Size: 			valDELTIME = 0.025
+Timestep Size: 			valDELTIME = 0.2
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
 Angles of Attack: 		seqALPHA = 20
@@ -23,10 +23,10 @@ Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
 Number of spanwise elements:	vecN 		= 10. 
-Number of chordwise elements: 	vecM 		= 10.
+Number of chordwise elements: 	vecM 		= 1.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.000000	0.000000	0.000000	1.000000	0.000000	NACA 4412
-0.000000	3.000000	0.000000	1.000000	0.000000	NACA 4412
+0.000000	0.000000	0.000000	1.000000	0.000000	NACA 0015
+0.000000	3.000000	0.000000	1.000000	0.000000	NACA 0015

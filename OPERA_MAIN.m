@@ -18,14 +18,14 @@ disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/NACA 4412 2d.dat';
 % strFILE = 'inputs/Circle_2d.dat';
-% strFILE = 'inputs/simple_wing.dat';
-strFILE = 'inputs/simple_wing2.dat';
+strFILE = 'inputs/simple_wing.dat';
+% strFILE = 'inputs/simple_wing2.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS, vecULS] = fcnOPREAD(strFILE);
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(matPOINTS);
 
 flagRELAX = 0;
-valMAXTIME = 0
+valMAXTIME = 15
 valDENSITY = 1.225;
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
@@ -176,7 +176,7 @@ end
 
 %% Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 20);
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 20);
 if valTIMESTEP > 0
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 %     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 4);
@@ -186,21 +186,22 @@ if valTIMESTEP > 0
 end
 
 
-granularity = .1;
-x = [-0.5:granularity:1.5] + min(matCENTER(:,1));
-y = 1.5;
-z = [-1:granularity:1] + min(matCENTER(:,3));
-[X,Y,Z] = meshgrid(x, y, z);
-
-fpg = [X(:) Y(:) Z(:)];
-
-% fpg = [0.0541 1.5 0.4761];
-q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-q_ind = q_inds + matUINF(1,:);
-hold on
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),'r');
-hold off
-
+% granularity = .1;
+% x = [-0.5:granularity:1.5] + min(matCENTER(:,1));
+% y = 1.5;
+% z = [-1:granularity:1] + min(matCENTER(:,3));
+% [X,Y,Z] = meshgrid(x, y, z);
+% 
+% fpg = [X(:) Y(:) Z(:)];
+% 
+% % fpg = [0.0541 1.5 0.4761];
+% q_inds = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+% q_ind = q_inds + matUINF(1,:);
+% hold on
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),'r');
+% hold off
+% 
+% view([0 0])
 
 
 % marg = 1e-2

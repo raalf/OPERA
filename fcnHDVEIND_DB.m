@@ -61,7 +61,7 @@ idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m
     (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
 % disp(['Edge calls: ', num2str(sum(idx_on_edge))]);
 if any(idx_on_edge)
-    tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)] + (1e-1.*(-[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)]./(sqrt(sum([x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)].^2,2)))));
+    tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)] + (1e-2.*(-[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)]./(sqrt(sum([x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)].^2,2)))));
     x_m(idx_on_edge) = tmp(:,1);
     y_m(idx_on_edge) = tmp(:,2);
     z_m(idx_on_edge) = tmp(:,3);
@@ -77,11 +77,11 @@ L = [C E];
 F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
-tol_F = 1e-10;
-tol_S = 1e-10;
-tol_T = 1e-10;
-tol_u = 1e-4;
-tol_alpha = 1e-2;
+tol_F = 1e-5;
+tol_S = 1e-14;
+tol_T = 1e-14;
+tol_u = 1e-5;
+tol_alpha = 1e-14;
 
 % Correcting zero F limits if we are in the plane of the element
 idx = abs(F_lim(:,:,1)) < tol_F & alpha(:,1) <= tol_alpha;
@@ -115,11 +115,12 @@ idx(:,:,13) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u &  alpha >
 idx(:,:,14) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u &  alpha <= tol_alpha;
 idx(:,:,15) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) <= tol_u &  alpha >  tol_alpha;
 idx(:,:,16) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) <= tol_u &  alpha <= tol_alpha;
-idx(:,:,17) = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u - alpha) <= 1e-5;
-idx(:,:,18) = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u - alpha) <= 1e-5;
-idx(:,:,19) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u - alpha) <= 1e-5;
-idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u - alpha) <= 1e-5;
-% idx(:,:,17:19) = false(size(idx(:,:,1:3)));
+idx(:,:,17) = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
+idx(:,:,18) = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
+idx(:,:,19) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
+idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
+% idx(:,:,17:20) = false(size(idx(:,:,1:4)));
+
 
 K0 = fcnK0(S, T, u, alpha, F_lim, tol, idx);
 K1 = fcnK1(S, T, u, alpha, F_lim, tol, idx);

@@ -166,6 +166,7 @@ for i = 1:valPANELS
     
 end
 
+fclose(fp);
 [matPOINTS, matTEPOINTS, matLEPOINTS, vecULS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING);
 
 

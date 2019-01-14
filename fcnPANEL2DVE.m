@@ -1,4 +1,4 @@
-function [ CP, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE(strATYPE, panel4corners, i, vecN, vecM, repsilon, tepsilon, rchord, tchord, airfoil, strSPACING)
+function [ CP, LE_Left, LE_Right, TE_Left, TE_Right, vecULS] = fcnPANEL2DVE(strATYPE, panel4corners, i, vecN, vecM, repsilon, tepsilon, rchord, tchord, airfoil, strSPACING)
 %fcnPANEL2DVE Summary of this function goes here
 %   fcnPANEL2DVE takes four corners of a panel and outputs vertices of non-planer DVEs
 
@@ -110,7 +110,7 @@ elseif strcmpi(strATYPE{2},'PANEL')
     PX2 = zeros(M+1,N+1,2);
     PY2 = zeros(M+1,N+1,2);
     PZ2 = zeros(M+1,N+1,2);
-    
+    tmp_ul = nan(M+1,N+1,2);
     for jj = 1:2
         for j = M+1:-1:1
             if diff(chordY(1,:)) ~= 0    %if: panel is NOT vertical
@@ -123,10 +123,11 @@ elseif strcmpi(strATYPE{2},'PANEL')
             PX2(j,:,jj) = interp1(chordbase,chordX(j,:),spanwise); % X coordinates of all points
             PY2(j,:,jj) = interp1(chordbase,chordY(j,:),spanwise); % Y coordinates of all points
             PZ2(j,:,jj) = interp1(chordbase,chordZ(j,:,jj),spanwise); % Z coordinates of all points
-                        
+            tmp_ul(j,1:N+1,jj) = jj;
+            
 %             hFig4 = figure(4);
 %             clf(4);
-%             scatter3(airfoil(i,1).coord(:,1), repmat(PY2(j,1,jj),size(airfoil(i,1).coord(:,2),1),1), airfoil(i,1).coord(:,2),'ok')
+%             scatter3(airfoil(i,1).coord(:,1), repmat(PY2 j,1,jj),size(airfoil(i,1).coord(:,2),1),1), airfoil(i,1).coord(:,2),'ok')
 %             hold on
 %             scatter3(airfoil(i,2).coord(:,1), repmat(PY2(j,end,jj),size(airfoil(i,2).coord(:,2),1),1), airfoil(i,2).coord(:,2),'^b')
 %             scatter3(PX2(j,:,jj), PY2(j,:,jj), PZ2(j,:,jj), 'xr')
@@ -144,14 +145,18 @@ elseif strcmpi(strATYPE{2},'PANEL')
     PY2 = [tmp(1:end-1,:); PY2(:,:,2)];
     
     tmp = flipud(PZ2(:,:,1));
-    PZ2 = [tmp(1:end-1,:); PZ2(:,:,2)];
+    PZ2 = [tmp(1:end-1,:); PZ2(:,:,2)];   
     
+    tmp = flipud(tmp_ul(:,:,1));
+    tmp_ul = [tmp(1:end-1,:); tmp_ul(:,:,2)];
 end
 
 if strcmpi(strATYPE{2},'PANEL')
     % DVE Parameters Calculation
     % Calculate Control Points, stored in 3D matrix
     CP = reshape([PX2(2:2:end,2:2:end),PY2(2:2:end,2:2:end),PZ2(2:2:end,2:2:end)],(vecM(i)*2),vecN(i),3);
+    vecULS = reshape([tmp_ul(2:2:end,2:2:end),tmp_ul(2:2:end,2:2:end),tmp_ul(2:2:end,2:2:end)],(vecM(i)*2),vecN(i),3);
+    vecULS = vecULS(:,:,1);
     %     CP_Right = reshape([PX2(2:2:end,3:2:end),PY2(2:2:end,3:2:end),PZ2(2:2:end,3:2:end)],vecM(i),vecN(i),3);
     %LE_Mid no longer needed (Jan6,2017 -Alton)
     %LE_Mid = reshape([PX2(1:2:end-1,2:2:end),PY2(1:2:end-1,2:2:end),PZ2(1:2:end-1,2:2:end)],vecM(i),vecN(i),3);
@@ -166,6 +171,7 @@ else
     % DVE Parameters Calculation
     % Calculate Control Points, stored in 3D matrix
     CP = reshape([PX2(2:2:end,2:2:end),PY2(2:2:end,2:2:end),PZ2(2:2:end,2:2:end)],vecM(i),vecN(i),3);
+    vecULS = ones(size(CP,1), size(CP,2),1);
     %     CP_Right = reshape([PX2(2:2:end,3:2:end),PY2(2:2:end,3:2:end),PZ2(2:2:end,3:2:end)],vecM(i),vecN(i),3);
     %LE_Mid no longer needed (Jan6,2017 -Alton)
     %LE_Mid = reshape([PX2(1:2:end-1,2:2:end),PY2(1:2:end-1,2:2:end),PZ2(1:2:end-1,2:2:end)],vecM(i),vecN(i),3);

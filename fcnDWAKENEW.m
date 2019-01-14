@@ -1,4 +1,4 @@
-function matWCOEFF = fcnDWAKENEW(valTIMESTEP, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF)
+function matWCOEFF = fcnDWAKENEW(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF)
 
 valWNELE_tmp = length([vecWLEDVE; vecWTEDVE]);
 
@@ -21,15 +21,25 @@ circ1 = [   fcnDCIRC2(pts(:,:,1), vecWLEDVE, valWNELE, matWROTANG, matWCENTER); 
     fcnDCIRC2(pts(:,:,2), vecWLEDVE, valWNELE, matWROTANG, matWCENTER); ...
     fcnDCIRC2(pts(:,:,3), vecWLEDVE, valWNELE, matWROTANG, matWCENTER)];
 
-pts_loc(:,:,1) = fcnGLOBSTAR(pts(:,:,1) - matCENTER(vecTEDVE,:), matROTANG(vecTEDVE,:));
-pts_loc(:,:,2) = fcnGLOBSTAR(pts(:,:,2) - matCENTER(vecTEDVE,:), matROTANG(vecTEDVE,:));
-pts_loc(:,:,3) = fcnGLOBSTAR(pts(:,:,3) - matCENTER(vecTEDVE,:), matROTANG(vecTEDVE,:));
-res1 = [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matCOEFF(vecTEDVE,:),2); ...
-    sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matCOEFF(vecTEDVE,:),2); ...
-    sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matCOEFF(vecTEDVE,:),2)];
+pts_loc(:,:,1) = fcnGLOBSTAR(pts(:,:,1) - matCENTER(vecTEDVE(:,1),:), matROTANG(vecTEDVE(:,1),:));
+pts_loc(:,:,2) = fcnGLOBSTAR(pts(:,:,2) - matCENTER(vecTEDVE(:,1),:), matROTANG(vecTEDVE(:,1),:));
+pts_loc(:,:,3) = fcnGLOBSTAR(pts(:,:,3) - matCENTER(vecTEDVE(:,1),:), matROTANG(vecTEDVE(:,1),:));
+res1_1 = [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matCOEFF(vecTEDVE(:,1),:),2); ...
+    sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matCOEFF(vecTEDVE(:,1),:),2); ...
+    sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matCOEFF(vecTEDVE(:,1),:),2)];
+if strcmpi(strATYPE{2},'PANEL')
+    pts_loc(:,:,1) = fcnGLOBSTAR(pts(:,:,1) - matCENTER(vecTEDVE(:,2),:), matROTANG(vecTEDVE(:,2),:));
+    pts_loc(:,:,2) = fcnGLOBSTAR(pts(:,:,2) - matCENTER(vecTEDVE(:,2),:), matROTANG(vecTEDVE(:,2),:));
+    pts_loc(:,:,3) = fcnGLOBSTAR(pts(:,:,3) - matCENTER(vecTEDVE(:,2),:), matROTANG(vecTEDVE(:,2),:));
+    res1_2 = [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matCOEFF(vecTEDVE(:,2),:),2); ...
+        sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matCOEFF(vecTEDVE(:,2),:),2); ...
+        sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matCOEFF(vecTEDVE(:,2),:),2)];
+    
+    res1 = res1_2 + res1_1;
+else
+    res1 = res1_1;
+end
 
-vort6 = [];
-res6 = [];
 vort6 = [fcnDVORT2(pts(:,:,1), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
     fcnDVORT2(pts(:,:,2), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
     fcnDVORT2(pts(:,:,3), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A')];
@@ -89,17 +99,17 @@ else
         sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matWCOEFF(dvenum,:),2); ...
         sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matWCOEFF(dvenum,:),2)];
     
-%     vort4 = [fcnDVORT2(pts(:,:,1), vecWTEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
-%         fcnDVORT2(pts(:,:,2), vecWTEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
-%         fcnDVORT2(pts(:,:,3), vecWTEDVE, valWNELE, matWCENTER, matWROTANG, 'A')];
-%     res4 = [sum([pts_loc(:,2,1) ones(size(pts_loc(:,2,1),1),1), zeros(size(pts_loc(:,2,1),1),3)].*matWCOEFF(dvenum,:),2);...
-%         sum([pts_loc(:,2,2) ones(size(pts_loc(:,2,2),1),1), zeros(size(pts_loc(:,2,2),1),3)].*matWCOEFF(dvenum,:),2);...
-%         sum([pts_loc(:,2,3) ones(size(pts_loc(:,2,3),1),1), zeros(size(pts_loc(:,2,3),1),3)].*matWCOEFF(dvenum,:),2)];
+    %     vort4 = [fcnDVORT2(pts(:,:,1), vecWTEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
+    %         fcnDVORT2(pts(:,:,2), vecWTEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
+    %         fcnDVORT2(pts(:,:,3), vecWTEDVE, valWNELE, matWCENTER, matWROTANG, 'A')];
+    %     res4 = [sum([pts_loc(:,2,1) ones(size(pts_loc(:,2,1),1),1), zeros(size(pts_loc(:,2,1),1),3)].*matWCOEFF(dvenum,:),2);...
+    %         sum([pts_loc(:,2,2) ones(size(pts_loc(:,2,2),1),1), zeros(size(pts_loc(:,2,2),1),3)].*matWCOEFF(dvenum,:),2);...
+    %         sum([pts_loc(:,2,3) ones(size(pts_loc(:,2,3),1),1), zeros(size(pts_loc(:,2,3),1),3)].*matWCOEFF(dvenum,:),2)];
     
-%     nedg = size([vecWLEDVE; vecWTEDVE],1);
-%     zer = zeros(nedg,1);
-%     vort4 = fcnCREATEDSECT(sparse(nedg, valWNELE*5), nedg, 5, [vecWLEDVE; vecWTEDVE], [], [ones(nedg,1), zer, zer, zer, zer], []);
-%     res4 = zeros(size(vort4,1),1);
+    %     nedg = size([vecWLEDVE; vecWTEDVE],1);
+    %     zer = zeros(nedg,1);
+    %     vort4 = fcnCREATEDSECT(sparse(nedg, valWNELE*5), nedg, 5, [vecWLEDVE; vecWTEDVE], [], [ones(nedg,1), zer, zer, zer, zer], []);
+    %     res4 = zeros(size(vort4,1),1);
     
     
 end

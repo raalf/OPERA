@@ -1,4 +1,4 @@
-function [matPOINTS, matTEPOINTS, matLEPOINTS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING)
+function [matPOINTS, matTEPOINTS, matLEPOINTS, vecULS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING)
 
 % This function has been taken from VAP2 and repurposed for OPERA. It takes panel corner points and discretizes
 % the panel into quadralateral DVEs, which I then subdivide into triangles to match STL format.
@@ -129,7 +129,7 @@ for i = 1:valPANELS
     end
     
     % fcnPANEL2DVE takes four corners of a panel and outputs vertices of non-planer DVEs
-    [~, LE_Left, LE_Right, TE_Left, TE_Right ] = fcnPANEL2DVE(strATYPE, panel4corners, i, vecN, vecM, repsilon, tepsilon, rchord, tchord, airfoil, strSPACING);
+    [~, LE_Left, LE_Right, TE_Left, TE_Right , tmpULS] = fcnPANEL2DVE(strATYPE, panel4corners, i, vecN, vecM, repsilon, tepsilon, rchord, tchord, airfoil, strSPACING);
     
     if strcmpi(strATYPE{2}, 'PANEL')
         vecM = vecM.*2;
@@ -163,8 +163,10 @@ for i = 1:valPANELS
     P2(idxStart:idxEnd,:) = reshape(permute(LE_Right, [2 1 3]),count,3);
     P3(idxStart:idxEnd,:) = reshape(permute(TE_Right, [2 1 3]),count,3);
     P4(idxStart:idxEnd,:) = reshape(permute(TE_Left, [2 1 3]),count,3);
+    vecULS(idxStart:idxEnd,:) = reshape(permute(tmpULS, [2 1 3]),count,1);
     
     % Creating "triangles" from the quadrilaterals on this panel. This is done in a way that SHOULD keep the normals "upwards" and not mixed
+    vecULS = reshape(repmat(vecULS,1,2,1)', [],1,1);
     if strcmpi(strATYPE{2}, 'PANEL')
         temp_points = cat(3, permute(reshape([P1(idxStart:idxEnd,:) P3(idxStart:idxEnd,:) P2(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
         permute(reshape([P1(idxStart:idxEnd,:) P4(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]));

@@ -1,7 +1,7 @@
 clc
 clear
 
-letter = 'G'
+letter = 'T'
 
 fn = 0:7;
 
@@ -30,17 +30,17 @@ if length(k) > 1
 end
 tnum = lastline(1:k(1)-2);
 
-fcnheader = sprintf('function I = fcn%s(S, t, u, alpha, F, tol)\n',fcn);
+fcnheader = sprintf('function I = fcn%s(S, T, u, alpha, F, tol)\n',fcn);
 
 I = sprintf('\nI = %s(:,:,2) - %s(:,:,1);\n',tnum, tnum);
 fcnfooter = sprintf('\nend\n');
 
-% fid = fopen(['G:\GIT\opera\fcn', fcn, '.m'],'wt');
-fid = fopen(['C:\Users\travi\OneDrive\Desktop\GIT\opera\fcn', fcn, '.m'],'wt');
+fid = fopen(['G:\GIT\opera\K Functions\fcn', fcn, '.m'],'wt');
+% fid = fopen(['C:\Users\travi\OneDrive\Desktop\GIT\opera\fcn', fcn, '.m'],'wt');
 fprintf(fid, [fcnheader body I fcnfooter]);
 fclose(fid);
 
-delete(['K Integrals/', fcn, '_in.txt'])
+% delete(['K Integrals/', fcn, '_in.txt'])
 
 end
 

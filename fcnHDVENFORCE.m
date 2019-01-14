@@ -1,7 +1,7 @@
 function matDVENFORCE = fcnHDVENFORCE(strATYPE, matUINF, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE)
 % Output is force per unit density
 
-if strcmpi(strATYPE{2}, 'THIN') == 1
+% if strcmpi(strATYPE{2}, 'THIN') == 1
     
     
     fpg = matCONTROL;
@@ -72,8 +72,8 @@ if strcmpi(strATYPE{2}, 'THIN') == 1
     %
     %         matDVENFORCE = -0.5.*(CPU - CPL).*(sqrt(sum(matUINF.^2,2))).*vecDVEAREA.*matDVECT(:,:,3);
     
-elseif strcmpi(strATYPE{2}, 'PANEL') == 1
-    matDVENFORCE = nan(valNELE,1);
-end
+% elseif strcmpi(strATYPE{2}, 'PANEL') == 1
+%     matDVENFORCE = nan(valNELE,1);
+% end
 
 end

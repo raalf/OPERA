@@ -4,14 +4,14 @@ ALL UNITS IN SI
 ANALYSIS PARAMETERS
 
 Analysis Type:	 	strATYPE = 3D
-Lifting Surface:	strA2TYPE = THIN
-Chordwise Spacing:	strSPACING = NORMAL
+Lifting Surface:	strA2TYPE = PANEL
+Chordwise Spacing:	strSPACING = HALFCOSINE
 
 Maximum Timesteps: 		valMAXTIME = 0
 Timestep Size: 			valDELTIME = 0.1
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
-Angles of Attack: 		seqALPHA = 20
+Angles of Attack: 		seqALPHA = 0
 Angles of Sideslip: 	seqBETA = 0
 
 GEOMETRY
@@ -26,7 +26,7 @@ Number of spanwise elements:	vecN 		= 5.
 Number of chordwise elements: 	vecM 		= 10.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
-Leading edge:					strLE       = YES
+Leading edge:					strLE       = NO
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.000000	0.000000	0.000000	1.000000	0.000000	NACA 0015
 0.000000	3.000000	0.000000	1.000000	0.000000	NACA 0015

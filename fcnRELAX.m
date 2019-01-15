@@ -1,4 +1,4 @@
-function [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG] = ...
+function [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG, matWAKEGEOM] = ...
                 fcnRELAX(vecUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
                 matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST)
             
@@ -13,12 +13,21 @@ quiver3(matWVLST(:,1), matWVLST(:,2), matWVLST(:,3), w_ind(:,1), w_ind(:,2), w_i
 quiver3(matWVLST(:,1), matWVLST(:,2), matWVLST(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
 hold off
 
-s_ind = s_ind.*0;
-w_ind = w_ind.*0;
+% s_ind = s_ind.*0;
+% w_ind = w_ind.*0;
+
+% for i = 1:valWNELE
+%     q_loc = -0.5.*[matWCOEFF(i,3).*matWPLEX(:,1,i) + matWCOEFF(i,4), matWCOEFF(i,1).*matWPLEX(:,2,i) + matWCOEFF(i,2), matWPLEX(:,2,i).*0];
+%     
+% end
+
+
 %% Identifying trailing edges, we won't relax these points
 
 % Finding vertices common between wing and wake, these are the trailing edge vertices
-dontmove = [matWVLST(matWELST(vecWLE,1),:); matWVLST(matWELST(vecWLE(end),2),:); matWVLST(matWELST(vecWTE,1),:); matWVLST(matWELST(vecWTE(end),2),:)];
+% dontmove = [matWVLST(matWELST(vecWLE,1),:); matWVLST(matWELST(vecWLE(end),2),:); matWVLST(matWELST(vecWTE,1),:); matWVLST(matWELST(vecWTE(end),2),:)];
+oldest_dve = [1:(valWSIZE*20)]';
+dontmove = [matWVLST(matWELST(vecWLE,1),:); matWVLST(matWELST(vecWLE(end),2),:); matWVLST(matWDVE(oldest_dve,:),:)];
 [idxTEV, ~] = ismember(matWVLST, dontmove, 'rows');
 
 % Setting induced velocities at these points to zero

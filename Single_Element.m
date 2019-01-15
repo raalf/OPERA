@@ -45,8 +45,6 @@ z = [-0.1:granularity:0.1];
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-% fpg(fpg(:,3) ~= 0,:) = [];
-
 % fpg = [0.1183333333333333597936487535662308800966 0.1416666666666666629659232512494781985879 0.0000000000000000000000000000000000000000]
 
 fpl = fcnGLOBSTAR(fpg - matCENTER, matROTANG);
@@ -78,8 +76,8 @@ if len > 1
     delete('BadFPs.txt');
 end
 
-% for i = 1:size(fpl,1)
-parfor i = 1:size(fpl,1)
+for i = 1:size(fpl,1)
+% parfor i = 1:size(fpl,1)
     try
         r = fpl(i,:);
         term = repmat(mu,1,3).*((n./(sqrt(sum((r - s).^2,2)).^3)) - dot(3.*repmat(n,length(xi(:)),1), r - s, 2).*((r - s)./(sqrt(sum((r - s).^2,2)).^5)));
@@ -105,61 +103,30 @@ parfor i = 1:size(fpl,1)
     end
 end
 
-
-
-
-
-
-
-% [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL)
-
 %% Plot
 
-% vecUINF = [cosd(0) 0 sind(0)]
-
-% [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
-% % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), vecUINF, matROTANG, 'r', 10);
-% % view([-30 17])
-%
-% granularity = 0.05;
-% y = [-0.2:granularity:0.8];
-% x = [0.05, matCENTER(:,1), 0.4];
-% z = [-0.2:granularity:0.2];
-%
-% granularity = 0.05;
-% x = [-5:granularity:7];
-% y = [-5, matCENTER(:,2), 5];
-% z = [-5:granularity:5];
-%
-%
-%
-% granularity = 0.025;
-% x = [-0.1:granularity:0.6];
-% y = [-0.2:granularity:0.6];
-% z = x.*0;
-%
-% % granularity = 0.01;
-% % z = -.5:granularity:.5;
-% % len = length(z);
-% % y = zeros(len,1) + matCENTER(:,2);
-% % x = zeros(len,1) + matCENTER(:,1);
-%
-% granularity = 0.01;
-% z = -.5:granularity:.5;
-% len = length(z);
-% % y = zeros(len,1) + matCENTER(:,2);
-% y = 0.01:0.1:0.49;
-% x = -0.05:0.06:0.35;
-%
-%
-% % z(z==0) = [];
-
+% [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
+% 
+% % granularity = 0.0025;
+% % x = [-0.05:granularity:0.05];
+% % y = [0.01];
+% % z = [-0.05:granularity:0.05];
+% % 
+% % granularity = 0.0025;
+% % x = [0.225:granularity:0.275];
+% % y = [0.25];
+% % z = [-0.05:granularity:0.05];
+% 
+% % granularity = 0.05;
+% % x = [-5:granularity:7];
+% % y = [-5, matCENTER(:,2), 5];
+% % z = [-5:granularity:5];
+% 
 % [X,Y,Z] = meshgrid(x,y,z);
 % fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-% % fpg = [0 -5 4.8]
 % [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 % figure(1);
-% q_ind = permute(q_ind,[3 2 1]);
+% % q_ind = permute(q_ind,[3 2 1]);
 % hold on
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),'b')
 % hold off

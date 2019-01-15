@@ -145,44 +145,24 @@ for valTIMESTEP = 1:valMAXTIME
         
     end
     
-    if flagRELAX == 1 && valTIMESTEP > 2
+    if flagRELAX == 1 && valTIMESTEP > 10
+        [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');    
+        [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);       
         
-        [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-        [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-%         
-%         s_ind = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-%         w_ind = fcnSDVEVEL(matCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
-%         
-%         hold on
-%         quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
-%         quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
-%         hold off
-%         
-%         s_ind = fcnSDVEVEL(matWCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-%         w_ind = fcnSDVEVEL(matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
-%         
-%         hold on
-%         quiver3(matWCENTER(:,1), matWCENTER(:,2), matWCENTER(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
-%         quiver3(matWCENTER(:,1), matWCENTER(:,2), matWCENTER(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
-%         hold off
-               
-        
-        [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG] = ...
+        [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG, matWAKEGEOM] = ...
             fcnRELAX(matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
             matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST);
-        
+       
         % Rebuild wing resultant
         %         vecR = fcnRWING(valDLEN, valTIMESTEP, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT);
         %         matCOEFF = fcnSOLVED(matD, vecR, valNELE);
         %         matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
-        
         %         matWCOEFF(end - valWSIZE*2 + 1:end, :) = fcnDWAKENEW(valTIMESTEP, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF);
     end
-    
-    hFig21 = fcnPLOTCOEFF(hFig21, valTIMESTEP, matCOEFF_HSTRY);
-    
-    
-%     matDVENFORCE = fcnHDVENFORCE(strATYPE, matUINF, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE);
+
+    % Forces
+%     hFig21 = fcnPLOTCOEFF(hFig21, valTIMESTEP, matCOEFF_HSTRY);
+%     matDVENFORCE = fcnHDVENFORCE(strATYPE, matUINF, valDENSITY, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE);
     matDVENFORCE = nan(valNELE, 3);
     vecDVELIFT = sum(matDVENFORCE,1).*cosd(valALPHA);
     vecDVEDRAG = sum(matDVENFORCE,1).*sind(valALPHA);
@@ -190,17 +170,17 @@ for valTIMESTEP = 1:valMAXTIME
     %     matDVEDRAGDIR = cross(matSPANDIR, matDVELIFTDIR, 2);
     %     vecDVELIFT = dot(matDVENFORCE, matDVELIFTDIR, 2);
     %     vecDVEDRAG = dot(matDVENFORCE, matDVEDRAGDIR, 2);
-    CL = sum(vecDVELIFT)./(0.5.*sum(vecDVEAREA));
-    CDi = sum(vecDVEDRAG)./(0.5.*sum(vecDVEAREA));
+    CL = sum(vecDVELIFT)./(0.5.*valDENSITY.*sum(vecDVEAREA));
+    CDi = sum(vecDVEDRAG)./(0.5.*valDENSITY.*sum(vecDVEAREA));
     fprintf('Timestep: %d\t\tCL = %0.5f\t\tCDi = %0.5f\n', valTIMESTEP, CL, CDi);
 end
 
 % % Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 20);
+% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 20);
 if valTIMESTEP > 0
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-    [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 4);
+%     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 4);
     hold on
     quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVENFORCE(:,1), matDVENFORCE(:,2), matDVENFORCE(:,3))
     hold off

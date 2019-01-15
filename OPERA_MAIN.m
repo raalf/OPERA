@@ -24,7 +24,7 @@ strFILE = 'inputs/simple_wing.dat';
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS, vecULS] = fcnOPREAD(strFILE);
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(matPOINTS);
 
-flagRELAX = 1;
+flagRELAX = 0;
 valMAXTIME = 15
 valDENSITY = 1.225;
 
@@ -149,22 +149,22 @@ for valTIMESTEP = 1:valMAXTIME
         
         [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
         [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-        
-        s_ind = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-        w_ind = fcnSDVEVEL(matCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
-        
-        hold on
-        quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
-        quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
-        hold off
-        
-        s_ind = fcnSDVEVEL(matWCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-        w_ind = fcnSDVEVEL(matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
-        
-        hold on
-        quiver3(matWCENTER(:,1), matWCENTER(:,2), matWCENTER(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
-        quiver3(matWCENTER(:,1), matWCENTER(:,2), matWCENTER(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
-        hold off
+%         
+%         s_ind = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+%         w_ind = fcnSDVEVEL(matCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+%         
+%         hold on
+%         quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
+%         quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
+%         hold off
+%         
+%         s_ind = fcnSDVEVEL(matWCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+%         w_ind = fcnSDVEVEL(matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+%         
+%         hold on
+%         quiver3(matWCENTER(:,1), matWCENTER(:,2), matWCENTER(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
+%         quiver3(matWCENTER(:,1), matWCENTER(:,2), matWCENTER(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
+%         hold off
                
         
         [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG] = ...
@@ -182,7 +182,7 @@ for valTIMESTEP = 1:valMAXTIME
     hFig21 = fcnPLOTCOEFF(hFig21, valTIMESTEP, matCOEFF_HSTRY);
     
     
-    %     matDVENFORCE = fcnHDVENFORCE(strATYPE, matUINF, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE);
+%     matDVENFORCE = fcnHDVENFORCE(strATYPE, matUINF, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE);
     matDVENFORCE = nan(valNELE, 3);
     vecDVELIFT = sum(matDVENFORCE,1).*cosd(valALPHA);
     vecDVEDRAG = sum(matDVENFORCE,1).*sind(valALPHA);
@@ -206,12 +206,12 @@ if valTIMESTEP > 0
     hold off
 end
 
-s_ind = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-w_ind = fcnSDVEVEL(matCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
-q_ind = s_ind + w_ind + matUINF;
-hold on
-quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),'m')
-hold off
+% s_ind = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+% w_ind = fcnSDVEVEL(matCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+% q_ind = s_ind + w_ind + matUINF;
+% hold on
+% quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),'m')
+% hold off
         
 
 

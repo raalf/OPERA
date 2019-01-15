@@ -61,7 +61,8 @@ idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m
     (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
 % disp(['Edge calls: ', num2str(sum(idx_on_edge))]);
 if any(idx_on_edge)
-    tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)] + (1e-2.*(-[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)]./(sqrt(sum([x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)].^2,2)))));
+%     tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)]./1.5;
+    tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)] + (1e-3.*(-[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)]./(sqrt(sum([x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)].^2,2)))));
     x_m(idx_on_edge) = tmp(:,1);
     y_m(idx_on_edge) = tmp(:,2);
     z_m(idx_on_edge) = tmp(:,3);
@@ -193,7 +194,7 @@ if any(idx_nan)
    disp('Nan induction in fcnHDVEIND_DB'); 
 end
 % disp(['Inf or NaN induction: ', num2str(length(idx_nan))]);
-infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
+% infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
 infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
 
 % infl_loc(:,:,:) = infl_loc(:,:,:).*-1;

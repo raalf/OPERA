@@ -8,10 +8,10 @@ function [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, m
 s_ind = fcnSDVEVEL(matWVLST, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 w_ind = fcnSDVEVEL(matWVLST, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
 
-% hold on
-% quiver3(matWVLST(:,1), matWVLST(:,2), matWVLST(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
-% quiver3(matWVLST(:,1), matWVLST(:,2), matWVLST(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
-% hold off
+hold on
+quiver3(matWVLST(:,1), matWVLST(:,2), matWVLST(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
+quiver3(matWVLST(:,1), matWVLST(:,2), matWVLST(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
+hold off
 
 s_ind = s_ind.*0;
 w_ind = w_ind.*0;

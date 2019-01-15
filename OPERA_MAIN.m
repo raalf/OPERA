@@ -24,7 +24,7 @@ strFILE = 'inputs/simple_wing.dat';
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS, vecULS] = fcnOPREAD(strFILE);
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(matPOINTS);
 
-flagRELAX = 0;
+flagRELAX = 1;
 valMAXTIME = 15
 valDENSITY = 1.225;
 
@@ -157,6 +157,15 @@ for valTIMESTEP = 1:valMAXTIME
         quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
         quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
         hold off
+        
+        s_ind = fcnSDVEVEL(matWCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+        w_ind = fcnSDVEVEL(matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+        
+        hold on
+        quiver3(matWCENTER(:,1), matWCENTER(:,2), matWCENTER(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
+        quiver3(matWCENTER(:,1), matWCENTER(:,2), matWCENTER(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
+        hold off
+               
         
         [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG] = ...
             fcnRELAX(matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...

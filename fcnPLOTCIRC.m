@@ -25,9 +25,9 @@ for i = 1:valNELE
     points_glob = points_glob + matCENTER(i,:);
 
     hold on
-    trisurf(tri, circ_glob(:,1), circ_glob(:,2), circ_glob(:,3),'edgealpha',0,'facealpha',0.8);
+%     trisurf(tri, circ_glob(:,1), circ_glob(:,2), circ_glob(:,3),'edgealpha',0,'facealpha',0.8);
 %     quiver3(points_glob(:,1), points_glob(:,2), points_glob(:,3), vort_glob(:,1), vort_glob(:,2), vort_glob(:,3))
-%     scatter3(reshape(circ(:,1),[],1,1), reshape(circ(:,2),[],1,1), reshape(circ(:,3),[],1,1),4,colour)
+    scatter3(reshape(circ(:,1),[],1,1), reshape(circ(:,2),[],1,1), reshape(circ(:,3),[],1,1),4,colour)
 
     hold off
 end

@@ -8,7 +8,7 @@ Lifting Surface:	strA2TYPE = THIN
 Chordwise Spacing:	strSPACING = NORMAL
 
 Maximum Timesteps: 		valMAXTIME = 0
-Timestep Size: 			valDELTIME = 0.2
+Timestep Size: 			valDELTIME = 1
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
 Angles of Attack: 		seqALPHA = 20
@@ -22,8 +22,8 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 9. 
-Number of chordwise elements: 	vecM 		= 5.
+Number of spanwise elements:	vecN 		= 15. 
+Number of chordwise elements: 	vecM 		= 8.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES

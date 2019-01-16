@@ -4,7 +4,7 @@ linestyles = {'--';'-.';'-';':'};
 markers = {'o';'x';'s';'^';'*';'d';'v';'>';'<';'p';'h'};
 colors = {'k';'b';'r';'m'};
     
-if valTIMESTEP > 0
+if valTIMESTEP == 0
     hFig21 = figure(21);
     clf(21);
     hold on
@@ -23,7 +23,7 @@ if valTIMESTEP > 0
     ylabel('Percent Change in Value','FontSize',15)
     legend('A_1','A_2','B_1','B_2','C_3','Location','NorthEast')
     set(gca, 'YScale', 'log')
-if valTIMESTEP < 0
+elseif valTIMESTEP > 0
     set(0, 'currentfigure', hFig21);
     
     hold on

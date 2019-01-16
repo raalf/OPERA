@@ -61,7 +61,7 @@ idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m
     (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
 % disp(['Edge calls: ', num2str(sum(idx_on_edge))]);
 if any(idx_on_edge)
-    tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)].*0.95;
+    tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)].*1.00;
 %     tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)] + (1e-1.*(-[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)]./(sqrt(sum([x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)].^2,2)))));
     x_m(idx_on_edge) = tmp(:,1);
     y_m(idx_on_edge) = tmp(:,2);

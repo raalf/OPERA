@@ -23,7 +23,7 @@ strFILE = 'inputs/simple_wing.dat';
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS);
 
 flagRELAX = 0;
-valMAXTIME = 20
+valMAXTIME = 50
 valDENSITY = 1.225;
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
@@ -35,7 +35,7 @@ matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 matKINCON_P = matCONTROL;
 matKINCON_DVE = [1:valNELE]';
 
-% Points where flow tangency is enforced
+% Points where flow tangency is enforcedfe
 matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, vecSYM, matROTANG, matSPANDIR, matKINCON_P, matKINCON_DVE);
 valDLEN = length(matD);
 
@@ -99,11 +99,13 @@ for valTIMESTEP = 1:valMAXTIME
     % Jank is in session, The Right Honourable FORLOOP is preciding
     % VECTORIZE IT TRAVIS
     vecDVELIFT = nan(valNELE,1);
+    vecDVEDRAG = nan(valNELE,1);
     for jj = 1:size(vecTE,1)
+        % Lift
         pts = matVLST(matELST(vecTE(jj),:),:); % End points of TE edge segement
         pts_loc = fcnGLOBSTAR(pts - matCENTER(vecTEDVE(jj),:), repmat(matROTANG(vecTEDVE(jj),:),2,1)); % In element local (The TE DVE where this edge is from)
         
-        len = 100; % Number of divisions of this line (Jank)
+        len = 50; % Number of divisions of this line (Jank)
         points = [linspace(pts_loc(1,1), pts_loc(2,1), len)' linspace(pts_loc(1,2), pts_loc(2,2), len)' linspace(pts_loc(1,3), pts_loc(2,3), len)'];
         distance = sqrt(sum((pts_loc(2,:) - pts_loc(1,:)).^2,2)); % Length of entire TE edge
         vec = (pts_loc(2,:) - pts_loc(1,:))./distance; % Direction of this edge (in local)
@@ -113,10 +115,18 @@ for valTIMESTEP = 1:valMAXTIME
         circ = fcnSTARGLOB(circ, repmat(matROTANG(vecTEDVE(jj),:), len, 1)); % Translate to global
         F = cross( repmat(valDENSITY.*matUINF(vecTEDVE(jj),:), len, 1), circ, 2); % A special guest mix on the track, Kutty J
         vecDVELIFT(vecTEDVE(jj),1) = sqrt(sum((sum(F,1).*(distance/len)).^2,2)); % Multiply by the length of the discretization, and sum
+        
+        % Drag
+        fpg = fcnSTARGLOB(points, repmat(matROTANG(vecTEDVE(jj),:),len,1)) + matCENTER(vecTEDVE(jj),:);
+        w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+        F_ind = cross( w_ind, circ, 2);
+        F_ind(1,:) = F_ind(1,:).*0;
+        F_ind(end,:) = F_ind(end,:).*0;
+        vecDVEDRAG(vecTEDVE(jj),1) = sqrt(sum((sum(F_ind,1).*(distance/len)).^2,2));
     end
 
     CL = nansum(vecDVELIFT)./(0.5.*valDENSITY.*sum(vecDVEAREA));
-    CDi = nan;
+    CDi = nansum(vecDVEDRAG)./(0.5.*valDENSITY.*sum(vecDVEAREA));
     fprintf('Timestep: %d\t\tCL = %0.5f\t\tCDi = %0.5f\n', valTIMESTEP, CL, CDi);
 end
 

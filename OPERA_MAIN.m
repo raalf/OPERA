@@ -16,13 +16,14 @@ disp('====================================================================');
 %% Preamble
 strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/simple_wing2.dat';
+% strFILE = 'inputs/simple_wing_test.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS, vecULS] = fcnOPREAD(strFILE);
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(matPOINTS);
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS);
 
 flagRELAX = 0;
-valMAXTIME = 40
+valMAXTIME = 20
 valDENSITY = 1.225;
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
@@ -80,8 +81,7 @@ for valTIMESTEP = 1:valMAXTIME
         matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
         
         % Update wake coefficients
-        matWCOEFF(end - valWSIZE*2 + 1:end, :) = fcnDWAKENEW(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF);
-        
+        matWCOEFF(end - valWSIZE*2 + 1:end, :) = fcnDWAKENEW(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF); 
     end
     
     if flagRELAX == 1 && valTIMESTEP > 10

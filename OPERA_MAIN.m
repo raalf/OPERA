@@ -25,7 +25,7 @@ strFILE = 'inputs/simple_wing.dat';
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(matPOINTS);
 
 flagRELAX = 0;
-valMAXTIME = 15
+valMAXTIME = 5
 valDENSITY = 1.225;
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
@@ -55,14 +55,14 @@ matKINCON_DVE = [1:valNELE]';
 if ~isempty(matTEPOINTS) && strcmpi(strATYPE{2},'PANEL')
     [~, idxte(:,1)] = ismember(matTEPOINTS(:,:,1),matVLST,'rows');
     [~, idxte(:,2)] = ismember(matTEPOINTS(:,:,2),matVLST,'rows');
-    [~, vecTE] = ismember(idxte, matELST,'rows');
+    [~, vecTE] = ismember(sort(idxte,2), sort(matELST,2),'rows');
     vecTEDVE = sort(matEATT(vecTE,:),2,'descend');
     %     matKINCON_P = [matCONTROL; ((matVLST(matELST(vecTE,1),:) + matVLST(matELST(vecTE,2),:))./2)];
     %     matKINCON_DVE = [[1:valNELE]'; matEATT(vecTE,1)];
 elseif ~isempty(matTEPOINTS) && strcmpi(strATYPE{2},'THIN')
     [~, idxte(:,1)] = ismember(matTEPOINTS(:,:,1),matVLST,'rows');
     [~, idxte(:,2)] = ismember(matTEPOINTS(:,:,2),matVLST,'rows');
-    [~, vecTE] = ismember(idxte, matELST,'rows');
+    [~, vecTE] = ismember(sort(idxte,2), sort(matELST,2), 'rows');
     vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend'));
     
     idx = all(matEATT,2);
@@ -161,15 +161,16 @@ for valTIMESTEP = 1:valMAXTIME
     end
 
     % Forces
-%     hFig21 = fcnPLOTCOEFF(hFig21, valTIMESTEP, matCOEFF_HSTRY);
-%     matDVENFORCE = fcnHDVENFORCE(strATYPE, matUINF, valDENSITY, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE);
-    matDVENFORCE = nan(valNELE, 3);
-    vecDVELIFT = sum(matDVENFORCE,1).*cosd(valALPHA);
-    vecDVEDRAG = sum(matDVENFORCE,1).*sind(valALPHA);
-    %     matDVELIFTDIR = cross(matUINF, matSPANDIR, 2);
-    %     matDVEDRAGDIR = cross(matSPANDIR, matDVELIFTDIR, 2);
-    %     vecDVELIFT = dot(matDVENFORCE, matDVELIFTDIR, 2);
-    %     vecDVEDRAG = dot(matDVENFORCE, matDVEDRAGDIR, 2);
+    hFig21 = fcnPLOTCOEFF(hFig21, valTIMESTEP, matCOEFF_HSTRY);
+    [matDVENFORCE, matDVEFDIST, matDVEFDIST_P] = fcnHDVENFORCE(strATYPE, matUINF, valDENSITY, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE);
+%     matDVENFORCE = nan(valNELE, 3);
+    valRESULTANT = sum(matDVENFORCE,1);
+%     vecDVEDRAG = valRESULTANT(1,1).*cosd(valALPHA) + valRESULTANT(1,3).*sind(valALPHA);
+%     vecDVELIFT = -valRESULTANT(1,1).*sind(valALPHA) + valRESULTANT(1,3).*cosd(valALPHA);
+    matDVELIFTDIR = cross(matUINF, matSPANDIR, 2);
+    matDVEDRAGDIR = cross(matSPANDIR, matDVELIFTDIR, 2);
+    vecDVELIFT = dot(matDVENFORCE, matDVELIFTDIR, 2);
+    vecDVEDRAG = dot(matDVENFORCE, matDVEDRAGDIR, 2);
     CL = sum(vecDVELIFT)./(0.5.*valDENSITY.*sum(vecDVEAREA));
     CDi = sum(vecDVEDRAG)./(0.5.*valDENSITY.*sum(vecDVEAREA));
     fprintf('Timestep: %d\t\tCL = %0.5f\t\tCDi = %0.5f\n', valTIMESTEP, CL, CDi);
@@ -177,11 +178,14 @@ end
 
 % % Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 20);
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 20);
 if valTIMESTEP > 0
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-%     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 4);
+    [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 4);
     hold on
+%     tmp_p = reshape(permute(matDVEFDIST_P, [2 1 3]), size(matDVEFDIST_P, 2), [])';
+%     tmp_f = reshape(permute(matDVEFDIST, [2 1 3]), size(matDVEFDIST, 2), [])';
+%     quiver3(tmp_p(:,1), tmp_p(:,2), tmp_p(:,3), tmp_f(:,1),tmp_f(:,2), tmp_f(:,3));
     quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVENFORCE(:,1), matDVENFORCE(:,2), matDVENFORCE(:,3))
     hold off
 end

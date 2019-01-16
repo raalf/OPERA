@@ -1,22 +1,36 @@
-function matDVENFORCE = fcnHDVENFORCE(strATYPE, matUINF, valDENSITY, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE)
+function [matDVENFORCE, matDVEFDIST, matDVEFDIST_P] = fcnHDVENFORCE(strATYPE, matUINF, valDENSITY, matCONTROL, matDVECT, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, vecDVEAREA, matVLST, matDVE)
 % Output is force per unit density
+
+matDVEFDIST = nan;
+matDVEFDIST_P = nan;
 
 if strcmpi(strATYPE{2}, 'THIN') == 1
  
     fpg = matCONTROL;
     w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
     q_u = dot(matUINF + w_ind, matDVECT(:,:,3), 2).*matDVECT(:,:,3);
-    
+
     for i = 1:valNELE
-        corners = matPLEX(:,:,2);
-        points = fcnPOLYGRID(corners(:,1), corners(:,2), 10);
+        corners = matPLEX(:,:,i);
+        points = fcnPOLYGRID(corners(:,1), corners(:,2), 30);
         
         len = size(points,1);
-        vort = -0.5.*[matCOEFF(i,3).*points(:,1) + matCOEFF(i,4), matCOEFF(i,1).*points(:,2) + matCOEFF(i,2), points(:,2).*0];
-        q_lm = fcnSTARGLOB(vort, repmat(matROTANG(i,:),len,1));
+        q_lm = -0.5.*[matCOEFF(i,3).*points(:,1) + matCOEFF(i,4), matCOEFF(i,1).*points(:,2) + matCOEFF(i,2), points(:,2).*0];
+        q_lm = fcnSTARGLOB(q_lm, repmat(matROTANG(i,:),len,1));
+        
         CPU = 1 - (sqrt(sum((q_lm + matUINF(i,:) + q_u(i,:)).^2,2))).^2; % WON'T WORK FOR ROTORS
         CPL = 1 - (sqrt(sum((-q_lm + matUINF(i,:) + q_u(i,:)).^2,2))).^2; % WON'T WORK FOR ROTORS
-        matDVENFORCE(i,:) =  sum( -(CPU - CPL).*0.5.*valDENSITY.*(vecDVEAREA(i)./len).*sqrt(sum(matUINF(i,:).^2,2)).*matDVECT(i,:,3) ,1);
+        
+%         delta_p = valDENSITY.*sqrt(sum(matUINF(i,:).^2,2)).*sqrt(sum(q_lm.^2,2));
+        delta_p = -(CPU - CPL).*0.5.*valDENSITY.*sqrt(sum(matUINF(i,:).^2,2)).^2;
+%         delta_f = (delta_p.*(vecDVEAREA(i)./len).*[0 0 1]);
+%         matDVEFDIST(:,:,i) = fcnSTARGLOB(delta_f, repmat(matROTANG(i,:),len,1));
+%         matDVEFDIST_P(:,:,i) = fcnSTARGLOB([points points(:,1).*0], repmat(matROTANG(i,:),len,1)) + matCENTER(i,:);
+        matDVENFORCE(i,:) = sum(delta_p.*(vecDVEAREA(i)./len),1).*matDVECT(i,:,3);
+        
+%         CPU = 1 - (sqrt(sum((q_lm + matUINF(i,:) + q_u(i,:)).^2,2))).^2; % WON'T WORK FOR ROTORS
+%         CPL = 1 - (sqrt(sum((-q_lm + matUINF(i,:) + q_u(i,:)).^2,2))).^2; % WON'T WORK FOR ROTORS
+%         matDVENFORCE(i,:) =  sum( -(CPU - CPL).*0.5.*valDENSITY.*(vecDVEAREA(i)./len).*sqrt(sum(matUINF(i,:).^2,2)).^2.*matDVECT(i,:,3) ,1);
     end
 
     %     tmp = -0.5.*[matCOEFF(:,4), matCOEFF(:,2), matCOEFF(:,5).*0];

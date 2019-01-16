@@ -88,11 +88,11 @@ for valTIMESTEP = 1:valMAXTIME
             
             [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG, matWAKEGEOM] = ...
                 fcnRELAX(matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
-                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST); 
+                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST);
         end
         matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
     end
-
+    
     hFig21 = fcnPLOTCOEFF(valTIMESTEP, matCOEFF_HSTRY);
     
     % Forces
@@ -100,6 +100,15 @@ for valTIMESTEP = 1:valMAXTIME
     % VECTORIZE IT TRAVIS
     vecDVELIFT = nan(valNELE,1);
     vecDVEDRAG = nan(valNELE,1);
+    matDVEDRAG_DIR = matUINF./sqrt(sum(matUINF.^2,2));
+    matDVELIFT_DIR = cross(matDVEDRAG_DIR, matSPANDIR, 2);
+    matDVESIDEF_DIR = cross(matDVELIFT_DIR, matDVEDRAG_DIR, 2);
+    
+    liftfree = nan(valNELE,1);
+    liftind = nan(valNELE,1);
+    sidefree = nan(valNELE,1);
+    sideind = nan(valNELE,1);
+    dragind = nan(valNELE,1);
     for jj = 1:size(vecTE,1)
         % Lift
         pts = matVLST(matELST(vecTE(jj),:),:); % End points of TE edge segement
@@ -108,21 +117,27 @@ for valTIMESTEP = 1:valMAXTIME
         len = 50; % Number of divisions of this line (Jank)
         points = [linspace(pts_loc(1,1), pts_loc(2,1), len)' linspace(pts_loc(1,2), pts_loc(2,2), len)' linspace(pts_loc(1,3), pts_loc(2,3), len)'];
         distance = sqrt(sum((pts_loc(2,:) - pts_loc(1,:)).^2,2)); % Length of entire TE edge
-        vec = (pts_loc(2,:) - pts_loc(1,:))./distance; % Direction of this edge (in local)
+        vec = (pts_loc(1,:) - pts_loc(2,:))./distance; % Direction of this edge (in local)
         
         % Circulation at the points along the edge (oriented along the edge)
         circ = sum([0.5.*points(:,2).^2 points(:,2) 0.5.*points(:,1).^2 points(:,1) ones(size(points(:,1)))].*matCOEFF(vecTEDVE(jj),:),2).*vec;
         circ = fcnSTARGLOB(circ, repmat(matROTANG(vecTEDVE(jj),:), len, 1)); % Translate to global
         F = cross( repmat(valDENSITY.*matUINF(vecTEDVE(jj),:), len, 1), circ, 2); % A special guest mix on the track, Kutty J
-        vecDVELIFT(vecTEDVE(jj),1) = sqrt(sum((sum(F,1).*(distance/len)).^2,2)); % Multiply by the length of the discretization, and sum
+        liftfree(vecTEDVE(jj),1) = sqrt(sum((sum(F,1).*(distance/len)).^2,2)); % Multiply by the length of the discretization, and sum
         
         % Drag
         fpg = fcnSTARGLOB(points, repmat(matROTANG(vecTEDVE(jj),:),len,1)) + matCENTER(vecTEDVE(jj),:);
-        w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+        w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);% + fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
         F_ind = cross( w_ind, circ, 2);
         F_ind(1,:) = F_ind(1,:).*0;
         F_ind(end,:) = F_ind(end,:).*0;
-        vecDVEDRAG(vecTEDVE(jj),1) = sqrt(sum((sum(F_ind,1).*(distance/len)).^2,2));
+        force = sum(F_ind,1).*(distance/len);
+        
+        dragind(vecTEDVE(jj),1) = dot(force, matDVEDRAG_DIR(vecTEDVE(jj),:), 2);
+        liftind(vecTEDVE(jj),1) = dot(force, matDVELIFT_DIR(vecTEDVE(jj),:), 2);
+
+        vecDVEDRAG(vecTEDVE(jj),1) = dragind(vecTEDVE(jj),1);
+        vecDVELIFT(vecTEDVE(jj),1) = liftfree(vecTEDVE(jj),1) + liftind(vecTEDVE(jj),1);  
     end
     
     CL = nansum(vecDVELIFT)./(0.5.*valDENSITY.*sum(vecDVEAREA));

@@ -10,7 +10,7 @@ vecTEDVE = [];
 if ~isempty(matLEPOINTS)
     [~, idxle(:,1)] = ismember(matLEPOINTS(:,:,1),matVLST,'rows');
     [~, idxle(:,2)] = ismember(matLEPOINTS(:,:,2),matVLST,'rows');
-    [~, vecLE] = ismember(idxle, matELST,'rows');
+    [~, vecLE] = ismember(sort(idxle,2), sort(matELST,2),'rows');
     vecLEDVE = nonzeros(sort(matEATT(vecLE,:),2,'descend'));
 end
 

@@ -14,14 +14,15 @@ disp('| FLIGHT        | |  $$$$$$/| $$      | $$$$$$$$| $$  | $$| $$  | $$');
 disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
-strFILE = 'inputs/simple_wing.dat';
+% strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/simple_wing2.dat';
 % strFILE = 'inputs/simple_wing_test.dat';
+strFILE = 'inputs/ellipse.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS, vecULS] = fcnOPREAD(strFILE);
 [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(matPOINTS);
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS);
-
+valALPHA = 4
 flagRELAX = 0;
 valMAXTIME = 50
 valDENSITY = 1.225;
@@ -123,21 +124,26 @@ for valTIMESTEP = 1:valMAXTIME
         circ = sum([0.5.*points(:,2).^2 points(:,2) 0.5.*points(:,1).^2 points(:,1) ones(size(points(:,1)))].*matCOEFF(vecTEDVE(jj),:),2).*vec;
         circ = fcnSTARGLOB(circ, repmat(matROTANG(vecTEDVE(jj),:), len, 1)); % Translate to global
         F = cross( repmat(valDENSITY.*matUINF(vecTEDVE(jj),:), len, 1), circ, 2); % A special guest mix on the track, Kutty J
-        liftfree(vecTEDVE(jj),1) = sqrt(sum((sum(F,1).*(distance/len)).^2,2)); % Multiply by the length of the discretization, and sum
+        spans = repmat(distance/len, len, 1);
+        spans([1 len],:) = spans([1 len],:).*0.5;
+        liftfree(vecTEDVE(jj),1) = sqrt(sum((sum(F.*spans,1)).^2,2)); % Multiply by the length of the discretization, and sum
         
-        % Drag
-        fpg = fcnSTARGLOB(points, repmat(matROTANG(vecTEDVE(jj),:),len,1)) + matCENTER(vecTEDVE(jj),:);
-        w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);% + fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-        F_ind = cross( w_ind, circ, 2);
-        F_ind(1,:) = F_ind(1,:).*0;
-        F_ind(end,:) = F_ind(end,:).*0;
-        force = sum(F_ind,1).*(distance/len);
-        
-        dragind(vecTEDVE(jj),1) = dot(force, matDVEDRAG_DIR(vecTEDVE(jj),:), 2);
-        liftind(vecTEDVE(jj),1) = dot(force, matDVELIFT_DIR(vecTEDVE(jj),:), 2);
+%         % Drag
+%         fpg = fcnSTARGLOB(points, repmat(matROTANG(vecTEDVE(jj),:),len,1)) + matCENTER(vecTEDVE(jj),:);
+% %         w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER) + fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
+%         w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+% 
+%         F_ind = cross( w_ind, circ, 2);
+% %         F_ind(1,:) = F_ind(1,:).*0;
+% %         F_ind(end,:) = F_ind(end,:).*0;
+%         force = sum(F_ind.*spans,1);
+%         
+%         dragind(vecTEDVE(jj),1) = dot(force, matDVEDRAG_DIR(vecTEDVE(jj),:), 2);
+%         liftind(vecTEDVE(jj),1) = dot(force, matDVELIFT_DIR(vecTEDVE(jj),:), 2);
 
-        vecDVEDRAG(vecTEDVE(jj),1) = dragind(vecTEDVE(jj),1);
-        vecDVELIFT(vecTEDVE(jj),1) = liftfree(vecTEDVE(jj),1) + liftind(vecTEDVE(jj),1);  
+%         vecDVEDRAG(vecTEDVE(jj),1) = dragind(vecTEDVE(jj),1);
+%         vecDVELIFT(vecTEDVE(jj),1) = liftfree(vecTEDVE(jj),1) + liftind(vecTEDVE(jj),1);  
+          vecDVELIFT(vecTEDVE(jj),1) = liftfree(vecTEDVE(jj),1);
     end
     
     CL = nansum(vecDVELIFT)./(0.5.*valDENSITY.*sum(vecDVEAREA));
@@ -152,6 +158,7 @@ if valTIMESTEP > 0
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 4);
 end
+setAxes3DPanAndZoomStyle(zoom(gca),gca,'camera') ;
 
 % s_ind = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 % w_ind = fcnSDVEVEL(matCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);

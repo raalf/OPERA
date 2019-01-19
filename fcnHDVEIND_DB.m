@@ -5,21 +5,16 @@ warning('on')
 % tol3 = 1e-5;
 
 tol = 1e-10;
-tol2 = 1e-4;
-tol3 = 1e-4;
-
 
 fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
-
-len = size(fpl,1);
 
 x_m = fpl(:,1);
 y_m = fpl(:,2);
 z_m = fpl(:,3);
 
 %% Checking state of field point with relation to element surface
-margin_edge = 1e-5;
-margin_on_element = 1e-5;
+margin_edge = 1e-6;
+margin_on_element = 1e-6;
 
 xi_1 = permute(matPLEX(1,1,dvenum),[3 2 1]);
 xi_2 = permute(matPLEX(2,1,dvenum),[3 2 1]);
@@ -61,11 +56,11 @@ idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m
     (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
 % disp(['Edge calls: ', num2str(sum(idx_on_edge))]);
 if any(idx_on_edge)
-    tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)] - 1e-4;
-%     tmp = [x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)] + (1e-1.*(-[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)]./(sqrt(sum([x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)].^2,2)))));
-    x_m(idx_on_edge) = tmp(:,1);
-    y_m(idx_on_edge) = tmp(:,2);
-    z_m(idx_on_edge) = tmp(:,3);
+    tmpvc = -[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)];
+    tmpvc = tmpvc./sqrt(sum(tmpvc.^2,2));
+%     x_m(idx_on_edge) = x_m(idx_on_edge) + tmpvc(:,1).*5e-2;
+%     y_m(idx_on_edge) = y_m(idx_on_edge) + tmpvc(:,2).*5e-2;
+%     z_m(idx_on_edge) = tmp(:,3);
 end
 
 %%
@@ -78,10 +73,10 @@ L = [C E];
 F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
-tol_F = 1e-5;
+tol_F = 1e-3;
 tol_S = 1e-14;
 tol_T = 1e-14;
-tol_u = 1e-5;
+tol_u = 1e-4;
 tol_alpha = 1e-14;
 
 % Correcting zero F limits if we are in the plane of the element
@@ -192,7 +187,7 @@ if any(idx_nan)
    disp('Nan induction in fcnHDVEIND_DB'); 
 end
 % disp(['Inf or NaN induction: ', num2str(length(idx_nan))]);
-% infl_loc(:,:,idx_on_edge) = -infl_loc(:,:,idx_on_edge);
+% infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
 infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
 
 % infl_loc(:,:,:) = infl_loc(:,:,:).*-1;

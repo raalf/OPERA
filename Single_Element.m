@@ -129,7 +129,7 @@ z = 0;
 
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-% fpg = [0.3 0 0];
+fpg = [0.3 0 0; 0.3 0.0001 0; 0.3 -0.0001 0];
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 figure(1);
 % q_ind = permute(q_ind,[3 2 1]);

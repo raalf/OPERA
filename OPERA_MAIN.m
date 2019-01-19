@@ -128,27 +128,25 @@ for valTIMESTEP = 1:valMAXTIME
         spans([1 len],:) = spans([1 len],:).*0.5;
         liftfree(vecTEDVE(jj),1) = sqrt(sum((sum(F.*spans,1)).^2,2)); % Multiply by the length of the discretization, and sum
         
-%         % Drag
-%         fpg = fcnSTARGLOB(points, repmat(matROTANG(vecTEDVE(jj),:),len,1)) + matCENTER(vecTEDVE(jj),:);
-% %         w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER) + fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-%         w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
-% 
-%         F_ind = cross( w_ind, circ, 2);
-% %         F_ind(1,:) = F_ind(1,:).*0;
-% %         F_ind(end,:) = F_ind(end,:).*0;
-%         force = sum(F_ind.*spans,1);
-%         
-%         dragind(vecTEDVE(jj),1) = dot(force, matDVEDRAG_DIR(vecTEDVE(jj),:), 2);
-%         liftind(vecTEDVE(jj),1) = dot(force, matDVELIFT_DIR(vecTEDVE(jj),:), 2);
+        % Drag
+        fpg = fcnSTARGLOB(points, repmat(matROTANG(vecTEDVE(jj),:),len,1)) + matCENTER(vecTEDVE(jj),:);
+        w_ind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
 
-%         vecDVEDRAG(vecTEDVE(jj),1) = dragind(vecTEDVE(jj),1);
-%         vecDVELIFT(vecTEDVE(jj),1) = liftfree(vecTEDVE(jj),1) + liftind(vecTEDVE(jj),1);  
-          vecDVELIFT(vecTEDVE(jj),1) = liftfree(vecTEDVE(jj),1);
+        F_ind = cross( w_ind, circ, 2);
+        force = sum(F_ind.*spans,1);
+        
+        dragind(vecTEDVE(jj),1) = dot(force, matDVEDRAG_DIR(vecTEDVE(jj),:), 2);
+        liftind(vecTEDVE(jj),1) = dot(force, matDVELIFT_DIR(vecTEDVE(jj),:), 2);
+
+        vecDVEDRAG(vecTEDVE(jj),1) = dragind(vecTEDVE(jj),1);
+        vecDVELIFT(vecTEDVE(jj),1) = liftfree(vecTEDVE(jj),1) + liftind(vecTEDVE(jj),1);  
+%           vecDVELIFT(vecTEDVE(jj),1) = liftfree(vecTEDVE(jj),1);
     end
     
     CL = nansum(vecDVELIFT)./(0.5.*valDENSITY.*sum(vecDVEAREA));
     CDi = nansum(vecDVEDRAG)./(0.5.*valDENSITY.*sum(vecDVEAREA));
-    fprintf('Timestep: %d\t\tCL = %0.5f\t\tCDi = %0.5f\n', valTIMESTEP, CL, CDi);
+    e = (CL.^2)./(pi.*((max(matVLST(:,2))-min(matVLST(:,2))).^2)./sum(vecDVEAREA).*CDi);
+    fprintf('Timestep: %d\t\tCL = %0.5f\t\tCDi = %0.5f\t\te = %0.5f\n', valTIMESTEP, CL, CDi, e);
 end
 
 % Plot

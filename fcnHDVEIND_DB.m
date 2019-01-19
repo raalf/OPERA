@@ -56,10 +56,9 @@ idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m
     (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
 % disp(['Edge calls: ', num2str(sum(idx_on_edge))]);
 if any(idx_on_edge)
-    tmpvc = -[x_m(idx_on_edge) y_m(idx_on_edge) z_m(idx_on_edge)];
-    tmpvc = tmpvc./sqrt(sum(tmpvc.^2,2));
-%     x_m(idx_on_edge) = x_m(idx_on_edge) + tmpvc(:,1).*5e-2;
-%     y_m(idx_on_edge) = y_m(idx_on_edge) + tmpvc(:,2).*5e-2;
+%     tmpvc = [x_m(idx_on_edge) y_m(idx_on_edge)].*0.9;
+%     tmpvc = tmpvc./sqrt(sum(tmpvc.^2,2));
+%     y_m(idx_on_edge) = tmpvc(:,2);
 %     z_m(idx_on_edge) = tmp(:,3);
 end
 
@@ -73,22 +72,22 @@ L = [C E];
 F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
-tol_F = 1e-3;
-tol_S = 1e-14;
-tol_T = 1e-14;
-tol_u = 1e-4;
-tol_alpha = 1e-14;
+tol_F = 1e-1;
+tol_S = 1e-10;
+tol_T = 1e-10;
+tol_u = 1e-5;
+tol_alpha = 1e-10;
 
 % Correcting zero F limits if we are in the plane of the element
 idx = abs(F_lim(:,:,1)) < tol_F & alpha(:,1) <= tol_alpha;
 sgn = sign(F_lim(idx,:,1));
 sgn(sign(F_lim(idx,:,1)) == 0) = sign(F_lim(sign(F_lim(idx,:,1)) == 0,:,2));
-F_lim(idx,:,1) = sgn.*tol_F;
+F_lim(idx,:,1) = -sgn.*tol_F;
 
 idx = abs(F_lim(:,:,2)) < tol_F & alpha <= tol_alpha;
 sgn = sign(F_lim(idx,:,2));
 sgn(sign(F_lim(idx,:,2)) == 0) = sign(F_lim(sign(F_lim(idx,:,2)) == 0,:,1));
-F_lim(idx,:,2) = sgn.*tol_F;
+F_lim(idx,:,2) = -sgn.*tol_F;
 
 F_lim = repmat(F_lim,1,2,1);
 alpha = repmat(alpha,1,2,1);

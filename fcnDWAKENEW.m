@@ -1,4 +1,4 @@
-function matWCOEFF = fcnDWAKENEW(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF)
+function [matWCOEFF, vecWDVECIRCnew] = fcnDWAKENEW(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX)
 
 valWNELE_tmp = length([vecWLEDVE; vecWTEDVE]);
 
@@ -113,6 +113,7 @@ else
     
     
 end
+
 %% Solving
 DW = [circ1; circ2; vort3; vort4; circ5; vort6];
 RW = [res1; res2; res3; res4; res5; res6];
@@ -122,6 +123,48 @@ DW = DW(:,((min([vecWLEDVE; vecWTEDVE]) - 1)*5 + 1):end);
 matWCOEFF = DW\RW;
 matWCOEFF = reshape(matWCOEFF,5,valWNELE_tmp,1)';
 
+%% Wake element integrated strength
+dves = [vecWLEDVE; vecWTEDVE];
+
+xi_1 = permute(matWPLEX(1,1,dves),[3 2 1]);
+xi_2 = permute(matWPLEX(2,1,dves),[3 2 1]);
+xi_3 = permute(matWPLEX(3,1,dves),[3 2 1]);
+
+eta_1 = permute(matWPLEX(1,2,dves),[3 2 1]);
+eta_2 = permute(matWPLEX(2,2,dves),[3 2 1]);
+eta_3 = permute(matWPLEX(3,2,dves),[3 2 1]);
+
+idx_flp = abs(xi_2 - xi_3) < 1e-5;
+xi_tmp(idx_flp) = xi_3(idx_flp);
+xi_3(idx_flp) = xi_1(idx_flp);
+xi_1(idx_flp) = xi_tmp(idx_flp);
+eta_tmp(idx_flp) = eta_3(idx_flp);
+eta_3(idx_flp) = eta_1(idx_flp);
+eta_1(idx_flp) = eta_tmp(idx_flp);
+
+idx_rrg = eta_2 < eta_1;
+eta_tmp(idx_rrg) = eta_2(idx_rrg);
+eta_2(idx_rrg) = eta_1(idx_rrg);
+eta_1(idx_rrg) = eta_tmp(idx_rrg);
+
+% Checking which elements are on the element
+C = (eta_3 - eta_2)./(xi_3 - xi_2);
+D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
+E = (eta_3 - eta_1)./(xi_3 - xi_1);
+D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
+
+a1 = -((C.^3-E.^3).*xi_1.^3./0.24e2+((C.^3-E.^3).*xi_3+0.4e1.*D_LE.*C.^2-0.4e1.*D_TE.*E.^2).*xi_1.^2./0.24e2+((C.^3-E.^3).*xi_3.^2+(0.4e1.*D_LE.*C.^2-0.4e1.*D_TE.*E.^2).*xi_3+0.6e1.*D_LE.^2.*C-0.6e1.*D_TE.^2.*E).*xi_1./0.24e2+(C.^3-E.^3).*xi_3.^3./0.24e2+(0.4e1.*D_LE.*C.^2-0.4e1.*D_TE.*E.^2).*xi_3.^2./0.24e2+(0.6e1.*D_LE.^2.*C-0.6e1.*D_TE.^2.*E).*xi_3./0.24e2+D_LE.^3./0.6e1-D_TE.^3./0.6e1).*(xi_1-xi_3);
+a2 = -(((4.*C.^2-4.*E.^2).*xi_1.^2)./0.24e2+(((4.*C.^2-4.*E.^2).*xi_3+12.*D_LE.*C-12.*D_TE.*E).*xi_1)./0.24e2+((4.*C.^2-4.*E.^2).*xi_3.^2)./0.24e2+((12.*D_LE.*C-12.*D_TE.*E).*xi_3)./0.24e2+((-12.*D_TE+12.*D_LE).*(D_LE+D_TE))./0.24e2).*(xi_1-xi_3);
+b1 = -(((3.*C-3.*E).*xi_1.^3)./0.24e2+(((3.*C-3.*E).*xi_3-4.*D_TE+4.*D_LE).*xi_1.^2)./0.24e2+(((3.*C-3.*E).*xi_3.^2+(-4.*D_TE+4.*D_LE).*xi_3).*xi_1)./0.24e2+((3.*C-3.*E).*xi_3.^3)./0.24e2+((-4.*D_TE+4.*D_LE).*xi_3.^2)./0.24e2).*(xi_1-xi_3);
+b2 = -(((8.*C-8.*E).*xi_1.^2)./0.24e2+(((8.*C-8.*E).*xi_3-12.*D_TE+12.*D_LE).*xi_1)./0.24e2+((8.*C-8.*E).*xi_3.^2)./0.24e2+((-12.*D_TE+12.*D_LE).*xi_3)./0.24e2).*(xi_1-xi_3);
+c3 = -(((12.*C-12.*E).*xi_1)./0.24e2+((12.*C-12.*E).*xi_3)./0.24e2-D_TE+D_LE).*(xi_1-xi_3);
+vecWDVECIRCnew = sum([a1 a2 b1 b2 c3].*matWCOEFF,2);
+vecWDVECIRCnew(idx_flp,:) = vecWDVECIRCnew(idx_flp,:).*-1; 
+
+% xi_len = reshape(abs(max([matWPLEX(:,1,dves)],[],1) - min([matWPLEX(:,1,dves)],[],1)),[],1,1);
+% eta_len = reshape(abs(max([matWPLEX(:,2,dves)],[],1) - min([matWPLEX(:,2,dves)],[],1)),[],1,1);
+% matWDVECIRCnew(:,1) = (1/6).*matWCOEFF(:,3).*(xi_len.^3) + 0.5.*matWCOEFF(:,4).*(xi_len.^2) + matWCOEFF(:,5).*xi_len;
+% matWDVECIRCnew(:,2) = (1/6).*matWCOEFF(:,1).*(eta_len.^3) + 0.5.*matWCOEFF(:,2).*(eta_len.^2) + matWCOEFF(:,5).*eta_len;
 
 end
 

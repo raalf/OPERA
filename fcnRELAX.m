@@ -5,38 +5,32 @@ function [matWADJE, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, m
 % Relaxes wake by moving points in the wake vertex list matWVLST, and updating the local vectors in matWDVECT
 
 %% Finding induced velocities at all wake vertices
-s_ind = fcnSDVEVEL(matWVLST, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
-w_ind = fcnSDVEVEL(matWVLST, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
 
-hold on
-quiver3(matWVLST(:,1), matWVLST(:,2), matWVLST(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'g')
-quiver3(matWVLST(:,1), matWVLST(:,2), matWVLST(:,3), s_ind(:,1), s_ind(:,2), s_ind(:,3),'r')
-hold off
-
-% s_ind = s_ind.*0;
-% w_ind = w_ind.*0;
-
-% for i = 1:valWNELE
-%     q_loc = -0.5.*[matWCOEFF(i,3).*matWPLEX(:,1,i) + matWCOEFF(i,4), matWCOEFF(i,1).*matWPLEX(:,2,i) + matWCOEFF(i,2), matWPLEX(:,2,i).*0];
-%     
+% for i = 1:size(matWVLST,1)
+%     [attached_dves,~] = find(matWDVE == i);
+%     fpg = matWCENTER(attached_dves,:);
+%     q_ind(i,:) = mean(fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER) + fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER), 1);
 % end
 
+q_ind = fcnSDVEVEL(matWVLST+[0.1 0 0], valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER) + fcnSDVEVEL(matWVLST, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+
+hold on
+quiver3(matWVLST(:,1), matWVLST(:,2), matWVLST(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),'r')
+hold off
 
 %% Identifying trailing edges, we won't relax these points
 
 % Finding vertices common between wing and wake, these are the trailing edge vertices
 % dontmove = [matWVLST(matWELST(vecWLE,1),:); matWVLST(matWELST(vecWLE(end),2),:); matWVLST(matWELST(vecWTE,1),:); matWVLST(matWELST(vecWTE(end),2),:)];
-oldest_dve = [1:(valWSIZE*20)]';
+oldest_dve = [1:(valWSIZE*2)]';
 dontmove = [matWVLST(matWELST(vecWLE,1),:); matWVLST(matWELST(vecWLE(end),2),:); matWVLST(matWDVE(oldest_dve,:),:)];
 [idxTEV, ~] = ismember(matWVLST, dontmove, 'rows');
 
 % Setting induced velocities at these points to zero
-s_ind(idxTEV,:) = repmat([0 0 0], length(nonzeros(idxTEV)), 1);
-w_ind(idxTEV,:) = repmat([0 0 0], length(nonzeros(idxTEV)), 1);
+q_ind(idxTEV,:) = repmat([0 0 0], length(nonzeros(idxTEV)), 1);
 
 %% Moving wake vertices
-% matWVLST = matWVLST + (s_ind + w_ind + repmat(vecUINF, length(s_ind(:,1)),1)).*valDELTIME; % Needs more work for rotors (assuming freestream magnitude is 1)
-matWVLST = matWVLST + (s_ind + w_ind).*valDELTIME;
+matWVLST = matWVLST + q_ind.*valDELTIME;
 
 %% Recreating wake point matrix, and regenerating wake HDVE parameters
 matWAKEGEOM(:,:,1) = matWVLST(matWDVE(:,1,1),:);

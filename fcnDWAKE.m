@@ -1,326 +1,110 @@
-function [matNEWWAKECOEFF] = fcnDWAKE(valWNELE, matPLEX, vecTEDVE, valWSIZE, matWPLEX, matELOC, vecTE, vecWLEDVE, matCOEFF, matWELOC, vecWLE, matDVE, matELST, matWDVE, matWELST, matWEATT, matWEIDX)
+function [matWCOEFF] = fcnDWAKE(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC)
 
-% This function finds the coefficients of the post-trailing edge elements, by setting the spanwise component equal to the opposite of the circulation along the trailing edge of the wing (spanwise)
-% There is no chordwise change in wake coefficients now (steady only)
-
-lambda_mid = [ ...
-    0.5 0.5 0; ... % Edge 1 mid-point
-    0 0.5 0.5; ... % Edge 2 mid-point
-    0.5 0 0.5; ... % Edge 3 mid-point
-    ];
-
-lambda_vert = [ ...
-    1 0 0; ...
-    0 1 0; ...
-    0 0 1; ...
-    ];
-
-len = length(vecWLEDVE);
-
-aftdves = [valWNELE - valWSIZE + 1:valWNELE]'; % aft row of post-TE wake HDVEs 
-
-%% Circulation at TE of wing/LE of wake Prelim
-% Evaluated at the mid-point of each edge which splits two HDVEs
-
-%(x,y) of all three vertices of HDVEs at trailing edge of the wing and the corresponding leading edge of the post te wake HDVE
-x1 = [reshape(matPLEX(1,1,vecTEDVE),len,1) reshape(matWPLEX(1,1,vecWLEDVE),len,1)];
-x2 = [reshape(matPLEX(2,1,vecTEDVE),len,1) reshape(matWPLEX(2,1,vecWLEDVE),len,1)];
-x3 = [reshape(matPLEX(3,1,vecTEDVE),len,1) reshape(matWPLEX(3,1,vecWLEDVE),len,1)];
-y1 = [reshape(matPLEX(1,2,vecTEDVE),len,1) reshape(matWPLEX(1,2,vecWLEDVE),len,1)];
-y2 = [reshape(matPLEX(2,2,vecTEDVE),len,1) reshape(matWPLEX(2,2,vecWLEDVE),len,1)];
-y3 = [reshape(matPLEX(3,2,vecTEDVE),len,1) reshape(matWPLEX(3,2,vecWLEDVE),len,1)];
-
-
-%% Midpoint of edge to set circulation of wake opposite to wing
-lmb1 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:)) ones(len,1)],1),len,2); % Ones(le,1) because wake LE is always local edge 1
-lmb2 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:)) ones(len,1)],2),len,2);
-lmb3 = reshape(lambda_mid([nonzeros(matELOC(vecTE,:)) ones(len,1)],3),len,2);
-
-a2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
-a1 = 0.5.*(a2.^2);
-b2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
-b1 = 0.5.*(b2.^2);
-c2 = a2.*b2;
-c3 = ones(len,2);
-
-% The resultant is the circulation at the trailing edge of the wing, found using the coefficients A1 A2 B1 B2 C3 we solved for in DWING/Resultant
-% res1 = -sum([a1(:,1).*vecSPANDIR(:,1), a2(:,1).*vecSPANDIR(:,1), b1(:,1).*vecSPANDIR(:,2), b2(:,1).*vecSPANDIR(:,2), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
-res1 = -sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
-
-% These are the wake coefficients (spanwise) that we need to solve for, B1, B2 and C3
-gamma1 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)];
-
-% Row indices of the rows where circulation equations will go
-rows = reshape([repmat([1:len]',1,6)]',[],1);
-
-% Column indices for each circulation equation, col# = (DVE*5)-4 as each DVE gets a 6 column group
-col1 = reshape([repmat([(vecWLEDVE.*6)-5],1,6) + repmat([0:5],len,1)]',[],1);
-circ1 = zeros(len, valWNELE*6);
-circ1(sub2ind(size(circ1),rows,col1)) = reshape(gamma1',[],1);
-
-%% Vertices to set wake circulation opposite to wing (along TE)
-
-[ta,tb,~] = find(matDVE(vecTEDVE,:,1) == repmat(matELST(vecTE,1),1,3));
-[~,rb,] = sort(ta);
-vnuma(:,1) = tb(rb);
-
-[ta,tb,~] = find(matDVE(vecTEDVE,:,1) == repmat(matELST(vecTE,2),1,3));
-[~,rb,] = sort(ta);
-vnuma(:,2) = tb(rb);
-
-[ta,tb,~] = find(matWDVE(vecWLEDVE,:,1) == repmat(matWELST(vecWLE,1),1,3));
-[~,rb,] = sort(ta);
-vnumb(:,1) = tb(rb);
-
-[ta,tb,~] = find(matWDVE(vecWLEDVE,:,1) == repmat(matWELST(vecWLE,2),1,3));
-[~,rb,] = sort(ta);
-vnumb(:,2) = tb(rb);
-
-%% First vertex
-lmb1 = reshape(lambda_vert([vnuma(:,1) vnumb(:,1)],1),len,2);
-lmb2 = reshape(lambda_vert([vnuma(:,1) vnumb(:,1)],2),len,2);
-lmb3 = reshape(lambda_vert([vnuma(:,1) vnumb(:,1)],3),len,2);
-
-a2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
-a1 = 0.5.*(a2.^2);
-b2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
-b1 = 0.5.*(b2.^2);
-c2 = a2.*b2;
-c3 = ones(len,2);
-
-% The resultant is the circulation at the trailing edge of the wing, found using the coefficients A1 A2 B1 B2 C3 we solved for in DWING/Resultant
-% res2 = -sum([a1(:,1).*vecSPANDIR(:,2), a2(:,1).*vecSPANDIR(:,2), b1(:,1).*vecSPANDIR(:,1), b2(:,1).*vecSPANDIR(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
-res2 = -sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
-
-% These are the wake coefficients (spanwise) that we need to solve for, B1, B2 and C3
-gamma2 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)]; % Wake only changes in the spanwise direction, which is always local xsi
-
-% Row indices of the rows where circulation equations will go
-rows = reshape([repmat([1:len]',1,6)]',[],1);
-
-% Column indices for each circulation equation, col# = (DVE*5)-4 as each DVE gets a 6 column group
-col1 = reshape([repmat([(vecWLEDVE.*6)-5],1,6) + repmat([0:5],len,1)]',[],1);
-circ2 = zeros(len, valWNELE*6);
-circ2(sub2ind(size(circ2),rows,col1)) = reshape(gamma2',[],1);
-
-%% Second Vertex
-lmb1 = reshape(lambda_vert([vnuma(:,2) vnumb(:,2)],1),len,2);
-lmb2 = reshape(lambda_vert([vnuma(:,2) vnumb(:,2)],2),len,2);
-lmb3 = reshape(lambda_vert([vnuma(:,2) vnumb(:,2)],3),len,2);
-
-a2 = (lmb1.*y1+lmb2.*y2+lmb3.*y3);
-a1 = 0.5.*(a2.^2);
-b2 = (lmb1.*x1+lmb2.*x2+lmb3.*x3);
-b1 = 0.5.*(b2.^2);
-c2 = a2.*b2;
-c3 = ones(len,2);
-
-% The resultant is the circulation at the trailing edge of the wing, found using the coefficients A1 A2 B1 B2 C3 we solved for in DWING/Resultant
-% res3 = -sum([a1(:,1).*vecSPANDIR(:,2), a2(:,1).*vecSPANDIR(:,2), b1(:,1).*vecSPANDIR(:,1), b2(:,1).*vecSPANDIR(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
-res3 = -sum([a1(:,1), a2(:,1), b1(:,1), b2(:,1), c2(:,1), c3(:,1)].*matCOEFF(vecTEDVE,:),2);
-
-% These are the wake coefficients (spanwise) that we need to solve for, B1, B2 and C3
-gamma3 = [a1(:,2), a2(:,2), b1(:,2), b2(:,2), c2(:,2), c3(:,2)]; % Wake only changes in the spanwise direction, which is always local xsi
-
-% Row indices of the rows where circulation equations will go
-rows = reshape([repmat([1:len]',1,6)]',[],1);
-
-% Column indices for each circulation equation, col# = (DVE*5)-4 as each DVE gets a 6 column group
-col1 = reshape([repmat([(vecWLEDVE.*6)-5],1,6) + repmat([0:5],len,1)]',[],1);
-circ3 = zeros(len, valWNELE*6);
-circ3(sub2ind(size(circ3),rows,col1)) = reshape(gamma3',[],1);
-
-%% Now for the second (aft) post TE wake element
-% Evaluated at the mid-point of each edge which splits two HDVEs
-
-idx = sort(ismember(matWEATT, vecWLEDVE), 2, 'descend');
-idx = idx(:,1);
-idx_postte = zeros(size(matWEATT(:,1)));
-idx_postte(unique([reshape(unique(matWEIDX(vecWLEDVE,:)),[],1); reshape(unique(matWEIDX(aftdves,2:3)),[],1)])) = 1; % Here, we are going to ignore edges that aren't between the two post-te HDVEs, as we want to ignore the rest of the wake
-idx = idx & all(matWEATT,2) & idx_postte; % All post-te row HDVE edges which we must set circulation constant
-
-nedg = length(nonzeros(idx));
-
+ %% Circulation equations between elements
 % Evaluated at the mid-point of each edge which splits two HDVEs
 idx = all(matWEATT,2); % All edges that split 2 DVEs
-nedg = length(matWEATT(idx,1));
 
-vnuma = [];
-vnumb = [];
-% Typically found at the two vertices that split two HDVEs
-% vnuma is local vertices 1 and 2 (columns) for HDVE 1
-% vnumb is local vertices 1 and 2 for HDVE 2
-[ta,tb,~] = find(matWDVE(matWEATT(idx,1),:,1) == repmat(matWELST(idx,1),1,3));
-[~,rb,] = sort(ta);
-vnuma(:,1) = tb(rb); % Sorting it according to row, cause find returns them jumbled up
+vnum_a = matWVLST(matWELST(idx,1),:);
+vnum_b = matWVLST(matWELST(idx,2),:);
+vnum_mid = (vnum_a + vnum_b)./2;
 
-[ta,tb,~] = find(matWDVE(matWEATT(idx,1),:,1) == repmat(matWELST(idx,2),1,3));
-[~,rb,] = sort(ta);
-vnuma(:,2) = tb(rb);
+%% Circulation at edge corner and midpoints
+dvenum = [matWEATT(idx,1) matWEATT(idx,2)];
+circ = [fcnDCIRC(repmat(vnum_a,1,1,2), dvenum, valWNELE, matWROTANG, matWCENTER); ...
+        fcnDCIRC(repmat(vnum_mid,1,1,2), dvenum, valWNELE, matWROTANG, matWCENTER); ...
+        fcnDCIRC(repmat(vnum_b,1,1,2), dvenum, valWNELE, matWROTANG, matWCENTER)];
+res_circ = zeros(size(circ,1),1);
 
-[ta,tb,~] = find(matWDVE(matWEATT(idx,2),:,1) == repmat(matWELST(idx,1),1,3));
-[~,rb,] = sort(ta);
-vnumb(:,1) = tb(rb);
+%% Vorticity along edge between elements
+% Unit vector in local ref frame (a for HDVE1, b for HDVE2) from local vertex to local vertex on the edge that forms the border between the two
+vort = [fcnDVORTEDGE(repmat(vnum_a,1,1,2), dvenum, valWNELE, matWROTANG, matWCENTER); ...
+        fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valWNELE, matWROTANG, matWCENTER); ...
+        fcnDVORTEDGE(repmat(vnum_b,1,1,2), dvenum, valWNELE, matWROTANG, matWCENTER)];
+res_vort = zeros(size(vort,1),1);
+    
+%% Leading edge of wake
+pts(:,:,1) = matWVLST(matWELST(vecWLE,1),:);
+pts(:,:,2) = matWVLST(matWELST(vecWLE,2),:);
+pts(:,:,3) = (pts(:,:,1) + pts(:,:,2))./2;
 
-[ta,tb,~] = find(matWDVE(matWEATT(idx,2),:,1) == repmat(matWELST(idx,2),1,3));
-[~,rb,] = sort(ta);
-vnumb(:,2) = tb(rb);
+circ_le = [   fcnDCIRC2(pts(:,:,1), vecWLEDVE, valWNELE, matWROTANG, matWCENTER); ...
+    fcnDCIRC2(pts(:,:,2), vecWLEDVE, valWNELE, matWROTANG, matWCENTER); ...
+    fcnDCIRC2(pts(:,:,3), vecWLEDVE, valWNELE, matWROTANG, matWCENTER)];
 
-circ4 = [];
-circ5 = [];
-circ6 = [];
-circ4 = fcnDCIRC(idx, nedg, lambda_mid, valWNELE, matWPLEX, matWEATT, matWELOC);
-circ5 = fcnDCIRC2(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valWNELE, matWPLEX, matWEATT, matWELOC);
-circ6 = fcnDCIRC2(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valWNELE, matWPLEX, matWEATT, matWELOC);
+pts_loc(:,:,1) = fcnGLOBSTAR(pts(:,:,1) - matCENTER(vecTEDVE(:,1),:), matROTANG(vecTEDVE(:,1),:));
+pts_loc(:,:,2) = fcnGLOBSTAR(pts(:,:,2) - matCENTER(vecTEDVE(:,1),:), matROTANG(vecTEDVE(:,1),:));
+pts_loc(:,:,3) = fcnGLOBSTAR(pts(:,:,3) - matCENTER(vecTEDVE(:,1),:), matROTANG(vecTEDVE(:,1),:));
+res1_1 = [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matCOEFF(vecTEDVE(:,1),:),2); ...
+    sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matCOEFF(vecTEDVE(:,1),:),2); ...
+    sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matCOEFF(vecTEDVE(:,1),:),2)];
+if strcmpi(strATYPE{2},'PANEL')
+    pts_loc(:,:,1) = fcnGLOBSTAR(pts(:,:,1) - matCENTER(vecTEDVE(:,2),:), matROTANG(vecTEDVE(:,2),:));
+    pts_loc(:,:,2) = fcnGLOBSTAR(pts(:,:,2) - matCENTER(vecTEDVE(:,2),:), matROTANG(vecTEDVE(:,2),:));
+    pts_loc(:,:,3) = fcnGLOBSTAR(pts(:,:,3) - matCENTER(vecTEDVE(:,2),:), matROTANG(vecTEDVE(:,2),:));
+    res1_2 = [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matCOEFF(vecTEDVE(:,2),:),2); ...
+        sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matCOEFF(vecTEDVE(:,2),:),2); ...
+        sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matCOEFF(vecTEDVE(:,2),:),2)];
+    
+    res_circ_le = res1_2 + res1_1;
+else
+    res_circ_le = res1_1;
+end
 
-res4 = zeros(nedg, 1);
-res5 = zeros(nedg, 1);
-res6 = zeros(nedg, 1);
+vort_le = [fcnDVORT2(pts(:,:,1), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
+    fcnDVORT2(pts(:,:,2), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
+    fcnDVORT2(pts(:,:,3), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A')];
+res_vort_le = zeros(size(vort_le,1),1);
+    
+%% Integrated circulation
+xi_1 = permute(matWPLEX(1,1,:),[3 2 1]);
+xi_2 = permute(matWPLEX(2,1,:),[3 2 1]);
+xi_3 = permute(matWPLEX(3,1,:),[3 2 1]);
 
-%% Vorticity
+eta_1 = permute(matWPLEX(1,2,:),[3 2 1]);
+eta_2 = permute(matWPLEX(2,2,:),[3 2 1]);
+eta_3 = permute(matWPLEX(3,2,:),[3 2 1]);
 
-vort1 = [];
-vort2 = [];
-vort3 = [];
-vort4 = [];
+idx_flp = abs(xi_2 - xi_3) < 1e-5;
+xi_tmp(idx_flp) = xi_3(idx_flp);
+xi_3(idx_flp) = xi_1(idx_flp);
+xi_1(idx_flp) = xi_tmp(idx_flp);
+eta_tmp(idx_flp) = eta_3(idx_flp);
+eta_3(idx_flp) = eta_1(idx_flp);
+eta_1(idx_flp) = eta_tmp(idx_flp);
 
-temp = reshape(permute(matWPLEX,[1 3 2]),[],3,1);
+idx_rrg = eta_2 < eta_1;
+eta_tmp(idx_rrg) = eta_2(idx_rrg);
+eta_2(idx_rrg) = eta_1(idx_rrg);
+eta_1(idx_rrg) = eta_tmp(idx_rrg);
 
-e1vec = temp(matWEATT(idx,1).*3 + vnuma(:,2) - 3,:) - temp(matWEATT(idx,1).*3 + vnuma(:,1) - 3,:);
-e2vec = temp(matWEATT(idx,2).*3 + vnumb(:,2) - 3,:) - temp(matWEATT(idx,2).*3 + vnumb(:,1) - 3,:);
-e1vec = e1vec(:,1:2)./repmat(sqrt(e1vec(:,1).^2 + e1vec(:,2).^2),1,2);
-e2vec = e2vec(:,1:2)./repmat(sqrt(e2vec(:,1).^2 + e2vec(:,2).^2),1,2);
+% Checking which elements are on the element
+C = (eta_3 - eta_2)./(xi_3 - xi_2);
+D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
+E = (eta_3 - eta_1)./(xi_3 - xi_1);
+D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
 
-vort1 = fcnDVORTEDGE(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valWNELE, matWPLEX, matWEATT, e1vec, e2vec);
-vort2 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valWNELE, matWPLEX, matWEATT, e1vec, e2vec);
+a1 = -((C.^3-E.^3).*xi_1.^3./0.24e2+((C.^3-E.^3).*xi_3+0.4e1.*D_LE.*C.^2-0.4e1.*D_TE.*E.^2).*xi_1.^2./0.24e2+((C.^3-E.^3).*xi_3.^2+(0.4e1.*D_LE.*C.^2-0.4e1.*D_TE.*E.^2).*xi_3+0.6e1.*D_LE.^2.*C-0.6e1.*D_TE.^2.*E).*xi_1./0.24e2+(C.^3-E.^3).*xi_3.^3./0.24e2+(0.4e1.*D_LE.*C.^2-0.4e1.*D_TE.*E.^2).*xi_3.^2./0.24e2+(0.6e1.*D_LE.^2.*C-0.6e1.*D_TE.^2.*E).*xi_3./0.24e2+D_LE.^3./0.6e1-D_TE.^3./0.6e1).*(xi_1-xi_3);
+a2 = -(((4.*C.^2-4.*E.^2).*xi_1.^2)./0.24e2+(((4.*C.^2-4.*E.^2).*xi_3+12.*D_LE.*C-12.*D_TE.*E).*xi_1)./0.24e2+((4.*C.^2-4.*E.^2).*xi_3.^2)./0.24e2+((12.*D_LE.*C-12.*D_TE.*E).*xi_3)./0.24e2+((-12.*D_TE+12.*D_LE).*(D_LE+D_TE))./0.24e2).*(xi_1-xi_3);
+b1 = -(((3.*C-3.*E).*xi_1.^3)./0.24e2+(((3.*C-3.*E).*xi_3-4.*D_TE+4.*D_LE).*xi_1.^2)./0.24e2+(((3.*C-3.*E).*xi_3.^2+(-4.*D_TE+4.*D_LE).*xi_3).*xi_1)./0.24e2+((3.*C-3.*E).*xi_3.^3)./0.24e2+((-4.*D_TE+4.*D_LE).*xi_3.^2)./0.24e2).*(xi_1-xi_3);
+b2 = -(((8.*C-8.*E).*xi_1.^2)./0.24e2+(((8.*C-8.*E).*xi_3-12.*D_TE+12.*D_LE).*xi_1)./0.24e2+((8.*C-8.*E).*xi_3.^2)./0.24e2+((-12.*D_TE+12.*D_LE).*xi_3)./0.24e2).*(xi_1-xi_3);
+c3 = -(((12.*C-12.*E).*xi_1)./0.24e2+((12.*C-12.*E).*xi_3)./0.24e2-D_TE+D_LE).*(xi_1-xi_3);
+gamma = [a1 a2 b1 b2 c3];
 
-vort3 = fcnDVORTEDGE(idx, vnuma(:,1), vnumb(:,1), nedg, lambda_vert, valWNELE, matWPLEX, matWEATT, [-e1vec(:,2) e1vec(:,1)], [-e2vec(:,2) e2vec(:,1)]);
-vort4 = fcnDVORTEDGE(idx, vnuma(:,2), vnumb(:,2), nedg, lambda_vert, valWNELE, matWPLEX, matWEATT, [-e1vec(:,2) e1vec(:,1)], [-e2vec(:,2) e2vec(:,1)]);
+circ_int = fcnCREATEDSECT(sparse(size(gamma,1), valWNELE*5), size(gamma,1), 5, [1:valWNELE]', [], gamma, []);
+res_circ_int = vecWDVECIRC;
+res_circ_int(idx_flp,:) = res_circ_int(idx_flp,:).*-1; 
 
-resv1 = zeros(nedg, 1);
-resv2 = zeros(nedg, 1);
-resv3 = zeros(nedg, 1);
-resv4 = zeros(nedg, 1);
+% xi_len = reshape(abs(max([matWPLEX(:,1,:)],[],1) - min([matWPLEX(:,1,:)],[],1)),[],1,1);
+% eta_len = reshape(abs(max([matWPLEX(:,2,:)],[],1) - min([matWPLEX(:,2,:)],[],1)),[],1,1);
+% circ_int = fcnDCIRC3(xi_len, eta_len, valWNELE);
+% res_circ_int = reshape(matWDVECIRC', 1,[])';
 
 %%
-d_wake = [circ1; circ2; circ3; circ4; circ5; circ6; vort1; vort2; vort3; vort4];
-res_wake = [res1; res2; res3; res4; res5; res6; resv1; resv2; resv3; resv4];
+DW = [circ; vort; circ_le; vort_le; circ_int];
+RW = [res_circ; res_vort; res_circ_le; res_vort_le; res_circ_int];
 
-%% Back half of post-TE wake DVEs
-
-%{
-% The wake HDVEs in question:
-
-% If this is the first row of wake elements (timestep = 1) then we set the aft row of wake elements (2nd triangles in the post-te row) to constant circ
-if valWSIZE*2 == valWNELE
-      
-    cols = reshape([repmat([(aftdves.*5)-4],1,2)+repmat([0:1],length(aftdves),1)]',[],1);
-    
-    rows_rep = reshape([repmat([1:valWSIZE]',1,length(aftdves)*2)]',[],1); 
-    cols_rep = repmat(cols,valWSIZE,1);
-    
-    d_wake(sub2ind(size(d_wake),rows_rep,cols_rep)) = 0;
-    
-    rows = reshape([repmat([1:length(aftdves)*2]',1,1)]',[],1); 
-    cols1 = (aftdves.*5)-4;
-    cols2 = cols1 + 1;
-    
-    circ_chw = zeros(length(aftdves)*2, valWNELE*5);
-    circ_chw(sub2ind(size(circ_chw),rows,[cols1; cols2])) = 1;
-    
-    res_chw = zeros(length(aftdves)*2,1);
-    
-    d_wake = [d_wake; circ_chw];
-    res_wake = [res_wake; res_chw];
-       
-% Otherwise we set it equal to the leading edge of the row of wake elements behind it   
-else
-    aftedges = matWEIDX(aftdves,1); % It will always be edge 1 of these HDVEs, due to the way the wake is generated
-    
-    idx = logical(zeros(length(matWEATT(:,1)),1));
-    idx(aftedges) = 1;
-
-    nedg = length(nonzeros(idx));
-         
-    % Circulation
-%     circ_chw2 = fcnDCIRC(idx, nedg, lamb_mid, valWNELE, matWPLEX, matWEATT, matWELOC);
-%     res_chw2 = zeros(nedg,1);
-    
-    % Vorticity
-    % along that edge equal for both HDVES
-    % vnuma is local vertices 1 and 2 (columns) for HDVE 1
-    % vnumb is local vertices 1 and 2 for HDVE 2
-    [ta,tb,~] = find(matWDVE(matWEATT(idx,1),:,1) == repmat(matWELST(idx,1),1,3));
-    [~,rb,] = sort(ta);
-    vnuma3(:,1) = tb(rb); % Sorting it according to row, cause find returns them jumbled up
-
-    [ta,tb,~] = find(matWDVE(matWEATT(idx,1),:,1) == repmat(matWELST(idx,2),1,3));
-    [~,rb,] = sort(ta);
-    vnuma3(:,2) = tb(rb);
-
-    [ta,tb,~] = find(matWDVE(matWEATT(idx,2),:,1) == repmat(matWELST(idx,1),1,3));
-    [~,rb,] = sort(ta);
-    vnumb3(:,1) = tb(rb);
-
-    [ta,tb,~] = find(matWDVE(matWEATT(idx,2),:,1) == repmat(matWELST(idx,2),1,3));
-    [~,rb,] = sort(ta);
-    vnumb3(:,2) = tb(rb);
-    
-%     % First vertex
-%     [vort_echw1, vort_xchw1] = fcnDVORT(idx, vnuma3(:,1), vnumb3(:,1), nedg, lamb_vert, valWNELE, matWPLEX, matWEATT, matWELOC, matWALIGN);
-% 
-%     % Second vertex
-%     [vort_echw2, vort_xchw2] = fcnDVORT(idx, vnuma3(:,2), vnumb3(:,2), nedg, lamb_vert, valWNELE, matWPLEX, matWEATT, matWELOC, matWALIGN);
-%     
-%     vort_chw = [vort_echw1; vort_xchw1; vort_echw2; vort_xchw2];
-%     res_vchw = zeros(length(vort_chw(:,1)),1);
-    
-%     d_wake = [d_wake; circ_chw2];
-%     res_wake = [res_wake; res_chw2];
-%     d_wake(:,1:valWSIZE*2*5) = [];
-    d_wake = d_wake(:, end - (valWSIZE*2*5) + 1:end);
-    
-%     % Adding in values of older (2nd post-te row) of wake HDVEs, where the value of circulation is known. Adding this to resultant
-%     oldwakedves = setdiff(unique(matWEATT(aftedges,:)), aftdves); % the older wake HDVEs that border with aftdves
-%     
-%     rows = reshape([repmat([1:length(oldwakedves)*5]',1,1)]',[],1); 
-%     col1 = reshape([repmat([(oldwakedves.*5)-4],1,5) + repmat([0:4],nedg,1)]',[],1);
-%     
-%     circ_chw3 = zeros(length(oldwakedves)*5, valWNELE*5);
-%     circ_chw3(sub2ind(size(circ_chw3),rows,col1)) = 1;
-%     
-%     res_chw3 = reshape(matWCOEFF(oldwakedves,:)',[],1);
-%     
-%     
-%     res_wake = [res_wake; res_chw2; res_vchw; res_chw3];
-    
-end
-%}
-
-% cols = reshape([repmat([(aftdves.*6)-5],1,2)+repmat([0:1],length(aftdves),1)]',[],1);
-% 
-% rows_rep = reshape([repmat([1:valWSIZE]',1,length(aftdves)*2)]',[],1); 
-% cols_rep = repmat(cols,valWSIZE,1);
-% 
-% d_wake(sub2ind(size(d_wake),rows_rep,cols_rep)) = 0;
-% 
-% rows = reshape([repmat([1:length(aftdves)*2]',1,1)]',[],1); 
-% cols1 = (aftdves.*6)-5;
-% cols2 = cols1 + 1;
-% 
-% circ_chw = zeros(length(aftdves)*2, valWNELE*6);
-% circ_chw(sub2ind(size(circ_chw),rows,[cols1; cols2])) = 1;
-% 
-% res_chw = zeros(length(aftdves)*2,1);
-% 
-% d_wake = [d_wake; circ_chw];
-% res_wake = [res_wake; res_chw];
-% 
-% d_wake = d_wake(:, end - (valWSIZE*2*6) + 1:end);
-
-matNEWWAKECOEFF = d_wake\res_wake;
-matNEWWAKECOEFF = reshape(matNEWWAKECOEFF,6,valWSIZE*2,1)';
-
+matWCOEFF = DW\RW;
+matWCOEFF = reshape(matWCOEFF,5,valWNELE,1)';
 
 end
 

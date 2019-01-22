@@ -1,9 +1,5 @@
 function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL)
 warning('on')
-% tol = 1e-10;
-% tol2 = 1e-6;
-% tol3 = 1e-5;
-
 tol = 1e-10;
 
 fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
@@ -13,8 +9,8 @@ y_m = fpl(:,2);
 z_m = fpl(:,3);
 
 %% Checking state of field point with relation to element surface
-margin_edge = 1e-6;
-margin_on_element = 1e-6;
+margin_edge = 1e-5;
+margin_on_element = 1e-5;
 
 xi_1 = permute(matPLEX(1,1,dvenum),[3 2 1]);
 xi_2 = permute(matPLEX(2,1,dvenum),[3 2 1]);
@@ -48,18 +44,16 @@ te_eta = E.*x_m + D_TE;
 
 xi_left = min([xi_1, xi_3],[],2);
 xi_right = max([xi_1, xi_3],[],2);
-% idx_in_plane = abs(z_m) <= tol2;
-% idx_on_element = y_m >= te_eta - margin_edge & y_m <= le_eta + margin_edge & x_m >= xi_left - margin_edge & x_m <= xi_right + margin_edge & abs(z_m) <= margin_on_element;
 idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m & x_m <= xi_right + margin_edge) & abs(z_m) <= margin_on_element) | ...
     (abs(y_m - le_eta) < margin_edge & (xi_left - margin_edge <= x_m & x_m <= xi_right + margin_edge) & abs(z_m) <= margin_on_element) | ...
     (abs(x_m - xi_left) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element) | ...
     (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
 % disp(['Edge calls: ', num2str(sum(idx_on_edge))]);
 if any(idx_on_edge)
-%     tmpvc = [x_m(idx_on_edge) y_m(idx_on_edge)].*0.9;
+%     tmpvc = [x_m(idx_on_edge) y_m(idx_on_edge)];
 %     tmpvc = tmpvc./sqrt(sum(tmpvc.^2,2));
-%     y_m(idx_on_edge) = tmpvc(:,2);
-%     z_m(idx_on_edge) = tmp(:,3);
+%     x_m(idx_on_edge) = x_m(idx_on_edge) - 2e-2;
+%     y_m(idx_on_edge) = y_m(idx_on_edge) - 2e-2;
 end
 
 %%
@@ -72,22 +66,22 @@ L = [C E];
 F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
-tol_F = 1e-1;
+tol_F = 1e-3;
 tol_S = 1e-10;
 tol_T = 1e-10;
-tol_u = 1e-5;
+tol_u = 1e-10;
 tol_alpha = 1e-10;
 
 % Correcting zero F limits if we are in the plane of the element
-idx = abs(F_lim(:,:,1)) < tol_F & alpha(:,1) <= tol_alpha;
+idx = abs(F_lim(:,:,1)) < tol_F & alpha(:,1) <= 1e-3;
 sgn = sign(F_lim(idx,:,1));
 sgn(sign(F_lim(idx,:,1)) == 0) = sign(F_lim(sign(F_lim(idx,:,1)) == 0,:,2));
-F_lim(idx,:,1) = -sgn.*tol_F;
+F_lim(idx,:,1) = sgn.*tol_F;
 
-idx = abs(F_lim(:,:,2)) < tol_F & alpha <= tol_alpha;
+idx = abs(F_lim(:,:,2)) < tol_F & alpha <= 1e-3;
 sgn = sign(F_lim(idx,:,2));
 sgn(sign(F_lim(idx,:,2)) == 0) = sign(F_lim(sign(F_lim(idx,:,2)) == 0,:,1));
-F_lim(idx,:,2) = -sgn.*tol_F;
+F_lim(idx,:,2) = sgn.*tol_F;
 
 F_lim = repmat(F_lim,1,2,1);
 alpha = repmat(alpha,1,2,1);
@@ -186,8 +180,7 @@ if any(idx_nan)
    disp('Nan induction in fcnHDVEIND_DB'); 
 end
 % disp(['Inf or NaN induction: ', num2str(length(idx_nan))]);
-% infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
-infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
+infl_loc(1:2,:,idx_on_edge) = infl_loc(1:2,:,idx_on_edge).*0;
+% infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
 
-% infl_loc(:,:,:) = infl_loc(:,:,:).*-1;
 end

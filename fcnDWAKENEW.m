@@ -147,7 +147,6 @@ eta_tmp(idx_rrg) = eta_2(idx_rrg);
 eta_2(idx_rrg) = eta_1(idx_rrg);
 eta_1(idx_rrg) = eta_tmp(idx_rrg);
 
-
 % Checking which elements are on the element
 C = (eta_3 - eta_2)./(xi_3 - xi_2);
 D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));

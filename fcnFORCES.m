@@ -30,16 +30,31 @@ for jj = 1:size(vecTE,1)
     len = 1000; % Number of divisions of this line (Jank)
     points = [linspace(pts_loc(1,1), pts_loc(2,1), len)' linspace(pts_loc(1,2), pts_loc(2,2), len)' linspace(pts_loc(1,3), pts_loc(2,3), len)'];
     distance = sqrt(sum((pts_loc(2,:) - pts_loc(1,:)).^2,2)); % Length of entire TE edge
-    vec = (pts_loc(1,:) - pts_loc(2,:))./distance; % Direction of this edge (in local)
+    vec = (pts_loc(2,:) - pts_loc(1,:))./distance; % Direction of this edge (in local)
     
     % Circulation at the points along the edge (oriented along the edge)
     circ = sum([0.5.*points(:,2).^2 points(:,2) 0.5.*points(:,1).^2 points(:,1) ones(size(points(:,1)))].*matCOEFF(vecTEDVE(jj),:),2).*vec;
     circ = fcnSTARGLOB(circ, repmat(matROTANG(vecTEDVE(jj),:), len, 1)); % Translate to global
-    F = cross( repmat(valDENSITY.*matUINF(vecTEDVE(jj),:), len, 1), circ, 2); % A special guest mix on the track, Kutty J
+    F = cross( circ, repmat(valDENSITY.*matUINF(vecTEDVE(jj),:), len, 1), 2); % A special guest mix on the track, Kutty J
     spans = repmat(distance/len, len, 1);
     spans([1 len],:) = spans([1 len],:).*0.5;
     liftfree(vecTEDVE(jj),1) = sqrt(sum((sum(F.*spans,1)).^2,2)); % Multiply by the length of the discretization, and sum
     vecDVELIFT(vecTEDVE(jj),1) = liftfree(vecTEDVE(jj),1);
+    
+%     p = polyfit(points(:,1), sum([0.5.*points(:,2).^2 points(:,2) 0.5.*points(:,1).^2 points(:,1) ones(size(points(:,1)))].*matCOEFF(vecTEDVE(jj),:),2), 2);
+%     mid_point = mean(pts_loc,1);
+%     fp_0 = points - mid_point;
+%     hspan = abs((pts_loc(2,1) - pts_loc(1,1))./2);
+%     phi = repmat(acosd(dot([1 0 0],vec,2)),len,1);
+%     [aloc, bloc, cloc] = fcnBOUNDIND(hspan, phi, fp_0); % C is higher order
+%     a = fcnSTARGLOB(aloc, repmat(matROTANG(vecTEDVE(jj),:),len,1));
+%     b = fcnSTARGLOB(bloc, repmat(matROTANG(vecTEDVE(jj),:),len,1));
+%     c = fcnSTARGLOB(cloc, repmat(matROTANG(vecTEDVE(jj),:),len,1));
+%     
+%     D = [a b c];
+%     D = reshape(reshape(D', 1, 9, []), 3, 3, len);
+%     w_ind = permute(sum(D.*repmat(reshape([p(3) p(2) p(1)]',1,3,[]),3,1,1),2),[2 1 3]);
+%     w_ind = reshape(permute(w_ind,[3 1 2]),[],3,1)./(-4*pi);
     
     % Drag
     %         fpg = fcnSTARGLOB(points, repmat(matWROTANG(vecWLEDVE(jj),:),len,1)) + matWCENTER(vecWLEDVE(jj),:);

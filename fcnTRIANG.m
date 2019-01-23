@@ -1,5 +1,5 @@
-function [TR, matADJE, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(POINTS, TYPE, matWETA)
+function [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
+            matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA, vecDVEFLIP] = fcnTRIANG(POINTS, TYPE, matWETA)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -32,27 +32,15 @@ tol = 1e-14;
 [matVLST,~,j] = uniquetol([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)], tol, 'ByRows',true);
 matDVE(:,:,1) = reshape(j,[],3);
 
-% % Removing duplicate elements from OpenVSP STL when infinitely thin
-% if strcmp(strATYPE,'LS')
-%    [~, ia, ~] = unique(sort(matDVE(:,:,1),2),'rows','stable');
-%    matDVE = matDVE(ia,:,:);
-%    valNELE = length(matDVE(:,1,1)); 
-% end
-
 % Converting above data to triangulation
 TR = triangulation(matDVE(:,:,1),matVLST);
 
 matELST = edges(TR); % List of unique edges
 DNORM = -faceNormal(TR);
-% DNORM(1,:) = [0 0 1] %TEMPORARY DON'T KEEP
 
-% matDVE(:,:,2) = faceNormal(TR); % Normal
-% matCENTER = incenter(TR); % incenter of triangle
 matCENTER = (matVLST(matDVE(:,1),:) + matVLST(matDVE(:,2),:) + matVLST(matDVE(:,3),:))./3;
-% matCONTROL = (matVLST(matDVE(:,2),:) + matVLST(matDVE(:,1),:) + matCENTER)./3;
 
 %% Finding edge attachement matrix (which DVEs share which edge)
-
 temp2 = edgeAttachments(TR, matELST);
 
 % Different numbers of edge attachements means we can't do a straight cell2mat on edgeAttachements(TR,ELST)
@@ -67,6 +55,11 @@ end
 temp3(idx==1,1) = cell2mat(temp2(idx==1,:));
 
 matEATT = sort(temp3,2); % List of unique edge attachements (by element #), and sort it on each row
+
+%% Local HDVE Xi-eta Axis
+P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
+[matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER, TYPE, matWETA);
+matCONTROL = matCENTER;
 
 %% Mapping global edge number to local edge number in EIDX
 % This may be improved to fewer lines
@@ -120,46 +113,6 @@ matEIDX = reshape(matEIDX,[],3);
 temp31 = sortrows([i j]); % Sorting by column 1 so column 2 is the correct order
 matELOC(matEATT>0,1) = temp31(:,2); % ELOC is column 2, indexing it appropriately
 matELOC = reshape(matELOC,nedg,[]);
-
-%% Computing the adjaceny matrix (which DVEs are adjacent to which, columns are sensitive to edge number)
-SDEG = length(matEATT(1,:)); % The degree of the split
-
-% Neighbouring elements along the first local edge of each HDVE
-temp10 = matEATT(matEIDX(:,1),:); % Getting all HDVEs that share the local first edge of every HDVE
-temp10(temp10==repmat([1:valNELE]',1,SDEG)) = 0; % Removing HDVE from its own adjacency
-temp10 = sort(temp10,2); % Sorting to sift out the zeros from the columns
-temp10(:,1) = []; % Removing extra column of zeros after the sort
-matADJE(:,1,:) = reshape(temp10,valNELE,1,SDEG-1); % Placing values in ADJE matrix
-
-clear temp10
-
-% Local edge #2
-temp10 = matEATT(matEIDX(:,2),:); % Getting all HDVEs that share the local first edge of every HDVE
-temp10(temp10==repmat([1:valNELE]',1,SDEG)) = 0; % Removing HDVE from its own adjacency
-temp10 = sort(temp10,2); % Sorting to sift out the zeros from the columns
-temp10(:,1) = []; % Removing extra column of zeros after the sort
-matADJE(:,2,:) = reshape(temp10,valNELE,1,SDEG-1); % Placing values in ADJE matrix
-
-clear temp10
-
-% Local edge #3
-temp10 = matEATT(matEIDX(:,3),:); % Getting all HDVEs that share the local first edge of every HDVE
-temp10(temp10==repmat([1:valNELE]',1,SDEG)) = 0; % Removing HDVE from its own adjacency
-temp10 = sort(temp10,2); % Sorting to sift out the zeros from the columns
-temp10(:,1) = []; % Removing extra column of zeros after the sort
-matADJE(:,3,:) = reshape(temp10,valNELE,1,SDEG-1); % Placing values in ADJE matrix
-
-clear temp10
-
-% If missing an adjacency with panel code, then there is a discontinuity in the geometry somewhere
-if isempty(find(isnan(matADJE))) == 0 && strcmp(ATYPE,'PC')
-    disp('Problem with geometry in fcnTRIANG.')
-end
-
-%% Local HDVE Xi-eta Axis
-P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
-[matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER, TYPE, matWETA);
-matCONTROL = matCENTER;
 
 %% Vertex attachements and normal averages
 matVATT = vertexAttachments(TR);

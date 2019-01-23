@@ -1,4 +1,4 @@
-function [PLEX, DVECT, ROTANG] = fcnTRITOLEX(P, DNORM, matCONTROL)
+function [PLEX, DVECT, ROTANG] = fcnTRITOLEX(P, DNORM, matCONTROL, TYPE, matWETA)
 % This function converts a nx3x3 matrix from global (X,Y,Z)
 % to local (eta,xi,zeta) coordinates, where the depth n is vertex number
 % and columns are (X,Y,Z), rows are HDVE number
@@ -40,9 +40,15 @@ DVECT = zeros(sp(3),3,3);
 % Zeta (Normal)
 DVECT(:,:,3) = DNORM;
 
-% Element "xsi" is aligned with global X (Change for rotors?)
-global_x = repmat([-1 0 0],sp(3),1);
-DVECT(:,:,2) = global_x - repmat((dot(global_x,DVECT(:,:,3),2))./(sqrt(sum(DVECT(:,:,3).^2,2))),1,3).*DVECT(:,:,3);
+if strcmpi(TYPE, 'SURFACE')
+    % Element "xsi" is aligned with global X (Change for rotors?)
+    global_x = repmat([-1 0 0],sp(3),1);
+    DVECT(:,:,2) = global_x - repmat((dot(global_x,DVECT(:,:,3),2))./(sqrt(sum(DVECT(:,:,3).^2,2))),1,3).*DVECT(:,:,3);
+else
+    idx = reshape(matWETA,1,1,[]);
+    DVECT(matWETA == 1,:,2) = reshape(P(2,:,idx == 1) - P(1,:,idx == 1),3,[],1)';
+    DVECT(matWETA == 2,:,2) = reshape(P(2,:,idx == 2) - P(3,:,idx == 2),3,[],1)';
+end
 
 % Element "eta" 
 DVECT(:,:,1) = cross(DVECT(:,:,2),DVECT(:,:,3),2);

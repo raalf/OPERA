@@ -46,6 +46,14 @@ if strcmpi(strATYPE{2},'THIN') == 1
     pts(:,:,1) = matVLST(matELST(vecTE,1),:);
     pts(:,:,2) = matVLST(matELST(vecTE,2),:);
     pts(:,:,3) = (pts(:,:,1) + pts(:,:,2))./2;
+    
+    te_dir = pts(:,:,2) - pts(:,:,1);
+    te_dir = te_dir./(sqrt(sum(te_dir.^2,2)));
+    
+%     vort_te = [te_dir(:,2).*fcnDVORT2(pts(:,:,1), vecTEDVE, valNELE, matCENTER, matROTANG, 'A') + te_dir(:,1).*fcnDVORT2(pts(:,:,1), vecTEDVE, valNELE, matCENTER, matROTANG, 'B'); ...
+%     te_dir(:,2).*fcnDVORT2(pts(:,:,2), vecTEDVE, valNELE, matCENTER, matROTANG, 'A') + te_dir(:,1).*fcnDVORT2(pts(:,:,2), vecTEDVE, valNELE, matCENTER, matROTANG, 'B'); ...
+%     te_dir(:,2).*fcnDVORT2(pts(:,:,3), vecTEDVE, valNELE, matCENTER, matROTANG, 'A') + te_dir(:,1).*fcnDVORT2(pts(:,:,3), vecTEDVE, valNELE, matCENTER, matROTANG, 'B')];
+    
     vort_te = [fcnDVORT2(pts(:,:,1), vecTEDVE, valNELE, matCENTER, matROTANG, 'A'); ...
         fcnDVORT2(pts(:,:,2), vecTEDVE, valNELE, matCENTER, matROTANG, 'A'); ...
         fcnDVORT2(pts(:,:,3), vecTEDVE, valNELE, matCENTER, matROTANG, 'A')];

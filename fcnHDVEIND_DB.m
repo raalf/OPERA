@@ -9,7 +9,7 @@ y_m = fpl(:,2);
 z_m = fpl(:,3);
 
 %% Checking state of field point with relation to element surface
-margin_edge = 1e-5;
+margin_edge = 1e-3;
 margin_on_element = 1e-5;
 
 xi_1 = permute(matPLEX(1,1,dvenum),[3 2 1]);
@@ -20,7 +20,7 @@ eta_1 = permute(matPLEX(1,2,dvenum),[3 2 1]);
 eta_2 = permute(matPLEX(2,2,dvenum),[3 2 1]);
 eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 
-idx_flp = abs(xi_2 - xi_3) < margin_edge;
+idx_flp = abs(xi_2 - xi_3) < margin_edge & abs(xi_1 - xi_2) > margin_edge;
 xi_tmp(idx_flp) = xi_3(idx_flp);
 xi_3(idx_flp) = xi_1(idx_flp);
 xi_1(idx_flp) = xi_tmp(idx_flp);
@@ -32,6 +32,10 @@ idx_rrg = eta_2 < eta_1;
 eta_tmp(idx_rrg) = eta_2(idx_rrg);
 eta_2(idx_rrg) = eta_1(idx_rrg);
 eta_1(idx_rrg) = eta_tmp(idx_rrg);
+
+if any(abs(xi_2 - xi_3) < margin_edge & abs(xi_1 - xi_2) > margin_edge)
+    disp('Issue in element orientation in HDVEIND.');
+end
 
 % Checking which elements are on the element
 C = (eta_3 - eta_2)./(xi_3 - xi_2);
@@ -49,12 +53,12 @@ idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m
     (abs(x_m - xi_left) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element) | ...
     (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
 % disp(['Edge calls: ', num2str(sum(idx_on_edge))]);
-if any(idx_on_edge)
-%     tmpvc = [x_m(idx_on_edge) y_m(idx_on_edge)];
+% if any(idx_on_edge)
+%     tmpvc = -[x_m(idx_on_edge) y_m(idx_on_edge)];
 %     tmpvc = tmpvc./sqrt(sum(tmpvc.^2,2));
-%     x_m(idx_on_edge) = x_m(idx_on_edge) - 2e-2;
-%     y_m(idx_on_edge) = y_m(idx_on_edge) - 2e-2;
-end
+%     x_m(idx_on_edge) = x_m(idx_on_edge) + tmpvc(:,1).*2e-8;
+%     y_m(idx_on_edge) = y_m(idx_on_edge) + tmpvc(:,2).*2e-8;
+% end
 
 %%
 alpha = z_m.^2;
@@ -180,7 +184,7 @@ if any(idx_nan)
    disp('Nan induction in fcnHDVEIND_DB'); 
 end
 % disp(['Inf or NaN induction: ', num2str(length(idx_nan))]);
-infl_loc(1:2,:,idx_on_edge) = infl_loc(1:2,:,idx_on_edge).*0;
+% infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
 % infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
 
 end

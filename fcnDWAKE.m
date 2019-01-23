@@ -1,4 +1,4 @@
-function [matWCOEFF] = fcnDWAKE(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC)
+function [matWCOEFF] = fcnDWAKE(type, valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC)
 
  %% Circulation equations between elements
 % Evaluated at the mid-point of each edge which splits two HDVEs
@@ -55,6 +55,10 @@ vort_le = [fcnDVORT2(pts(:,:,1), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A
     fcnDVORT2(pts(:,:,3), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A')];
 res_vort_le = zeros(size(vort_le,1),1);
     
+
+circ_int = [];
+res_circ_int = [];
+if strcmpi(type, 'UNSTEADY')
 %% Integrated circulation
 xi_1 = permute(matWPLEX(1,1,:),[3 2 1]);
 xi_2 = permute(matWPLEX(2,1,:),[3 2 1]);
@@ -94,14 +98,14 @@ circ_int = fcnCREATEDSECT(sparse(size(gamma,1), valWNELE*5), size(gamma,1), 5, [
 res_circ_int = vecWDVECIRC;
 res_circ_int(idx_flp,:) = res_circ_int(idx_flp,:).*-1; 
 
-% xi_len = reshape(abs(max([matWPLEX(:,1,:)],[],1) - min([matWPLEX(:,1,:)],[],1)),[],1,1);
-% eta_len = reshape(abs(max([matWPLEX(:,2,:)],[],1) - min([matWPLEX(:,2,:)],[],1)),[],1,1);
-% circ_int = fcnDCIRC3(xi_len, eta_len, valWNELE);
-% res_circ_int = reshape(matWDVECIRC', 1,[])';
+else
+   vort_steady = fcnDVORT1([1:valWNELE]', valWNELE, 'A');
+   res_steady = zeros(size(vort_steady,1),1); 
+end
 
 %%
-DW = [circ; vort; circ_le; vort_le; circ_int];
-RW = [res_circ; res_vort; res_circ_le; res_vort_le; res_circ_int];
+DW = [circ; vort; circ_le; vort_le; circ_int; vort_steady];
+RW = [res_circ; res_vort; res_circ_le; res_vort_le; res_circ_int; res_steady];
 
 matWCOEFF = DW\RW;
 matWCOEFF = reshape(matWCOEFF,5,valWNELE,1)';

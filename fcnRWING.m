@@ -13,7 +13,6 @@ if valTIMESTEP < 1
     vecR(end-(len-1):end) = -(4*pi).*dot(matUINF(matKINCON_DVE,:), normals,2);
 else
     % WAKE INDUCED SHIT HERE
-%     w_ind = fcnWINDVEL(matKINCON_P, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER);
     w_ind = fcnSDVEVEL(matKINCON_P, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
     vecR(end-(len-1):end) = -(4*pi).*dot(matUINF(matKINCON_DVE,:) + w_ind, normals, 2);
 end

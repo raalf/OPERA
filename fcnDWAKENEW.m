@@ -134,7 +134,7 @@ eta_1 = permute(matWPLEX(1,2,dves),[3 2 1]);
 eta_2 = permute(matWPLEX(2,2,dves),[3 2 1]);
 eta_3 = permute(matWPLEX(3,2,dves),[3 2 1]);
 
-idx_flp = abs(xi_2 - xi_3) < 1e-5;
+idx_flp = abs(xi_2 - xi_3) < 1e-3 & abs(xi_1 - xi_2) > 1e-3;
 xi_tmp(idx_flp) = xi_3(idx_flp);
 xi_3(idx_flp) = xi_1(idx_flp);
 xi_1(idx_flp) = xi_tmp(idx_flp);
@@ -146,6 +146,7 @@ idx_rrg = eta_2 < eta_1;
 eta_tmp(idx_rrg) = eta_2(idx_rrg);
 eta_2(idx_rrg) = eta_1(idx_rrg);
 eta_1(idx_rrg) = eta_tmp(idx_rrg);
+
 
 % Checking which elements are on the element
 C = (eta_3 - eta_2)./(xi_3 - xi_2);

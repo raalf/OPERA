@@ -1,4 +1,4 @@
-function [hFig21] = fcnPLOTCOEFF(valTIMESTEP, matCOEFF_HSTRY)
+function fcnPLOTCOEFF(valTIMESTEP, matCOEFF_HSTRY)
 
 linestyles = {'--';'-.';'-';':'};
 markers = {'o';'x';'s';'^';'*';'d';'v';'>';'<';'p';'h'};

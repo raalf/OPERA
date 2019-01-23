@@ -16,7 +16,14 @@ while(ch~='=');
     ch = fscanf(fp,'%c',1);
 end
 strA2TYPE = fscanf(fp,'%s',1);
-strATYPE = {strATYPE, strA2TYPE};
+
+% Wing or rotor?
+ch = fscanf(fp,'%c',1);
+while(ch~='=');
+    ch = fscanf(fp,'%c',1);
+end
+strA3TYPE = fscanf(fp,'%s',1);
+strATYPE = {strATYPE, strA2TYPE, strA3TYPE};
 
 % Chordwise element spacing
 ch = fscanf(fp,'%c',1);

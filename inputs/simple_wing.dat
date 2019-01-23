@@ -31,4 +31,4 @@ Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.000000	0.000000	0.000000	1.000000	0.000000	NACA 0015
-0.000000	3.000000	0.000000	1.000000	0.000000	NACA 0015
+0.000000	3.000000	3.000000	1.000000	0.000000	NACA 0015

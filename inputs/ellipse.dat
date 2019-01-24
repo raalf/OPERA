@@ -29,8 +29,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.97500	0.00000	0	0.10000	0	NACA 0015
-0.94437	0.06892	0	0.22252	0	NACA 0015
+0.90000	0.00000	0	0.10000	0	NACA 0015
+0.77748	0.06892	0	0.22252	0	NACA 0015
 
  
 Panel #:2.
@@ -40,8 +40,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.94437	0.06892	0	0.22252	0	NACA 0015
-0.89153	0.27223	0	0.43388	0	NACA 0015
+0.77748	0.06892	0	0.22252	0	NACA 0015
+0.56612	0.27223	0	0.43388	0	NACA 0015
 
  
 Panel #:3.
@@ -51,8 +51,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.89153	0.27223	0	0.43388	0	NACA 0015
-0.84413	0.59972	0	0.62349	0	NACA 0015
+0.56612	0.27223	0	0.43388	0	NACA 0015
+0.37651	0.59972	0	0.62349	0	NACA 0015
 
  
 Panel #:4.
@@ -62,8 +62,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.84413	0.59972	0	0.62349	0	NACA 0015
-0.80454	1.03499	0	0.78183	0	NACA 0015
+0.37651	0.59972	0	0.62349	0	NACA 0015
+0.21817	1.03499	0	0.78183	0	NACA 0015
 
  
 Panel #:5.
@@ -73,8 +73,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.80454	1.03499	0	0.78183	0	NACA 0015
-0.77476	1.55619	0	0.90097	0	NACA 0015
+0.21817	1.03499	0	0.78183	0	NACA 0015
+0.09903	1.55619	0	0.90097	0	NACA 0015
 
  
 Panel #:6.
@@ -84,8 +84,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.77476	1.55619	0	0.90097	0	NACA 0015
-0.75627	2.13721	0	0.97493	0	NACA 0015
+0.09903	1.55619	0	0.90097	0	NACA 0015
+0.02507	2.13721	0	0.97493	0	NACA 0015
 
  
 Panel #:7.
@@ -95,8 +95,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.75627	2.13721	0	0.97493	0	NACA 0015
-0.75000	2.74889	0	1.00000	0	NACA 0015
+0.02507	2.13721	0	0.97493	0	NACA 0015
+0.00000	2.74889	0	1.00000	0	NACA 0015
 
  
 Panel #:8.
@@ -106,8 +106,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.75000	2.74889	0	1.00000	0	NACA 0015
-0.75627	3.36058	0	0.97493	0	NACA 0015
+0.00000	2.74889	0	1.00000	0	NACA 0015
+0.02507	3.36058	0	0.97493	0	NACA 0015
 
  
 Panel #:9.
@@ -117,8 +117,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.75627	3.36058	0	0.97493	0	NACA 0015
-0.77476	3.94159	0	0.90097	0	NACA 0015
+0.02507	3.36058	0	0.97493	0	NACA 0015
+0.09903	3.94159	0	0.90097	0	NACA 0015
 
  
 Panel #:10.
@@ -128,8 +128,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.77476	3.94159	0	0.90097	0	NACA 0015
-0.80454	4.46280	0	0.78183	0	NACA 0015
+0.09903	3.94159	0	0.90097	0	NACA 0015
+0.21817	4.46280	0	0.78183	0	NACA 0015
 
  
 Panel #:11.
@@ -139,8 +139,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.80454	4.46280	0	0.78183	0	NACA 0015
-0.84413	4.89807	0	0.62349	0	NACA 0015
+0.21817	4.46280	0	0.78183	0	NACA 0015
+0.37651	4.89807	0	0.62349	0	NACA 0015
 
  
 Panel #:12.
@@ -150,8 +150,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.84413	4.89807	0	0.62349	0	NACA 0015
-0.89153	5.22556	0	0.43388	0	NACA 0015
+0.37651	4.89807	0	0.62349	0	NACA 0015
+0.56612	5.22556	0	0.43388	0	NACA 0015
 
  
 Panel #:13.
@@ -161,8 +161,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.89153	5.22556	0	0.43388	0	NACA 0015
-0.94437	5.42887	0	0.22252	0	NACA 0015
+0.56612	5.22556	0	0.43388	0	NACA 0015
+0.77748	5.42887	0	0.22252	0	NACA 0015
 
  
 Panel #:14.
@@ -172,6 +172,6 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.94437	5.42887	0	0.22252	0	NACA 0015
-0.97500	5.49779	0	0.10000	0	NACA 0015
+0.77748	5.42887	0	0.22252	0	NACA 0015
+0.90000	5.49779	0	0.10000	0	NACA 0015
 

@@ -14,18 +14,18 @@ disp('| FLIGHT        | |  $$$$$$/| $$      | $$$$$$$$| $$  | $$| $$  | $$');
 disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
-strFILE = 'inputs/simple_wing.dat';
+% strFILE = 'inputs/simple_wing.dat';
 strFILE = 'inputs/ellipse.dat';
+% strFILE = 'inputs/box_wing.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS, vecULS] = fcnOPREAD(strFILE);
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA]...
     = fcnTRIANG(matPOINTS, 'SURFACE', []);
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS);
 
-% valALPHA = 20
-% valMAXTIME = 10
-% valDELTIME = 0.2
-
+% valALPHA = 4
+% valMAXTIME = 60
+% valDELTIME = 1
 valDENSITY = 1.225;
 flagRELAX =  0;
 
@@ -33,7 +33,6 @@ matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
 view([33, 28])
-
 %% D-Matrix Creation
 matKINCON_P = matCONTROL;
 matKINCON_DVE = [1:valNELE]';
@@ -117,8 +116,8 @@ for valTIMESTEP = 1:valMAXTIME
         matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
     end
    
-    [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG] = fcnFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, ...
-        matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA);
+    [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG] = fcnFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, ...
+        matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX);
    
 %     fcnPLOTCOEFF(valTIMESTEP, matCOEFF_HSTRY);
     
@@ -139,12 +138,12 @@ for valTIMESTEP = 1:valMAXTIME
 end
 
 % Plot
-[hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 10);
+% [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
+% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 10);
 view([0 0])
 if valTIMESTEP > 0
-    [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-    [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 10);
+%     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
+%     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 10);
 end
 setAxes3DPanAndZoomStyle(zoom(gca),gca,'camera') ;
 

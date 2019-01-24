@@ -54,10 +54,13 @@ B_2 = matCOEFF(vecTEDVE,4); C_3 = matCOEFF(vecTEDVE,5);
 u = uvw(:,1); v = uvw(:,2); w = uvw(:,3);
 
 % Analytically integrating circulation along the TE vector
-term = ((A_1.*E.^2 + B_1).*xi_1.^2 + ((A_1.*E.^2 + B_1).*xi_3 + (3.*A_1.*D_TE + 3.*A_2).*E + 3.*B_2).*xi_1 + (A_1.*E.^2 + B_1).*xi_3.^2 + ((3.*A_1.*D_TE + 3.*A_2).*E + 3.*B_2).*xi_3 + 3.*A_1.*D_TE.^2 + 6.*A_2.*D_TE + 6.*C_3);
+% Projected circulation onto trailing edge
+% term = ((A_1.*E.^2 + B_1).*xi_1.^2 + ((A_1.*E.^2 + B_1).*xi_3 + (3.*A_1.*D_TE + 3.*A_2).*E + 3.*B_2).*xi_1 + (A_1.*E.^2 + B_1).*xi_3.^2 + ((3.*A_1.*D_TE + 3.*A_2).*E + 3.*B_2).*xi_3 + 3.*A_1.*D_TE.^2 + 6.*A_2.*D_TE + 6.*C_3);
+% Spanwise circulation
+term = (B_1.*xi_1.^2 + (B_1.*xi_3 + 3.*B_2).*xi_1 + B_1.*xi_3.^2 + 3.*B_2.*xi_3 + 6.*C_3);
 tmp21 = -(1/6).*((xi_1 - xi_3).*valDENSITY.*term.*w.*(eta_1 - eta_3));
 tmp22 =  (1/6).*((xi_1 - xi_3).^2.*valDENSITY.*term.*w.*(eta_1 - eta_3));
-tmp33 = -(1/6).*(xi_1.*v - xi_3.*v - u.*(eta_1 - eta_3)).*term.*(xi_1 - xi_3).*valDENSITY;
+tmp33 = -(1/6).*(xi_1.*v - xi_3.*v - u.*(eta_3 - eta_1)).*term.*(xi_1 - xi_3).*valDENSITY;
 
 % This is the special force
 F = fcnSTARGLOB(-[tmp21 tmp22 tmp33]./(xi_3 - xi_1), matROTANG(vecTEDVE,:));

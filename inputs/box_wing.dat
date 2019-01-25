@@ -41,7 +41,7 @@ Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.000000	6.000000	0.000000	1.000000	0.000000	NACA 0015
-3.000000	6.000000	1.200000	1.000000	0.000000	NACA 0015
+0.000000	6.000000	1.200000	1.000000	0.000000	NACA 0015
 
 Panel #:3. 
 Number of spanwise elements:	vecN 		= 5. 
@@ -50,8 +50,8 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-3.000000	6.000000	1.200000	1.000000	0.000000	NACA 0015
-3.000000	0.000000	1.200000	1.000000	0.000000	NACA 0015
+0.000000	6.000000	1.200000	1.000000	0.000000	NACA 0015
+0.000000	0.000000	1.200000	1.000000	0.000000	NACA 0015
 
 Panel #:4. 
 Number of spanwise elements:	vecN 		= 5. 
@@ -60,5 +60,5 @@ Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-3.000000	0.000000	1.200000	1.000000	0.000000	NACA 0015
+0.000000	0.000000	1.200000	1.000000	0.000000	NACA 0015
 0.000000	0.000000	0.000000	1.000000	0.000000	NACA 0015

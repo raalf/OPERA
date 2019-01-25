@@ -14,18 +14,19 @@ disp('| FLIGHT        | |  $$$$$$/| $$      | $$$$$$$$| $$  | $$| $$  | $$');
 disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
-strFILE = 'inputs/simple_wing.dat';
+% strFILE = 'inputs/simple_wing.dat';
 % strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/box_wing.dat';
+strFILE = 'inputs/goland_wing.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS, vecULS] = fcnOPREAD(strFILE);
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA]...
     = fcnTRIANG(matPOINTS, 'SURFACE', []);
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS);
 
-% valALPHA = 4
-valMAXTIME = 60
-valDELTIME = 10
+valALPHA = 0
+valMAXTIME = 100
+valDELTIME = 0.1
 valDENSITY = 1.225;
 flagRELAX =  0;
 
@@ -48,7 +49,7 @@ matWEATT = []; matWEIDX = []; matWELOC = []; matWPLEX = []; matWDVECT = [];
 matWALIGN = []; matWVATT = []; matWVNORM = []; matWCENTER = [];
 matWAKEGEOM = []; matWCOEFF = []; matWVLST = []; matWROTANG = [];
 vecWDVECIRC = []; CL = nan(valMAXTIME,1); CDi = nan(valMAXTIME,1);
-e = nan(valMAXTIME,1);
+e = nan(valMAXTIME,1); gust_vel_old = matCENTER.*0;
 
 valWSIZE = length(vecTE);
 
@@ -58,6 +59,11 @@ vecR = fcnRWING(valDLEN, 0, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, ma
 % Solving for wing coefficients
 [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
 matCOEFF_HSTRY(:,:,1) = matCOEFF;
+
+valGUSTAMP = 0.0025;
+valGUSTL = 7.3152;
+flagGUSTMODE = 2;
+valGUSTSTART = 30;
 
 for valTIMESTEP = 1:valMAXTIME
     %% Timestep to solution
@@ -73,6 +79,12 @@ for valTIMESTEP = 1:valMAXTIME
     
     % Moving the wing
     [matVLST, matCENTER, matNEWWAKE, matCONTROL, matKINCON_P] = fcnMOVEWING(matUINF, valDELTIME, matVLST, matCENTER, matELST, vecTE, matCONTROL, matKINCON_P);
+    if valTIMESTEP >= valGUSTSTART
+    [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, flagGUSTMODE, valDELTIME, 1, valGUSTSTART, matCENTER, gust_vel_old);
+    end
+%     if valTIMESTEP == 10
+%        strATYPE{3} = 'UNSTEADY';
+%     end
     
     % Generating new wake elements
     if any(vecTE)
@@ -116,8 +128,8 @@ for valTIMESTEP = 1:valMAXTIME
         matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
     end
    
-    [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
+%     [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
+% [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
 % [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 30);
 
     [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG] = fcnFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, ...
@@ -143,13 +155,13 @@ end
 
 % Plot
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-% [hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 10);
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 10);
 view([0 0])
 if valTIMESTEP > 0
     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-%     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 10);
+    [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 10);
 end
-setAxes3DPanAndZoomStyle(zoom(gca),gca,'camera') ;
+% setAxes3DPanAndZoomStyle(zoom(gca),gca,'camera') ;
 
 % s_ind = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER);
 % w_ind = fcnSDVEVEL(matCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);

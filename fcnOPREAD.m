@@ -141,6 +141,13 @@ for i = 1:valPANELS
         vecPANELLE(i) = 0;
     end
     
+    % Reading spanwise DVE spacing for this panel
+    ch = fscanf(fp,'%c',1);
+    while(ch~='=');
+        ch = fscanf(fp,'%c',1);
+    end
+    strPSPACE{i} = fscanf(fp,'%s',1);    
+    
     % Skipping geometry column header
     fgets(fp);
     fgets(fp);
@@ -174,7 +181,7 @@ for i = 1:valPANELS
 end
 
 fclose(fp);
-[matPOINTS, matTEPOINTS, matLEPOINTS, vecULS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING);
+[matPOINTS, matTEPOINTS, matLEPOINTS, vecULS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE);
 
 
 end

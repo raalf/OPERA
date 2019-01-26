@@ -24,11 +24,12 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 10. 
-Number of chordwise elements: 	vecM 		= 6.
+Number of spanwise elements:	vecN 		= 8. 
+Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
+Spanwise Element Spacing:		strPSPACE	= COSINE
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.000000	0.000000	0.000000	1.828800	0.000000	NACA 0015
 0.000000	6.096000	0.000000	1.828800	0.000000	NACA 0015

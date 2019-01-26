@@ -29,7 +29,7 @@ chord = [flip(chord(2:end)) chord];
 
 str = sprintf('OPERA INPUT FILE\nALL UNITS IN SI\n\nANALYSIS PARAMETERS\n\nAnalysis Type:	 	strATYPE = 3D\nLifting Surface:	strA2TYPE = THIN\nSteady or Unsteady:	strA3TYPE = STEADY\n\nChordwise Spacing:	strSPACING = %s\n\nMaximum Timesteps: 		valMAXTIME = %d\nTimestep Size: 			valDELTIME = %0.2f\nRelaxed or Fixed Wake: 	strRELAX = FIXED\n\nAngles of Attack: 		seqALPHA = %0.2f\nAngles of Sideslip: 	seqBETA = 0\n\nGEOMETRY\n\nNo. of panels:	valPANELS =	%d\n\nDefines leading edge of wing, all measured in metres:\nKeep vecM the same for all panels on a wing.', strCHORDSPACING, valMAXTIME, valDELTIME, valALPHA, 2.*(num_panels-1));
 for i = 1:(num_panels-1).*2
-    panels{i} = sprintf('\nPanel #:%d.\nNumber of spanwise elements:	vecN 		= %d.\nNumber of chordwise elements: 	vecM 		= %d.\nSymmetry about YZ Plane:		strSYM 		= NO\nTrailing edge:					strTE 		= YES\nLeading edge:					strLE       = YES\nxleft		yleft		zleft		chord		epsilon	 	airfoil\n', i, vecN, vecM);
+    panels{i} = sprintf('\nPanel #:%d.\nNumber of spanwise elements:	vecN 		= %d.\nNumber of chordwise elements: 	vecM 		= %d.\nSymmetry about YZ Plane:		strSYM 		= NO\nTrailing edge:					strTE 		= YES\nLeading edge:					strLE       = YES\nSpanwise Element Spacing:		strPSPACE    = NORMAL\nxleft		yleft		zleft		chord		epsilon	 	airfoil\n', i, vecN, vecM);
     goem = sprintf('%0.5f\t%0.5f\t0\t%0.5f\t0\tNACA 0015\n%0.5f\t%0.5f\t0\t%0.5f\t0\tNACA 0015\n\n',x(i),y(i),chord(i),x(i+1),y(i+1),chord(i+1));
     panels{i} = [panels{i} goem];
     

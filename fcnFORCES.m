@@ -84,48 +84,49 @@ for jj = 1:length(vecTE)
     
     wind = fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
     
-%     % Adding in bound induction call
-%     wind_b = zeros(len,3);
-%     for jjj = 1:length(vecTE)
-%         dve2 = vecTEDVE(jjj);
-% 
-%         p1 = fcnGLOBSTAR(matVLST(matELST(vecTE(jjj),1),:) - matCENTER(dve2,:), matROTANG(dve2,:));
-%         p2 = fcnGLOBSTAR(matVLST(matELST(vecTE(jjj),2),:) - matCENTER(dve2,:), matROTANG(dve2,:));
-%         
-%         hspan = abs(p1(1) - p2(1))./2;
-%         midpoint = mean([p1; p2],1);
-%         vec = p2 - p1;
-%         vec = vec./sqrt(sum(vec.^2,2));
-%         phi = acos(dot([1 0 0], vec, 2));
-%         if phi > pi/2
-%             phi = phi - pi;
-%         end
-%         fp_0 = fcnGLOBSTAR(fpg - matCENTER(dve2,:), matROTANG(dve2,:)) - midpoint;
-%         
-%         [aloc, bloc, cloc] = fcnBOUNDIND(repmat(hspan,len,1), repmat(-phi,len,1), [fp_0(:,2) fp_0(:,1) fp_0(:,3)]);
-%         aloc = [aloc(:,2) aloc(:,1) aloc(:,3)];
-%         bloc = [bloc(:,2) bloc(:,1) bloc(:,3)];
-%         cloc = [cloc(:,2) cloc(:,1) cloc(:,3)];
-%         
-%         D = [aloc bloc cloc]; % C is higher order
-%         D = reshape(reshape(D', 1, 9, []), 3, 3, len);
-%         
-%         % We need to translate the polynomial coefficients from xi = 0 to
-%         % xi = xi_midpoint
-%         xi_mp = midpoint(1);
-%         
-%         xi = linspace(p1(1,1), p2(1,1), 100);
-%         circ = 0.5.*matCOEFF(dve2,3).*xi.^2 + matCOEFF(dve2,4).*xi + matCOEFF(dve2,5);
-%         
-%         coeff = polyfit(xi - xi_mp, circ, 2);
-%         coeff = fliplr(coeff);
-%         
-%         w_ind = permute(sum(D.*repmat(reshape(coeff',1,3,[]),3,1,1),2),[2 1 3]);
-%         w_ind = reshape(permute(w_ind,[3 1 2]),[],3,1)./(-4*pi);
-%         
-%         wind_b = wind_b + fcnSTARGLOB(w_ind, repmat(matROTANG(dve2,:),len,1));
-%     end
-%     wind = wind - wind_b;
+    % Adding in bound induction call
+    wind_b = zeros(len,3);
+    for jjj = 1:length(vecTE)
+        dve2 = vecTEDVE(jjj);
+
+        p1 = fcnGLOBSTAR(matVLST(matELST(vecTE(jjj),1),:) - matCENTER(dve2,:), matROTANG(dve2,:));
+        p2 = fcnGLOBSTAR(matVLST(matELST(vecTE(jjj),2),:) - matCENTER(dve2,:), matROTANG(dve2,:));
+        
+        hspan = abs(p1(1) - p2(1))./2;
+        midpoint = mean([p1; p2],1);
+        vec = p2 - p1;
+        vec = vec./sqrt(sum(vec.^2,2));
+        phi = acos(dot([1 0 0], vec, 2));
+        if phi > pi/2
+            phi = phi - pi;
+        end
+        fp_0 = fcnGLOBSTAR(fpg - matCENTER(dve2,:), matROTANG(dve2,:)) - midpoint;
+        
+        [aloc, bloc, cloc] = fcnBOUNDIND(repmat(hspan,len,1), repmat(-phi,len,1), [fp_0(:,2) fp_0(:,1) fp_0(:,3)]);
+        aloc = [aloc(:,2) aloc(:,1) aloc(:,3)];
+        bloc = [bloc(:,2) bloc(:,1) bloc(:,3)];
+        cloc = [cloc(:,2) cloc(:,1) cloc(:,3)];
+        
+        D = [aloc bloc cloc]; % C is higher order
+        D = reshape(reshape(D', 1, 9, []), 3, 3, len);
+        
+        % We need to translate the polynomial coefficients from xi = 0 to
+
+        xi_mp = midpoint(1);
+        
+        xi = linspace(p1(1,1), p2(1,1), 100);
+        eta = linspace(p1(1,2), p2(1,2), 100);
+        circ = 0.5.*matCOEFF(dve2,3).*xi.^2 + matCOEFF(dve2,4).*xi + matCOEFF(dve2,5).*xi.*eta + matCOEFF(dve2,6);
+        
+        coeff = polyfit(xi - xi_mp, circ, 2);
+        coeff = fliplr(coeff);
+        
+        w_ind = permute(sum(D.*repmat(reshape(coeff',1,3,[]),3,1,1),2),[2 1 3]);
+        w_ind = reshape(permute(w_ind,[3 1 2]),[],3,1)./(-4*pi);
+        
+        wind_b = wind_b + fcnSTARGLOB(w_ind, repmat(matROTANG(dve2,:),len,1));
+    end
+    wind = wind - wind_b;
     
     tmp51 = [tmp51; fpg_og];
     tmp52 = [tmp52; wind];
@@ -158,15 +159,18 @@ for jj = 1:length(vecTE)
     sideind(vecTEDVE(jj),1) = dot(R, matDVESIDE_DIR(vecTEDVE(jj),:), 2);
 end
 
-% load('Stuff/downwash_goland_wing_vap3.mat');
-% hFig34 = figure(34);
-% clf(34)
-% scatter(tmp51(:,2), tmp52(:,3),'^m')
-% hold on
-% scatter(XDATA, YDATA, 'ok');
-% hold off
-% box on
-% grid minor
+[~,b] = sort(tmp51(:,2),'ascend');
+tmp51 = tmp51(b,:);
+tmp52 = tmp52(b,:);
+load('Stuff/downwash_goland_wing_vap3.mat');
+hFig34 = figure(34);
+clf(34)
+plot(tmp51(:,2), tmp52(:,3),'-^m')
+hold on
+scatter(XDATA, YDATA, 'ok');
+hold off
+box on
+grid minor
 
 vecDVELIFT = liftfree + liftind;
 vecDVESIDE = sidefree + sideind;

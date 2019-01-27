@@ -20,9 +20,11 @@ circ = [fcnDCIRC(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); .
 
 %% Vorticity along edge between elements
 % Unit vector in local ref frame (a for HDVE1, b for HDVE2) from local vertex to local vertex on the edge that forms the border between the two
-vort = [fcnDVORTEDGE(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
-        fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
-        fcnDVORTEDGE(repmat(vnum_b,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
+% vort = [fcnDVORTEDGE(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
+%         fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
+%         fcnDVORTEDGE(repmat(vnum_b,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
+% vort = [];
+vort = [fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
 
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis

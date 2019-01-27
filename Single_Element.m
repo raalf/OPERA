@@ -26,7 +26,7 @@ matPOINTS(:,:,3) = [0  0.5 0];
 
 vecUINF = fcnUINFWING(valALPHA, 0);
 
-matCOEFF = [0 0 0 0 1];
+matCOEFF = [0 0 0 0 0 1];
 
 %% fpl
 % fpg = [-0 0.2 0]
@@ -132,9 +132,9 @@ matCOEFF = [0 0 0 0 1];
 % y = [-0.1:granularity:0.1];
 % z = 0.0002;
 
-[X,Y,Z] = meshgrid(x,y,z);
-fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-% fpg = [0.2 0 0];
+% [X,Y,Z] = meshgrid(x,y,z);
+% fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
+fpg = [0.5 0 0; 0  0 0; 0  0.5 0];
 % fpg = [0 0.2 0];
 % fpg = [0.25 0.25 0];
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);

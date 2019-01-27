@@ -24,16 +24,16 @@ circ1 = [   fcnDCIRC2(pts(:,:,1), vecWLEDVE, valWNELE, matWROTANG, matWCENTER); 
 pts_loc(:,:,1) = fcnGLOBSTAR(pts(:,:,1) - matCENTER(vecTEDVE(:,1),:), matROTANG(vecTEDVE(:,1),:));
 pts_loc(:,:,2) = fcnGLOBSTAR(pts(:,:,2) - matCENTER(vecTEDVE(:,1),:), matROTANG(vecTEDVE(:,1),:));
 pts_loc(:,:,3) = fcnGLOBSTAR(pts(:,:,3) - matCENTER(vecTEDVE(:,1),:), matROTANG(vecTEDVE(:,1),:));
-res1_1 = [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matCOEFF(vecTEDVE(:,1),:),2); ...
-    sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matCOEFF(vecTEDVE(:,1),:),2); ...
-    sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matCOEFF(vecTEDVE(:,1),:),2)];
+res1_1 = [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) pts_loc(:,2,1).*pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matCOEFF(vecTEDVE(:,1),:),2); ...
+    sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) pts_loc(:,2,2).*pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matCOEFF(vecTEDVE(:,1),:),2); ...
+    sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) pts_loc(:,2,3).*pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matCOEFF(vecTEDVE(:,1),:),2)];
 if strcmpi(strATYPE{2},'PANEL')
     pts_loc(:,:,1) = fcnGLOBSTAR(pts(:,:,1) - matCENTER(vecTEDVE(:,2),:), matROTANG(vecTEDVE(:,2),:));
     pts_loc(:,:,2) = fcnGLOBSTAR(pts(:,:,2) - matCENTER(vecTEDVE(:,2),:), matROTANG(vecTEDVE(:,2),:));
     pts_loc(:,:,3) = fcnGLOBSTAR(pts(:,:,3) - matCENTER(vecTEDVE(:,2),:), matROTANG(vecTEDVE(:,2),:));
-    res1_2 = [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matCOEFF(vecTEDVE(:,2),:),2); ...
-        sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matCOEFF(vecTEDVE(:,2),:),2); ...
-        sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matCOEFF(vecTEDVE(:,2),:),2)];
+    res1_2 = [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) pts_loc(:,2,1).*pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matCOEFF(vecTEDVE(:,2),:),2); ...
+        sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) pts_loc(:,2,2).*pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matCOEFF(vecTEDVE(:,2),:),2); ...
+        sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) pts_loc(:,2,3).*pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matCOEFF(vecTEDVE(:,2),:),2)];
     
     res1 = res1_2 + res1_1;
 else
@@ -95,9 +95,9 @@ else
     pts_loc(:,:,1) = fcnGLOBSTAR(pts(:,:,1) - matWCENTER(dvenum,:), matWROTANG(dvenum,:));
     pts_loc(:,:,2) = fcnGLOBSTAR(pts(:,:,2) - matWCENTER(dvenum,:), matWROTANG(dvenum,:));
     pts_loc(:,:,3) = fcnGLOBSTAR(pts(:,:,3) - matWCENTER(dvenum,:), matWROTANG(dvenum,:));
-    res5 =  [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matWCOEFF(dvenum,:),2); ...
-        sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matWCOEFF(dvenum,:),2); ...
-        sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matWCOEFF(dvenum,:),2)];
+    res5 =  [   sum([0.5.*pts_loc(:,2,1).^2 pts_loc(:,2,1) 0.5.*pts_loc(:,1,1).^2 pts_loc(:,1,1) pts_loc(:,2,1).*pts_loc(:,1,1) ones(size(pts_loc(:,1,1)))].*matWCOEFF(dvenum,:),2); ...
+        sum([0.5.*pts_loc(:,2,2).^2 pts_loc(:,2,2) 0.5.*pts_loc(:,1,2).^2 pts_loc(:,1,2) pts_loc(:,2,2).*pts_loc(:,1,2) ones(size(pts_loc(:,1,2)))].*matWCOEFF(dvenum,:),2); ...
+        sum([0.5.*pts_loc(:,2,3).^2 pts_loc(:,2,3) 0.5.*pts_loc(:,1,3).^2 pts_loc(:,1,3) pts_loc(:,2,3).*pts_loc(:,1,3) ones(size(pts_loc(:,1,3)))].*matWCOEFF(dvenum,:),2)];
     
     %     vort4 = [fcnDVORT2(pts(:,:,1), vecWTEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
     %         fcnDVORT2(pts(:,:,2), vecWTEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
@@ -118,10 +118,10 @@ end
 DW = [circ1; circ2; vort3; vort4; circ5; vort6];
 RW = [res1; res2; res3; res4; res5; res6];
 
-DW = DW(:,((min([vecWLEDVE; vecWTEDVE]) - 1)*5 + 1):end);
+DW = DW(:,((min([vecWLEDVE; vecWTEDVE]) - 1)*6 + 1):end);
 
 matWCOEFF = DW\RW;
-matWCOEFF = reshape(matWCOEFF,5,valWNELE_tmp,1)';
+matWCOEFF = reshape(matWCOEFF,6,valWNELE_tmp,1)';
 
 %% Wake element integrated strength
 dves = [vecWLEDVE; vecWTEDVE];
@@ -153,18 +153,15 @@ D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
 E = (eta_3 - eta_1)./(xi_3 - xi_1);
 D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
 
-a1 = -((C.^3-E.^3).*xi_1.^3./0.24e2+((C.^3-E.^3).*xi_3+0.4e1.*D_LE.*C.^2-0.4e1.*D_TE.*E.^2).*xi_1.^2./0.24e2+((C.^3-E.^3).*xi_3.^2+(0.4e1.*D_LE.*C.^2-0.4e1.*D_TE.*E.^2).*xi_3+0.6e1.*D_LE.^2.*C-0.6e1.*D_TE.^2.*E).*xi_1./0.24e2+(C.^3-E.^3).*xi_3.^3./0.24e2+(0.4e1.*D_LE.*C.^2-0.4e1.*D_TE.*E.^2).*xi_3.^2./0.24e2+(0.6e1.*D_LE.^2.*C-0.6e1.*D_TE.^2.*E).*xi_3./0.24e2+D_LE.^3./0.6e1-D_TE.^3./0.6e1).*(xi_1-xi_3);
-a2 = -(((4.*C.^2-4.*E.^2).*xi_1.^2)./0.24e2+(((4.*C.^2-4.*E.^2).*xi_3+12.*D_LE.*C-12.*D_TE.*E).*xi_1)./0.24e2+((4.*C.^2-4.*E.^2).*xi_3.^2)./0.24e2+((12.*D_LE.*C-12.*D_TE.*E).*xi_3)./0.24e2+((-12.*D_TE+12.*D_LE).*(D_LE+D_TE))./0.24e2).*(xi_1-xi_3);
-b1 = -(((3.*C-3.*E).*xi_1.^3)./0.24e2+(((3.*C-3.*E).*xi_3-4.*D_TE+4.*D_LE).*xi_1.^2)./0.24e2+(((3.*C-3.*E).*xi_3.^2+(-4.*D_TE+4.*D_LE).*xi_3).*xi_1)./0.24e2+((3.*C-3.*E).*xi_3.^3)./0.24e2+((-4.*D_TE+4.*D_LE).*xi_3.^2)./0.24e2).*(xi_1-xi_3);
-b2 = -(((8.*C-8.*E).*xi_1.^2)./0.24e2+(((8.*C-8.*E).*xi_3-12.*D_TE+12.*D_LE).*xi_1)./0.24e2+((8.*C-8.*E).*xi_3.^2)./0.24e2+((-12.*D_TE+12.*D_LE).*xi_3)./0.24e2).*(xi_1-xi_3);
-c3 = -(((12.*C-12.*E).*xi_1)./0.24e2+((12.*C-12.*E).*xi_3)./0.24e2-D_TE+D_LE).*(xi_1-xi_3);
-vecWDVECIRCnew = sum([a1 a2 b1 b2 c3].*matWCOEFF,2);
-vecWDVECIRCnew(idx_flp,:) = vecWDVECIRCnew(idx_flp,:).*-1; 
+a1 = -((xi_1-xi_3).*((C.^3-E.^3).*xi_1.^3+((C.^3-E.^3).*xi_3+4.*C.^2.*D_LE-4.*E.^2.*D_TE).*xi_1.^2+((C.^3-E.^3).*xi_3.^2+(4.*C.^2.*D_LE-4.*E.^2.*D_TE).*xi_3+6.*C.*D_LE.^2-6.*E.*D_TE.^2).*xi_1+(C.^3-E.^3).*xi_3.^3+(4.*C.^2.*D_LE-4.*E.^2.*D_TE).*xi_3.^2+(6.*C.*D_LE.^2-6.*E.*D_TE.^2).*xi_3+4.*D_LE.^3-4.*D_TE.^3))./0.24e2;
+a2 = -((xi_1-xi_3).*((C.^2-E.^2).*xi_1.^2+((C.^2-E.^2).*xi_3+3.*C.*D_LE-3.*E.*D_TE).*xi_1+(C.^2-E.^2).*xi_3.^2+(3.*C.*D_LE-3.*E.*D_TE).*xi_3+3.*D_LE.^2-3.*D_TE.^2))./0.6e1;
+b1 = -(xi_1-xi_3).*((C-E).*xi_1.^3+((C-E).*xi_3+0.4e1./0.3e1.*D_LE-0.4e1./0.3e1.*D_TE).*xi_1.^2+((C-E).*xi_3+0.4e1./0.3e1.*D_LE-0.4e1./0.3e1.*D_TE).*xi_3.*xi_1+((C-E).*xi_3+0.4e1./0.3e1.*D_LE-0.4e1./0.3e1.*D_TE).*xi_3.^2)./0.8e1;
+b2 = -(xi_1-xi_3).*((C-E).*xi_1.^2+((C-E).*xi_3+0.3e1./0.2e1.*D_LE-0.3e1./0.2e1.*D_TE).*xi_1+((C-E).*xi_3+0.3e1./0.2e1.*D_LE-0.3e1./0.2e1.*D_TE).*xi_3)./0.3e1;
+c2 = -(xi_1-xi_3).*((C.^2-E.^2).*xi_1.^3+((C.^2-E.^2).*xi_3+0.8e1./0.3e1.*C.*D_LE-0.8e1./0.3e1.*E.*D_TE).*xi_1.^2+((C.^2-E.^2).*xi_3.^2+(0.8e1./0.3e1.*C.*D_LE-0.8e1./0.3e1.*E.*D_TE).*xi_3+0.2e1.*D_LE.^2-0.2e1.*D_TE.^2).*xi_1+xi_3.*((C.^2-E.^2).*xi_3.^2+(0.8e1./0.3e1.*C.*D_LE-0.8e1./0.3e1.*E.*D_TE).*xi_3+0.2e1.*D_LE.^2-0.2e1.*D_TE.^2))./0.8e1;
+c3 = -((xi_1-xi_3).*((C-E).*xi_1+(C-E).*xi_3+2.*D_LE-2.*D_TE))./0.2e1;
 
-% xi_len = reshape(abs(max([matWPLEX(:,1,dves)],[],1) - min([matWPLEX(:,1,dves)],[],1)),[],1,1);
-% eta_len = reshape(abs(max([matWPLEX(:,2,dves)],[],1) - min([matWPLEX(:,2,dves)],[],1)),[],1,1);
-% matWDVECIRCnew(:,1) = (1/6).*matWCOEFF(:,3).*(xi_len.^3) + 0.5.*matWCOEFF(:,4).*(xi_len.^2) + matWCOEFF(:,5).*xi_len;
-% matWDVECIRCnew(:,2) = (1/6).*matWCOEFF(:,1).*(eta_len.^3) + 0.5.*matWCOEFF(:,2).*(eta_len.^2) + matWCOEFF(:,5).*eta_len;
+vecWDVECIRCnew = sum([a1 a2 b1 b2 c2 c3].*matWCOEFF,2);
+vecWDVECIRCnew(idx_flp,:) = vecWDVECIRCnew(idx_flp,:).*-1; 
 
 end
 

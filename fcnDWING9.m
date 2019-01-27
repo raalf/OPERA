@@ -81,7 +81,7 @@ end
 
 %% Kinematic conditions at vertices
 % Flow tangency is to be enforced at all control points on the surface HDVEs
-% In the D-Matrix, dot (a1,a2,b1,b2,c3) of our influencing HDVE with the normal of the point we are influencing on
+% In the D-Matrix, dot (a1,a2,b1,b2,c2,c3) of our influencing HDVE with the normal of the point we are influencing on
 
 % List of DVEs we are influencing from (one for each of the above fieldpoints)
 len = length(matKINCON_P(:,1));
@@ -94,14 +94,14 @@ fpg = repmat(matKINCON_P,valNELE,1);
 
 normals = repmat(matDVECT(matKINCON_DVE,:,3),valNELE,1); % Repeated so we can dot all at once
 
-% Dotting a1, a2, b1, b2, c3 with the normals of the field points
-temp60 = [dot(permute(infl_glob(:,1,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,2,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,3,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,4,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,5,:),[3 1 2]),normals,2)];
+% Dotting a1, a2, b1, b2, c2, c3 with the normals of the field points
+temp60 = [dot(permute(infl_glob(:,1,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,2,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,3,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,4,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,5,:),[3 1 2]),normals,2) dot(permute(infl_glob(:,6,:),[3 1 2]),normals,2)];
 
 % Reshaping and inserting into the bottom of the D-Matrix
 rows = [1:len]';
 
-king_kong = zeros(len, valNELE*5);
-king_kong(rows,:) = reshape(permute(reshape(temp60',5,[],valNELE),[2 1 3]),[],5*valNELE,1);
+king_kong = zeros(len, valNELE*6);
+king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
 
 %% Piecing together D-matrix
 D = [circ; vort; vort_tip; vort_te; circ_tip; king_kong];

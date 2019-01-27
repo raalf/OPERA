@@ -23,7 +23,7 @@ strFILE = 'inputs/goland_wing.dat';
     = fcnTRIANG(matPOINTS, 'SURFACE', []);
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS);
 
-valALPHA = 30
+valALPHA = 20
 valMAXTIME = 100
 valDELTIME = 1
 valDENSITY = 1.225;
@@ -58,13 +58,13 @@ vecR = fcnRWING(valDLEN, 0, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, ma
 % Solving for wing coefficients
 [matCOEFF] = fcnSOLVED(matD, vecR, valNELE);
 %%
-% Getting averaged mu values at vertices
+% % Getting averaged mu values at vertices
 % vmu = nan(size(matVLST,1),1);
 % for i = 1:size(matVLST,1)
 %     dves = matVATT(i, ~isnan(matVATT(i,:)))';
 %     len = length(dves);
 %     vloc = fcnGLOBSTAR(repmat(matVLST(i,:), len, 1) - matCENTER(dves,:), matROTANG(dves,:));
-%     circ = sum([0.5.*vloc(:,2).^2 vloc(:,2) 0.5.*vloc(:,1).^2 vloc(:,1) ones(size(vloc(:,1)))].*matCOEFF(dves,:),2);
+%     circ = sum([0.5.*vloc(:,2).^2 vloc(:,2) 0.5.*vloc(:,1).^2 vloc(:,1) vloc(:,1).*vloc(:,2) ones(size(vloc(:,1)))].*matCOEFF(dves,:),2);
 %     vmu(i) = mean(circ);
 % end
 % 
@@ -75,7 +75,7 @@ vecR = fcnRWING(valDLEN, 0, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, ma
 %     len = length(dves);
 %     pt = (matVLST(matELST(i,1),:) + matVLST(matELST(i,2),:))./2;
 %     vloc = fcnGLOBSTAR(repmat(pt,len,1) - matCENTER(dves,:), matROTANG(dves,:));
-%     circ = sum([0.5.*vloc(:,2).^2 vloc(:,2) 0.5.*vloc(:,1).^2 vloc(:,1) ones(size(vloc(:,1)))].*matCOEFF(dves,:),2);
+%     circ = sum([0.5.*vloc(:,2).^2 vloc(:,2) 0.5.*vloc(:,1).^2 vloc(:,1) vloc(:,1).*vloc(:,2) ones(size(vloc(:,1)))].*matCOEFF(dves,:),2);
 %     emu(i) = mean(circ);
 % end
 % 
@@ -87,9 +87,9 @@ vecR = fcnRWING(valDLEN, 0, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, ma
 % vmu(tmp) = 0;
 % 
 % % Getting mu  values at DVE control points
-% dmu = matCOEFF(:,5);
-
-
+% dmu = matCOEFF(:,6);
+% 
+% 
 % [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
 % view([33, 28])
 % hold on
@@ -98,8 +98,8 @@ vecR = fcnRWING(valDLEN, 0, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, ma
 % pt = (matVLST(matELST(:,1),:) + matVLST(matELST(:,2),:))./2;
 % scatter3(pt(:,1), pt(:,2), -emu, 'xr')
 % hold off
-
-
+% 
+% 
 % for i = 1:valNELE
 %    vloc = fcnGLOBSTAR(matVLST(matDVE(i,:),:) - matCENTER(i,:), repmat(matROTANG(i,:), 3, 1));
 %    vval = vmu(matDVE(i,:));
@@ -191,13 +191,12 @@ for valTIMESTEP = 1:valMAXTIME
         matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG);
    
 [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [3 1 4 4], 'opengl');
-[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 10);
-% view([0 0])
-% if valTIMESTEP > 0
-%     [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
-%     [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 10);
-% end
-% view([-15 15])
+[hFig1] = fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, real(matCOEFF), matUINF, matROTANG, 'xr', 30);
+if valTIMESTEP > 0
+    [hFig1] = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER);
+    [hFig1] = fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, real(matWCOEFF), matUINF, matWROTANG, 'xb', 30);
+end
+view([-15 15])
     
 %     fcnPLOTCOEFF(valTIMESTEP, matCOEFF_HSTRY);
 %     hFig22 = figure(22);

@@ -1,8 +1,10 @@
-function [CL, CDi, CY, e, vecDVELIFT, vecDVEDRAG] = fcnFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG)
+function [CL, CDi, CY, e, vecDVELIFT, vecDVEDRAG] = fcnFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF)
 
+%% Initializing
 vecDVELIFT = nan(valNELE,1);
 vecDVEDRAG = nan(valNELE,1);
 vecDVESIDE = nan(valNELE,1);
+
 matDVEDRAG_DIR = matUINF./sqrt(sum(matUINF.^2,2));
 matDVELIFT_DIR = cross(matDVEDRAG_DIR, matSPANDIR, 2);
 matDVESIDE_DIR = cross(matDVELIFT_DIR, matDVEDRAG_DIR, 2);
@@ -35,17 +37,28 @@ eta_tmp(idx_rrg) = eta_2(idx_rrg);
 eta_2(idx_rrg) = eta_1(idx_rrg);
 eta_1(idx_rrg) = eta_tmp(idx_rrg);
 
-% Checking which elements are on the element
 C = (eta_3 - eta_2)./(xi_3 - xi_2);
 D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
 E = (eta_3 - eta_1)./(xi_3 - xi_1);
 D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
 
 %% Freestream Forces (via Kutty J)
-% Integrating the cross product of the circulation along the TE and the
-% density times U_INF. Circulation equation is put solely in terms of xi
-% by defining eta in terms of xi. It is integrated from xi_1 to xi_3.
+% Integrating the cross product of the circulation along the TE and U_INF.
 % T.D.K 2019-01-23 230 KING ST. EAST, TORONTO, ON, CANADA
+
+% Velocity along the TE
+locations = [0.1:0.4:0.9]';
+uvw_te = locations.*reshape(matVUINF(matELST(vecTE,1),:)', 1, 3, []) + (1 - locations).*reshape(matVUINF(matELST(vecTE,2),:)', 1, 3, []);
+fpl_te = locations.*reshape([xi_1 eta_1 xi_1.*0]', 1, 3, []) + (1 - locations).*reshape([xi_3 eta_3 xi_3.*0]', 1, 3, []);
+tau = fpl_te - reshape([xi_1 eta_1 xi_1.*0]', 1, 3, []);
+tau = sqrt(sum(tau.^2, 2));
+
+for i = 1:size(vecTEDVE,1)
+    u(i,:) = polyfit(tau(:,1,i), uvw_te(:,1,i), 2);
+    v(i,:) = polyfit(tau(:,1,i), uvw_te(:,2,i), 2);
+    w(i,:) = polyfit(tau(:,1,i), uvw_te(:,3,i), 2);
+end
+
 uvw = fcnGLOBSTAR(matUINF(vecTEDVE,:), matROTANG(vecTEDVE,:));
 
 % For readability:
@@ -56,12 +69,19 @@ u = uvw(:,1); v = uvw(:,2); w = uvw(:,3); rho = valDENSITY;
 % Analytically integrating circulation along the TE vector
 % Projected circulation onto trailing edge
 % Spanwise circulation
-tmp21 = ((B_1./0.2e1+C_2.*E).*xi_1.^2+((B_1./0.2e1+C_2.*E).*xi_3+0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_1+(B_1./0.2e1+C_2.*E).*xi_3.^2+(0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_3+(3.*C_3)).*rho.*(eta_1-eta_3).*w.*(xi_3-xi_1)./0.3e1;
-tmp22 = ((B_1./0.2e1+C_2.*E).*xi_1.^2+((B_1./0.2e1+C_2.*E).*xi_3+0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_1+(B_1./0.2e1+C_2.*E).*xi_3.^2+(0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_3+(3.*C_3)).*rho.*w.*(xi_3-xi_1).^2./0.3e1; 
-tmp33 = -(v.*xi_1-v.*xi_3-u.*(eta_1-eta_3)).*rho.*((B_1./0.2e1+C_2.*E).*xi_1.^2+((B_1./0.2e1+C_2.*E).*xi_3+0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_1+(B_1./0.2e1+C_2.*E).*xi_3.^2+(0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_3+(3.*C_3)).*(xi_1-xi_3)./0.3e1;
+tmp21 = -(((A_1.*E.^2+2.*C_2.*E+B_1).*xi_1.^2+((A_1.*E.^2+2.*C_2.*E+B_1).*xi_3+(3.*A_1.*E+3.*C_2).*D_TE+3.*A_2.*E+3.*B_2).*xi_1+(A_1.*E.^2+2.*C_2.*E+B_1).*xi_3.^2+((3.*A_1.*E+3.*C_2).*D_TE+3.*A_2.*E+3.*B_2).*xi_3+3.*A_1.*D_TE.^2+6.*A_2.*D_TE+6.*C_3).*w.*(xi_1-xi_3).*(eta_1-eta_3).*rho)./0.6e1;
+tmp22 = (((A_1.*E.^2+2.*C_2.*E+B_1).*xi_1.^2+((A_1.*E.^2+2.*C_2.*E+B_1).*xi_3+(3.*A_1.*D_TE+3.*A_2).*E+3.*C_2.*D_TE+3.*B_2).*xi_1+(A_1.*E.^2+2.*C_2.*E+B_1).*xi_3.^2+((3.*A_1.*D_TE+3.*A_2).*E+3.*C_2.*D_TE+3.*B_2).*xi_3+3.*A_1.*D_TE.^2+6.*A_2.*D_TE+6.*C_3).*w.*(xi_1-xi_3).^2.*rho)./0.6e1;
+tmp33 = -(((A_1.*E.^2+2.*C_2.*E+B_1).*xi_1.^2+((A_1.*E.^2+2.*C_2.*E+B_1).*xi_3+(3.*A_1.*D_TE+3.*A_2).*E+3.*C_2.*D_TE+3.*B_2).*xi_1+(A_1.*E.^2+2.*C_2.*E+B_1).*xi_3.^2+((3.*A_1.*D_TE+3.*A_2).*E+3.*C_2.*D_TE+3.*B_2).*xi_3+3.*A_1.*D_TE.^2+6.*A_2.*D_TE+6.*C_3).*(v.*xi_1-v.*xi_3-u.*(eta_1-eta_3)).*rho.*(xi_1-xi_3))./0.6e1;
+
+% tmp21 = ((B_1./0.2e1+C_2.*E).*xi_1.^2+((B_1./0.2e1+C_2.*E).*xi_3+0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_1+(B_1./0.2e1+C_2.*E).*xi_3.^2+(0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_3+(3.*C_3)).*rho.*(eta_1-eta_3).*w.*(xi_3-xi_1)./0.3e1;
+% tmp22 = ((B_1./0.2e1+C_2.*E).*xi_1.^2+((B_1./0.2e1+C_2.*E).*xi_3+0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_1+(B_1./0.2e1+C_2.*E).*xi_3.^2+(0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_3+(3.*C_3)).*rho.*w.*(xi_3-xi_1).^2./0.3e1; 
+% tmp33 = -(v.*xi_1-v.*xi_3-u.*(eta_1-eta_3)).*rho.*((B_1./0.2e1+C_2.*E).*xi_1.^2+((B_1./0.2e1+C_2.*E).*xi_3+0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_1+(B_1./0.2e1+C_2.*E).*xi_3.^2+(0.3e1./0.2e1.*C_2.*D_TE+0.3e1./0.2e1.*B_2).*xi_3+(3.*C_3)).*(xi_1-xi_3)./0.3e1;
+
+v_te = [xi_3 - xi_1, eta_3 - eta_1, eta_1.*0];
+d_te = sqrt(sum(v_te.^2,2));
 
 % This is the special force
-F = fcnSTARGLOB(-[tmp21 tmp22 tmp33]./(xi_3 - xi_1), matROTANG(vecTEDVE,:));
+F = fcnSTARGLOB(-[tmp21 tmp22 tmp33]./d_te, matROTANG(vecTEDVE,:));
 
 % Splitting special force into lift and side forces
 liftfree(vecTEDVE,1) = dot(F, matDVELIFT_DIR(vecTEDVE,:), 2);
@@ -73,7 +93,6 @@ tmp52 = [];
 for jj = 1:length(vecTE)
     locations = [0.1:0.4:0.9]';
     fpg_og = locations.*matVLST(matELST(vecTE(jj),1),:) + (1 - locations).*matVLST(matELST(vecTE(jj),2),:);
-    
     
     fpg = fpg_og;
     len = size(fpg,1);
@@ -125,38 +144,38 @@ for jj = 1:length(vecTE)
         w_ind = reshape(permute(w_ind,[3 1 2]),[],3,1)./(-4*pi);
         
         wind_b = wind_b + fcnSTARGLOB(w_ind, repmat(matROTANG(dve2,:),len,1));
+    
     end
     wind = wind - wind_b;
     
     tmp51 = [tmp51; fpg_og];
     tmp52 = [tmp52; wind];
     
-    %     wcoeff = polyfit(fpg(:,2), wind(:,3), 2);
-    %     hFig30 = figure(30);
-    %     clf(30);
-    %     scatter(fpg_og(:,2), wind(:,3),'mo')
-    % %     hold on
-    % %     x = linspace(fpg_og(1,2), fpg_og(end,2),100);
-    % %     plot(x, wcoeff(1).*x.^2 + wcoeff(2).*x + wcoeff(3), '--^k')
-    % %     hold off
-    %     box on
-    %     grid minor
-    
+%         wcoeff = polyfit(fpg(:,2), wind(:,3), 2);
+%         hFig30 = figure(30);
+%         clf(30);
+%         scatter(fpg_og(:,2), wind(:,3),'mo')
+%         hold on
+%         x = linspace(fpg_og(1,2), fpg_og(end,2),100);
+%         plot(x, wcoeff(1).*x.^2 + wcoeff(2).*x + wcoeff(3), '--^k')
+%         hold off
+%         box on
+%         grid minor
 
-    hspan = fcnGLOBSTAR(matVLST(matELST(vecTE(jj),1),:) - matVLST(matELST(vecTE(jj),2),:), matROTANG(vecTEDVE(jj),:));
-    eta8 = hspan.*0.8;
-    hspan = abs(hspan(1))/2;
-    s = (matVLST(matELST(vecTE(jj),1),:) - matVLST(matELST(vecTE(jj),2),:))./(hspan.*2);
-    points = fcnGLOBSTAR(fpg_og - matCENTER(vecTEDVE(jj),:), repmat(matROTANG(vecTEDVE(jj),:), len, 1));
-%     te_circ = sum([0.5.*points(:,2).^2 points(:,2) 0.5.*points(:,1).^2 points(:,1) ones(size(points(:,1)))].*matCOEFF(vecTEDVE(jj),1:end),2);
-    te_circ = sum([0.5.*points(:,1).^2 points(:,1) points(:,1).*points(:,2) ones(size(points(:,1)))].*matCOEFF(vecTEDVE(jj),3:end),2);
-    tempr = cross(valDENSITY.*wind, repmat(s,len,1), 2).*te_circ;
-    R = (tempr(1,:) + 4.*tempr(2,:) + tempr(3,:)).*(eta8)/3;
-    R = R + (7.*tempr(1,:) - 8.*tempr(2,:) + 7.*tempr(3,:)).*(hspan-eta8)./3;        
-    
-    dragind(vecTEDVE(jj),1) = dot(R, matDVEDRAG_DIR(vecTEDVE(jj),:), 2);
-    liftind(vecTEDVE(jj),1) = dot(R, matDVELIFT_DIR(vecTEDVE(jj),:), 2);
-    sideind(vecTEDVE(jj),1) = dot(R, matDVESIDE_DIR(vecTEDVE(jj),:), 2);
+%     hspan = fcnGLOBSTAR(matVLST(matELST(vecTE(jj),1),:) - matVLST(matELST(vecTE(jj),2),:), matROTANG(vecTEDVE(jj),:));
+%     eta8 = hspan.*0.8;
+%     hspan = abs(hspan(1))/2;
+%     s = (matVLST(matELST(vecTE(jj),1),:) - matVLST(matELST(vecTE(jj),2),:))./(hspan.*2);
+%     points = fcnGLOBSTAR(fpg_og - matCENTER(vecTEDVE(jj),:), repmat(matROTANG(vecTEDVE(jj),:), len, 1));
+%     te_circ = sum([0.5.*points(:,2).^2 points(:,2) 0.5.*points(:,1).^2 points(:,1) points(:,1).*points(:,2) ones(size(points(:,1)))].*matCOEFF(vecTEDVE(jj),:),2);
+% %     te_circ = sum([0.5.*points(:,1).^2 points(:,1) points(:,1).*points(:,2) ones(size(points(:,1)))].*matCOEFF(vecTEDVE(jj),3:end),2);
+%     tempr = cross(valDENSITY.*wind, repmat(s,len,1), 2).*te_circ;
+%     R = (tempr(1,:) + 4.*tempr(2,:) + tempr(3,:)).*(eta8)/3;
+%     R = R + 2.*(7.*tempr(1,:) - 8.*tempr(2,:) + 7.*tempr(3,:)).*(hspan-eta8)./3;        
+%     
+%     dragind(vecTEDVE(jj),1) = dot(R, matDVEDRAG_DIR(vecTEDVE(jj),:), 2);
+%     liftind(vecTEDVE(jj),1) = dot(R, matDVELIFT_DIR(vecTEDVE(jj),:), 2);
+%     sideind(vecTEDVE(jj),1) = dot(R, matDVESIDE_DIR(vecTEDVE(jj),:), 2);
 end
 
 [~,b] = sort(tmp51(:,2),'ascend');

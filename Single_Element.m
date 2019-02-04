@@ -110,12 +110,12 @@ matCOEFF = [0 0 0 0 0 1];
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
-% fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, [], matROTANG, 'r', 10);
+fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, [], matROTANG, 'r', 10);
 
-% granularity = 0.00125;
-% y = [-0.025:granularity:0.025];
-% x = [0.2];
-% z = [-0.025:granularity:0.025].*0;
+granularity = 0.000125;
+y = [-0.025:granularity:0.025];
+x = [0.2];
+z = [-0.025:granularity:0.025].*0;
 
 % granularity = 0.0001;
 % x = [0.225:granularity:0.275];
@@ -132,11 +132,11 @@ matCOEFF = [0 0 0 0 0 1];
 % y = [-0.1:granularity:0.1];
 % z = 0.0002;
 
-% [X,Y,Z] = meshgrid(x,y,z);
-% fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-fpg = [0.5 0 0; 0  0 0; 0  0.5 0];
+[X,Y,Z] = meshgrid(x,y,z);
+fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
+% fpg = [0.5 0 0; 0  0 0; 0  0.5 0];
 % fpg = [0 0.2 0];
-% fpg = [0.25 0.25 0];
+% fpg = [0.2 0 0];
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 
 figure(1);
@@ -147,6 +147,13 @@ hold off
 setAxes3DPanAndZoomStyle(zoom(gca),gca,'camera') ;
 
 
+figure(10);
+clf(10);
+plot(fpg(:,2), abs(q_ind(:,3)), '-k');
+grid minor
+box on
+axis tight
+% set(gca, 'YScale', 'log')
 
 
 

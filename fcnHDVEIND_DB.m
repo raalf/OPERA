@@ -71,7 +71,7 @@ L = [C E];
 F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
-tol_F = 1e-5;
+tol_F = 1e-3;
 tol_S = 1e-10;
 tol_T = 1e-10;
 tol_u = 1e-10;
@@ -80,12 +80,12 @@ tol_alpha = 1e-10;
 % Correcting zero F limits if we are in the plane of the element
 idx = abs(F_lim(:,:,1)) < tol_F & alpha(:,1) <= 1e-3;
 sgn = sign(F_lim(idx,:,1));
-sgn(sign(F_lim(idx,:,1)) == 0) = sign(F_lim(sign(F_lim(idx,:,1)) == 0,:,2));
+% sgn(sign(F_lim(idx,:,1)) == 0) = sign(F_lim(sign(F_lim(idx,:,1)) == 0,:,2));
 F_lim(idx,:,1) = sgn.*tol_F;
 
 idx = abs(F_lim(:,:,2)) < tol_F & alpha <= 1e-3;
 sgn = sign(F_lim(idx,:,2));
-sgn(sign(F_lim(idx,:,2)) == 0) = sign(F_lim(sign(F_lim(idx,:,2)) == 0,:,1));
+% sgn(sign(F_lim(idx,:,2)) == 0) = sign(F_lim(sign(F_lim(idx,:,2)) == 0,:,1));
 F_lim(idx,:,2) = sgn.*tol_F;
 
 F_lim = repmat(F_lim,1,2,1);

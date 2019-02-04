@@ -1,7 +1,7 @@
 % clc
 clear
 
-strSPANSPACING = 'NORMAL';
+strSPANSPACING = 'HALFCOSINE';
 strCHORDSPACING = 'HALFCOSINE';
 valALPHA = 4;
 AR = 7;

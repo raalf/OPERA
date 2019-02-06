@@ -37,7 +37,7 @@ end
 
 stuff = strjoin(convertCharsToStrings([str panels]));
 
-fid = fopen('.\..\inputs\ellipse.dat','w');
+fid = fopen('inputs\ellipse.dat','w');
 fprintf(fid, stuff);
 fclose(fid);
 

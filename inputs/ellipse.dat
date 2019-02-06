@@ -9,7 +9,7 @@ Steady or Unsteady:	strA3TYPE = STEADY
 
 Chordwise Spacing:	strSPACING = HALFCOSINE
 
-Maximum Timesteps: 		valMAXTIME = 20
+Maximum Timesteps: 		valMAXTIME = 60
 Timestep Size: 			valDELTIME = 1.00
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
@@ -18,222 +18,246 @@ Angles of Sideslip: 	seqBETA = 0
 
 GEOMETRY
 
-No. of panels:	valPANELS =	18
+No. of panels:	valPANELS =	20
 
 Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing. 
 Panel #:1.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.90000	0.00000	0	0.10000	0	NACA 0015
-0.82635	0.04176	0	0.17365	0	NACA 0015
+0.56411	0.27489	0	0.43589	0	NACA 0015
 
  
 Panel #:2.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.82635	0.04176	0	0.17365	0	NACA 0015
-0.65798	0.16578	0	0.34202	0	NACA 0015
+0.56411	0.27489	0	0.43589	0	NACA 0015
+0.40000	0.54978	0	0.60000	0	NACA 0015
 
  
 Panel #:3.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.65798	0.16578	0	0.34202	0	NACA 0015
-0.50000	0.36828	0	0.50000	0	NACA 0015
+0.40000	0.54978	0	0.60000	0	NACA 0015
+0.28586	0.82467	0	0.71414	0	NACA 0015
 
  
 Panel #:4.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.50000	0.36828	0	0.50000	0	NACA 0015
-0.35721	0.64312	0	0.64279	0	NACA 0015
+0.28586	0.82467	0	0.71414	0	NACA 0015
+0.20000	1.09956	0	0.80000	0	NACA 0015
 
  
 Panel #:5.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.35721	0.64312	0	0.64279	0	NACA 0015
-0.23396	0.98194	0	0.76604	0	NACA 0015
+0.20000	1.09956	0	0.80000	0	NACA 0015
+0.13397	1.37445	0	0.86603	0	NACA 0015
 
  
 Panel #:6.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.23396	0.98194	0	0.76604	0	NACA 0015
 0.13397	1.37445	0	0.86603	0	NACA 0015
+0.08348	1.64934	0	0.91652	0	NACA 0015
 
  
 Panel #:7.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.13397	1.37445	0	0.86603	0	NACA 0015
-0.06031	1.80872	0	0.93969	0	NACA 0015
+0.08348	1.64934	0	0.91652	0	NACA 0015
+0.04606	1.92423	0	0.95394	0	NACA 0015
 
  
 Panel #:8.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.06031	1.80872	0	0.93969	0	NACA 0015
-0.01519	2.27155	0	0.98481	0	NACA 0015
+0.04606	1.92423	0	0.95394	0	NACA 0015
+0.02020	2.19911	0	0.97980	0	NACA 0015
 
  
 Panel #:9.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.01519	2.27155	0	0.98481	0	NACA 0015
-0.00000	2.74889	0	1.00000	0	NACA 0015
+0.02020	2.19911	0	0.97980	0	NACA 0015
+0.00501	2.47400	0	0.99499	0	NACA 0015
 
  
 Panel #:10.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
+Symmetry about YZ Plane:		strSYM 		= NO
+Trailing edge:					strTE 		= YES
+Leading edge:					strLE       = YES
+Spanwise Element Spacing:		strPSPACE    = NORMAL
+xleft		yleft		zleft		chord		epsilon	 	airfoil
+0.00501	2.47400	0	0.99499	0	NACA 0015
+0.00000	2.74889	0	1.00000	0	NACA 0015
+
+ 
+Panel #:11.
+Number of spanwise elements:	vecN 		= 1.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.00000	2.74889	0	1.00000	0	NACA 0015
-0.01519	3.22623	0	0.98481	0	NACA 0015
-
- 
-Panel #:11.
-Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
-Symmetry about YZ Plane:		strSYM 		= NO
-Trailing edge:					strTE 		= YES
-Leading edge:					strLE       = YES
-Spanwise Element Spacing:		strPSPACE    = NORMAL
-xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.01519	3.22623	0	0.98481	0	NACA 0015
-0.06031	3.68907	0	0.93969	0	NACA 0015
+0.00501	3.02378	0	0.99499	0	NACA 0015
 
  
 Panel #:12.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.06031	3.68907	0	0.93969	0	NACA 0015
-0.13397	4.12334	0	0.86603	0	NACA 0015
+0.00501	3.02378	0	0.99499	0	NACA 0015
+0.02020	3.29867	0	0.97980	0	NACA 0015
 
  
 Panel #:13.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
+Symmetry about YZ Plane:		strSYM 		= NO
+Trailing edge:					strTE 		= YES
+Leading edge:					strLE       = YES
+Spanwise Element Spacing:		strPSPACE    = NORMAL
+xleft		yleft		zleft		chord		epsilon	 	airfoil
+0.02020	3.29867	0	0.97980	0	NACA 0015
+0.04606	3.57356	0	0.95394	0	NACA 0015
+
+ 
+Panel #:14.
+Number of spanwise elements:	vecN 		= 1.
+Number of chordwise elements: 	vecM 		= 11.
+Symmetry about YZ Plane:		strSYM 		= NO
+Trailing edge:					strTE 		= YES
+Leading edge:					strLE       = YES
+Spanwise Element Spacing:		strPSPACE    = NORMAL
+xleft		yleft		zleft		chord		epsilon	 	airfoil
+0.04606	3.57356	0	0.95394	0	NACA 0015
+0.08348	3.84845	0	0.91652	0	NACA 0015
+
+ 
+Panel #:15.
+Number of spanwise elements:	vecN 		= 1.
+Number of chordwise elements: 	vecM 		= 11.
+Symmetry about YZ Plane:		strSYM 		= NO
+Trailing edge:					strTE 		= YES
+Leading edge:					strLE       = YES
+Spanwise Element Spacing:		strPSPACE    = NORMAL
+xleft		yleft		zleft		chord		epsilon	 	airfoil
+0.08348	3.84845	0	0.91652	0	NACA 0015
+0.13397	4.12334	0	0.86603	0	NACA 0015
+
+ 
+Panel #:16.
+Number of spanwise elements:	vecN 		= 1.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.13397	4.12334	0	0.86603	0	NACA 0015
-0.23396	4.51585	0	0.76604	0	NACA 0015
-
- 
-Panel #:14.
-Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
-Symmetry about YZ Plane:		strSYM 		= NO
-Trailing edge:					strTE 		= YES
-Leading edge:					strLE       = YES
-Spanwise Element Spacing:		strPSPACE    = NORMAL
-xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.23396	4.51585	0	0.76604	0	NACA 0015
-0.35721	4.85467	0	0.64279	0	NACA 0015
-
- 
-Panel #:15.
-Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
-Symmetry about YZ Plane:		strSYM 		= NO
-Trailing edge:					strTE 		= YES
-Leading edge:					strLE       = YES
-Spanwise Element Spacing:		strPSPACE    = NORMAL
-xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.35721	4.85467	0	0.64279	0	NACA 0015
-0.50000	5.12951	0	0.50000	0	NACA 0015
-
- 
-Panel #:16.
-Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
-Symmetry about YZ Plane:		strSYM 		= NO
-Trailing edge:					strTE 		= YES
-Leading edge:					strLE       = YES
-Spanwise Element Spacing:		strPSPACE    = NORMAL
-xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.50000	5.12951	0	0.50000	0	NACA 0015
-0.65798	5.33201	0	0.34202	0	NACA 0015
+0.20000	4.39823	0	0.80000	0	NACA 0015
 
  
 Panel #:17.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.65798	5.33201	0	0.34202	0	NACA 0015
-0.82635	5.45603	0	0.17365	0	NACA 0015
+0.20000	4.39823	0	0.80000	0	NACA 0015
+0.28586	4.67312	0	0.71414	0	NACA 0015
 
  
 Panel #:18.
 Number of spanwise elements:	vecN 		= 1.
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 11.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.82635	5.45603	0	0.17365	0	NACA 0015
+0.28586	4.67312	0	0.71414	0	NACA 0015
+0.40000	4.94801	0	0.60000	0	NACA 0015
+
+ 
+Panel #:19.
+Number of spanwise elements:	vecN 		= 1.
+Number of chordwise elements: 	vecM 		= 11.
+Symmetry about YZ Plane:		strSYM 		= NO
+Trailing edge:					strTE 		= YES
+Leading edge:					strLE       = YES
+Spanwise Element Spacing:		strPSPACE    = NORMAL
+xleft		yleft		zleft		chord		epsilon	 	airfoil
+0.40000	4.94801	0	0.60000	0	NACA 0015
+0.56411	5.22290	0	0.43589	0	NACA 0015
+
+ 
+Panel #:20.
+Number of spanwise elements:	vecN 		= 1.
+Number of chordwise elements: 	vecM 		= 11.
+Symmetry about YZ Plane:		strSYM 		= NO
+Trailing edge:					strTE 		= YES
+Leading edge:					strLE       = YES
+Spanwise Element Spacing:		strPSPACE    = NORMAL
+xleft		yleft		zleft		chord		epsilon	 	airfoil
+0.56411	5.22290	0	0.43589	0	NACA 0015
 0.90000	5.49779	0	0.10000	0	NACA 0015
 

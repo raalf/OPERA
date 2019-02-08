@@ -2,6 +2,8 @@ clear
 % clc
 
 %% Preamble
+set(groot,'defaultFigureCreateFcn','addToolbarExplorationButtons(gcf)')
+set(groot,'defaultAxesCreateFcn','set(get(gca,''Toolbar''),''Visible'',''off'')')
 
 strFILE = 'inputs/2dve.dat';
 
@@ -16,9 +18,9 @@ vecSYM = [];
 % matPOINTS(:,:,2) = [0  0.5 0];
 % matPOINTS(:,:,3) = [0.5  0.5 0];
 
-matPOINTS(:,:,1) = [0.5 0 0];
+matPOINTS(:,:,1) = [1 0 0];
 matPOINTS(:,:,2) = [0  0 0];
-matPOINTS(:,:,3) = [0  0.5 0];
+matPOINTS(:,:,3) = [0.3  0.5 0];
 
 
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
@@ -26,7 +28,7 @@ matPOINTS(:,:,3) = [0  0.5 0];
 
 vecUINF = fcnUINFWING(valALPHA, 0);
 
-matCOEFF = [0 0 0 0 0 1];
+matCOEFF = [0 0 -2 0.17 0 0.056];
 
 %% fpl
 % fpg = [-0 0.2 0]
@@ -112,10 +114,24 @@ matCOEFF = [0 0 0 0 0 1];
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
 fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, [], matROTANG, 'r', 10);
 
-granularity = 0.000125;
-y = [-0.025:granularity:0.025];
-x = [0.2];
-z = [-0.025:granularity:0.025].*0;
+% granularity = 0.000125;
+% y = [-0.025:granularity:0.025];
+% x = [0.2];
+% z = [-0.025:granularity:0.025].*0;
+
+% granularity = 0.00125;
+granularity = 0.1
+x = [0:granularity:0.2];
+y = [0.2];
+z = [-0.05 0 0.05];
+% z = 0;
+
+% granularity = 0.00125;
+% % granularity = 0.1
+% x = [0:granularity:0.2];
+% y = [0.2];
+% % z = [-0.05 0 0.05];
+% z = 0;
 
 % granularity = 0.0001;
 % x = [0.225:granularity:0.275];
@@ -139,17 +155,68 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = [0.2 0 0];
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 
+
+%%
+len = size(fpg,1);
+
+dve2 = 1;
+p1 = fcnGLOBSTAR(matVLST(matELST(1,1),:) - matCENTER(dve2,:), matROTANG(dve2,:));
+p2 = fcnGLOBSTAR(matVLST(matELST(1,2),:) - matCENTER(dve2,:), matROTANG(dve2,:));
+
+midpoint = mean([p1; p2],1);
+vec = p2 - p1;
+hspan = abs(p1(1,1) - p2(1,1))./2;
+vec = vec./sqrt(sum(vec.^2,2));
+phi = acos(dot([1 0 0], vec, 2));
+if phi > pi/2
+    phi = phi - pi;
+end
+
+xi = [linspace(p1(1,1), p2(1,1), 100)]';
+eta = [linspace(p1(1,2), p2(1,2), 100)]';       
+circ = 0.5.*matCOEFF(dve2,1).*eta.^2 + matCOEFF(dve2,2).*eta + 0.5.*matCOEFF(dve2,3).*xi.^2 + matCOEFF(dve2,4).*xi + matCOEFF(dve2,5).*xi.*eta + matCOEFF(dve2,6);
+% circ = 0.5.*matCOEFF(dve2,3).*xi.^2 + matCOEFF(dve2,4).*xi + matCOEFF(dve2,5).*xi.*eta + matCOEFF(dve2,6);
+
+if p2(1,1) > p1(1,1)
+    tmp6 = [linspace(-hspan, hspan, 100)]';
+else
+    tmp6 = [linspace(hspan, -hspan, 100)]';
+end     
+fp_0 = fcnGLOBSTAR(fpg - matCENTER(dve2,:), matROTANG(dve2,:)) - midpoint;
+[aloc, bloc, cloc] = fcnBOUNDIND(repmat(hspan,len,1), repmat(phi,len,1), [-fp_0(:,2) fp_0(:,1) fp_0(:,3)]);
+%         aloc = [aloc(:,2), -aloc(:,1), aloc(:,3)];
+%         bloc = [bloc(:,2), -bloc(:,1), bloc(:,3)];
+%         cloc = [cloc(:,2), -cloc(:,1), cloc(:,3)]; 
+        
+D = [aloc bloc cloc]; % C is higher order
+D = reshape(reshape(D', 1, 9, []), 3, 3, len);     
+              
+coeff = polyfit(tmp6, circ, 2);
+coeff = fliplr(coeff);
+w_ind = permute(sum(D.*repmat(reshape(coeff',1,3,[]),3,1,1),2),[2 1 3]);
+w_ind = reshape(permute(w_ind,[3 1 2]),[],3,1)./(-4*pi);
+
+% Out of filament local to element local
+% w_ind = fcnSTARGLOB(w_ind, [phi.*0, phi.*0, phi]);
+
+q_ind2 = q_ind + w_ind;
+%%
 figure(1);
 % q_ind = permute(q_ind,[3 2 1]);
 hold on
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),'b')
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'r')
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind2(:,1), q_ind2(:,2), q_ind2(:,3),'b')
 hold off
 setAxes3DPanAndZoomStyle(zoom(gca),gca,'camera') ;
 
 
 figure(10);
 clf(10);
-plot(fpg(:,2), abs(q_ind(:,3)), '-k');
+plot(fpg(:,1), q_ind(:,3), '-k');
+hold on
+plot(fpg(:,1), q_ind2(:,3), '--r');
+hold off
 grid minor
 box on
 axis tight

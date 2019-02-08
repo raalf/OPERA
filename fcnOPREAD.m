@@ -1,4 +1,4 @@
-function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS] = fcnOPREAD(strFILE)
+function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY] = fcnOPREAD(strFILE)
 
 fp = fopen(strFILE);
 
@@ -71,6 +71,27 @@ while(ch~='=');
     ch = fscanf(fp,'%c',1);
 end
 seqBETA = fscanf(fp,'%lf');
+
+% Reading density
+ch = fscanf(fp,'%c',1);
+while(ch~='=');
+    ch = fscanf(fp,'%c',1);
+end
+valDENSITY = fscanf(fp,'%lf');
+
+% Reading reference area
+ch = fscanf(fp,'%c',1);
+while(ch~='=');
+    ch = fscanf(fp,'%c',1);
+end
+valAREA = fscanf(fp,'%lf');
+
+% Reading reference span
+ch = fscanf(fp,'%c',1);
+while(ch~='=');
+    ch = fscanf(fp,'%c',1);
+end
+valSPAN = fscanf(fp,'%lf');
 
 %% Reading panel/wing/lifting line information
 % Reading No. of panels

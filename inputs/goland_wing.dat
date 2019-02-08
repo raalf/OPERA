@@ -16,6 +16,10 @@ Relaxed or Fixed Wake: 	strRELAX = FIXED
 Angles of Attack: 		seqALPHA = 20
 Angles of Sideslip: 	seqBETA = 0
 
+Density:			valDENSITY = 1
+Reference Area:		valAREA = 10
+Reference Span:		valSPAN = 10
+
 GEOMETRY
 
 No. of panels:	valPANELS =	1

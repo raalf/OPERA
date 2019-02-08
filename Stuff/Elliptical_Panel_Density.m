@@ -1,4 +1,5 @@
 clear
+addpath('addaxis')
 
 % cd G:\GIT\opera
 % 
@@ -35,37 +36,57 @@ clear
 % save('Elliptical_Panel_Density_Deltime_1.mat')
 
 %%
-load('Elliptical_Panel_Density_Deltime_1.mat')
+load('Elliptical_Panel_Density_Deltime_1.mat');
+
+nvals = (2:3:17);
+
 hFig1 = figure(1);
 clf(1);
-yyaxis left
-plot((1:2:12).*2,tmpCL_M,'-^k');
+plot(nvals.*2, tmpCDi_N,'-^k');
+xlabel('Number of Spanwise Elements','FontSize',10)
 hold on
-plot((2:3:17).*2,tmpCL_N,'--sk');
-hold off
-ylabel('C_L','FontSize',15);
-
-yyaxis right
-hold on
-plot((1:2:12).*2,tmpCDi_M,'-.^k');
-plot((2:3:17).*2,tmpCDi_N,':sk');
-hold off
-
-legend('Increasing Chordwise Elements (20 Spanwise Elements)', 'Increasing Spanwise Elements (5 Chordwise Elements)','Location','SouthEast')
-xlabel('Number of Variable Elements','FontSize',15);
-ylabel('C_D_i','FontSize',15);
+addaxis(nvals.*2, (tmpCL_N.^2)./(pi.*tmpAR.*tmpCDi_N),'-.dk')
+addaxis(nvals.*2, tmpCL_N,'--sk')
+addaxislabel(1, 'C_D_i');
+addaxislabel(2, 'e');
+addaxislabel(3, 'C_L');
 grid minor
-set(gca,'YMinorTick','on')
+box on
+axis tight
+legend('C_D_i','e','C_L','Location','East');
+AX=findall(0,'type','axes'); 
+set(AX(1),'fontsize',8)
+set(AX(2),'fontsize',8)
+set(AX(3),'fontsize',8)
+
+dim = [.45 .3 .5 .3];
+str = sprintf('alpha = 4\nx_t/c_r = 1\nAR = 7\nM = 8');
+annotation('textbox',dim,'String',str,'FitBoxToText','on');
+
+%%
+
+nvals = (1:2:12);
 
 hFig2 = figure(2);
 clf(2);
+plot(nvals, tmpCDi_M, '-^k');
+xlabel('Number of Chordwise Elements','FontSize',10)
 hold on
-plot((1:2:12).*2,(tmpCL_M.^2)./(pi.*7.*tmpCDi_M),'-^k');
-plot((2:3:17).*2,(tmpCL_N.^2)./(pi.*7.*tmpCDi_N),'--sk');
-hold off
-legend('Increasing Chordwise Elements (20 Spanwise Elements)', 'Increasing Spanwise Elements (5 Chordwise Elements)','Location','NorthEast')
-xlabel('Number of Variable Elements','FontSize',15);
-ylabel('Span Efficiency Factor','FontSize',15);
+addaxis(nvals, (tmpCL_M.^2)./(pi.*tmpAR.*tmpCDi_M),'-.dk')
+addaxis(nvals, tmpCL_M,'--sk')
+addaxislabel(1, 'C_D_i');
+addaxislabel(2, 'e');
+addaxislabel(3, 'C_L');
 grid minor
-set(gca,'YMinorTick','on')
+box on
+axis tight
+legend('C_D_i','e','C_L','Location','East');
+AX=findall(0,'type','axes'); 
+set(AX(1),'fontsize',8)
+set(AX(2),'fontsize',8)
+set(AX(3),'fontsize',8)
+
+dim = [.45 .3 .5 .3];
+str = sprintf('alpha = 4\nx_t/c_r = 1\nAR = 7\nN = 22');
+annotation('textbox',dim,'String',str,'FitBoxToText','on');
 

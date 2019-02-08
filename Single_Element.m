@@ -16,19 +16,20 @@ vecSYM = [];
 
 % matPOINTS(:,:,1) = [0 0 0];
 % matPOINTS(:,:,2) = [0  0.5 0];
-% matPOINTS(:,:,3) = [0.5  0.5 0];
+% matPOINTS(:,:,3) = [0.3  0.5 0];
 
 matPOINTS(:,:,1) = [1 0 0];
 matPOINTS(:,:,2) = [0  0 0];
-matPOINTS(:,:,3) = [0.3  0.5 0];
-
+% matPOINTS(:,:,3) = [0.9  0.5 0];
+x = 0.9;
+matPOINTS(:,:,3) = [x  0.5 0];
 
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS, 'SURFACE', []);
 
 vecUINF = fcnUINFWING(valALPHA, 0);
 
-matCOEFF = [0 0 -2 0.17 0 0.056];
+matCOEFF = -[0 0 -2 0.17 0 0.056];
 
 %% fpl
 % fpg = [-0 0.2 0]
@@ -120,11 +121,11 @@ fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPL
 % z = [-0.025:granularity:0.025].*0;
 
 % granularity = 0.00125;
-granularity = 0.1
-x = [0:granularity:0.2];
-y = [0.2];
+granularity = 0.005
+x = [(-0.4 + x/2):granularity:(x/2 + 0.4)];
+y = [0.1 0.25 0.4];
 z = [-0.05 0 0.05];
-% z = 0;
+z = 0;
 
 % granularity = 0.00125;
 % % granularity = 0.1
@@ -152,7 +153,7 @@ z = [-0.05 0 0.05];
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = [0.5 0 0; 0  0 0; 0  0.5 0];
 % fpg = [0 0.2 0];
-% fpg = [0.2 0 0];
+% fpg = [0.35 0.2 0; 0.35 0.2 0];
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
 
 
@@ -204,23 +205,23 @@ q_ind2 = q_ind + w_ind;
 figure(1);
 % q_ind = permute(q_ind,[3 2 1]);
 hold on
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3),'b')
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3),'r')
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 1, 'b')
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3), 1, 'r')
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind2(:,1), q_ind2(:,2), q_ind2(:,3),'b')
 hold off
 setAxes3DPanAndZoomStyle(zoom(gca),gca,'camera') ;
 
 
-figure(10);
-clf(10);
-plot(fpg(:,1), q_ind(:,3), '-k');
-hold on
-plot(fpg(:,1), q_ind2(:,3), '--r');
-hold off
-grid minor
-box on
-axis tight
-% set(gca, 'YScale', 'log')
+% figure(10);
+% clf(10);
+% plot(fpg(:,1), q_ind(:,3), '-k');
+% hold on
+% plot(fpg(:,1), q_ind2(:,3), '--r');
+% hold off
+% grid minor
+% box on
+% axis tight
+% % set(gca, 'YScale', 'log')
 
 
 

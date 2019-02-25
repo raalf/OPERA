@@ -122,6 +122,20 @@ K4 = fcnK4(S, T, u, alpha, F_lim, tol, idx);
 K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx);
 K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx);
 K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
+% K1 = sqrt(real(K1).^2 + imag(K1).^2);
+% K2 = sqrt(real(K2).^2 + imag(K2).^2);
+% K3 = sqrt(real(K3).^2 + imag(K3).^2);
+% K4 = sqrt(real(K4).^2 + imag(K4).^2);
+% K5 = sqrt(real(K5).^2 + imag(K5).^2);
+% K6 = sqrt(real(K6).^2 + imag(K6).^2);
+% K7 = sqrt(real(K7).^2 + imag(K7).^2);
+% K1(idx_on_edge,:) = sqrt(real(K1(idx_on_edge,:)).^2 + imag(K1(idx_on_edge,:)).^2);
+% K2(idx_on_edge,:) = sqrt(real(K2(idx_on_edge,:)).^2 + imag(K2(idx_on_edge,:)).^2);
+% K3(idx_on_edge,:) = sqrt(real(K3(idx_on_edge,:)).^2 + imag(K3(idx_on_edge,:)).^2);
+% K4(idx_on_edge,:) = sqrt(real(K4(idx_on_edge,:)).^2 + imag(K4(idx_on_edge,:)).^2);
+% K5(idx_on_edge,:) = sqrt(real(K5(idx_on_edge,:)).^2 + imag(K5(idx_on_edge,:)).^2);
+% K6(idx_on_edge,:) = sqrt(real(K6(idx_on_edge,:)).^2 + imag(K6(idx_on_edge,:)).^2);
+% K7(idx_on_edge,:) = sqrt(real(K7(idx_on_edge,:)).^2 + imag(K7(idx_on_edge,:)).^2);
 
 F(:,1) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K3+(6.*N.*S-3.*N).*K2+(-3.*L.*alpha+6.*L.*u).*K1 + ( +N.*alpha+2.*u.*N ).*K0]), 2);
 F(:,2) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(2.*L.*S+L).*K4+(6.*N.*S-3.*N-(2.*L.*S+L).*x_m).*K3+(-3.*L.*alpha+6.*L.*u-(6.*N.*S-3.*N).*x_m).*K2+(N.*alpha+2.*u.*N-(-3.*L.*alpha+6.*L.*u).*x_m).*K1 + ( -(N.*alpha+2.*u.*N).*x_m ).*K0]), 2);
@@ -139,6 +153,7 @@ F(:,13) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(4.*L.*S-L).*K7+(12.*N.*S-12.*S.
                 - fcnH_7(E, -E.*x_m - D_TE + y_m, alpha(:,1), F_lim(:,1,1), F_lim(:,1,2), tol) + fcnH_7(C, -C.*x_m - D_LE + y_m, alpha(:,1), F_lim(:,1,1), F_lim(:,1,2), tol);
 F(:,14) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(3.*S-1).*K7+(-x_m.*(3.*S-1)+3.*L.*S.*y_m+6.*L.*N-3.*y_m.*L).*K6+(-x_m.*(3.*L.*S.*y_m+6.*L.*N-3.*y_m.*L)+9.*N.*y_m.*S-9.*N.*y_m+6.*alpha.*S+3.*y_m.^2-3.*alpha+3.*u).*K5+(-x_m.*(9.*N.*y_m.*S-9.*N.*y_m+6.*alpha.*S+3.*y_m.^2-3.*alpha+3.*u)+2.*L.*S.*y_m.^3+3.*L.*S.*alpha.*y_m+L.*y_m.^3+12.*L.*N.*alpha-12.*L.*alpha.*y_m+9.*L.*u.*y_m).*K4+(-x_m.*(2.*L.*S.*y_m.^3+3.*L.*S.*alpha.*y_m+L.*y_m.^3+12.*L.*N.*alpha-12.*L.*alpha.*y_m+9.*L.*u.*y_m)+6.*N.*y_m.^3.*S+9.*N.*y_m.*alpha.*S-3.*N.*y_m.^3-12.*N.*y_m.*alpha+3.*N.*y_m.*u+3.*S.*alpha.^2+6.*alpha.*y_m.^2-3.*alpha.^2+6.*alpha.*u).*K3+(-x_m.*(6.*N.*y_m.^3.*S+9.*N.*y_m.*alpha.*S-3.*N.*y_m.^3-12.*N.*y_m.*alpha+3.*N.*y_m.*u+3.*S.*alpha.^2+6.*alpha.*y_m.^2-3.*alpha.^2+6.*alpha.*u)-3.*L.*alpha.*y_m.^3+6.*L.*u.*y_m.^3+6.*L.*N.*alpha.^2-9.*L.*alpha.^2.*y_m+9.*L.*alpha.*u.*y_m).*K2+(-x_m.*(-3.*L.*alpha.*y_m.^3+6.*L.*u.*y_m.^3+6.*L.*N.*alpha.^2-9.*L.*alpha.^2.*y_m+9.*L.*alpha.*u.*y_m)+N.*alpha.*y_m.^3+2.*N.*u.*y_m.^3-3.*N.*alpha.^2.*y_m+3.*N.*alpha.*u.*y_m+3.*alpha.^2.*y_m.^2-alpha.^3+3.*alpha.^2.*u).*K1 + ( -x_m.*(N.*alpha.*y_m.^3+2.*N.*u.*y_m.^3-3.*N.*alpha.^2.*y_m+3.*N.*alpha.*u.*y_m+3.*alpha.^2.*y_m.^2-alpha.^3+3.*alpha.^2.*u) ).*K0]), 2);
 F(:,15) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([K7+(2.*L.*S.*y_m+y_m.*L-3.*x_m).*K6+(3.*x_m.^2-3.*x_m.*(2.*L.*S.*y_m+y_m.*L)+6.*N.*y_m.*S-3.*N.*y_m+2.*alpha).*K5+(-x_m.^3+3.*x_m.^2.*(2.*L.*S.*y_m+y_m.*L)-3.*x_m.*(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha)-3.*L.*alpha.*y_m+6.*L.*u.*y_m).*K4+(-x_m.^3.*(2.*L.*S.*y_m+y_m.*L)+3.*x_m.^2.*(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha)-3.*x_m.*(-3.*L.*alpha.*y_m+6.*L.*u.*y_m)+N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2).*K3+(-x_m.^3.*(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha)+3.*x_m.^2.*(-3.*L.*alpha.*y_m+6.*L.*u.*y_m)-3.*x_m.*(N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2)).*K2+(-x_m.^3.*(-3.*L.*alpha.*y_m+6.*L.*u.*y_m)+3.*x_m.^2.*(N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2)).*K1 + ( -x_m.^3.*(N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2) ).*K0]), 2);
+
 F = real(F);
 
 %%

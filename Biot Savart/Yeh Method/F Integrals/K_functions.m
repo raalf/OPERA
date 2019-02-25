@@ -1,7 +1,7 @@
 clc
 clear
 
-letter = 'T'
+letter = 'H'
 
 fn = 0:7;
 

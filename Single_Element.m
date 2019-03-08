@@ -2,8 +2,8 @@ clear
 % clc
 
 %% Preamble
-set(groot,'defaultFigureCreateFcn','addToolbarExplorationButtons(gcf)')
-set(groot,'defaultAxesCreateFcn','set(get(gca,''Toolbar''),''Visible'',''off'')')
+% set(groot,'defaultFigureCreateFcn','addToolbarExplorationButtons(gcf)')
+% set(groot,'defaultAxesCreateFcn','set(get(gca,''Toolbar''),''Visible'',''off'')')
 
 strFILE = 'inputs/2dve.dat';
 
@@ -20,7 +20,7 @@ vecSYM = [];
 matPOINTS(:,:,1) = [1 0 0];
 matPOINTS(:,:,2) = [0  0 0];
 % matPOINTS(:,:,3) = [0.9  0.5 0];
-xp = 0.99;
+xp = 0.99
 % xp = 0
 matPOINTS(:,:,3) = [xp  0.5 0];
 
@@ -42,10 +42,11 @@ fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPL
 % z = [-0.025:granularity:0.025].*0;
 
 % granularity = 0.00125;
-granularity = 0.0025
-x = [(-0.4 + xp/2):granularity:(xp/2 + 0.05)];
+granularity = 0.01
+x = [-0.1:granularity:0.9];
 y = [0.1 0.25 0.4];
 z = [-0.05 0 0.05];
+z = [-0.05 0.05];
 z = 0;
 
 % granularity = 0.00125;
@@ -73,12 +74,11 @@ z = 0;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-num = 100;
-delt = 0.001;
-fpg = [linspace(0,xp,num)' linspace(0,0.5,num)' zeros(num,1)];
-fpg = [fpg; linspace(0,xp,num)'-delt linspace(0,0.5,num)' zeros(num,1)];
-fpg = [fpg; linspace(0,xp,num)'+delt linspace(0,0.5,num)' zeros(num,1)];
-
+% num = 100;
+% delt = 0.001;
+% fpg = [linspace(0,xp,num)' linspace(0,0.5,num)' zeros(num,1)];
+% fpg = [fpg; linspace(0,xp,num)'-delt linspace(0,0.5,num)' zeros(num,1)];
+% fpg = [fpg; linspace(0,xp,num)'+delt linspace(0,0.5,num)' zeros(num,1)];
 
 % fpg = [linspace(0,xp,num)' linspace(0,0.5,num)' zeros(num,1)];
 % fpg = [fpg(10,:); fpg(10,:) + [0.1 0 0]; fpg(10,:) - [0.1 0 0]]
@@ -113,9 +113,6 @@ else
 end     
 fp_0 = fcnGLOBSTAR(fpg - matCENTER(dve2,:), matROTANG(dve2,:)) - midpoint;
 [aloc, bloc, cloc] = fcnBOUNDIND(repmat(hspan,len,1), repmat(phi,len,1), [-fp_0(:,2) fp_0(:,1) fp_0(:,3)]);
-        aloc = [aloc(:,2), -aloc(:,1), aloc(:,3)];
-        bloc = [bloc(:,2), -bloc(:,1), bloc(:,3)];
-        cloc = [cloc(:,2), -cloc(:,1), cloc(:,3)]; 
         
 D = [aloc bloc cloc]; % C is higher order
 D = reshape(reshape(D', 1, 9, []), 3, 3, len);     
@@ -134,33 +131,35 @@ q_ind2 = q_ind + w_ind;
 figure(1);
 % q_ind = permute(q_ind,[3 2 1]);
 hold on
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind2(:,1), q_ind2(:,2), q_ind2(:,3), 1, 'b')
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind2(:,1), q_ind2(:,2), q_ind2(:,3), 1, 'b')
+quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 1, 'b')
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3), 1,'r')
 hold off
-setAxes3DPanAndZoomStyle(zoom(gca),gca,'camera');
+% setAxes3DPanAndZoomStyle(zoom(gca),gca,'camera');
 
-q_ind_avg = (q_ind(num+1:2*num,:) + q_ind((2*num)+1:3*num,:))./2;
-figure(10);
-clf(10);
-plot(fpg(1:num,2), q_ind(1:num,3), '-xk');
-hold on
-plot(fpg(1:num,2), q_ind_avg(:,3), '--or');
-
+% q_ind_avg = (q_ind(num+1:2*num,:) + q_ind((2*num)+1:3*num,:))./2;
+% figure(10);
+% clf(10);
+% plot(fpg(1:num,2), q_ind(1:num,3), '-xk');
+% hold on
+% % plot(fpg(1:num,2), q_ind_avg(:,3), '--or');
+% 
 % plot(fpg(1:num,2), q_ind2(num+1:2*num,3), '-.^r');
 % plot(fpg(1:num,2), q_ind2((2*num)+1:3*num,3), '--vr');
-
-% plot(fpg(1:num,2), (q_ind2(num+1:2*num,3) + q_ind2((2*num)+1:3*num,3))./2, '-.^r');
-% plot(fpg(1:num,2), w_ind((2*num)+1:3*num,3), '--vr');
-
-hold off
-grid minor
-box on
-axis tight
-% set(gca, 'YScale', 'log')
-
-trapz(fpg(1:num,2), q_ind(1:num,3))
-trapz(fpg(1:num,2), q_ind_avg(1:num,3))
-
-% trapz(sqrt(sum(fpg(1:num,:).^2,2)), q_ind(1:num,3))
-% trapz(sqrt(sum(fpg(1:num,:).^2,2)), q_ind_avg(1:num,3))
+% 
+% % plot(fpg(1:num,2), (q_ind2(num+1:2*num,3) + q_ind2((2*num)+1:3*num,3))./2, '-.^r');
+% % plot(fpg(1:num,2), w_ind((2*num)+1:3*num,3), '--vr');
+% 
+% hold off
+% grid minor
+% box on
+% axis tight
+% % set(gca, 'YScale', 'log')
+% 
+% trapz(fpg(1:num,2), q_ind(1:num,3))
+% trapz(fpg(1:num,2), q_ind_avg(1:num,3))
+% 
+% % trapz(sqrt(sum(fpg(1:num,:).^2,2)), q_ind(1:num,3))
+% % trapz(sqrt(sum(fpg(1:num,:).^2,2)), q_ind_avg(1:num,3))
 
 

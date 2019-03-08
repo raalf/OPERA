@@ -80,12 +80,12 @@ tol_alpha = 1e-10;
 % Correcting zero F limits if we are in the plane of the element
 idx = abs(F_lim(:,:,1)) < tol_F & alpha(:,1) <= 1e-3;
 sgn = sign(F_lim(idx,:,1));
-% sgn(sign(F_lim(idx,:,1)) == 0) = sign(F_lim(sign(F_lim(idx,:,1)) == 0,:,2));
+sgn(sign(F_lim(idx,:,1)) == 0) = sign(F_lim(sign(F_lim(idx,:,1)) == 0,:,2));
 F_lim(idx,:,1) = sgn.*tol_F;
 
 idx = abs(F_lim(:,:,2)) < tol_F & alpha <= 1e-3;
 sgn = sign(F_lim(idx,:,2));
-% sgn(sign(F_lim(idx,:,2)) == 0) = sign(F_lim(sign(F_lim(idx,:,2)) == 0,:,1));
+sgn(sign(F_lim(idx,:,2)) == 0) = sign(F_lim(sign(F_lim(idx,:,2)) == 0,:,1));
 F_lim(idx,:,2) = sgn.*tol_F;
 
 F_lim = repmat(F_lim,1,2,1);
@@ -122,6 +122,7 @@ K4 = fcnK4(S, T, u, alpha, F_lim, tol, idx);
 K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx);
 K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx);
 K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
+% K0 = sqrt(real(K0).^2 + imag(K0).^2);
 % K1 = sqrt(real(K1).^2 + imag(K1).^2);
 % K2 = sqrt(real(K2).^2 + imag(K2).^2);
 % K3 = sqrt(real(K3).^2 + imag(K3).^2);
@@ -129,6 +130,7 @@ K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
 % K5 = sqrt(real(K5).^2 + imag(K5).^2);
 % K6 = sqrt(real(K6).^2 + imag(K6).^2);
 % K7 = sqrt(real(K7).^2 + imag(K7).^2);
+% K0(idx_on_edge,:) = sqrt(real(K0(idx_on_edge,:)).^2 + imag(K0(idx_on_edge,:)).^2);
 % K1(idx_on_edge,:) = sqrt(real(K1(idx_on_edge,:)).^2 + imag(K1(idx_on_edge,:)).^2);
 % K2(idx_on_edge,:) = sqrt(real(K2(idx_on_edge,:)).^2 + imag(K2(idx_on_edge,:)).^2);
 % K3(idx_on_edge,:) = sqrt(real(K3(idx_on_edge,:)).^2 + imag(K3(idx_on_edge,:)).^2);
@@ -200,6 +202,7 @@ infl_new(3,5,:) = reshape(tmp35,1,1,[]);
 infl_new(3,6,:) = reshape(tmp36,1,1,[]);
 
 %%
+% infl_loc = real(infl_new) + imag(infl_new);
 infl_loc = real(infl_new);
 infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
 

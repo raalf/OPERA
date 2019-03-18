@@ -74,58 +74,16 @@ z = 0;
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-% num = 100;
-% delt = 0.001;
+num = 100;
+delt = 0.001;
 % fpg = [linspace(0,xp,num)' linspace(0,0.5,num)' zeros(num,1)];
 % fpg = [fpg; linspace(0,xp,num)'-delt linspace(0,0.5,num)' zeros(num,1)];
 % fpg = [fpg; linspace(0,xp,num)'+delt linspace(0,0.5,num)' zeros(num,1)];
 
-% fpg = [linspace(0,xp,num)' linspace(0,0.5,num)' zeros(num,1)];
+fpg = [linspace(0,xp,num)' linspace(0,0.5,num)' zeros(num,1)];
 % fpg = [fpg(10,:); fpg(10,:) + [0.1 0 0]; fpg(10,:) - [0.1 0 0]]
 
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL);
-
-%%
-len = size(fpg,1);
-
-dve2 = 1;
-p1 = fcnGLOBSTAR(matVLST(matELST(1,1),:) - matCENTER(dve2,:), matROTANG(dve2,:));
-p2 = fcnGLOBSTAR(matVLST(matELST(1,2),:) - matCENTER(dve2,:), matROTANG(dve2,:));
-
-midpoint = mean([p1; p2],1);
-vec = p2 - p1;
-hspan = abs(p1(1,1) - p2(1,1))./2;
-vec = vec./sqrt(sum(vec.^2,2));
-phi = acos(dot([1 0 0], vec, 2));
-if phi > pi/2
-    phi = phi - pi;
-end
-
-xi = [linspace(p1(1,1), p2(1,1), 100)]';
-eta = [linspace(p1(1,2), p2(1,2), 100)]';       
-circ = 0.5.*matCOEFF(dve2,1).*eta.^2 + matCOEFF(dve2,2).*eta + 0.5.*matCOEFF(dve2,3).*xi.^2 + matCOEFF(dve2,4).*xi + matCOEFF(dve2,5).*xi.*eta + matCOEFF(dve2,6);
-% circ = 0.5.*matCOEFF(dve2,3).*xi.^2 + matCOEFF(dve2,4).*xi + matCOEFF(dve2,5).*xi.*eta + matCOEFF(dve2,6);
-
-if p2(1,1) > p1(1,1)
-    tmp6 = [linspace(-hspan, hspan, 100)]';
-else
-    tmp6 = [linspace(hspan, -hspan, 100)]';
-end     
-fp_0 = fcnGLOBSTAR(fpg - matCENTER(dve2,:), matROTANG(dve2,:)) - midpoint;
-[aloc, bloc, cloc] = fcnBOUNDIND(repmat(hspan,len,1), repmat(phi,len,1), [-fp_0(:,2) fp_0(:,1) fp_0(:,3)]);
-        
-D = [aloc bloc cloc]; % C is higher order
-D = reshape(reshape(D', 1, 9, []), 3, 3, len);     
-              
-coeff = polyfit(tmp6, circ, 2);
-coeff = fliplr(coeff);
-w_ind = permute(sum(D.*repmat(reshape(coeff',1,3,[]),3,1,1),2),[2 1 3]);
-w_ind = reshape(permute(w_ind,[3 1 2]),[],3,1)./(-4*pi);
-
-% Out of filament local to element local
-% w_ind = fcnSTARGLOB(w_ind, [phi.*0, phi.*0, phi]);
-
-q_ind2 = q_ind + w_ind;
 
 %%
 figure(1);
@@ -133,33 +91,10 @@ figure(1);
 hold on
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind2(:,1), q_ind2(:,2), q_ind2(:,3), 1, 'b')
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 1, 'b')
-% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), w_ind(:,1), w_ind(:,2), w_ind(:,3), 1,'r')
 hold off
-% setAxes3DPanAndZoomStyle(zoom(gca),gca,'camera');
 
-% q_ind_avg = (q_ind(num+1:2*num,:) + q_ind((2*num)+1:3*num,:))./2;
-% figure(10);
-% clf(10);
-% plot(fpg(1:num,2), q_ind(1:num,3), '-xk');
-% hold on
-% % plot(fpg(1:num,2), q_ind_avg(:,3), '--or');
-% 
-% plot(fpg(1:num,2), q_ind2(num+1:2*num,3), '-.^r');
-% plot(fpg(1:num,2), q_ind2((2*num)+1:3*num,3), '--vr');
-% 
-% % plot(fpg(1:num,2), (q_ind2(num+1:2*num,3) + q_ind2((2*num)+1:3*num,3))./2, '-.^r');
-% % plot(fpg(1:num,2), w_ind((2*num)+1:3*num,3), '--vr');
-% 
-% hold off
-% grid minor
-% box on
-% axis tight
-% % set(gca, 'YScale', 'log')
-% 
-% trapz(fpg(1:num,2), q_ind(1:num,3))
-% trapz(fpg(1:num,2), q_ind_avg(1:num,3))
-% 
-% % trapz(sqrt(sum(fpg(1:num,:).^2,2)), q_ind(1:num,3))
-% % trapz(sqrt(sum(fpg(1:num,:).^2,2)), q_ind_avg(1:num,3))
+
+
+
 
 

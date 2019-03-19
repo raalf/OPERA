@@ -8,7 +8,7 @@ valALPHA = 4;
 AR = 7;
 
 valMAXTIME = 20;
-valDELTIME = 0.25;
+valDELTIME = 1;
 
 vecM = 6;
 vecN = 11;

@@ -5,14 +5,14 @@ lim = 1e10;
 vecDVELIFT = nan(valNELE,1);
 vecDVEDRAG = nan(valNELE,1);
 vecDVESIDE = nan(valNELE,1);
+% matDVEDRAG_DIR = matUINF./sqrt(sum(matUINF.^2,2));
+% matDVELIFT_DIR = cross(matDVEDRAG_DIR, matSPANDIR, 2);
+% matDVESIDE_DIR = cross(matDVELIFT_DIR, matDVEDRAG_DIR, 2);
 
-matDVEDRAG_DIR = matUINF./sqrt(sum(matUINF.^2,2));
-matDVELIFT_DIR = cross(matDVEDRAG_DIR, matSPANDIR, 2);
-matDVESIDE_DIR = cross(matDVELIFT_DIR, matDVEDRAG_DIR, 2);
 
-% matDVEDRAG_DIR = repmat(matUINF(1,:)./sqrt(sum(matUINF(1,:).^2,2)), valNELE, 1);
-% matDVELIFT_DIR = repmat(cross(matDVEDRAG_DIR(1,:), matSPANDIR(1,:), 2), valNELE, 1);
-% matDVESIDE_DIR = repmat(cross(matDVELIFT_DIR(1,:), matDVEDRAG_DIR(1,:), 2), valNELE,1);
+matDVEDRAG_DIR = repmat(matUINF(1,:)./sqrt(sum(matUINF(1,:).^2,2)), valNELE, 1);
+matDVELIFT_DIR = repmat(cross(matDVEDRAG_DIR(1,:), matSPANDIR(1,:), 2), valNELE, 1);
+matDVESIDE_DIR = repmat(cross(matDVELIFT_DIR(1,:), matDVEDRAG_DIR(1,:), 2), valNELE,1);
 
 liftfree = nan(valNELE,1);
 sidefree = nan(valNELE,1);
@@ -80,29 +80,11 @@ liftfree(vecTEDVE,1) = dot(F, matDVELIFT_DIR(vecTEDVE,:), 2);
 sidefree(vecTEDVE,1) = dot(F, matDVESIDE_DIR(vecTEDVE,:), 2);
 
 %% Induced Forces
-tmp51 = [];
-tmp52 = [];
-tmp53 = [];
-tmp54 = [];
-for jj = 1:length(vecTE)
-%     fpg_og = locations.*matVLST(matELST(vecTE(jj),1),:) + (1 - locations).*matVLST(matELST(vecTE(jj),2),:);
-    fpg_og = locations.*matWVLST(matWELST(vecWLE(jj),1),:) + (1 - locations).*matWVLST(matWELST(vecWLE(jj),2),:);
-    wind(:,:,jj) = fcnSDVEVEL(fpg_og, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
-    
-%     tmp45 = linspace(0.2,0.8,50)';
-%     fpg2 = tmp45.*matVLST(matELST(vecTE(jj),1),:) + (1 - tmp45).*matVLST(matELST(vecTE(jj),2),:);
-%     ind = fcnSDVEVEL(fpg2, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
-%     tmp53 = [tmp53; fpg2];
-%     tmp54 = [tmp54; ind];       
-  
-    tmp51 = [tmp51; fpg_og];
-    tmp52 = [tmp52; wind(:,:,jj)];   
-end
-
-hold on
-quiver3(tmp51(:,1), tmp51(:,2), tmp51(:,3), tmp52(:,1), tmp52(:,2), tmp52(:,3))
-% quiver3(tmp53(:,1), tmp53(:,2), tmp53(:,3), tmp54(:,1), tmp54(:,2), tmp54(:,3),10)
-hold off
+% Induced velocities at wake leading edge DVEs (wind is 3 x 3 x num_dve) 
+fpg_og = reshape(locations,1,1,[]).*matWVLST(matWELST(vecWLE,1),:) + (1 - reshape(locations,1,1,[])).*matWVLST(matWELST(vecWLE,2),:);
+fpg_og = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';
+wind = fcnSDVEVEL(fpg_og, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+wind = permute(reshape(wind', 3, [], 3), [3 1 2]);
 
 % Velocity along the TE
 for i = 1:size(vecTEDVE,1)
@@ -132,7 +114,10 @@ vecDVEDRAG = dragind;
 CL = nansum(vecDVELIFT)./(0.5.*valDENSITY.*valAREA);
 CDi = nansum(vecDVEDRAG)./(0.5.*valDENSITY.*valAREA);
 CY = nansum(vecDVESIDE)./(0.5.*valDENSITY.*valAREA);
-e = (CL.^2)./(pi.*((valSPAN.^2)./valAREA).*CDi);
+% e = (CL.^2)./(pi.*((valSPAN.^2)./valAREA).*CDi);
+q_inf = 0.5.*valDENSITY;
+e = ((nansum(vecDVELIFT)./q_inf).^2)./(pi.*(valSPAN.^2).*(nansum(vecDVEDRAG)./q_inf));
+
 fprintf('Timestep: %d\t\tCL = %0.5f\t\tCDi = %0.5f\t\te = %0.5f\n', valTIMESTEP, CL, CDi, e);
 
 end

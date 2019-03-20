@@ -15,20 +15,22 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
-strFILE = 'inputs/box_wing.dat';
+% strFILE = 'inputs/box_wing.dat';
 % strFILE = 'inputs/goland_wing.dat';
+strFILE = 'inputs/test.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY] = fcnOPREAD(strFILE);
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA]...
     = fcnTRIANG(matPOINTS, 'SURFACE', []);
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS);
 
+flagRELAX = 1
+
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 matVUINF = repmat(fcnUINFWING(valALPHA, 0), size(matVLST,1), 1);
 
 % [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
 % view([33, 28])
-
 %% D-Matrix Creation
 matKINCON_P = matCONTROL;
 matKINCON_DVE = [1:valNELE]';
@@ -60,6 +62,9 @@ valGUSTL = 7.3152;
 flagGUSTMODE = 2;
 valGUSTSTART = 12;
 
+valPRESTEPS = 20;
+valDELTIME = valDELTIME*10;
+strWAKE_TYPE = 'STEADY';
 for valTIMESTEP = 1:valMAXTIME
     %% Timestep to solution
     %   Move wing
@@ -71,6 +76,12 @@ for valTIMESTEP = 1:valMAXTIME
     %   Calculate surface normal forces
     %   Calculate DVE normal forces
     %   Calculate induced drag
+    
+    if valTIMESTEP == valPRESTEPS
+        valDELTIME = valDELTIME/10;
+        strWAKE_TYPE = strATYPE{3};
+    end
+    
     
     % Moving the wing
     [matVLST, matCENTER, matNEWWAKE, matCONTROL, matKINCON_P] = fcnMOVEWING(matUINF, valDELTIME, matVLST, matCENTER, matELST, vecTE, matCONTROL, matKINCON_P);
@@ -86,23 +97,41 @@ for valTIMESTEP = 1:valMAXTIME
         matCOEFF = fcnSOLVED(matD, vecR, valNELE);
         
         % Update wake coefficients
-        if strcmpi(strATYPE{3},'STEADY')
+        if strcmpi(strWAKE_TYPE,'STEADY')
             matWCOEFF = fcnDWAKE(strATYPE{3}, valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC);
         else
             [matWCOEFF(end - valWSIZE*2 + 1:end, :), vecWDVECIRC(end - valWSIZE*2 + 1:end, :)] = fcnDWAKENEW(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX);
         end
         
-        if flagRELAX == 1 && valTIMESTEP > 10           
+        % Relaxing Wake
+        if flagRELAX == 1 && valTIMESTEP > valPRESTEPS
+%             hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+%             fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS);
             [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG, matWAKEGEOM] = ...
-                fcnRELAX(valTIMESTEP, matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
-                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT);         
+                fcnRELAX2(valTIMESTEP, matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
+                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX);
             matWCOEFF = fcnDWAKE('STEADY', valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC);
+            hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+            fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS);
+            view([-12 18])
+            %             view([0 0])
         end
         
+        % Updating coefficient convergence history
         matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
     end
-    fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'Painters');
+    
+    % Calculating Forces
     [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matSIDE_DIR] = fcnFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, ...
         matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT);
-    
 end
+
+%% Plotting
+clf(1);
+hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+% fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'r', 5);
+if valMAXTIME > 0 && any(vecTE)
+    fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS);
+    %     fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, matUINF, matWROTANG, 'r', 5);
+end
+

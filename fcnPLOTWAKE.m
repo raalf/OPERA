@@ -1,12 +1,14 @@
-function [hFig1] = fcnPLOTWAKE(verbose, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER)
+function [hFig1] = fcnPLOTWAKE(verbose, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS)
 %FCNPLOTWAKE Summary of this function goes here
 %   Detailed explanation goes here
+
+plotDVE = [(valPRESTEPS.*valWSIZE.*2 + 1):valWNELE]';
 
 set(0,'CurrentFigure',hFig1);
 
 hold on
 
-patch('Faces',matWDVE(:,:,1),'Vertices',matWVLST,'FaceColor','b','EdgeColor','b','LineWidth',2,'FaceAlpha',0.5);%,'EdgeAlpha',0.5);
+patch('Faces',matWDVE(plotDVE,:,1),'Vertices',matWVLST,'FaceColor','b','EdgeColor','b','LineWidth',2,'FaceAlpha',0.5);%,'EdgeAlpha',0.5);
 % alpha(0.5);
 
 if verbose == 1

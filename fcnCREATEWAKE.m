@@ -20,7 +20,9 @@ vecWLE = matWEIDX(vecWLEDVE,2);
 vecWTEDVE = [(valWNELE - valWSIZE + 1):valWNELE]';
 vecWTE = matWEIDX(vecWTEDVE,3);
 
-vecWDVESYM = [vecWDVESYM; repmat(vecDVESYM(vecTEDVE), 2, 1)];
+if any(vecDVESYM)
+    vecWDVESYM = [vecWDVESYM; repmat(vecDVESYM(vecTEDVE), 2, 1)];
+end
 idx = ismember(vecTEDVE, vecSYMDVE);
 vecWSYMDVE = [vecWSYMDVE; vecWLEDVE(idx)];
 vecWSYM = [vecWSYM; matWEIDX(vecWSYMDVE, 1)];

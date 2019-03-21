@@ -8,14 +8,16 @@ verts(:,:,1) = [reshape(matWELST(edges,1), size(edges))];
 verts(:,:,2) = [reshape(matWELST(edges,2), size(edges))];
 
 fpg = (matWVLST(verts(:,:,1),:) + matWVLST(verts(:,:,2),:))./2;
-fpg1 = fpg + (matWCENTER(dvegrid(:),:) - fpg)./4;
-fpg2 = fpg - (matWCENTER(dvegrid(:),:) - fpg)./4;
-
-idx = reshape(1:size(fpg,1), size(edges));
-
+fpg1 = fpg + (matWCENTER(dvegrid(:),:) - fpg)./2;
+fpg2 = fpg - (matWCENTER(dvegrid(:),:) - fpg)./2;
 q_ind1 = fcnSDVEVEL(fpg1, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(fpg1, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
 q_ind2 = fcnSDVEVEL(fpg2, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(fpg2, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
 q_ind = (q_ind1 + q_ind2)./2;
+
+% fpg = (matWVLST(verts(:,:,1),:) + matWVLST(verts(:,:,2),:))./2;
+% q_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
+
+idx = reshape(1:size(fpg,1), size(edges));
 
 % hold on
 % % scatter3(fpg(:,1), fpg(:,2), fpg(:,3), 'o');

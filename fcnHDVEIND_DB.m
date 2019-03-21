@@ -52,14 +52,6 @@ idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m
     (abs(y_m - le_eta) < margin_edge & (xi_left - margin_edge <= x_m & x_m <= xi_right + margin_edge) & abs(z_m) <= margin_on_element) | ...
     (abs(x_m - xi_left) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element) | ...
     (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
-% disp(['Edge calls: ', num2str(sum(idx_on_edge))]);
-if any(idx_on_edge)
-%     tmpvc = -[x_m(idx_on_edge) y_m(idx_on_edge)];
-%     tmpvc = tmpvc./sqrt(sum(tmpvc.^2,2));
-%     x_m(idx_on_edge) = x_m(idx_on_edge) + tmpvc(:,1).*2e-8;
-%     y_m(idx_on_edge) = y_m(idx_on_edge) + tmpvc(:,2).*2e-8;
-%       z_m(idx_on_edge) = 1e-1;
-end
 
 %%
 alpha = z_m.^2;
@@ -71,7 +63,7 @@ L = [C E];
 F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
-tol_F = 1e-3;
+tol_F = 1e-5;
 tol_S = 1e-10;
 tol_T = 1e-10;
 tol_u = 1e-10;
@@ -81,12 +73,14 @@ tol_alpha = 1e-10;
 idx = abs(F_lim(:,:,1)) < tol_F & alpha(:,1) <= 1e-3;
 sgn = sign(F_lim(idx,:,1));
 sgn(sign(F_lim(idx,:,1)) == 0) = sign(F_lim(sign(F_lim(idx,:,1)) == 0,:,2));
-F_lim(idx,:,1) = sgn.*tol_F;
+% F_lim(idx,:,1) = sgn.*tol_F;
+alpha(idx) = 1e-1;
 
 idx = abs(F_lim(:,:,2)) < tol_F & alpha <= 1e-3;
 sgn = sign(F_lim(idx,:,2));
 sgn(sign(F_lim(idx,:,2)) == 0) = sign(F_lim(sign(F_lim(idx,:,2)) == 0,:,1));
-F_lim(idx,:,2) = sgn.*tol_F;
+% F_lim(idx,:,2) = sgn.*tol_F;
+alpha(idx,:) = 1e-1;
 
 F_lim = repmat(F_lim,1,2,1);
 alpha = repmat(alpha,1,2,1);
@@ -122,22 +116,6 @@ K4 = fcnK4(S, T, u, alpha, F_lim, tol, idx);
 K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx);
 K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx);
 K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
-% K0 = sqrt(real(K0).^2 + imag(K0).^2);
-% K1 = sqrt(real(K1).^2 + imag(K1).^2);
-% K2 = sqrt(real(K2).^2 + imag(K2).^2);
-% K3 = sqrt(real(K3).^2 + imag(K3).^2);
-% K4 = sqrt(real(K4).^2 + imag(K4).^2);
-% K5 = sqrt(real(K5).^2 + imag(K5).^2);
-% K6 = sqrt(real(K6).^2 + imag(K6).^2);
-% K7 = sqrt(real(K7).^2 + imag(K7).^2);
-% K0(idx_on_edge,:) = sqrt(real(K0(idx_on_edge,:)).^2 + imag(K0(idx_on_edge,:)).^2);
-% K1(idx_on_edge,:) = sqrt(real(K1(idx_on_edge,:)).^2 + imag(K1(idx_on_edge,:)).^2);
-% K2(idx_on_edge,:) = sqrt(real(K2(idx_on_edge,:)).^2 + imag(K2(idx_on_edge,:)).^2);
-% K3(idx_on_edge,:) = sqrt(real(K3(idx_on_edge,:)).^2 + imag(K3(idx_on_edge,:)).^2);
-% K4(idx_on_edge,:) = sqrt(real(K4(idx_on_edge,:)).^2 + imag(K4(idx_on_edge,:)).^2);
-% K5(idx_on_edge,:) = sqrt(real(K5(idx_on_edge,:)).^2 + imag(K5(idx_on_edge,:)).^2);
-% K6(idx_on_edge,:) = sqrt(real(K6(idx_on_edge,:)).^2 + imag(K6(idx_on_edge,:)).^2);
-% K7(idx_on_edge,:) = sqrt(real(K7(idx_on_edge,:)).^2 + imag(K7(idx_on_edge,:)).^2);
 
 F(:,1) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K3+(6.*N.*S-3.*N).*K2+(-3.*L.*alpha+6.*L.*u).*K1 + ( +N.*alpha+2.*u.*N ).*K0]), 2);
 F(:,2) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(2.*L.*S+L).*K4+(6.*N.*S-3.*N-(2.*L.*S+L).*x_m).*K3+(-3.*L.*alpha+6.*L.*u-(6.*N.*S-3.*N).*x_m).*K2+(N.*alpha+2.*u.*N-(-3.*L.*alpha+6.*L.*u).*x_m).*K1 + ( -(N.*alpha+2.*u.*N).*x_m ).*K0]), 2);

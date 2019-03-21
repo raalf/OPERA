@@ -1,4 +1,4 @@
-function [matPOINTS, matTEPOINTS, matLEPOINTS, vecULS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE)
+function [matPOINTS, matTEPOINTS, matLEPOINTS, vecULS, vecDVESYM] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE)
 
 % This function has been taken from VAP2 and repurposed for OPERA. It takes panel corner points and discretizes
 % the panel into quadralateral DVEs, which I then subdivide into triangles to match STL format.
@@ -88,6 +88,7 @@ clear tempB tempC temp1
 points = [];
 matTEPOINTS = [];
 matLEPOINTS = [];
+vecDVESYM = logical([]);
 
 for i = 1:valPANELS
     temp_te = [];
@@ -154,6 +155,10 @@ for i = 1:valPANELS
     idxEnd = vecEnd(i);
     
     vecDVEPANEL(idxStart:idxEnd,:) = repmat(i,count,1);
+    
+    if vecSYM(i) == 1
+       vecDVESYM = [vecDVESYM; true(count*2, 1)]; 
+    end
     
     % Write DVE WING Index
     vecDVEWING(idxStart:idxEnd,:) = repmat(panel2wing(i),count,1);

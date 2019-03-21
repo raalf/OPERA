@@ -1,4 +1,4 @@
-function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, vecSYM, matROTANG, vecSPANDIR, matKINCON_P, matKINCON_DVE)
+function [D] = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELOC, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, matROTANG, vecSPANDIR, matKINCON_P, matKINCON_DVE, vecSYM, vecSYMDVE, vecDVESYM)
 
 %% Circulation equations between elements
 % Evaluated at the mid-point of each edge which splits two HDVEs
@@ -34,6 +34,7 @@ vort = [fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENT
 circ_tip = [];
 vort_tip = [];
 vort_te = [];
+vort_sym = [];
 
 if strcmpi(strATYPE{2},'THIN') == 1
     pts(:,:,1) = matVLST(matELST(vecLE,1),:);
@@ -48,9 +49,6 @@ if strcmpi(strATYPE{2},'THIN') == 1
     pts(:,:,1) = matVLST(matELST(vecTE,1),:);
     pts(:,:,2) = matVLST(matELST(vecTE,2),:);
     pts(:,:,3) = (pts(:,:,1) + pts(:,:,2))./2;
-    
-    te_dir = pts(:,:,2) - pts(:,:,1);
-    te_dir = te_dir./(sqrt(sum(te_dir.^2,2)));
         
     vort_te = [fcnDVORT2(pts(:,:,1), vecTEDVE, valNELE, matCENTER, matROTANG, 'A'); ...
         fcnDVORT2(pts(:,:,2), vecTEDVE, valNELE, matCENTER, matROTANG, 'A'); ...
@@ -61,6 +59,7 @@ if strcmpi(strATYPE{1},'3D') == 1
     idx = ~all(matEATT,2);
     idx(vecTE) = 0;
     idx(vecLE) = 0;
+    idx(vecSYM) = 0;
     pts2(:,:,1) = matVLST(matELST(idx,1),:);
     pts2(:,:,2) = matVLST(matELST(idx,2),:);
     pts2(:,:,3) = (pts2(:,:,1) + pts2(:,:,2))./2;
@@ -75,7 +74,17 @@ elseif strcmpi(strATYPE{1},'2D') == 1
     vort_tip = fcnDVORT1(dvenum, valNELE,'B');
 end
 
-%% Trailing edge vorticity
+%% Symmetry
+if any(vecSYM)
+    pts = [];
+    pts(:,:,1) = matVLST(matELST(vecSYM,1),:);
+    pts(:,:,2) = matVLST(matELST(vecSYM,2),:);
+    pts(:,:,3) = (pts(:,:,1) + pts(:,:,2))./2;
+
+    vort_sym = [fcnDVORT2(pts(:,:,1), vecSYMDVE, valNELE, matCENTER, matROTANG, 'B'); ...
+        fcnDVORT2(pts(:,:,2), vecSYMDVE, valNELE, matCENTER, matROTANG, 'B'); ...
+        fcnDVORT2(pts(:,:,3), vecSYMDVE, valNELE, matCENTER, matROTANG, 'B')];    
+end
 
 %% Kinematic conditions at vertices
 % Flow tangency is to be enforced at all control points on the surface HDVEs
@@ -88,7 +97,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(matKINCON_P,valNELE,1);
 
-[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER);
+[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER, vecDVESYM);
 
 normals = repmat(matDVECT(matKINCON_DVE,:,3),valNELE,1); % Repeated so we can dot all at once
 
@@ -102,7 +111,7 @@ king_kong = zeros(len, valNELE*6);
 king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
 
 %% Piecing together D-matrix
-D = [circ; vort; vort_tip; vort_te; circ_tip; king_kong];
-% D = [circ; vort; vort_te; king_kong];
+D = [circ; vort; vort_tip; vort_te; vort_sym; circ_tip; king_kong];
+
 end
 

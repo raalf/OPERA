@@ -1,4 +1,4 @@
-function [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS)
+function [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR, vecSYM, vecSYMDVE] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS, vecSYM_old)
 
 matSPANDIR = repmat([0 1 0],valNELE,1);
 matSPANDIR = matSPANDIR - (dot(matSPANDIR, matDVECT(:,:,3),2)).*matDVECT(:,:,3);
@@ -6,6 +6,8 @@ vecLE = [];
 vecTE = [];
 vecLEDVE = [];
 vecTEDVE = [];
+vecSYM = [];
+vecSYMDVE = [];
 
 if ~isempty(matLEPOINTS)
     [~, idxle(:,1)] = ismember(matLEPOINTS(:,:,1),matVLST,'rows');
@@ -25,6 +27,14 @@ elseif ~isempty(matTEPOINTS) && strcmpi(strATYPE{2},'THIN')
     [~, vecTE] = ismember(sort(idxte,2), sort(matELST,2), 'rows');
     vecTEDVE = nonzeros(sort(matEATT(vecTE,:),2,'descend'));
 end
+
+if any(vecSYM_old)
+    symverts = find(matVLST(:,2) == 0);
+    vecSYM = find(all(ismember(matELST, symverts),2));
+    vecSYMDVE = nonzeros(sort(matEATT(vecSYM,:),2,'descend'));
+end
+
+
 
 end
 

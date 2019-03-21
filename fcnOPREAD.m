@@ -1,4 +1,4 @@
-function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY] = fcnOPREAD(strFILE)
+function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM] = fcnOPREAD(strFILE)
 
 fp = fopen(strFILE);
 
@@ -202,7 +202,7 @@ for i = 1:valPANELS
 end
 
 fclose(fp);
-[matPOINTS, matTEPOINTS, matLEPOINTS, vecULS] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE);
+[matPOINTS, matTEPOINTS, matLEPOINTS, vecULS, vecDVESYM] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE);
 
 
 end

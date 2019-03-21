@@ -1,6 +1,6 @@
 function [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG, matWAKEGEOM] = ...
                 fcnRELAX2(valTIMESTEP, matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
-                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX)
+                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM)
 
 dvegrid = flipud(repmat([1:valWSIZE, valWSIZE*2], valTIMESTEP, 1) + [0:(valWSIZE*2):(valWSIZE*valTIMESTEP*2 - 1)]');
 edges = reshape([matWEIDX(dvegrid(:,1:end-1), 1)' matWEIDX(dvegrid(:,end), 2)'],size(dvegrid));  
@@ -13,8 +13,8 @@ fpg2 = fpg - (matWCENTER(dvegrid(:),:) - fpg)./4;
 
 idx = reshape(1:size(fpg,1), size(edges));
 
-q_ind1 = fcnSDVEVEL(fpg1, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER) + fcnSDVEVEL(fpg1, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
-q_ind2 = fcnSDVEVEL(fpg2, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER) + fcnSDVEVEL(fpg2, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER);
+q_ind1 = fcnSDVEVEL(fpg1, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(fpg1, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
+q_ind2 = fcnSDVEVEL(fpg2, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(fpg2, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
 q_ind = (q_ind1 + q_ind2)./2;
 
 % hold on
@@ -41,6 +41,7 @@ tmp2 = tmp2./numvert;
 tmp2(matWELST(vecWLE,:),:) = tmp2(matWELST(vecWLE,:),:).*0; % Trailing edge of wing
 tmp2(matWELST(vecWTE,:),:) = tmp2(matWELST(vecWTE,:),:).*0; % Trailing edge of LE wake element row
 oldest_edge = matWEIDX((1:valWSIZE) + valWSIZE,3); % Trailing edge of oldest wake row
+tmp2(matWELST(vecWSYM,:),2) = tmp2(matWELST(vecWSYM,:),2).*0; % No y-component on symmetry line
 tmp2(matWELST(oldest_edge,:),:) = tmp2(matWELST(oldest_edge,:),:).*0;
 matWVLST = matWVLST + tmp2.*valDELTIME;
 

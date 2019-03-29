@@ -9,8 +9,8 @@ y_m = fpl(:,2);
 z_m = fpl(:,3);
 
 %% Checking state of field point with relation to element surface
-margin_edge = 1e-8;
-margin_on_element = 1e-8;
+margin_edge = 1e-14;
+margin_on_element = 1e-14;
 
 xi_1 = permute(matPLEX(1,1,dvenum),[3 2 1]);
 xi_2 = permute(matPLEX(2,1,dvenum),[3 2 1]);
@@ -195,7 +195,7 @@ if any(idx_nan)
 end
 % disp(['Inf or NaN induction: ', num2str(length(idx_nan))]);
 % infl_loc(1:2,:,idx_on_edge) = infl_loc(1:2,:,idx_on_edge).*0;
-infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
+% infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
 % infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
 
 end

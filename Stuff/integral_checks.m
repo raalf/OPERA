@@ -5,7 +5,7 @@ tol = 1e-10;
 
 len = 100;
 %%
-F_lim(:,:,1) = zeros(len, 1) + 2;
+F_lim(:,:,1) = zeros(len, 1) + 0.01;
 F_lim(:,:,2) = zeros(len, 1) + 1;
 
 % F_lim(:,:,1) = zeros(len, 1) - 2;
@@ -73,13 +73,13 @@ idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs(u - 
 % idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
 
 K0 = fcnK0(S, T, u, alpha, F_lim, tol, idx);
-% K1 = fcnK1(S, T, u, alpha, F_lim, tol, idx);
-% K2 = fcnK2(S, T, u, alpha, F_lim, tol, idx);
-% K3 = fcnK3(S, T, u, alpha, F_lim, tol, idx);
-% K4 = fcnK4(S, T, u, alpha, F_lim, tol, idx);
-% K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx);
-% K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx);
-% K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
+K1 = fcnK1(S, T, u, alpha, F_lim, tol, idx);
+K2 = fcnK2(S, T, u, alpha, F_lim, tol, idx);
+K3 = fcnK3(S, T, u, alpha, F_lim, tol, idx);
+K4 = fcnK4(S, T, u, alpha, F_lim, tol, idx);
+K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx);
+K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx);
+K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
 
 
 tol = 1e-10;

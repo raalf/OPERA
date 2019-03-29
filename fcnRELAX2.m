@@ -26,7 +26,7 @@ idx = reshape(1:size(fpg,1), size(edges));
 % hold off
 
 %% Moving wake vertices
-% matWCENTER = matWCENTER + q_ind.*valDELTIME;
+
 tmp2 = zeros(size(matWVLST));
 numvert = zeros(size(matWVLST,1),1);
 for i = 1:size(verts,1)

@@ -12,6 +12,7 @@ fpg = repmat(fpg,valNELE,1);
 if any(vecDVESYM)   
     idx = vecDVESYM(dvenum);
     q_sym = fcnINDVEL(dvenum(idx), dvetype(idx), [fpg(idx,1) -fpg(idx,2) fpg(idx,3)], matCOEFF, matPLEX, matROTANG, matCENTER); 
+    q_sym = q_sym.*[1 -1 1];
     q_ind(idx,:) = q_ind(idx,:) + q_sym;
 end
 

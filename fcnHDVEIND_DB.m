@@ -9,8 +9,8 @@ y_m = fpl(:,2);
 z_m = fpl(:,3);
 
 %% Checking state of field point with relation to element surface
-margin_edge = 1e-5;
-margin_on_element = 1e-5;
+margin_edge = 1e-8;
+margin_on_element = 1e-8;
 
 xi_1 = permute(matPLEX(1,1,dvenum),[3 2 1]);
 xi_2 = permute(matPLEX(2,1,dvenum),[3 2 1]);
@@ -63,24 +63,25 @@ L = [C E];
 F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
-tol_F = 1e-5;
-tol_S = 1e-10;
-tol_T = 1e-10;
+tol_F = 1e-10;
+tol_S = 1e-4;
+tol_T = 1e-4;
 tol_u = 1e-10;
 tol_alpha = 1e-10;
+tol_ualpha = 1e-3;
 
 % Correcting zero F limits if we are in the plane of the element
 idx = abs(F_lim(:,:,1)) < tol_F & alpha(:,1) <= 1e-3;
 sgn = sign(F_lim(idx,:,1));
 sgn(sign(F_lim(idx,:,1)) == 0) = sign(F_lim(sign(F_lim(idx,:,1)) == 0,:,2));
 % F_lim(idx,:,1) = sgn.*tol_F;
-alpha(idx) = 1e-1;
+% alpha(idx) = 1e-1;
 
 idx = abs(F_lim(:,:,2)) < tol_F & alpha <= 1e-3;
 sgn = sign(F_lim(idx,:,2));
 sgn(sign(F_lim(idx,:,2)) == 0) = sign(F_lim(sign(F_lim(idx,:,2)) == 0,:,1));
 % F_lim(idx,:,2) = sgn.*tol_F;
-alpha(idx,:) = 1e-1;
+% alpha(idx,:) = 1e-1;
 
 F_lim = repmat(F_lim,1,2,1);
 alpha = repmat(alpha,1,2,1);
@@ -103,10 +104,15 @@ idx(:,:,13) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u &  alpha >
 idx(:,:,14) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u &  alpha <= tol_alpha;
 idx(:,:,15) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) <= tol_u &  alpha >  tol_alpha;
 idx(:,:,16) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) <= tol_u &  alpha <= tol_alpha;
-idx(:,:,17) = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
-idx(:,:,18) = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
-idx(:,:,19) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
-idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
+% idx(:,:,17) = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
+% idx(:,:,18) = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
+% idx(:,:,19) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
+% idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
+idx(:,:,17) = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
+idx(:,:,18) = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
+idx(:,:,19) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
+idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
+
 
 K0 = fcnK0(S, T, u, alpha, F_lim, tol, idx);
 K1 = fcnK1(S, T, u, alpha, F_lim, tol, idx);
@@ -180,7 +186,6 @@ infl_new(3,5,:) = reshape(tmp35,1,1,[]);
 infl_new(3,6,:) = reshape(tmp36,1,1,[]);
 
 %%
-% infl_loc = real(infl_new) + imag(infl_new);
 infl_loc = real(infl_new);
 infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
 
@@ -189,8 +194,8 @@ if any(idx_nan)
    disp('Nan induction in fcnHDVEIND_DB'); 
 end
 % disp(['Inf or NaN induction: ', num2str(length(idx_nan))]);
-infl_loc(1:2,:,idx_on_edge) = infl_loc(1:2,:,idx_on_edge).*0;
-% infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
+% infl_loc(1:2,:,idx_on_edge) = infl_loc(1:2,:,idx_on_edge).*0;
+infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
 % infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
 
 end

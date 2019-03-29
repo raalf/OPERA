@@ -14,10 +14,10 @@ disp('| FLIGHT        | |  $$$$$$/| $$      | $$$$$$$$| $$  | $$| $$  | $$');
 disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
-% strFILE = 'inputs/ellipse.dat';
+strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/box_wing.dat';
 % strFILE = 'inputs/goland_wing.dat';
-strFILE = 'inputs/test.dat';
+% strFILE = 'inputs/test.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM] = fcnOPREAD(strFILE);
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA]...
@@ -25,6 +25,7 @@ strFILE = 'inputs/test.dat';
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR, vecSYM, vecSYMDVE] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS, vecSYM);
 
 flagRELAX = 1
+flagGIF = 1
 
 matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
 matVUINF = repmat(fcnUINFWING(valALPHA, 0), size(matVLST,1), 1);
@@ -105,20 +106,20 @@ for valTIMESTEP = 1:valMAXTIME
         
         % Relaxing Wake
         if flagRELAX == 1 && valTIMESTEP > valPRESTEPS
-%             hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
-%             fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS);
             [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG, matWAKEGEOM] = ...
-                fcnRELAX3(valTIMESTEP, matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
+                fcnRELAX2(valTIMESTEP, matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
                 matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM);
             matWCOEFF = fcnDWAKE('STEADY', valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC);
-            hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
-            fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS);
-            view([-52 14])
-            %             view([0 0])
         end
         
         % Updating coefficient convergence history
         matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
+        
+        if flagGIF == 1 && valTIMESTEP > valPRESTEPS
+        hFig1 = fcnGIF(valTIMESTEP - valPRESTEPS, valNELE, matDVE, matVLST, matCENTER, matELST, matDVECT, matPLEX, matCOEFF, matUINF, matROTANG, ...
+                    valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, valWSIZE, valPRESTEPS, 1);
+        end
+        
     end
     
     % Calculating Forces

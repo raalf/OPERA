@@ -3,7 +3,7 @@ ALL UNITS IN SI
 
 ANALYSIS PARAMETERS
 
-Analysis Type:	 	strATYPE = 3D
+Analysis Type:	 	strATYPE = WING
 Lifting Surface:	strA2TYPE = THIN
 Steady or Unsteady:	strA3TYPE = STEADY
 

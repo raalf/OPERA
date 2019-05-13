@@ -1,5 +1,5 @@
 function [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG, matWAKEGEOM] = ...
-                fcnRELAX2(valTIMESTEP, matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
+                fcnRELAX5(valTIMESTEP, matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
                 matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM)
 
 dvegrid = flipud(repmat([1:valWSIZE, valWSIZE*2], valTIMESTEP, 1) + [0:(valWSIZE*2):(valWSIZE*valTIMESTEP*2 - 1)]');
@@ -12,14 +12,10 @@ q_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVE
 
 idx = reshape(1:size(fpg,1), size(edges));
 
-edges_for = [idx(1,:); idx(1:end-1,:)];
-edges_aft = [idx(2:end,:); idx(end,:)];
-q_ind(idx(:),:) = (q_ind(edges_for(:),:) + 2.*q_ind(idx(:),:) + q_ind(edges_aft(:),:))./4;
-% q_ind(idx(:),:) = (q_ind(edges_for(:),:) + q_ind(idx(:),:) + q_ind(edges_aft(:),:))./3;
-
-% fcnPLOTWAKE(0, gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, 20);
 % hold on
-% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
+% % scatter3(fpg(:,1), fpg(:,2), fpg(:,3), 'o');
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3));
+% % scatter3(matWCENTER(dvegrid(:),1),matWCENTER(dvegrid(:),2),matWCENTER(dvegrid(:),3), '^')
 % hold off
 
 %% Moving wake vertices
@@ -38,7 +34,7 @@ end
 tmp2 = tmp2./numvert;
 
 tmp2(matWELST(vecWLE,:),:) = tmp2(matWELST(vecWLE,:),:).*0; % Trailing edge of wing
-% tmp2(matWELST(vecWTE,:),:) = tmp2(matWELST(vecWTE,:),:).*0; % Trailing edge of LE wake element row
+tmp2(matWELST(vecWTE,:),:) = tmp2(matWELST(vecWTE,:),:).*0; % Trailing edge of LE wake element row
 oldest_edge = matWEIDX((1:valWSIZE) + valWSIZE,3); % Trailing edge of oldest wake row
 tmp2(matWELST(vecWSYM,:),2) = tmp2(matWELST(vecWSYM,:),2).*0; % No y-component on symmetry line
 tmp2(matWELST(oldest_edge,:),:) = tmp2(matWELST(oldest_edge,:),:).*0;

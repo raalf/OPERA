@@ -1,8 +1,5 @@
 function matCOEFF = fcnADJCOEFF(matVLST, matVATT, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEATT, matEIDX, vecTE, valNELE, matERROR)
 
-
-
-
 % Getting averaged mu values at vertices
 vmu = nan(size(matVLST,1),1);
 for i = 1:size(matVLST,1)
@@ -34,39 +31,25 @@ vmu(tmp) = 0;
 % Getting mu  values at DVE control points
 dmu = matCOEFF(:,6);
 
-
-% [hFig1] = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [3 1 4 4], 'opengl');
-% view([33, 28])
-% hold on
-% scatter3(matVLST(:,1), matVLST(:,2), -vmu, 'ok');
-% scatter3(matCENTER(:,1), matCENTER(:,2), -dmu, '^m');
-% pt = (matVLST(matELST(:,1),:) + matVLST(matELST(:,2),:))./2;
-% scatter3(pt(:,1), pt(:,2), -emu, 'xr')
-% hold off
-
-
 for i = 1:valNELE
-   vloc = fcnGLOBSTAR(matVLST(matDVE(i,:),:) - matCENTER(i,:), repmat(matROTANG(i,:), 3, 1));
-   vval = vmu(matDVE(i,:));
-   
-   eloc = (matVLST(matELST(matEIDX(i,:),1),:) + matVLST(matELST(matEIDX(i,:),2),:))./2;
-   eloc = fcnGLOBSTAR(eloc - matCENTER(i,:), repmat(matROTANG(i,:), 3, 1));
-   eval = emu(matEIDX(i,:));
-   
-   dloc = [0 0 0];
-   dval = dmu(i);
-   
-   pts = [vloc; eloc; dloc]; 
-   XDATA = pts(:,1); YDATA = pts(:,2);
-   ZDATA = [vval; eval; dval]; 
-   
-   [xData, yData, zData] = prepareSurfaceData( XDATA, YDATA, ZDATA );
-   ft = fittype( 'poly22' );
-   [fitresult, gof] = fit( [xData, yData], zData, ft);
-   newcoeffs = coeffvalues(fitresult);
-   order = [6 3 4 2 5 1];
-   matCOEFF(i,:) = newcoeffs(order);
-   matCOEFF(i,[1,3]) = matCOEFF(i,[1,3]).*2;
+    vval = vmu(matDVE(i,:));
+    tmp1 = fcnDCIRC2(matVLST(matDVE(i,:),:), 1, 1, matROTANG(i,:), matCENTER(i,:));
+        
+    eloc = (matVLST(matELST(matEIDX(i,:),1),:) + matVLST(matELST(matEIDX(i,:),2),:))./2;
+    eval = emu(matEIDX(i,:));
+    tmp2 = fcnDCIRC2(eloc, 1, 1, matROTANG(i,:), matCENTER(i,:));
+    
+    dloc = matCENTER(i,:);
+    dval = dmu(i);
+    tmp3 = fcnDCIRC2(dloc, 1, 1, matROTANG(i,:), matCENTER(i,:));
+    
+%     tmpD = [tmp1; tmp2; tmp3];
+%     tmpR = [vval; eval; dval];
+    
+    tmpD = [tmp1; tmp2];
+    tmpR = [vval; eval];
+
+    matCOEFF(i,:) = [tmpD\tmpR]';
 end
 
 end

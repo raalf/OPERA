@@ -1,16 +1,16 @@
-function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM] = fcnOPREAD(strFILE)
+function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ] = fcnOPREAD(strFILE)
 
 fp = fopen(strFILE);
 
 %% Analysis Parameters
-% Thin or thick surface?
+% Wing or rotor?
 ch = fscanf(fp,'%c',1);
 while(ch~='=');
     ch = fscanf(fp,'%c',1);
 end
 strATYPE = fscanf(fp,'%s',1);
 
-% Wing or rotor?
+% Thin or thick surface?
 ch = fscanf(fp,'%c',1);
 while(ch~='=');
     ch = fscanf(fp,'%c',1);
@@ -79,19 +79,57 @@ while(ch~='=');
 end
 valDENSITY = fscanf(fp,'%lf');
 
-% Reading reference area
-ch = fscanf(fp,'%c',1);
-while(ch~='=');
+if strcmpi(strATYPE{1}, 'ROTOR')
+    valAREA = nan;
+    valSPAN = nan;
+    
+    % Diameter
     ch = fscanf(fp,'%c',1);
-end
-valAREA = fscanf(fp,'%lf');
+    while(ch~='=');
+        ch = fscanf(fp,'%c',1);
+    end
+    valDIAM = fscanf(fp,'%lf');
+    
+    % RPM
+    ch = fscanf(fp,'%c',1);
+    while(ch~='=');
+        ch = fscanf(fp,'%c',1);
+    end
+    valRPM = fscanf(fp,'%lf'); 
+    
+    % Collective
+    ch = fscanf(fp,'%c',1);
+    while(ch~='=');
+        ch = fscanf(fp,'%c',1);
+    end
+    valCOLL = fscanf(fp,'%lf'); 
+    
+    % Advance ratio
+    ch = fscanf(fp,'%c',1);
+    while(ch~='=');
+        ch = fscanf(fp,'%c',1);
+    end
+    valJ = fscanf(fp,'%lf'); 
+else
+    valDIAM = nan;
+    valRPM = nan;
+    valCOLL = nan;
+    valJ = nan;
+    
+    % Reading reference area
+    ch = fscanf(fp,'%c',1);
+    while(ch~='=');
+        ch = fscanf(fp,'%c',1);
+    end
+    valAREA = fscanf(fp,'%lf');
 
-% Reading reference span
-ch = fscanf(fp,'%c',1);
-while(ch~='=');
+    % Reading reference span
     ch = fscanf(fp,'%c',1);
+    while(ch~='=');
+        ch = fscanf(fp,'%c',1);
+    end
+    valSPAN = fscanf(fp,'%lf');    
 end
-valSPAN = fscanf(fp,'%lf');
 
 %% Reading panel/wing/lifting line information
 % Reading No. of panels

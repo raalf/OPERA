@@ -1,12 +1,18 @@
 function [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG, matWAKEGEOM] = ...
-                fcnRELAX(valTIMESTEP, matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
+                fcnRELAX3(valTIMESTEP, matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
                 matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM)
 
 % Finding induced velocities at all wake vertices
 q_ind = fcnSDVEVEL(matWCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
 
+
+dvegrid = flipud(repmat([1:valWSIZE, valWSIZE*2], valTIMESTEP, 1) + [0:(valWSIZE*2):(valWSIZE*valTIMESTEP*2 - 1)]');
+edges = reshape([matWEIDX(dvegrid(:,1:end), 1)' matWEIDX(dvegrid(:,end), 2)'],size(dvegrid,1), size(dvegrid,2)+1);  
+verts(:,:,1) = [reshape(matWELST(edges,1), size(edges))];
+verts(:,:,2) = [reshape(matWELST(edges,2), size(edges))];
+
 %% Moving wake vertices
-matWCENTER = matWCENTER + q_ind.*valDELTIME;
+% matWCENTER = matWCENTER + q_ind.*valDELTIME;
 
 oldest_edge = matWEIDX((1:valWSIZE) + valWSIZE,3);
 % Not moving trailing edge of wing, trailing edge of newest wake row,
@@ -21,9 +27,11 @@ if any(move_em)
         dves = matWVATT(vtx, ~isnan(matWVATT(vtx,:)));
         weights = sqrt(sum((matWCENTER(dves',:) - matWVLST(vtx,:)).^2, 2)); 
         weights = weights./sum(weights);
-        matWVLST(vtx,:) = matWVLST(vtx,:) + sum(repmat(weights, 1, 3).*q_ind(dves',:),1).*valDELTIME;    
+        WVLST_tmp(i,:) = matWVLST(vtx,:) + sum(repmat(weights, 1, 3).*q_ind(dves',:),1).*valDELTIME;       
     end
 end
+
+matWVLST(move_em,:) = WVLST_tmp;
 
 
 % hFig1 = gcf;

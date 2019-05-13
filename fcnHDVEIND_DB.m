@@ -1,6 +1,7 @@
 function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL)
 warning('on')
 tol = 1e-10;
+ztol = 1e-2;
 
 fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
 
@@ -8,9 +9,14 @@ x_m = fpl(:,1);
 y_m = fpl(:,2);
 z_m = fpl(:,3);
 
+idx_afx = abs(z_m) < ztol;
+z_m_orig = z_m(idx_afx);
+sgn = sign(z_m_orig);
+sgn(sgn == 0) = 1;
+z_m(idx_afx) = sgn.*ztol;
+
 %% Checking state of field point with relation to element surface
-margin_edge = 1e-14;
-margin_on_element = 1e-14;
+margin_edge = 1e-10;
 
 xi_1 = permute(matPLEX(1,1,dvenum),[3 2 1]);
 xi_2 = permute(matPLEX(2,1,dvenum),[3 2 1]);
@@ -43,16 +49,6 @@ D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
 E = (eta_3 - eta_1)./(xi_3 - xi_1);
 D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
 
-le_eta = C.*x_m + D_LE;
-te_eta = E.*x_m + D_TE;
-
-xi_left = min([xi_1, xi_3],[],2);
-xi_right = max([xi_1, xi_3],[],2);
-idx_on_edge =   (abs(y_m - te_eta) < margin_edge & (xi_left - margin_edge <= x_m & x_m <= xi_right + margin_edge) & abs(z_m) <= margin_on_element) | ...
-    (abs(y_m - le_eta) < margin_edge & (xi_left - margin_edge <= x_m & x_m <= xi_right + margin_edge) & abs(z_m) <= margin_on_element) | ...
-    (abs(x_m - xi_left) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element) | ...
-    (abs(x_m - xi_right) < margin_edge & (te_eta - margin_edge <= y_m & y_m <= le_eta + margin_edge) & abs(z_m) <= margin_on_element);
-
 %%
 alpha = z_m.^2;
 N = [-C.*x_m - D_LE + y_m, -E.*x_m - D_TE + y_m];
@@ -63,31 +59,18 @@ L = [C E];
 F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
-tol_F = 1e-10;
-tol_S = 1e-4;
-tol_T = 1e-4;
+%%
+tol_alpha = 1e-20;
+tol_F = 1e-3;
+tol_S = 1e-10;
+tol_T = 1e-10;
 tol_u = 1e-10;
-tol_alpha = 1e-10;
-tol_ualpha = 1e-3;
+tol_ualpha = 1e-2;
 
-% Correcting zero F limits if we are in the plane of the element
-idx = abs(F_lim(:,:,1)) < tol_F & alpha(:,1) <= 1e-3;
-sgn = sign(F_lim(idx,:,1));
-sgn(sign(F_lim(idx,:,1)) == 0) = sign(F_lim(sign(F_lim(idx,:,1)) == 0,:,2));
-% F_lim(idx,:,1) = sgn.*tol_F;
-% alpha(idx) = 1e-1;
-
-idx = abs(F_lim(:,:,2)) < tol_F & alpha <= 1e-3;
-sgn = sign(F_lim(idx,:,2));
-sgn(sign(F_lim(idx,:,2)) == 0) = sign(F_lim(sign(F_lim(idx,:,2)) == 0,:,1));
-% F_lim(idx,:,2) = sgn.*tol_F;
-% alpha(idx,:) = 1e-1;
-
+idx = [];
 F_lim = repmat(F_lim,1,2,1);
 alpha = repmat(alpha,1,2,1);
 
-% Identifying which cases are special
-idx = [];
 idx(:,:,1)  = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u &  alpha >  tol_alpha;
 idx(:,:,2)  = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u &  alpha <= tol_alpha;
 idx(:,:,3)  = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) <= tol_u &  alpha >  tol_alpha;
@@ -104,16 +87,13 @@ idx(:,:,13) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u &  alpha >
 idx(:,:,14) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u &  alpha <= tol_alpha;
 idx(:,:,15) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) <= tol_u &  alpha >  tol_alpha;
 idx(:,:,16) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) <= tol_u &  alpha <= tol_alpha;
-% idx(:,:,17) = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
-% idx(:,:,18) = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
-% idx(:,:,19) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
-% idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs(u - alpha) <=  tol_u;
 idx(:,:,17) = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
 idx(:,:,18) = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
 idx(:,:,19) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
 idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
 
 
+%%
 K0 = fcnK0(S, T, u, alpha, F_lim, tol, idx);
 K1 = fcnK1(S, T, u, alpha, F_lim, tol, idx);
 K2 = fcnK2(S, T, u, alpha, F_lim, tol, idx);
@@ -122,6 +102,8 @@ K4 = fcnK4(S, T, u, alpha, F_lim, tol, idx);
 K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx);
 K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx);
 K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
+
+% alpha(idx_afx) = 0;
 
 F(:,1) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K3+(6.*N.*S-3.*N).*K2+(-3.*L.*alpha+6.*L.*u).*K1 + ( +N.*alpha+2.*u.*N ).*K0]), 2);
 F(:,2) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(2.*L.*S+L).*K4+(6.*N.*S-3.*N-(2.*L.*S+L).*x_m).*K3+(-3.*L.*alpha+6.*L.*u-(6.*N.*S-3.*N).*x_m).*K2+(N.*alpha+2.*u.*N-(-3.*L.*alpha+6.*L.*u).*x_m).*K1 + ( -(N.*alpha+2.*u.*N).*x_m ).*K0]), 2);
@@ -143,6 +125,7 @@ F(:,15) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([K7+(2.*L.*S.*y_m+y_m.*L-3.*x_m).
 F = real(F);
 
 %%
+% z_m(idx_afx) = z_m_orig;
 tmp11 = (-3/2).*F(:,5).*x_m.*z_m + (3/2).*F(:,10).*z_m;
 tmp12 = -3.*F(:,4).*x_m.*z_m + 3.*F(:,6).*z_m;
 tmp13 = (-3/2).*F(:,3).*x_m.*z_m + (3/2).*F(:,7).*z_m;
@@ -197,5 +180,7 @@ end
 % infl_loc(1:2,:,idx_on_edge) = infl_loc(1:2,:,idx_on_edge).*0;
 % infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
 % infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
+
+infl_loc(1:2,:,idx_afx) = infl_loc(1:2,:,idx_afx).*reshape((z_m_orig./ztol),1,1,[]);
 
 end

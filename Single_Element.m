@@ -22,6 +22,7 @@ matPOINTS(:,:,2) = [0  0 0];
 % matPOINTS(:,:,3) = [0.9  0.5 0];
 xp = 0.99
 % xp = 0
+% xp = 0.5
 matPOINTS(:,:,3) = [xp  0.5 0];
 
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
@@ -38,41 +39,53 @@ matCOEFF = -[1 1 1 1 1 1];
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
 % fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, [], matROTANG, 'r', 10);
 
-% granularity = 0.000125;
-% y = [-0.025:granularity:0.025];
-% x = [0.2];
-% z = [-0.025:granularity:0.025].*0;
+granularity = 0.00125;
+y = [0.5];
+x = [0.99];
+z = [-0.25:granularity:0.25];
 
 % % granularity = 0.00125;
-% granularity = 0.01
+% granularity = 0.1
 % x = [-0.1:granularity:0.9];
-% y = [0.1 0.25 0.4];
+% y = [-0.1:granularity:0.6];
+% % y = [0.01:granularity:0.49];
 % z = [-0.05 0 0.05];
 % z = [-0.05 0.05];
-% z = 0;
+% % z = 0;
 
-% granularity = 0.00125;
-% % granularity = 0.01
-% y = [-0.1:granularity:0.9];
-% x = [0.1 0.25 0.4];
-% % z = [-0.05 0 0.05];
+% % granularity = 0.00125;
+% granularity = 0.1
+% % x = [-0.1:granularity:0.9];
+% x = [0.6:granularity:0.9];
+% 
+% granularity = 0.1
+% x = [0.6:granularity:0.9];
+% y = [0.2];
+% % y = [0.01:granularity:0.49];
+% z = [-0.05 0 0.05];
 % % z = [-0.05 0.05];
-% z = 0;
+% % z = 0;
 
-% granularity = 0.0001;
-% x = [0.225:granularity:0.275];
-% y = [0.25];
-% z = [-0.05:granularity:0.05].*0;
+% % granularity = 0.00125;
+% granularity = 0.25
+% x = [-1:granularity:2];
+% % x = 0
+% % y = [-1:granularity:1];
+% y = [-1:granularity:2];
+% z = [-1:granularity:1];
+% % z = [1e-5 -1e-5];
+% % z = 0;
+% z(z == 0) = []
 
-% granularity = 0.05;
-% x = [-5:granularity:7];
-% y = [-5, matCENTER(:,2), 5];
-% z = [-5:granularity:5];
-
-granularity = 0.05;
-y = 0.2;
-x = [-0.1:granularity:0.8];
-z = 0.0002;
+% % granularity = 0.00125;
+% granularity = 0.05
+% x = [0.05:granularity:0.95];
+% % x = 0
+% % y = [-1:granularity:1];
+% y = [0.05:granularity:0.55];
+% % z = [-1:granularity:1];
+% z = [1e-5 -1e-5];
+% z(z == 0) = []
 
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
@@ -83,15 +96,32 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = [0.5 0 0; 0.6 0 0; 0.5 0.001 0; 0.6 0.001 0]
 % fpg = [0.5 0.2 0; 0.5 0.2 0];
 
+% fpg = [0.3 0.5 0.0; 0.3 0.5 0.0]
+% fpg = [0.1 0.1 0.0; 0.1 0.1 0.0]
+% fpg = [0.7 0.2 0.0; 0.7 0.2 0.0]
+% fpg = [0 1.8 0.8; 0 1.8 0.8]
+% fpg = [-0.1 1.3 -0.1; -0.1 1.3 -0.1]
+% fpg = [-2 -1 -0.1; -2 -1 -0.1]
+% fpg = repmat([1 0 0], 2, 1)
+
+
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM);
 
 
 
 %%
 figure(1);
+clf(1);
 hold on
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 1, 'b')
 hold off
+
+figure(2);
+clf(2);
+plot(z, q_ind(:,3),'-ok')
+grid minor
+box on
+axis tight
 
 
 

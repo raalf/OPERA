@@ -20,11 +20,11 @@ circ = [fcnDCIRC(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); .
 
 %% Vorticity along edge between elements
 % Unit vector in local ref frame (a for HDVE1, b for HDVE2) from local vertex to local vertex on the edge that forms the border between the two
-% vort = [fcnDVORTEDGE(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
-%         fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
-%         fcnDVORTEDGE(repmat(vnum_b,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
+vort = [fcnDVORTEDGE(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
+        fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
+        fcnDVORTEDGE(repmat(vnum_b,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
 % vort = [];
-vort = [fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
+% vort = [fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
 
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
@@ -55,24 +55,21 @@ if strcmpi(strATYPE{2},'THIN') == 1
         fcnDVORT2(pts(:,:,3), vecTEDVE, valNELE, matCENTER, matROTANG, 'A')];
 end
             
-if strcmpi(strATYPE{1},'3D') == 1    
-    idx = ~all(matEATT,2);
-    idx(vecTE) = 0;
-    idx(vecLE) = 0;
-    idx(vecSYM) = 0;
-    pts2(:,:,1) = matVLST(matELST(idx,1),:);
-    pts2(:,:,2) = matVLST(matELST(idx,2),:);
-    pts2(:,:,3) = (pts2(:,:,1) + pts2(:,:,2))./2;
-    tipdves = nonzeros(matEATT(idx,:));
-    
-    circ_tip = [circ_tip; 
-                fcnDCIRC2(pts2(:,:,1), tipdves, valNELE, matROTANG, matCENTER); ...
-                fcnDCIRC2(pts2(:,:,2), tipdves, valNELE, matROTANG, matCENTER); ...
-                fcnDCIRC2(pts2(:,:,3), tipdves, valNELE, matROTANG, matCENTER)];
-elseif strcmpi(strATYPE{1},'2D') == 1
-    dvenum = [1:valNELE]';    
-    vort_tip = fcnDVORT1(dvenum, valNELE,'B');
-end
+
+idx = ~all(matEATT,2);
+idx(vecTE) = 0;
+idx(vecLE) = 0;
+idx(vecSYM) = 0;
+pts2(:,:,1) = matVLST(matELST(idx,1),:);
+pts2(:,:,2) = matVLST(matELST(idx,2),:);
+pts2(:,:,3) = (pts2(:,:,1) + pts2(:,:,2))./2;
+tipdves = nonzeros(matEATT(idx,:));
+
+circ_tip = [circ_tip; 
+            fcnDCIRC2(pts2(:,:,1), tipdves, valNELE, matROTANG, matCENTER); ...
+            fcnDCIRC2(pts2(:,:,2), tipdves, valNELE, matROTANG, matCENTER); ...
+            fcnDCIRC2(pts2(:,:,3), tipdves, valNELE, matROTANG, matCENTER)];
+
 
 %% Symmetry
 if any(vecSYM)

@@ -176,10 +176,7 @@ idx_nan = find(reshape(sum(any(isnan(infl_new) | isinf(infl_new))),[],1) > 0);
 if any(idx_nan)
    disp('Nan induction in fcnHDVEIND_DB'); 
 end
-% disp(['Inf or NaN induction: ', num2str(length(idx_nan))]);
-% infl_loc(1:2,:,idx_on_edge) = infl_loc(1:2,:,idx_on_edge).*0;
-% infl_loc(:,:,idx_on_edge) = infl_loc(:,:,idx_on_edge).*0;
-% infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
+infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
 
 infl_loc(1:2,:,idx_afx) = infl_loc(1:2,:,idx_afx).*reshape((z_m_orig./ztol),1,1,[]);
 

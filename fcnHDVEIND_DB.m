@@ -61,9 +61,8 @@ F_lim(:,:,2) = x_m - xi_1;
 
 %%
 tol_alpha = 1e-20;
-tol_F = 1e-3;
-tol_S = 1e-10;
-tol_T = 1e-10;
+tol_S = 1e-3;
+tol_T = 1e-3;
 tol_u = 1e-10;
 tol_ualpha = 1e-2;
 
@@ -103,7 +102,7 @@ K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx);
 K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx);
 K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
 
-% alpha(idx_afx) = 0;
+% alpha(idx_afx) = z_m_orig.^2;
 
 F(:,1) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K3+(6.*N.*S-3.*N).*K2+(-3.*L.*alpha+6.*L.*u).*K1 + ( +N.*alpha+2.*u.*N ).*K0]), 2);
 F(:,2) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(2.*L.*S+L).*K4+(6.*N.*S-3.*N-(2.*L.*S+L).*x_m).*K3+(-3.*L.*alpha+6.*L.*u-(6.*N.*S-3.*N).*x_m).*K2+(N.*alpha+2.*u.*N-(-3.*L.*alpha+6.*L.*u).*x_m).*K1 + ( -(N.*alpha+2.*u.*N).*x_m ).*K0]), 2);
@@ -125,6 +124,7 @@ F(:,15) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([K7+(2.*L.*S.*y_m+y_m.*L-3.*x_m).
 F = real(F);
 
 %%
+
 % z_m(idx_afx) = z_m_orig;
 tmp11 = (-3/2).*F(:,5).*x_m.*z_m + (3/2).*F(:,10).*z_m;
 tmp12 = -3.*F(:,4).*x_m.*z_m + 3.*F(:,6).*z_m;

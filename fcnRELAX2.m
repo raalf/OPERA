@@ -5,14 +5,18 @@ function [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, 
 verts(:,:,1) = matWVGRID(1:end-1,:);
 verts(:,:,2) = matWVGRID(2:end,:);
 
-fpg = (matWVLST(verts(:,:,1),:) + matWVLST(verts(:,:,2),:))./2;
+idx_row = [true(size(verts,1) - (valPRESTEPS - 1), 1); false(valPRESTEPS, 1)];
+
+fpg = (matWVLST(verts(idx_row,:,1),:) + matWVLST(verts(idx_row,:,2),:))./2;
 q_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
 
-idx = reshape(1:size(fpg,1), size(verts(:,:,1)));
-
+idx = reshape(1:size(fpg,1), size(verts(idx_row,:,1)));
 edges_for = [idx(1,:); idx(1:end-1,:)];
 edges_aft = [idx(2:end,:); idx(end,:)];
 q_ind(idx(:),:) = (q_ind(edges_for(:),:) + 2.*q_ind(idx(:),:) + q_ind(edges_aft(:),:))./4;
+
+%%
+idx_whole = [idx; repmat(idx(end,:), valPRESTEPS, 1)];
 
 %% Moving wake vertices
 % Getting velocities at all wake vertices
@@ -20,14 +24,15 @@ tmp2 = zeros(size(matWVLST));
 numvert = zeros(size(matWVLST,1),1);
 for i = 1:size(verts,1)
    tv = verts(i,:,:);
-   tmp2(tv(:,:,1),:) = tmp2(tv(:,:,1),:) + q_ind(idx(i,:),:);
-   tmp2(tv(:,:,2),:) = tmp2(tv(:,:,2),:) + q_ind(idx(i,:),:);
+   tmp2(tv(:,:,1),:) = tmp2(tv(:,:,1),:) + q_ind(idx_whole(i,:),:);
+   tmp2(tv(:,:,2),:) = tmp2(tv(:,:,2),:) + q_ind(idx_whole(i,:),:);
     
    numvert(tv(:,:,1),:) = numvert(tv(:,:,1),:) + 1;
    numvert(tv(:,:,2),:) = numvert(tv(:,:,2),:) + 1;
 end
 tmp2 = tmp2./numvert;
 
+%% Moving
 % Not moving some vertices
 tmp2(matWELST(vecWLE,:),:) = 0; % Trailing edge of wing
 tmp2(matWELST(vecWSYM,:),2) = 0; % No y-component on symmetry line

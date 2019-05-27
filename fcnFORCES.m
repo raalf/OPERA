@@ -83,6 +83,7 @@ sidefree(vecTEDVE,1) = dot(F, matDVESIDE_DIR(vecTEDVE,:), 2);
 % Induced velocities at wake leading edge DVEs (wind is 3 x 3 x num_dve) 
 fpg_og = reshape(locations,1,1,[]).*matWVLST(matWELST(vecWLE,1),:) + (1 - reshape(locations,1,1,[])).*matWVLST(matWELST(vecWLE,2),:);
 fpg_og = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';
+
 wind = fcnSDVEVEL(fpg_og, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
 wind = permute(reshape(wind', 3, [], 3), [3 1 2]);
 

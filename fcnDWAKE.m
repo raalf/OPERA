@@ -61,6 +61,8 @@ res_vort_le = zeros(size(vort_le,1),1);
 %% Integrated circulation
 circ_int = [];
 res_circ_int = [];
+vort_steady = [];
+res_steady = [];
 if strcmpi(type, 'UNSTEADY')
     xi_1 = permute(matWPLEX(1,1,:),[3 2 1]);
     xi_2 = permute(matWPLEX(2,1,:),[3 2 1]);

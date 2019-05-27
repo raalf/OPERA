@@ -1,17 +1,17 @@
 % clc
 clear
 
-strSPANSPACING = 'NORMAL';
-% strSPANSPACING = 'COSINE';
+% strSPANSPACING = 'NORMAL';
+strSPANSPACING = 'HALFCOSINE';
 strCHORDSPACING = 'NORMAL';
-valALPHA = 20;
+valALPHA = 4;
 AR = 7;
 
 valMAXTIME = 60;
 valDELTIME = 0.2;
 
-vecM = 3;
-vecN = 10;
+vecM = 2;
+vecN = 5;
 
 xtcr = 1; % 1 is straight TE, 0 is straight LE
 

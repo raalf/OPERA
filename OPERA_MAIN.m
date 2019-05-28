@@ -14,8 +14,8 @@ disp('| FLIGHT        | |  $$$$$$/| $$      | $$$$$$$$| $$  | $$| $$  | $$');
 disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
-strFILE = 'inputs/ellipse.dat';
-% strFILE = 'inputs/test2.dat';
+% strFILE = 'inputs/ellipse.dat';
+strFILE = 'inputs/test2.dat';
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ] = fcnOPREAD(strFILE);
@@ -24,7 +24,7 @@ strFILE = 'inputs/ellipse.dat';
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR, vecSYM, vecSYMDVE] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS, vecSYM);
 
 flagRELAX = 1
-flagGIF = 1;
+flagGIF = 0;
 valMAXTIME = 60
 
 % matUINF
@@ -88,7 +88,7 @@ flagGUSTMODE = 2;
 valGUSTSTART = 12;
 
 if strcmpi(strATYPE{1}, 'WING')
-    valPRESTEPS = 20;
+    valPRESTEPS = 0
     valDELTIME = valDELTIME*10;
     strWAKE_TYPE = 'STEADY';
 else
@@ -129,7 +129,7 @@ for valTIMESTEP = 1:valMAXTIME
         % Rebuild wing resultant
         vecR = fcnRWING(valDLEN, valTIMESTEP, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, vecWDVESYM);
         matCOEFF = fcnSOLVED(matD, vecR, valNELE);
-        matCOEFF = fcnADJCOEFF(matVLST, matVATT, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEATT, matEIDX, vecTE, valNELE, []);
+        matCOEFF = fcnADJCOEFF(matVLST, matVATT, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEATT, matEIDX, [vecTE; vecSYM], valNELE, []);
         
         % Update wake coefficients
         if strcmpi(strWAKE_TYPE,'STEADY')
@@ -137,17 +137,16 @@ for valTIMESTEP = 1:valMAXTIME
         else
             [matWCOEFF(end - valWSIZE*2 + 1:end, :), vecWDVECIRC(end - valWSIZE*2 + 1:end, :)] = fcnDWAKENEW(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVATT, matWDVE);
         end
+        matWCOEFF = fcnADJCOEFF(matWVLST, matWVATT, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEATT, matWEIDX, [vecWLE; vecWOTE; vecWSYM], valWNELE, []);
         
         % Relaxing Wake
         if flagRELAX == 1 && valTIMESTEP > valPRESTEPS
-            %             tmatWCOEFF = fcnADJCOEFF(matWVLST, matWVATT, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEATT, matWEIDX, [vecWLE; vecWOTE], valWNELE, []);
             [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG, matWAKEGEOM, matWVGRID] = ...
                 fcnRELAX2(valTIMESTEP, matUINF, valDELTIME, valNELE, matCOEFF, matDVE, matDVECT, matVLST, matPLEX, valWNELE, matWCOEFF, matWDVE, matWDVECT, matWVLST, matWPLEX, valWSIZE, ...
                 matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, valPRESTEPS);
 
             matWCOEFF = fcnDWAKE('STEADY', valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVATT, matWDVE);
-%             matWCOEFF = fcnADJCOEFF(matWVLST, matWVATT, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEATT, matWEIDX, [vecWLE; vecWOTE], valWNELE, []);
-
+            matWCOEFF = fcnADJCOEFF(matWVLST, matWVATT, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEATT, matWEIDX, [vecWLE; vecWOTE; vecWSYM], valWNELE, []);
         end
         
 %         hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
@@ -164,7 +163,39 @@ for valTIMESTEP = 1:valMAXTIME
         end
     end
     
-    % Calculating Forces
+    %% Plot wake circ
+    
+    hFig20 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+    fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'r', 100);
+    tmatWVLST = repmat(matWVLST(1,:), size(matWVLST,1), 1);
+    for i = 1:size(matWVGRID,1)
+        tmp1 = matWVLST(matWVGRID(i,:),:);
+        tmp2 = [tmp1(1,:); tmp1(1:end-1,:)];
+        tmatWVLST(matWVGRID(i,:), 2) = cumsum(sqrt(sum((tmp2 - tmp1).^2, 2))) + tmatWVLST(matWVGRID(i,:),2);
+    end
+
+    for i = 1:size(matWVGRID,2)
+        tmp1 = matWVLST(matWVGRID(:,i),:);
+        tmp2 = [tmp1(1,:); tmp1(1:end-1,:)];
+        tmatWVLST(matWVGRID(:,i), 1) = cumsum(sqrt(sum((tmp2 - tmp1).^2, 2))) + tmatWVLST(matWVGRID(:,i),1);
+    end
+    tmatWAKEGEOM = [];
+    tmatWAKEGEOM(:,:,1) = tmatWVLST(matWDVE(:,1,1),:);
+    tmatWAKEGEOM(:,:,2) = tmatWVLST(matWDVE(:,2,1),:);
+    tmatWAKEGEOM(:,:,3) = tmatWVLST(matWDVE(:,3,1),:);
+    tmatWETA = nan(valWNELE, 1);
+    tmatWETA(reshape([1:valWSIZE.*2:valWNELE]' + [1:valWSIZE]-1, [], 1),1) = 1;
+    tmatWETA(reshape([1:valWSIZE.*2:valWNELE]' + [1:valWSIZE] + valWSIZE - 1, [], 1),1) = 2;
+    [~, ~, ~, ~, ~, ~, ~, ~, tmatWPLEX, tmatWDVECT, ~, ~, tmatWCENTER, tmatWROTANG, ~] = fcnTRIANG(tmatWAKEGEOM, 'WAKE', tmatWETA);
+%     tmatWCOEFF = fcnDWAKE('STEADY', valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, tmatWROTANG, tmatWCENTER, tmatWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVATT, matWDVE);
+%     tmatWCOEFF = fcnADJCOEFF(tmatWVLST, matWVATT, tmatWCENTER, tmatWROTANG, matWDVE, matWCOEFF, matWELST, matWEATT, matWEIDX, [vecWLE; vecWOTE; vecWSYM], valWNELE, []);
+    fcnPLOTWAKE(0, hFig20, matWDVE, valWNELE, tmatWVLST, matWELST, tmatWDVECT, tmatWCENTER, valWSIZE, 0);
+    fcnPLOTCIRC(hFig20, matWDVE, valWNELE, tmatWVLST, matWELST, tmatWDVECT, tmatWCENTER, tmatWPLEX, matWCOEFF, matUINF, tmatWROTANG, 'r', 200);
+    grid minor
+    box on
+    view([-29 7]);
+    
+    %% Calculating Forces
     [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matSIDE_DIR] = fcnFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, ...
         matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM);
 end

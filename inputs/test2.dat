@@ -5,20 +5,20 @@ ANALYSIS PARAMETERS
 
 Analysis Type:	 	strATYPE = WING
 Lifting Surface:	strA2TYPE = THIN
-Steady or Unsteady:	strA3TYPE = STEADY
+Steady or Unsteady:	strA3TYPE = UNSTEADY
 
 Chordwise Spacing:	strSPACING = NORMAL
 
 Maximum Timesteps: 		valMAXTIME = 60
-Timestep Size: 			valDELTIME = 0.05
+Timestep Size: 			valDELTIME = 0.025
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
-Angles of Attack: 		seqALPHA = 10
+Angles of Attack: 		seqALPHA = 20
 Angles of Sideslip: 	seqBETA = 0
 
 Density:			valDENSITY = 1
-Reference Area:		valAREA = 4
-Reference Span:		valSPAN = 4
+Reference Area:		valAREA = 0.5
+Reference Span:		valSPAN = 1
 
 GEOMETRY
 
@@ -33,7 +33,7 @@ Number of chordwise elements: 	vecM 		= 3.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
-Spanwise Element Spacing:		strPSPACE	= NORMAL
+Spanwise Element Spacing:		strPSPACE	= COSINE
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.000000	0.000000	0.000000	0.200000	0.000000	NACA 0015
 0.000000	1.000000	0.000000	0.200000	0.000000	NACA 0015

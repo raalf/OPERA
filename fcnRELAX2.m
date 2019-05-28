@@ -5,7 +5,11 @@ function [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, 
 verts(:,:,1) = matWVGRID(1:end-1,:);
 verts(:,:,2) = matWVGRID(2:end,:);
 
-idx_row = [true(size(verts,1) - (valPRESTEPS - 1), 1); false(valPRESTEPS, 1)];
+if valPRESTEPS > 0
+    idx_row = [true(size(verts,1) - (valPRESTEPS - 1), 1); false(valPRESTEPS, 1)];
+else
+    idx_row = [true(size(verts,1), 1); false(valPRESTEPS, 1)]; 
+end
 
 fpg = (matWVLST(verts(idx_row,:,1),:) + matWVLST(verts(idx_row,:,2),:))./2;
 q_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);

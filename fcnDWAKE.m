@@ -102,7 +102,7 @@ if strcmpi(type, 'UNSTEADY')
     circ_int = fcnCREATEDSECT(sparse(size(gamma,1), valWNELE*6), size(gamma,1), 6, [1:valWNELE]', [], gamma, []);
     res_circ_int = vecWDVECIRC;
     res_circ_int(idx_flp,:) = res_circ_int(idx_flp,:).*-1; 
-else
+elseif strcmpi(type, 'STEADY')
     vort_steady = fcnDVORT1([1:valWNELE]', valWNELE, 'A');
     res_steady = zeros(size(vort_steady,1),1); 
 end

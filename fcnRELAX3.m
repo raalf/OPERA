@@ -4,7 +4,6 @@ function [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, m
  
 dvegrid = flipud(repmat([1:valWSIZE, valWSIZE*2], valTIMESTEP, 1) + [0:(valWSIZE*2):(valWSIZE*valTIMESTEP*2 - 1)]');
  
-
 q_ind = nan(valWNELE, 3);
 % Finding induced velocities at all wake vertices
 q_ind(dvegrid,:) = fcnSDVEVEL(matWCENTER(dvegrid,:), valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(matWCENTER(dvegrid,:), valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);

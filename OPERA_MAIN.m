@@ -15,7 +15,8 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
-strFILE = 'inputs/test2.dat';
+% strFILE = 'inputs/test2.dat';
+strFILE = 'inputs/goland_wing.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE] = fcnOPREAD(strFILE);
@@ -23,7 +24,7 @@ strFILE = 'inputs/test2.dat';
     = fcnTRIANG(matPOINTS, 'SURFACE', []);
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR, vecSYM, vecSYMDVE] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS, vecSYM);
 
-flagRELAX = 0
+flagRELAX = 1
 flagGIF = 1;
 valMAXTIME = 60
 
@@ -85,13 +86,15 @@ matCOEFF = fcnSOLVED(matD, vecR, valNELE);
 matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
 matCOEFF_HSTRY(:,:,1) = matCOEFF;
 
-valGUSTAMP = 0.0025;
-valGUSTL = 7.3152;
+% valGUSTAMP = 0.0025;
+% valGUSTL = 7.3152;
+valGUSTAMP = 0.2;
+valGUSTL = 7;
 flagGUSTMODE = 2;
-valGUSTSTART = 12;
+valGUSTSTART = 210;
 
 if strcmpi(strATYPE{1}, 'WING')
-    valPRESTEPS = 0
+    valPRESTEPS = 20
     valDELTIME = valDELTIME*10;
     strWAKE_TYPE = 'STEADY';
 else
@@ -99,22 +102,15 @@ else
     strWAKE_TYPE = strATYPE{3};
 end
 
+%% Timestep to solution    
 for valTIMESTEP = 1:valMAXTIME
-    %% Timestep to solution
-    %   Move wing
-    %   Generate new wake elements
-    %   Create and solve WD-Matrix for new elements
-    %   Solve wing D-Matrix with wake-induced velocities
-    %   Solve entire WD-Matrix (?)
-    %   Relaxation procedure (Relax, create W-Matrix and W-Resultant, solve W-Matrix)
-    %   Calculate surface normal forces
-    %   Calculate DVE normal forces
-    %   Calculate induced drag
-    
+
     if strcmpi(strATYPE{1}, 'WING') && valTIMESTEP == valPRESTEPS + 1
         valDELTIME = valDELTIME/10;
         strWAKE_TYPE = strATYPE{3};
     end
+    
+    [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, flagGUSTMODE, valDELTIME, 1, valGUSTSTART, matCENTER, gust_vel_old);
     
     if strcmpi(strATYPE{1}, 'ROTOR')
         [matVLST, matCENTER, matNEWWAKE, matCONTROL, matKINCON_P, matUINF, matVUINF] = fcnMOVEROTOR(matUINF, matVUINF, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matCENTER, matELST, vecTE, matCONTROL, matKINCON_P);
@@ -123,9 +119,10 @@ for valTIMESTEP = 1:valMAXTIME
         [matVLST, matCENTER, matNEWWAKE, matCONTROL, matKINCON_P] = fcnMOVEWING(matUINF, valDELTIME, matVLST, matCENTER, matELST, vecTE, matCONTROL, matKINCON_P);
     end
     
+    
+    
     % Generating new wake elements
     if any(vecTE)
-%         hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
         [matWAKEGEOM, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
             matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG, ...
             vecWLE, vecWTE, vecWLEDVE, vecWTEDVE, vecWDVECIRC, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVGRID, ...
@@ -144,8 +141,6 @@ for valTIMESTEP = 1:valMAXTIME
         
         % Relaxing Wake
         if flagRELAX == 1 && valTIMESTEP > valPRESTEPS
-            %             hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
-            %             fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS);
             [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWVATT, matWCENTER, matWROTANG, matWAKEGEOM, matWVGRID] = ...
                 fcnRELAX5(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
                 matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, valPRESTEPS);
@@ -162,10 +157,6 @@ for valTIMESTEP = 1:valMAXTIME
                 valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, valWSIZE, valPRESTEPS, matWVGRID, valGIFNUM);
         end
     end
-
-    %% Plot wake circ
-%     fcnPLOTWAKE(1, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS);
-%     fcnPLOTCIRC(gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, matUINF, matWROTANG, 'b', 50)
     
     %% Calculating Forces
     [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matSIDE_DIR] = fcnFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, ...

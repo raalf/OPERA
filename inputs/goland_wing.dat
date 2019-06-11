@@ -5,15 +5,15 @@ ANALYSIS PARAMETERS
 
 Analysis Type:	 	strATYPE = WING
 Lifting Surface:	strA2TYPE = THIN
-Steady or Unsteady:	strA3TYPE = STEADY
+Steady or Unsteady:	strA3TYPE = UNSTEADY
 
-Chordwise Spacing:	strSPACING = HALFCOSINE
+Chordwise Spacing:	strSPACING = NORMAL
 
 Maximum Timesteps: 		valMAXTIME = 100
-Timestep Size: 			valDELTIME = 1
+Timestep Size: 			valDELTIME = 0.5
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
-Angles of Attack: 		seqALPHA = 20
+Angles of Attack: 		seqALPHA = 4
 Angles of Sideslip: 	seqBETA = 0
 
 Density:			valDENSITY = 1
@@ -28,8 +28,8 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 12. 
-Number of chordwise elements: 	vecM 		= 4.
+Number of spanwise elements:	vecN 		= 7. 
+Number of chordwise elements: 	vecM 		= 3.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES

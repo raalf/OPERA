@@ -46,11 +46,9 @@ if valTIMESTEP == 1
 else
     % find matWVGRID vertices from old_WVLST in new matWVLST
     [~,vmap] = ismember(old_WVLST, matWVLST, 'rows');
-    [~,emap] = ismember(vmap(old_WELST), matWELST, 'rows');
-    [~,idx] = ismember(old_WVLST(matWVGRID,:), matWVLST, 'rows');
-    matWVGRID = [unique(matWELST(vecWLE,:)', 'stable')'; reshape(idx, size(matWVGRID))];
-    [~,idx2] = ismember(vmap(old_WELST(matWEGRID,:)), matWELST, 'rows');
-    matWEGRID = [vecWLE'; matWEIDX(vecWLEDVE,3)'; reshape(idx2, size(matWEGRID))];
+    [~,emap] = ismember(sort(vmap(old_WELST),2), sort(matWELST,2), 'rows');
+    matWVGRID = [unique(matWELST(vecWLE,:)', 'stable')'; vmap(matWVGRID)];
+    matWEGRID = [vecWLE'; matWEIDX(vecWLEDVE,3)'; emap(matWEGRID)];
     
     old_WVMU = vecWVMU;
     old_WEMU = vecWEMU;
@@ -65,7 +63,7 @@ end
 
 tmp = permute(cat(3,matWVGRID(1:end-1,:), matWVGRID(2:end,:)), [1 3 2]);
 tmp = reshape(permute(tmp, [2 1 3]), size(tmp, 2), [])';
-[~,idx] = ismember(tmp, matWELST,'rows');
+[~,idx] = ismember(sort(tmp,2), sort(matWELST,2),'rows');
 matWE2GRID = reshape(idx, valTIMESTEP, size(matWVGRID,2));
 
 %% Coefficients

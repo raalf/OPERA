@@ -14,9 +14,9 @@ disp('| FLIGHT        | |  $$$$$$/| $$      | $$$$$$$$| $$  | $$| $$  | $$');
 disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
-% strFILE = 'inputs/ellipse.dat';
+strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/test2.dat';
-strFILE = 'inputs/goland_wing.dat'
+% strFILE = 'inputs/goland_wing.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE] = fcnOPREAD(strFILE);
@@ -94,7 +94,7 @@ flagGUSTMODE = 2;
 valGUSTSTART = 210;
 
 if strcmpi(strATYPE{1}, 'WING')
-    valPRESTEPS = 20
+    valPRESTEPS = 0
     valDELTIME = valDELTIME*10;
     strWAKE_TYPE = 'STEADY';
 else
@@ -102,15 +102,14 @@ else
     strWAKE_TYPE = strATYPE{3};
 end
 
-%% Timestep to solution    
+%% Timestep to solution
 for valTIMESTEP = 1:valMAXTIME
-
     if strcmpi(strATYPE{1}, 'WING') && valTIMESTEP == valPRESTEPS + 1
         valDELTIME = valDELTIME/10;
         strWAKE_TYPE = strATYPE{3};
     end
     
-    [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, flagGUSTMODE, valDELTIME, 1, valGUSTSTART, matCENTER, gust_vel_old);
+    %     [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, flagGUSTMODE, valDELTIME, 1, valGUSTSTART, matCENTER, gust_vel_old);
     
     if strcmpi(strATYPE{1}, 'ROTOR')
         [matVLST, matCENTER, matNEWWAKE, matCONTROL, matKINCON_P, matUINF, matVUINF] = fcnMOVEROTOR(matUINF, matVUINF, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matCENTER, matELST, vecTE, matCONTROL, matKINCON_P);
@@ -118,8 +117,6 @@ for valTIMESTEP = 1:valMAXTIME
         % Moving the wing
         [matVLST, matCENTER, matNEWWAKE, matCONTROL, matKINCON_P] = fcnMOVEWING(matUINF, valDELTIME, matVLST, matCENTER, matELST, vecTE, matCONTROL, matKINCON_P);
     end
-    
-    
     
     % Generating new wake elements
     if any(vecTE)
@@ -157,6 +154,10 @@ for valTIMESTEP = 1:valMAXTIME
                 valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, valWSIZE, valPRESTEPS, matWVGRID, valGIFNUM);
         end
     end
+    
+%     fcnPLOTWAKE(0, gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID);
+%     fcnPLOTCIRC(gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, matUINF, matWROTANG, 'b', 30)
+%     fcnPLOTCIRC(gcf, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'b', 30)
     
     %% Calculating Forces
     [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matSIDE_DIR] = fcnFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, ...

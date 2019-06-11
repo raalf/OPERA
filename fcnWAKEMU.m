@@ -26,10 +26,8 @@ end
 res1 = reshape(res1,[],3);
 
 %% Assigning circulation values to leading edge of wake row (vertices and edge midpoints)
-[~,idx1] = ismember(matWELST(vecWLE,1), matWVGRID(1,:));
-[~,idx2] = ismember(matWELST(vecWLE,2), matWVGRID(1,:));
-vecWVMU(idx1) = res1(:,1);
-vecWVMU(idx2) = (vecWVMU(idx2) + res1(:,2))./2;
+vecWVMU(matWELST(vecWLE,1)) = res1(:,1);
+vecWVMU(matWELST(vecWLE,2)) = res1(:,2);
 vecWEMU(vecWLE) = res1(:,3);
 
 if (size(matWVGRID,1)) <= 2 || strcmpi(strATYPE{3},'STEADY')

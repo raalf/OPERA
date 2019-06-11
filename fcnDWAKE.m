@@ -1,4 +1,4 @@
-function [matWCOEFF] = fcnDWAKE(type, valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVATT, matWDVE)
+function [matWCOEFF] = fcnDWAKE(type, valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVATT, matWDVE, vecWOTE, vecWOTEDVE)
 
  %% Circulation equations between elements
 % Evaluated at the mid-point of each edge which splits two HDVEs
@@ -51,10 +51,10 @@ else
     res_circ_le = res1_1;
 end
 
-% vort_le = [fcnDVORT2(pts(:,:,1), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
-%     fcnDVORT2(pts(:,:,2), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
-%     fcnDVORT2(pts(:,:,3), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A')];
-vort_le = fcnDVORT2(pts(:,:,2), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A');
+vort_le = [fcnDVORT2(pts(:,:,1), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
+    fcnDVORT2(pts(:,:,2), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
+    fcnDVORT2(pts(:,:,3), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A')];
+% vort_le = fcnDVORT2(pts(:,:,3), vecWLEDVE, valWNELE, matWCENTER, matWROTANG, 'A');
 res_vort_le = zeros(size(vort_le,1),1);
   
 
@@ -63,53 +63,27 @@ circ_int = [];
 res_circ_int = [];
 vort_steady = [];
 res_steady = [];
-if strcmpi(type, 'UNSTEADY')
-    xi_1 = permute(matWPLEX(1,1,:),[3 2 1]);
-    xi_2 = permute(matWPLEX(2,1,:),[3 2 1]);
-    xi_3 = permute(matWPLEX(3,1,:),[3 2 1]);
+vort_te = [];
+res_vort_te = [];
 
-    eta_1 = permute(matWPLEX(1,2,:),[3 2 1]);
-    eta_2 = permute(matWPLEX(2,2,:),[3 2 1]);
-    eta_3 = permute(matWPLEX(3,2,:),[3 2 1]);
-
-    idx_flp = abs(xi_2 - xi_3) < 1e-5;
-    xi_tmp(idx_flp) = xi_3(idx_flp);
-    xi_3(idx_flp) = xi_1(idx_flp);
-    xi_1(idx_flp) = xi_tmp(idx_flp);
-    eta_tmp(idx_flp) = eta_3(idx_flp);
-    eta_3(idx_flp) = eta_1(idx_flp);
-    eta_1(idx_flp) = eta_tmp(idx_flp);
-
-    idx_rrg = eta_2 < eta_1;
-    eta_tmp(idx_rrg) = eta_2(idx_rrg);
-    eta_2(idx_rrg) = eta_1(idx_rrg);
-    eta_1(idx_rrg) = eta_tmp(idx_rrg);
-
-    % Checking which elements are on the element
-    C = (eta_3 - eta_2)./(xi_3 - xi_2);
-    D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
-    E = (eta_3 - eta_1)./(xi_3 - xi_1);
-    D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
-
-    a1 = -((xi_1-xi_3).*((C.^3-E.^3).*xi_1.^3+((C.^3-E.^3).*xi_3+4.*C.^2.*D_LE-4.*E.^2.*D_TE).*xi_1.^2+((C.^3-E.^3).*xi_3.^2+(4.*C.^2.*D_LE-4.*E.^2.*D_TE).*xi_3+6.*C.*D_LE.^2-6.*E.*D_TE.^2).*xi_1+(C.^3-E.^3).*xi_3.^3+(4.*C.^2.*D_LE-4.*E.^2.*D_TE).*xi_3.^2+(6.*C.*D_LE.^2-6.*E.*D_TE.^2).*xi_3+4.*D_LE.^3-4.*D_TE.^3))./0.24e2;
-    a2 = -((xi_1-xi_3).*((C.^2-E.^2).*xi_1.^2+((C.^2-E.^2).*xi_3+3.*C.*D_LE-3.*E.*D_TE).*xi_1+(C.^2-E.^2).*xi_3.^2+(3.*C.*D_LE-3.*E.*D_TE).*xi_3+3.*D_LE.^2-3.*D_TE.^2))./0.6e1;
-    b1 = -(xi_1-xi_3).*((C-E).*xi_1.^3+((C-E).*xi_3+0.4e1./0.3e1.*D_LE-0.4e1./0.3e1.*D_TE).*xi_1.^2+((C-E).*xi_3+0.4e1./0.3e1.*D_LE-0.4e1./0.3e1.*D_TE).*xi_3.*xi_1+((C-E).*xi_3+0.4e1./0.3e1.*D_LE-0.4e1./0.3e1.*D_TE).*xi_3.^2)./0.8e1;
-    b2 = -(xi_1-xi_3).*((C-E).*xi_1.^2+((C-E).*xi_3+0.3e1./0.2e1.*D_LE-0.3e1./0.2e1.*D_TE).*xi_1+((C-E).*xi_3+0.3e1./0.2e1.*D_LE-0.3e1./0.2e1.*D_TE).*xi_3)./0.3e1;
-    c2 = -(xi_1-xi_3).*((C.^2-E.^2).*xi_1.^3+((C.^2-E.^2).*xi_3+0.8e1./0.3e1.*C.*D_LE-0.8e1./0.3e1.*E.*D_TE).*xi_1.^2+((C.^2-E.^2).*xi_3.^2+(0.8e1./0.3e1.*C.*D_LE-0.8e1./0.3e1.*E.*D_TE).*xi_3+0.2e1.*D_LE.^2-0.2e1.*D_TE.^2).*xi_1+xi_3.*((C.^2-E.^2).*xi_3.^2+(0.8e1./0.3e1.*C.*D_LE-0.8e1./0.3e1.*E.*D_TE).*xi_3+0.2e1.*D_LE.^2-0.2e1.*D_TE.^2))./0.8e1;
-    c3 = -((xi_1-xi_3).*((C-E).*xi_1+(C-E).*xi_3+2.*D_LE-2.*D_TE))./0.2e1;
-    gamma = [a1 a2 b1 b2 c2 c3];
-
-    circ_int = fcnCREATEDSECT(sparse(size(gamma,1), valWNELE*6), size(gamma,1), 6, [1:valWNELE]', [], gamma, []);
-    res_circ_int = vecWDVECIRC;
-    res_circ_int(idx_flp,:) = res_circ_int(idx_flp,:).*-1; 
+if strcmpi(type, 'UNSTEADY')   
+    pts = [];
+    pts(:,:,1) = matWVLST(matWELST(vecWOTE,1),:);
+    pts(:,:,2) = matWVLST(matWELST(vecWOTE,2),:);
+    pts(:,:,3) = (pts(:,:,1) + pts(:,:,2))./2;
+    vort_te = [fcnDVORT2(pts(:,:,1), vecWOTEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
+    fcnDVORT2(pts(:,:,2), vecWOTEDVE, valWNELE, matWCENTER, matWROTANG, 'A');...
+    fcnDVORT2(pts(:,:,3), vecWOTEDVE, valWNELE, matWCENTER, matWROTANG, 'A')];
+    % vort_te = fcnDVORT2(pts(:,:,3), vecWOTEDVE, valWNELE, matWCENTER, matWROTANG, 'A');
+    res_vort_te = zeros(size(vort_te,1),1);
 elseif strcmpi(type, 'STEADY')
     vort_steady = fcnDVORT1([1:valWNELE]', valWNELE, 'A');
     res_steady = zeros(size(vort_steady,1),1); 
 end
 
 %%
-DW = [circ; vort; circ_le; vort_le; circ_int; vort_steady];
-RW = [res_circ; res_vort; res_circ_le; res_vort_le; res_circ_int; res_steady];
+DW = [circ; vort; circ_le; vort_le; circ_int; vort_steady; vort_te];
+RW = [res_circ; res_vort; res_circ_le; res_vort_le; res_circ_int; res_steady; res_vort_te];
 
 matWCOEFF = DW\RW;
 matWCOEFF = reshape(matWCOEFF,6,valWNELE,1)';

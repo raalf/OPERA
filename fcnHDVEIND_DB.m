@@ -102,8 +102,6 @@ K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx);
 K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx);
 K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
 
-% alpha(idx_afx) = z_m_orig.^2;
-
 F(:,1) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K3+(6.*N.*S-3.*N).*K2+(-3.*L.*alpha+6.*L.*u).*K1 + ( +N.*alpha+2.*u.*N ).*K0]), 2);
 F(:,2) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(2.*L.*S+L).*K4+(6.*N.*S-3.*N-(2.*L.*S+L).*x_m).*K3+(-3.*L.*alpha+6.*L.*u-(6.*N.*S-3.*N).*x_m).*K2+(N.*alpha+2.*u.*N-(-3.*L.*alpha+6.*L.*u).*x_m).*K1 + ( -(N.*alpha+2.*u.*N).*x_m ).*K0]), 2);
 F(:,3) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K5+(6.*N.*S-3.*N-2.*(2.*L.*S+L).*x_m).*K4+(-3.*L.*alpha+6.*L.*u-2.*(6.*N.*S-3.*N).*x_m+(2.*L.*S+L).*x_m.^2).*K3+(N.*alpha+2.*u.*N-2.*(-3.*L.*alpha+6.*L.*u).*x_m+(6.*N.*S-3.*N).*x_m.^2).*K2+(-2.*(N.*alpha+2.*u.*N).*x_m+(-3.*L.*alpha+6.*L.*u).*x_m.^2).*K1 + ( +(N.*alpha+2.*u.*N).*x_m.^2 ).*K0]), 2);
@@ -125,7 +123,6 @@ F = real(F);
 
 %%
 
-% z_m(idx_afx) = z_m_orig;
 tmp11 = (-3/2).*F(:,5).*x_m.*z_m + (3/2).*F(:,10).*z_m;
 tmp12 = -3.*F(:,4).*x_m.*z_m + 3.*F(:,6).*z_m;
 tmp13 = (-3/2).*F(:,3).*x_m.*z_m + (3/2).*F(:,7).*z_m;

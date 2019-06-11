@@ -1,6 +1,8 @@
 function [matWAKEGEOM, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
-    matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG, vecWLE, vecWTE, vecWLEDVE, vecWTEDVE, vecWDVECIRC, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVGRID, vecWOTE] = fcnCREATEWAKE(valTIMESTEP, strATYPE, vecULS, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, ...
-    vecTE, vecTEDVE, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC, vecWSYMDVE, vecSYMDVE, vecWDVESYM, vecDVESYM, vecWSYM)
+    matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWCOEFF, matWROTANG, vecWLE, vecWTE, ...
+    vecWLEDVE, vecWTEDVE, vecWDVECIRC, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVGRID, vecWOTE, ...
+    vecWOTEDVE, matWEGRID, matWE2GRID, vecWVMU, vecWEMU] = fcnCREATEWAKE(valTIMESTEP, strATYPE, vecULS, matNEWWAKE, matWAKEGEOM, matCOEFF, valWSIZE, ...
+    vecTE, vecTEDVE, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC, vecWSYMDVE, vecSYMDVE, vecWDVESYM, vecDVESYM, vecWSYM, matWVGRID, matWVLST, matWELST, matWEGRID, vecWVMU, vecWEMU)
 
 if valTIMESTEP <= 1
     matWAKEGEOM = matNEWWAKE;
@@ -14,13 +16,16 @@ matWETA = nan(valWNELE, 1);
 matWETA(reshape([1:valWSIZE.*2:valWNELE]' + [1:valWSIZE]-1, [], 1),1) = 1;
 matWETA(reshape([1:valWSIZE.*2:valWNELE]' + [1:valWSIZE] + valWSIZE - 1, [], 1),1) = 2;
 
+old_WVLST = matWVLST;
+old_WELST = matWELST;
 [~, matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC, matWPLEX, matWDVECT, matWVATT, matWVNORM, matWCENTER, matWROTANG] = fcnTRIANG(matWAKEGEOM, 'WAKE', matWETA);
+
 vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailing edge row of wake HDVEs
 vecWLE = matWEIDX(vecWLEDVE,2);
 vecWTEDVE = [(valWNELE - valWSIZE + 1):valWNELE]';
 vecWTE = matWEIDX(vecWTEDVE,3);
 
-vecWOTEDVE = (1:valWSIZE) + valWSIZE;
+vecWOTEDVE = [(1:valWSIZE) + valWSIZE]';
 vecWOTE = matWEIDX(vecWOTEDVE, 3);
 
 if any(vecDVESYM)
@@ -30,18 +35,42 @@ idx = ismember(vecTEDVE, vecSYMDVE);
 vecWSYMDVE = [vecWSYMDVE; vecWLEDVE(idx)];
 vecWSYM = [vecWSYM; matWEIDX(vecWSYMDVE, 1)];
 
-if valTIMESTEP <= 1
-    [matWCOEFF, vecWDVECIRC] = fcnDWAKENEW(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, [], matWPLEX, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVATT, matWDVE);
-%     matWCOEFF = fcnADJCOEFF(matWVLST, matWVATT, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEATT, matWEIDX, [], valWNELE, []);
+%% Wake circulation grid points
+% fcnPLOTWAKE(1, gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, 0);
+% view([90 90])
+if valTIMESTEP == 1
+    matWVGRID = [unique(matWELST(vecWLE,:)', 'stable')'; unique(matWELST(vecWTE,:)', 'stable')'];
+    matWEGRID = [vecWLE matWEIDX(vecWLEDVE,3) vecWTE]';
+    vecWVMU = zeros(size(matWVLST,1),1);
+    vecWEMU = zeros(size(matWELST,1),1);
 else
-    [tmp1, tmp2] = fcnDWAKENEW(valTIMESTEP, strATYPE, vecULS, valWNELE, vecWLE, vecWLEDVE, vecWTE, vecWTEDVE, matWEATT, matWELST, matWROTANG, matWCENTER, matWVLST, vecTE, vecTEDVE, matCOEFF, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVATT, matWDVE);
-    matWCOEFF = [matWCOEFF; tmp1];
-    vecWDVECIRC = [vecWDVECIRC; tmp2];
-%     matWCOEFF = fcnADJCOEFF(matWVLST, matWVATT, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEATT, matWEIDX, [], valWNELE, []);
+    % find matWVGRID vertices from old_WVLST in new matWVLST
+    [~,vmap] = ismember(old_WVLST, matWVLST, 'rows');
+    [~,emap] = ismember(vmap(old_WELST), matWELST, 'rows');
+    [~,idx] = ismember(old_WVLST(matWVGRID,:), matWVLST, 'rows');
+    matWVGRID = [unique(matWELST(vecWLE,:)', 'stable')'; reshape(idx, size(matWVGRID))];
+    [~,idx2] = ismember(vmap(old_WELST(matWEGRID,:)), matWELST, 'rows');
+    matWEGRID = [vecWLE'; matWEIDX(vecWLEDVE,3)'; reshape(idx2, size(matWEGRID))];
+    
+    old_WVMU = vecWVMU;
+    old_WEMU = vecWEMU;
+    vecWVMU = zeros(size(matWVLST,1),1);
+    vecWEMU = zeros(size(matWELST,1),1);
+    
+    if strcmpi(strATYPE{3},'UNSTEADY')
+        vecWVMU(vmap) = old_WVMU;
+        vecWEMU(emap) = old_WEMU;
+    end
 end
 
-dvegrid = flipud(repmat([1:valWSIZE, valWSIZE*2], valTIMESTEP, 1) + [0:(valWSIZE*2):(valWSIZE*valTIMESTEP*2 - 1)]');
-matWVGRID = [reshape(matWDVE(dvegrid,2), size(dvegrid)); reshape(matWDVE(dvegrid(end,1:end-1),1), size(dvegrid(end,1:end-1))) matWDVE(dvegrid(end,end), 3)];
+tmp = permute(cat(3,matWVGRID(1:end-1,:), matWVGRID(2:end,:)), [1 3 2]);
+tmp = reshape(permute(tmp, [2 1 3]), size(tmp, 2), [])';
+[~,idx] = ismember(tmp, matWELST,'rows');
+matWE2GRID = reshape(idx, valTIMESTEP, size(matWVGRID,2));
+
+%% Coefficients
+[vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG);
+matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
 
 
 end

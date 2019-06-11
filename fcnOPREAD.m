@@ -1,4 +1,4 @@
-function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ] = fcnOPREAD(strFILE)
+function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE] = fcnOPREAD(strFILE)
 
 fp = fopen(strFILE);
 
@@ -141,12 +141,14 @@ valPANELS = fscanf(fp,'%lf');
 
 %% Reading panel information and geometry
 
+vecWING = zeros(valPANELS,1);
 vecN = zeros(valPANELS,1);
 vecM = zeros(valPANELS,1);
 strAIRFOIL = [];
 vecSYM = zeros(valPANELS,1);
 
 for i = 1:valPANELS
+    
     % Reading spanwise 'n'
     ch = fscanf(fp,'%c',1);
     while(ch~='=');
@@ -240,7 +242,7 @@ for i = 1:valPANELS
 end
 
 fclose(fp);
-[matPOINTS, matTEPOINTS, matLEPOINTS, vecULS, vecDVESYM] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE);
+[matPOINTS, matTEPOINTS, matLEPOINTS, vecULS, vecDVESYM, vecDVESURFACE] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE, vecWING);
 
 
 end

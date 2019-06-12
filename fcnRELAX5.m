@@ -2,17 +2,24 @@ function [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, 
     fcnRELAX5(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
     matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, valPRESTEPS)
 
+% Not moving some vertices
+oldest_edge = matWEIDX((1:valWSIZE) + valWSIZE,3); % Trailing edge of oldest wake row
+dont_move = unique([matWELST(vecWLE,:); matWELST(vecWTE,:); matWELST(oldest_edge,:)]);
+move = true(size(matWVLST,1),1);
+move(dont_move) = false;
+
 %% Getting velocities at wake vertices
-tmp2 = fcnSDVEVEL(matWVLST, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(matWVLST, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
+tmp2 = zeros(size(matWVLST));
+tmp2(move,:) = fcnSDVEVEL(matWVLST(move,:), valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(matWVLST(move,:), valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
+tmp2(matWELST(vecWSYM,:),2) = 0; % No y-component on symmetry line
+
+%%
+% forward = [matWVGRID(1,:); matWVGRID(1:end-1,:)];
+% behind = [matWVGRID(2:end,:); matWVGRID(end,:)];
+% tmp2 = (tmp2(forward,:) + 2.*tmp2 + tmp2(behind,:))./4;
+% tmp2(dont_move,:) = tmp2(dont_move,:).*0;
 
 %% Moving
-% Not moving some vertices
-tmp2(matWELST(vecWLE,:),:) = 0; % Trailing edge of wing
-tmp2(matWELST(vecWTE,:),:) = 0; % Trailing edge of wing
-tmp2(matWELST(vecWSYM,:),2) = 0; % No y-component on symmetry line
-oldest_edge = matWEIDX((1:valWSIZE) + valWSIZE,3); % Trailing edge of oldest wake row
-tmp2(matWELST(oldest_edge,:),:) = 0;
-
 % Moving vertices
 matWVLST = matWVLST + tmp2.*valDELTIME;
 
@@ -33,8 +40,6 @@ P = permute(reshape(matWVLST(matWDVE(:,:)',:)', 3, 3, []), [2 1 3]);
 DNORM = cross((matWVLST(matWDVE(:,3),:) - matWVLST(matWDVE(:,1),:)), (matWVLST(matWDVE(:,2),:) - matWVLST(matWDVE(:,1),:)), 2);
 DNORM = DNORM./sqrt(sum(DNORM.^2, 2));
 [matWPLEX, matWDVECT, matWROTANG] = fcnTRITOLEX(P, DNORM, matWCENTER, 'WAKE', matWETA);
-
-
 
 end
 

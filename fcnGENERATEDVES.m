@@ -59,7 +59,7 @@ P1          = nan(valNELE,3);
 P2          = nan(valNELE,3);
 P3          = nan(valNELE,3);
 P4          = nan(valNELE,3);
-vecDVEWING  = nan(valNELE,1);
+vecDVEWING  = [];
 vecEnd      = cumsum(vecN.*vecM);
 
 %% Assign Wing to Panel
@@ -162,7 +162,7 @@ for i = 1:valPANELS
     end
     
     % Write DVE WING Index
-    vecDVEWING(idxStart:idxEnd,:) = repmat(panel2wing(i),count,1);
+    vecDVEWING = [vecDVEWING; repmat(panel2wing(i),count*2,1)];
     
     % Write non-planer DVE coordinates
     P1(idxStart:idxEnd,:) = reshape(permute(LE_Left, [2 1 3]),count,3);

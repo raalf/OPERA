@@ -1,19 +1,7 @@
-function [matVLST, matCENTER, matNEWWAKE, matCONTROL, matKINCON_P, matUINF, matVUINF, matPLEX, matDVECT, matROTANG] = fcnMOVEROTOR(matUINF, matVUINF, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE)
-
-% 3D matrix of TE points, 3x?x2, rows are (x,y,z), columns are points, and depth is first and second TE point
-te_flip(:,:,1) = matVLST(matELST(vecTE,1),:)';
-te_flip(:,:,2) = matVLST(matELST(vecTE,2),:)';
-
-idx_flip = [sqrt(sum(te_flip(1:2,:,1).^2,1)) > sqrt(sum(te_flip(1:2,:,2).^2,1))]'; % Finding out which trailing edges go from out to in, so we know what to flip
-idx_flip2 = logical([zeros(length(idx_flip),1); idx_flip]); % idx_flip1 is the first point, idx_flip2 is the second point
+function [matVLST, matCENTER, matNEWWAKE, matCONTROL, matKINCON_P, matUINF, matVUINF, matPLEX, matDVECT, matROTANG, vecWDVEFLIP] = fcnMOVEROTOR(matUINF, matVUINF, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, vecWDVEFLIP)
 
 % Old trailing edge vertices
 old_te = matVLST(matELST(vecTE,:),:);
-
-% Flipping the necessary vertices
-temp = old_te(idx_flip,:);
-old_te(idx_flip,:) = old_te(idx_flip2,:);
-old_te(idx_flip2,:) = temp;
 
 matVLST = matVLST + matVUINF.*valDELTIME;
 
@@ -46,18 +34,11 @@ matVUINF = dir.*(dist./valDELTIME) + valJ.*rps.*valDIAM.*fcnUINFWING(valALPHA, 0
 % New trailing edge vertices
 new_te = matVLST(matELST(vecTE,:),:);
 
-% Flipping the necessary vertices
-temp = new_te(idx_flip,:);
-new_te(idx_flip,:) = new_te(idx_flip2,:);
-new_te(idx_flip2,:) = temp;
-
-% Now that everything is flipped, the wake SHOULD generate with eta in the streamwise direction and
-% the normals pointed upwards. If it doesn't, then this needs to be rewritten to ensure that is the case
-
-% These vertices will be used to calculate the wake HDVE geometry
 matNEWWAKE(:,:,2) = [new_te(1:end/2,:); new_te((end/2)+1:end,:)];
-matNEWWAKE(:,:,3) = [new_te((end/2)+1:end,:); old_te((end/2)+1:end,:)];
-matNEWWAKE(:,:,1) = [old_te(1:end/2,:); old_te(1:end/2,:)];
+matNEWWAKE(:,:,3) = [new_te((end/2)+1:end,:); old_te(1:end/2,:)];
+matNEWWAKE(:,:,1) = [old_te(1:end/2,:); old_te((end/2)+1:end,:)];
+
+vecWDVEFLIP = [vecWDVEFLIP; false(size(matNEWWAKE,1)./2, 1); true(size(matNEWWAKE,1)./2, 1)]; 
 
 end
 

@@ -1,5 +1,5 @@
 function [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA, vecDVEFLIP] = fcnTRIANG(POINTS, TYPE, matWETA)
+            matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(POINTS, TYPE, matWETA, vecDVEFLIP)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -29,14 +29,17 @@ valNELE = size(POINTS(:,:,1),1);
 % Getting unique vertices, and switching from (x,y,z) to indices with reference to master list VLST
 % [matVLST,~,j] = unique([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)],'rows','stable');
 tol = 1e-14;
-[matVLST,~,j] = uniquetol([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)], tol, 'ByRows',true);
+[matVLST,~,j] = uniquetol([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)], tol, 'ByRows', true);
 matDVE(:,:,1) = reshape(j,[],3);
 
 % Converting above data to triangulation
 TR = triangulation(matDVE(:,:,1),matVLST);
 
 matELST = edges(TR); % List of unique edges
-DNORM = -faceNormal(TR);
+
+DNORM = cross(matVLST(matDVE(:,2),:) - matVLST(matDVE(:,3),:), matVLST(matDVE(:,1),:) - matVLST(matDVE(:,3),:), 2);
+DNORM = DNORM./sqrt(sum(DNORM.^2,2));
+DNORM(vecDVEFLIP,:) = DNORM(vecDVEFLIP,:).*-1;
 
 matCENTER = (matVLST(matDVE(:,1),:) + matVLST(matDVE(:,2),:) + matVLST(matDVE(:,3),:))./3;
 

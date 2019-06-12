@@ -1,4 +1,4 @@
-function [matPOINTS, matTEPOINTS, matLEPOINTS, vecULS, vecDVESYM, vecDVEWING] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE, vecWING)
+function [matPOINTS, matTEPOINTS, matLEPOINTS, vecULS, vecDVESYM, vecDVEWING, vecDVEFLIP] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE, vecWING)
 
 % This function has been taken from VAP2 and repurposed for OPERA. It takes panel corner points and discretizes
 % the panel into quadralateral DVEs, which I then subdivide into triangles to match STL format.
@@ -89,6 +89,7 @@ points = [];
 matTEPOINTS = [];
 matLEPOINTS = [];
 vecDVESYM = logical([]);
+vecDVEFLIP = logical([]);
 
 for i = 1:valPANELS
     temp_te = [];
@@ -177,9 +178,11 @@ for i = 1:valPANELS
         temp_points = cat(3, permute(reshape([P1(idxStart:idxEnd,:) P3(idxStart:idxEnd,:) P2(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
         permute(reshape([P1(idxStart:idxEnd,:) P4(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]));
     else
-        temp_points = cat(3, permute(reshape([P1(idxStart:idxEnd,:) P2(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
+        temp_points = cat(3, permute(reshape([P3(idxStart:idxEnd,:) P2(idxStart:idxEnd,:) P1(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
         permute(reshape([P4(idxStart:idxEnd,:) P1(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]));    
     end
+    
+    vecDVEFLIP = [vecDVEFLIP; true(length(idxStart:idxEnd),1); false(length(idxStart:idxEnd),1)];
     
     %     % Dealing with symmetry, assuming the symmetry plane is the YZ plane
     %     % This is done in a way that SHOULD keep the normals consistant

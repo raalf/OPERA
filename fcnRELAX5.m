@@ -1,6 +1,6 @@
 function [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWVATT, matWCENTER, matWROTANG, matWAKEGEOM, matWVGRID] = ...
     fcnRELAX5(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
-    matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, valPRESTEPS)
+    matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, valPRESTEPS)
 
 %% Getting velocities at wake vertices
 tmp2 = fcnSDVEVEL(matWVLST, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(matWVLST, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
@@ -8,6 +8,7 @@ tmp2 = fcnSDVEVEL(matWVLST, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, ve
 %% Moving
 % Not moving some vertices
 tmp2(matWELST(vecWLE,:),:) = 0; % Trailing edge of wing
+tmp2(matWELST(vecWTE,:),:) = 0; % Trailing edge of wing
 tmp2(matWELST(vecWSYM,:),2) = 0; % No y-component on symmetry line
 oldest_edge = matWEIDX((1:valWSIZE) + valWSIZE,3); % Trailing edge of oldest wake row
 tmp2(matWELST(oldest_edge,:),:) = 0;

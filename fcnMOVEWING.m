@@ -1,4 +1,4 @@
-function [matVLST, matCENTER, matNEWWAKE, matCONTROL, matKINCON_P] = fcnMOVEWING(matUINF, valDELTIME, matVLST, matCENTER, matELST, vecTE, matCONTROL, matKINCON_P)
+function [matVLST, matCENTER, matNEWWAKE, matCONTROL, matKINCON_P, vecWDVEFLIP] = fcnMOVEWING(matUINF, valDELTIME, matVLST, matCENTER, matELST, vecTE, matCONTROL, matKINCON_P, vecWDVEFLIP)
 % This function moves a wing (NOT rotor) by translating all of the vertices
 % in the VLST and the in-centers of each triangle in CENTER.
 
@@ -58,8 +58,10 @@ new_te(idx_flip2,:) = temp;
 
 % These vertices will be used to calculate the wake HDVE geometry
 matNEWWAKE(:,:,2) = [new_te(1:end/2,:); new_te((end/2)+1:end,:)];
-matNEWWAKE(:,:,3) = [new_te((end/2)+1:end,:); old_te((end/2)+1:end,:)];
-matNEWWAKE(:,:,1) = [old_te(1:end/2,:); old_te(1:end/2,:)];
+matNEWWAKE(:,:,3) = [new_te((end/2)+1:end,:); old_te(1:end/2,:)];
+matNEWWAKE(:,:,1) = [old_te(1:end/2,:); old_te((end/2)+1:end,:)];
+
+vecWDVEFLIP = [vecWDVEFLIP; false(size(matNEWWAKE,1)./2, 1); true(size(matNEWWAKE,1)./2, 1)]; 
 
 end
 

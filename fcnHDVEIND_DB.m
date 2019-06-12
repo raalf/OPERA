@@ -26,19 +26,7 @@ eta_1 = permute(matPLEX(1,2,dvenum),[3 2 1]);
 eta_2 = permute(matPLEX(2,2,dvenum),[3 2 1]);
 eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 
-idx_flp = abs(xi_2 - xi_3) < margin_edge & abs(xi_1 - xi_2) > margin_edge;
-xi_tmp(idx_flp) = xi_3(idx_flp);
-xi_3(idx_flp) = xi_1(idx_flp);
-xi_1(idx_flp) = xi_tmp(idx_flp);
-eta_tmp(idx_flp) = eta_3(idx_flp);
-eta_3(idx_flp) = eta_1(idx_flp);
-eta_1(idx_flp) = eta_tmp(idx_flp);
-
-idx_rrg = eta_2 < eta_1;
-eta_tmp(idx_rrg) = eta_2(idx_rrg);
-eta_2(idx_rrg) = eta_1(idx_rrg);
-eta_1(idx_rrg) = eta_tmp(idx_rrg);
-
+idx_flp = xi_3 < xi_1; % Flipping influence of elements that need a good flippin
 if any(abs(xi_2 - xi_3) < margin_edge & abs(xi_1 - xi_2) > margin_edge)
     disp('Issue in element orientation in HDVEIND.');
 end

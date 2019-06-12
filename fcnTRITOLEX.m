@@ -39,28 +39,9 @@ DVECT = zeros(sp(3),3,3);
 
 % Zeta (Normal)
 DVECT(:,:,3) = DNORM;
-
-if strcmpi(TYPE, 'SURFACE')
-    % Element "xsi" is aligned with global X (Change for rotors?)
-    global_x = repmat([-1 0 0],sp(3),1);
-    DVECT(:,:,2) = global_x - repmat((dot(global_x,DVECT(:,:,3),2))./(sqrt(sum(DVECT(:,:,3).^2,2))),1,3).*DVECT(:,:,3);
-else
-    idx = reshape(matWETA,1,1,[]);
-    DVECT(matWETA == 1,:,2) = reshape(P(2,:,idx == 1) - P(1,:,idx == 1),3,[],1)';
-    DVECT(matWETA == 2,:,2) = reshape(P(2,:,idx == 2) - P(3,:,idx == 2),3,[],1)';
-end
-
-% Element "eta" 
+DVECT(:,:,2) = reshape(((P(2,:,:) - P(1,:,:))./sqrt(sum((P(2,:,:) - P(1,:,:)).^2,2))),3,[],1)';
 DVECT(:,:,1) = cross(DVECT(:,:,2),DVECT(:,:,3),2);
 
-% % Eta (think of it as local y-axis)
-% DVECT(:,:,2) = permute((P(2,:,:) - P(1,:,:))./sqrt(sum((P(2,:,:) - P(1,:,:)).^2,2)), [3 2 1]);
-% 
-% % Xsi
-% DVECT(:,:,1) = cross(DVECT(:,:,2),DVECT(:,:,3),2);
-
-% Roll, pitch, yaw angles for global/local transformations
-% [YAW, PITCH, ROLL] = dcm2angle(permute(DVECT, [3 2 1]), 'ZXY');
 [ROLL, PITCH, YAW] = dcm2angle(permute(DVECT, [3 2 1]), 'XYZ', 'ZeroR3');
 
 ROTANG(:,1) = ROLL;

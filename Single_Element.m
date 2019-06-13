@@ -26,7 +26,7 @@ xp = 0.99
 matPOINTS(:,:,3) = [xp  0.5 0];
 
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-    matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS, 'SURFACE', []);
+    matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS, 'SURFACE', [], false);
 vecDVESYM = false(size(matCENTER, 1), 1);
 
 vecUINF = fcnUINFWING(valALPHA, 0);
@@ -66,15 +66,15 @@ z = [-0.25:granularity:0.25];
 % % z = [-0.05 0.05];
 % % z = 0;
 
-% % granularity = 0.00125;
-% granularity = 0.25
-% x = [-1:granularity:2];
-% % x = 0
-% % y = [-1:granularity:1];
-% y = [-1:granularity:2];
-% z = [-1:granularity:1];
-% % z = [1e-5 -1e-5];
-% % z = 0;
+% granularity = 0.00125;
+granularity = 0.0625
+x = [-1:granularity:2];
+% x = 0
+% y = [-1:granularity:1];
+y = [-1:granularity:2];
+z = [-0.3:granularity:0.3];
+% z = [1e-5 -1e-5];
+% z = 0;
 % z(z == 0) = []
 
 % % granularity = 0.00125;
@@ -110,18 +110,18 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
 
 %%
-figure(1);
-clf(1);
+% figure(1);
+% clf(1);
 hold on
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 1, 'b')
 hold off
 
-figure(2);
-clf(2);
-plot(z, q_ind(:,3),'-ok')
-grid minor
-box on
-axis tight
+% % figure(2);
+% % clf(2);
+% plot(z, q_ind(:,3),'-ok')
+% grid minor
+% box on
+% axis tight
 
 
 

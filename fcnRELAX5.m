@@ -1,6 +1,6 @@
 function [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWVATT, matWCENTER, matWROTANG, matWAKEGEOM, matWVGRID] = ...
     fcnRELAX5(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
-    matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, valPRESTEPS)
+    matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWVATT, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, valPRESTEPS, vecWDVEFLIP)
 
 % Not moving some vertices
 oldest_edge = matWEIDX((1:valWSIZE) + valWSIZE,3); % Trailing edge of oldest wake row
@@ -28,18 +28,15 @@ matWAKEGEOM(:,:,1) = matWVLST(matWDVE(:,1,1),:);
 matWAKEGEOM(:,:,2) = matWVLST(matWDVE(:,2,1),:);
 matWAKEGEOM(:,:,3) = matWVLST(matWDVE(:,3,1),:);
 
-matWETA = nan(valWNELE, 1);
-matWETA(reshape([1:valWSIZE.*2:valWNELE]' + [1:valWSIZE]-1, [], 1),1) = 1;
-matWETA(reshape([1:valWSIZE.*2:valWNELE]' + [1:valWSIZE] + valWSIZE - 1, [], 1),1) = 2;
-
 % matWCENTER
 matWCENTER = (matWVLST(matWDVE(:,1),:) + matWVLST(matWDVE(:,2),:) + matWVLST(matWDVE(:,3),:))./3;
 
 % matWPLEX, matWDVECT, matWROTANG
 P = permute(reshape(matWVLST(matWDVE(:,:)',:)', 3, 3, []), [2 1 3]);
-DNORM = cross((matWVLST(matWDVE(:,3),:) - matWVLST(matWDVE(:,1),:)), (matWVLST(matWDVE(:,2),:) - matWVLST(matWDVE(:,1),:)), 2);
-DNORM = DNORM./sqrt(sum(DNORM.^2, 2));
-[matWPLEX, matWDVECT, matWROTANG] = fcnTRITOLEX(P, DNORM, matWCENTER, 'WAKE', matWETA);
+DNORM = cross(matWVLST(matWDVE(:,2),:) - matWVLST(matWDVE(:,3),:), matWVLST(matWDVE(:,1),:) - matWVLST(matWDVE(:,3),:), 2);
+DNORM = DNORM./sqrt(sum(DNORM.^2,2));
+DNORM(vecWDVEFLIP,:) = DNORM(vecWDVEFLIP,:).*-1;
+[matWPLEX, matWDVECT, matWROTANG] = fcnTRITOLEX(P, DNORM, matWCENTER, 'WAKE', []);
 
 end
 

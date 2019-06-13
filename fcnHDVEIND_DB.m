@@ -51,8 +51,14 @@ F_lim(:,:,2) = x_m - xi_1;
 tol_alpha = 1e-20;
 tol_S = 1e-3;
 tol_T = 1e-3;
-tol_u = 1e-10;
+tol_u = 1e-20;
 tol_ualpha = 1e-2;
+
+% tol_alpha = 1e-20;
+% tol_S = 1e-10;
+% tol_T = 1e-10;
+% tol_u = 1e-20;
+% tol_ualpha = 1e-2;
 
 idx = [];
 F_lim = repmat(F_lim,1,2,1);

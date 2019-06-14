@@ -34,8 +34,8 @@ Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.90000	-2.74889	0	0.10000	0	NACA 0015
-0.61732	-2.53965	0	0.38268	0	NACA 0015
+1.00000	-2.74889	0	0.10000	0	NACA 0015
+1.00000	-2.53965	0	0.38268	0	NACA 0015
 
  
 Panel #:2.
@@ -46,8 +46,8 @@ Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.61732	-2.53965	0	0.38268	0	NACA 0015
-0.29289	-1.94376	0	0.70711	0	NACA 0015
+1.00000	-2.53965	0	0.38268	0	NACA 0015
+1.00000	-1.94376	0	0.70711	0	NACA 0015
 
  
 Panel #:3.
@@ -58,8 +58,8 @@ Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.29289	-1.94376	0	0.70711	0	NACA 0015
-0.07612	-1.05196	0	0.92388	0	NACA 0015
+1.00000	-1.94376	0	0.70711	0	NACA 0015
+1.00000	-1.05196	0	0.92388	0	NACA 0015
 
  
 Panel #:4.
@@ -70,8 +70,8 @@ Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.07612	-1.05196	0	0.92388	0	NACA 0015
-0.00000	0.00000	0	1.00000	0	NACA 0015
+1.00000	-1.05196	0	0.92388	0	NACA 0015
+1.00000	0.00000	0	1.00000	0	NACA 0015
 
  
 Panel #:5.
@@ -82,8 +82,8 @@ Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.00000	0.00000	0	1.00000	0	NACA 0015
-0.07612	1.05196	0	0.92388	0	NACA 0015
+1.00000	0.00000	0	1.00000	0	NACA 0015
+1.00000	1.05196	0	0.92388	0	NACA 0015
 
  
 Panel #:6.
@@ -94,8 +94,8 @@ Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.07612	1.05196	0	0.92388	0	NACA 0015
-0.29289	1.94376	0	0.70711	0	NACA 0015
+1.00000	1.05196	0	0.92388	0	NACA 0015
+1.00000	1.94376	0	0.70711	0	NACA 0015
 
  
 Panel #:7.
@@ -106,8 +106,8 @@ Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.29289	1.94376	0	0.70711	0	NACA 0015
-0.61732	2.53965	0	0.38268	0	NACA 0015
+1.00000	1.94376	0	0.70711	0	NACA 0015
+1.00000	2.53965	0	0.38268	0	NACA 0015
 
  
 Panel #:8.
@@ -118,6 +118,6 @@ Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE    = NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.61732	2.53965	0	0.38268	0	NACA 0015
-0.90000	2.74889	0	0.10000	0	NACA 0015
+1.00000	2.53965	0	0.38268	0	NACA 0015
+1.00000	2.74889	0	0.10000	0	NACA 0015
 

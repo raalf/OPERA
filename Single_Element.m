@@ -20,8 +20,8 @@ vecSYM = [];
 matPOINTS(:,:,1) = [1 0 0];
 matPOINTS(:,:,2) = [0  0 0];
 % matPOINTS(:,:,3) = [0.9  0.5 0];
-xp = 0.99
-% xp = 0
+xp = 0
+% xp = 0.99
 % xp = 0.5
 matPOINTS(:,:,3) = [xp  0.5 0];
 
@@ -53,29 +53,31 @@ z = [-0.25:granularity:0.25];
 % z = [-0.05 0.05];
 % % z = 0;
 
+granularity = 0.025
+x = [-0.1:granularity:1];
+y = [0.1:0.05:0.4];
+% y = [0.2]
+% y = [0.01:granularity:0.49];
+z = [-0.05 0 0.05];
+% z = [-0.05 0.05];
+% z = 0;
+
 % % granularity = 0.00125;
-% granularity = 0.1
-% % x = [-0.1:granularity:0.9];
-% x = [0.6:granularity:0.9];
-% 
-% granularity = 0.1
-% x = [0.6:granularity:0.9];
-% y = [0.2];
-% % y = [0.01:granularity:0.49];
-% z = [-0.05 0 0.05];
-% % z = [-0.05 0.05];
+% granularity = 0.25
+% x = [-1:granularity:2];
+% % x = 0
+% % y = [-1:granularity:1];
+% y = [-1:granularity:2];
+% z = [-0.3:granularity:0.3];
+% % z = [1e-5 -1e-5];
 % % z = 0;
+% % z(z == 0) = []
 
 % granularity = 0.00125;
-granularity = 0.0625
-x = [-1:granularity:2];
-% x = 0
-% y = [-1:granularity:1];
-y = [-1:granularity:2];
-z = [-0.3:granularity:0.3];
-% z = [1e-5 -1e-5];
-% z = 0;
-% z(z == 0) = []
+% granularity = 0.1
+% x = [-0.5:granularity:1.5];
+% y = [-0.5:granularity:1];
+% z = [-0.3:granularity:0.3];
 
 % % granularity = 0.00125;
 % granularity = 0.05
@@ -105,15 +107,23 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = repmat([1 0 0], 2, 1)
 
 
-[q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM);
 
+% fpg = [0.2 0.1 0; 0.2 0.1 0];
+vecBOUNDIND = true(size(fpg,1),1);
+% vecBOUNDIND = false(size(fpg,1),1);
+[q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, vecBOUNDIND);
 
-
+% vecBOUNDIND = true(size(fpg,1),1);
+% [q_ind2] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, vecBOUNDIND);
+% q_ind
+% 
+% q_ind2 = q_ind + q_ind2;
 %%
 % figure(1);
 % clf(1);
 hold on
 quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 1, 'b')
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind2(:,1), q_ind2(:,2), q_ind2(:,3), 1, 'm')
 hold off
 
 % % figure(2);

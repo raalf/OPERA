@@ -14,12 +14,12 @@ disp('| FLIGHT        | |  $$$$$$/| $$      | $$$$$$$$| $$  | $$| $$  | $$');
 disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 %% Preamble
-strFILE = 'inputs/ellipse.dat';
+% strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/test2.dat';
 % strFILE = 'inputs/test.dat';
 % strFILE = 'inputs/goland_wing.dat'
 % strFILE = 'inputs/rotor_test.dat'
-% strFILE = 'inputs/box_wing.dat'
+strFILE = 'inputs/box_wing.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP] = fcnOPREAD(strFILE);

@@ -10,7 +10,7 @@ move(dont_move) = false;
 
 %% Getting velocities at wake vertices
 tmp2 = zeros(size(matWVLST));
-tmp2(move,:) = fcnSDVEVEL(matWVLST(move,:), valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + fcnSDVEVEL(matWVLST(move,:), valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM);
+tmp2(move,:) = fcnSDVEVEL(matWVLST(move,:), valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, false(valNELE,1)) + fcnSDVEVEL(matWVLST(move,:), valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, false(valWNELE,1));
 tmp2(matWELST(vecWSYM,:),2) = 0; % No y-component on symmetry line
 
 %%

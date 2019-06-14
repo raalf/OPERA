@@ -1,7 +1,12 @@
 function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI)
 warning('on')
 tol = 1e-10;
-ztol = 5e-3;
+
+if ~isempty(vecBI)
+    ztol = 0;
+else
+    ztol = 5e-3;
+end
 
 fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
 

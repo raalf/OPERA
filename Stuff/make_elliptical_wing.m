@@ -11,9 +11,9 @@ valMAXTIME = 60;
 valDELTIME = 0.4;
 
 vecM = 3;
-vecN = 9;
+vecN = 5;
 
-xtcr = 1; % 1 is straight TE, 0 is straight LE
+xtcr = 0.25; % 1 is straight TE, 0 is straight LE
 
 elliptical_wing_o_matic(vecN, vecM, valALPHA, strSPANSPACING, strCHORDSPACING, valDELTIME, valMAXTIME, AR, xtcr, 'NO')
 run('OPERA_MAIN');

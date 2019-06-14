@@ -7,11 +7,16 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(fpg,valNELE,1);
 
-[q_ind] = fcnINDVEL(dvenum, dvetype, fpg, matCOEFF, matPLEX, matROTANG, matCENTER, [], vecBOUNDIND(dvenum));
+if ~isempty(vecBOUNDIND)
+    tmp = vecBOUNDIND(dvenum);
+else
+    tmp = [];
+end
+[q_ind] = fcnINDVEL(dvenum, dvetype, fpg, matCOEFF, matPLEX, matROTANG, matCENTER, [], tmp);
 
-if any(vecDVESYM)   
+if any(vecDVESYM)
     idx = vecDVESYM(dvenum);
-    q_sym = fcnINDVEL(dvenum(idx), dvetype(idx), [fpg(idx,1) -fpg(idx,2) fpg(idx,3)], matCOEFF, matPLEX, matROTANG, matCENTER, [], vecBOUNDIND(idx)); 
+    q_sym = fcnINDVEL(dvenum(idx), dvetype(idx), [fpg(idx,1) -fpg(idx,2) fpg(idx,3)], matCOEFF, matPLEX, matROTANG, matCENTER, [], vecBOUNDIND(idx));
     q_sym = q_sym.*[1 -1 1];
     q_ind(idx,:) = q_ind(idx,:) + q_sym;
 end

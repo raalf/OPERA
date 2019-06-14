@@ -94,7 +94,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(matKINCON_P,valNELE,1);
 
-[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER, vecDVESYM, false(size(dvenum)));
+[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER, vecDVESYM, []);
 
 normals = repmat(matDVECT(matKINCON_DVE,:,3),valNELE,1); % Repeated so we can dot all at once
 

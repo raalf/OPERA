@@ -50,6 +50,7 @@ D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
 %% Freestream Forces (via Kutty J)
 % Integrating the cross product of the circulation along the TE and U_INF.
 % T.D.K 2019-01-23 230 KING ST. EAST, TORONTO, ON, CANADA
+% tescale = sqrt(sum([xi_3 - xi_1 eta_3 - eta_1].^2,2))./(xi_3 - xi_1);
 
 % Velocity along the TE
 locations = [0.2:0.3:0.8]';
@@ -57,7 +58,6 @@ uvw_te = locations.*reshape(matVUINF(matELST(vecTE,1),:)', 1, 3, []) + (1 - loca
 fpl_te = locations.*reshape([xi_1 eta_1 xi_1.*0]', 1, 3, []) + (1 - locations).*reshape([xi_3 eta_3 xi_3.*0]', 1, 3, []);
 
 tau = fpl_te(:,1,:);
-
 for i = 1:size(vecTEDVE,1)
     uvw = fcnGLOBSTAR(uvw_te(:,:,i), repmat(matROTANG(vecTEDVE(i),:), length(locations), 1));
     u(i,:) = polyfit(tau(:,1,i), uvw(:,1), 2);
@@ -92,6 +92,7 @@ hold off
 wind = permute(reshape(wind', 3, [], 3), [3 1 2]);
 
 % Velocity along the TE
+u = []; v = []; w = [];
 for i = 1:size(vecTEDVE,1)
     uvw = fcnGLOBSTAR(wind(:,:,i), repmat(matROTANG(vecTEDVE(i),:), length(locations), 1));
     u(i,:) = polyfit(tau(:,1,i), uvw(:,1), 2);

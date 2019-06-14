@@ -30,7 +30,8 @@ y = [-flip(y(2:end)) y];
 x = [flip(x(2:end)) x];
 chord = [flip(chord(2:end)) chord];
 
-valAREA = (pi*hspan*rchord)./2;
+% valAREA = (pi*hspan*rchord)./2;
+valAREA = sum(((chord(1:end-1) + chord(2:end))./2).*diff(y));
 if strcmpi(vecSYM, 'YES')
     tpanels = num_panels - 1;
 else

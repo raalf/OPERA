@@ -32,12 +32,12 @@ vecDVESYM = false(size(matCENTER, 1), 1);
 vecUINF = fcnUINFWING(valALPHA, 0);
 
 matCOEFF = -[0 0 -2 0.17 0 0.056];
-matCOEFF = -[1 1 1 1 1 1];
+matCOEFF = -[0 0 -2 1 0 1];
 
 %% Plot
 
 [hFig1] = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCONTROL, matPLEX, [], vecUINF, matROTANG, [3 1 4 4], 'opengl');
-% fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, [], matROTANG, 'r', 10);
+fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, [], matROTANG, 'r', 10);
 
 granularity = 0.00125;
 y = [0.5];
@@ -106,9 +106,8 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = [-2 -1 -0.1; -2 -1 -0.1]
 % fpg = repmat([1 0 0], 2, 1)
 
-
-
-% fpg = [0.2 0.1 0; 0.2 0.1 0];
+x1 = (0.2 - 0.5)./(((-0.5)/(1 - xp)));
+fpg = [0 0.2 0; x1 0.2 0];
 vecBOUNDIND = true(size(fpg,1),1);
 % vecBOUNDIND = false(size(fpg,1),1);
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, vecBOUNDIND);

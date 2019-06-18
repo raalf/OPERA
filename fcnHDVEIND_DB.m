@@ -1,12 +1,6 @@
-function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI)
+function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI, ztol)
 warning('on')
 tol = 1e-10;
-
-if ~isempty(vecBI)
-    ztol = 0;
-else
-    ztol = 5e-3;
-end
 
 fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
 
@@ -53,7 +47,7 @@ F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
 %%
-tol_alpha = 1e-20;
+tol_alpha = 1e-5;
 tol_S = 1e-3;
 tol_T = 1e-3;
 tol_u = 1e-20;

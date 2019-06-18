@@ -17,8 +17,8 @@ Angles of Attack: 		seqALPHA = 4
 Angles of Sideslip: 	seqBETA = 0
 
 Density:			valDENSITY = 1
-Reference Area:		valAREA = 10
-Reference Span:		valSPAN = 10
+Reference Area:		valAREA = 11.0947
+Reference Span:		valSPAN = 6.096
 
 GEOMETRY
 

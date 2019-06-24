@@ -1,5 +1,5 @@
 function [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(POINTS, TYPE, matWETA, vecDVEFLIP)
+            matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(POINTS, vecDVEFLIP)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -33,7 +33,7 @@ tol = 1e-14;
 matDVE(:,:,1) = reshape(j,[],3);
 
 % Converting above data to triangulation
-TR = triangulation(matDVE(:,:,1),matVLST);
+TR = triangulation(matDVE(:,:,1), matVLST);
 
 matELST = edges(TR); % List of unique edges
 
@@ -61,7 +61,7 @@ matEATT = sort(temp3,2); % List of unique edge attachements (by element #), and 
 
 %% Local HDVE Xi-eta Axis
 P = permute(reshape(TR.Points(TR.ConnectivityList',:)',3,3,[]),[2 1 3]);
-[matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER, TYPE, matWETA);
+[matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER);
 matCONTROL = matCENTER;
 
 %% Mapping global edge number to local edge number in EIDX

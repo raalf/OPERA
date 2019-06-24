@@ -86,9 +86,9 @@ fpg_og = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';
 vecBOUNDIND = false(valWNELE,1);
 % vecBOUNDIND(vecWLEDVE) = true;
 wind = fcnSDVEVEL(fpg_og, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, vecBOUNDIND, 0);
-hold on
-quiver3(fpg_og(:,1), fpg_og(:,2), fpg_og(:,3), wind(:,1), wind(:,2), wind(:,3), 'b');
-hold off
+% hold on
+% quiver3(fpg_og(:,1), fpg_og(:,2), fpg_og(:,3), wind(:,1), wind(:,2), wind(:,3), 'b');
+% hold off
 wind = permute(reshape(wind', 3, [], 3), [3 1 2]);
 
 % Velocity along the TE

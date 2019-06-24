@@ -38,7 +38,5 @@ matNEWWAKE(:,:,2) = [new_te(1:end/2,:); new_te((end/2)+1:end,:)];
 matNEWWAKE(:,:,3) = [new_te((end/2)+1:end,:); old_te(1:end/2,:)];
 matNEWWAKE(:,:,1) = [old_te(1:end/2,:); old_te((end/2)+1:end,:)];
 
-vecWDVEFLIP = [vecWDVEFLIP; false(size(matNEWWAKE,1)./2, 1); true(size(matNEWWAKE,1)./2, 1)]; 
-
 end
 

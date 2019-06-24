@@ -1,4 +1,4 @@
-function [PLEX, DVECT, ROTANG] = fcnTRITOLEX(P, DNORM, matCONTROL, TYPE, matWETA)
+function [PLEX, DVECT, ROTANG] = fcnTRITOLEX(P, DNORM, matCONTROL)
 % This function converts a nx3x3 matrix from global (X,Y,Z)
 % to local (eta,xi,zeta) coordinates, where the depth n is vertex number
 % and columns are (X,Y,Z), rows are HDVE number

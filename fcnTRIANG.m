@@ -1,5 +1,5 @@
 function [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matELOC, matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(POINTS, vecDVEFLIP)
+            matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA] = fcnTRIANG(POINTS, vecDVEFLIP)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -27,7 +27,6 @@ function [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
 valNELE = size(POINTS(:,:,1),1);
 
 % Getting unique vertices, and switching from (x,y,z) to indices with reference to master list VLST
-% [matVLST,~,j] = unique([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)],'rows','stable');
 tol = 1e-14;
 [matVLST,~,j] = uniquetol([POINTS(:,:,1); POINTS(:,:,2); POINTS(:,:,3)], tol, 'ByRows', true);
 matDVE(:,:,1) = reshape(j,[],3);
@@ -108,14 +107,6 @@ temp8 = (floor(matEIDX./nedg).*nedg);
 matEIDX(matEIDX>nedg) = matEIDX(matEIDX>nedg) - temp8(matEIDX>nedg);
 matEIDX(matEIDX==0) = nedg;
 matEIDX = reshape(matEIDX,[],3);
-
-%% Computing ELOC
-[i3,~,~] = find(matEATT>0); % Finding indices of nonzero elements in EATT
-[i,j,~] = find(matEIDX(matEATT(matEATT>0),:) == repmat(i3,1,3)); % Finding where these indices are equal to whats in EIDX
-
-temp31 = sortrows([i j]); % Sorting by column 1 so column 2 is the correct order
-matELOC(matEATT>0,1) = temp31(:,2); % ELOC is column 2, indexing it appropriately
-matELOC = reshape(matELOC,nedg,[]);
 
 %% Vertex attachements and normal averages
 matVATT = vertexAttachments(TR);

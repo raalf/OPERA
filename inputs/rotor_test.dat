@@ -20,7 +20,7 @@ Density:				valDENSITY = 1
 Reference Diameter:		valDIAM = 0.6
 Reference RPM:			valRPM = 1020
 Collective Pitch:		valCOLL = 4
-Advance Ratio:			valJ = 1
+Advance Ratio:			valJ = 0.3
 
 GEOMETRY
 
@@ -30,12 +30,12 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 10. 
-Number of chordwise elements: 	vecM 		= 4.
+Number of spanwise elements:	vecN 		= 8. 
+Number of chordwise elements: 	vecM 		= 3.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE	= NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.000000	0.100000	0.000000	0.0700000	30.000000	NACA 0015
-0.000000	0.3000000	0.000000	0.050000	5.000000	NACA 0015
+-0.020000	0.100000	0.000000	0.0700000	30.000000	NACA 0015
+-0.010000	0.3000000	0.000000	0.050000	5.000000	NACA 0015

@@ -26,7 +26,7 @@ P = permute(reshape(matWVLST(matWDVE(:,:)',:)', 3, 3, []), [2 1 3]);
 DNORM = cross(matWVLST(matWDVE(:,2),:) - matWVLST(matWDVE(:,3),:), matWVLST(matWDVE(:,1),:) - matWVLST(matWDVE(:,3),:), 2);
 DNORM = DNORM./sqrt(sum(DNORM.^2,2));
 DNORM(vecWDVEFLIP,:) = DNORM(vecWDVEFLIP,:).*-1;
-[matWPLEX, matWDVECT, matWROTANG] = fcnTRITOLEX(P, DNORM, matWCENTER, 'WAKE', []);
+[matWPLEX, matWDVECT, matWROTANG] = fcnTRITOLEX(P, DNORM, matWCENTER);
 
 end
 

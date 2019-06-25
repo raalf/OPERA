@@ -1,62 +1,78 @@
-function [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWELOC,...
-    matWPLEX, matWDVECT, matWCENTER, matWCOEFF, matWROTANG, vecWLE, vecWTE, ...
+function [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWCOEFF, matWROTANG, vecWLE, vecWTE, ...
     vecWLEDVE, vecWTEDVE, vecWDVECIRC, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVGRID, vecWOTE, ...
     vecWOTEDVE, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, vecWDVEFLIP] = fcnCREATEWAKE2(valTIMESTEP, strATYPE, matNEWWAKE, matCOEFF, valWSIZE, ...
     vecTEDVE, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC, vecWSYMDVE, vecSYMDVE, vecWDVESYM, vecDVESYM, ...
     vecWSYM, matWVGRID, matWVLST, matWELST, matWEGRID, vecWVMU, vecWEMU, vecWDVEFLIP, matWCENTER, matWROTANG, matWDVECT, ...
-    matWELOC, matWDVE, matWEIDX, vecWLEDVE, vecWTEDVE, matWEATT)
+    matWDVE, matWEIDX, vecWLEDVE, matWEATT)
 
 WDVEFLIP = [false(size(matNEWWAKE,1)./2, 1); true(size(matNEWWAKE,1)./2, 1)];
 
 valWNELE = valTIMESTEP*valWSIZE*2;
-[~, WELST, WVLST, WDVE, ~, WEATT, WEIDX, WELOC, WPLEX, WDVECT, ~, ~, WCENTER, WROTANG] = fcnTRIANG(matNEWWAKE, WDVEFLIP);
+[~, WELST, WVLST, WDVE, ~, WEATT, WEIDX, WPLEX, WDVECT, ~, ~, WCENTER, WROTANG] = fcnTRIANG(matNEWWAKE, WDVEFLIP);
 
-% Requiring no modification, just concatination
 if valTIMESTEP > 1
-    [idx1,~] = ismember(WVLST, matWVLST, 'rows');
-    newWVLST = [WVLST(~idx1,:); WVLST(idx1,:)];
-    [~,vmap] = ismember(WVLST, newWVLST, 'rows');
+    [idx1,b1] = ismember(WVLST, matWVLST, 'rows');
     
-    WDVE = vmap(WDVE);
-    WELST = vmap(WELST);
-
-    [idx1,b] = ismember(matWVLST, newWVLST, 'rows');
-    idx3 = find(~idx1);
-
+    % WDVE, WELST
+    idx_WDVE = false(size(WDVE));
+    idx_WELST = false(size(WELST));
+    new = find(idx1);
+    old = b1(idx1);
+    for j = 1:length(new)
+        tmp_DVE = WDVE == new(j);
+        WDVE(tmp_DVE) = old(j);
+        idx_WDVE = idx_WDVE | tmp_DVE;
+        
+        tmp_WELST = WELST == new(j);
+        WELST(tmp_WELST) = old(j);
+        idx_WELST = idx_WELST | tmp_WELST;
+    end
     
-    [idx2,b] = ismember(WDVE, idx3);
-    WDVE = WDVE + size(matWVLST,1)/2;
-    WDVE(b > 0) = b(b > 0);
+    old = unique(WDVE(~idx_WDVE));
+    new_vt = [(size(matWVLST,1)+1):size(matWVLST,1) + length(new)];
+    for j = 1:length(old)
+        tmp_DVE = WDVE == old(j) & ~idx_WDVE;
+        WDVE(tmp_DVE) = new_vt(j);
+        
+        tmp_WELST = WELST == old(j) & ~idx_WELST;
+        WELST(tmp_WELST) = new_vt(j);
+    end
     
-    [~,b] = ismember(WELST, idx3);
-    WELST(all(b,2),:) = [];
-    b(all(b,2),:) = [];
-    WELST = WELST + size(matWVLST,1);
-    WELST(b > 0) = b(b > 0);
-    
-    [~,b] = ismember(WEIDX, idx3);
-    WEIDX = WEIDX + size(matWVLST,1);
-    WEIDX(b > 0) = b(b > 0);
-    
+    matWDVE = cat(1, matWDVE, WDVE);
     matWVLST = cat(1, matWVLST, WVLST(~idx1, :));
+    
+    % WEIDX
+    [idx2,b2] = ismember(WELST, matWELST, 'rows');
+    idx_WEIDX = false(size(WEIDX));
+    new = find(idx2);
+    old = b2(idx2);
+    for j = 1:length(new)
+        tmp_WEIDX = WEIDX == new(j);
+        WEIDX(tmp_WEIDX) = old(j);
+        idx_WEIDX = idx_WEIDX | tmp_WEIDX;
+    end
+    
+    old = unique(WEIDX(~idx_WEIDX));
+    new = [(size(matWELST,1)+1):size(matWELST,1) + length(old)]';
+    for j = 1:length(old)
+        tmp_WEIDX = WEIDX == old(j) & ~idx_WEIDX;
+        WEIDX(tmp_WEIDX) = new(j);
+    end
+    
+    matWEIDX = cat(1, matWEIDX, WEIDX);
+    matWELST = cat(1, matWELST, WELST(~idx2, :));
 else
+    matWDVE = WDVE;
     matWVLST = WVLST;
+    matWELST = WELST;
+    matWEIDX = WEIDX;
 end
-
-hold on
-fcnPLOTWAKE(1, gcf, WDVE, valWSIZE*2, matWVLST, WELST, WDVECT, WCENTER, valWSIZE, 0);
-view([90 90])
-hold off
 
 matWCENTER = cat(1, matWCENTER, WCENTER);
 matWROTANG = cat(1, matWROTANG, WROTANG);
 matWDVECT = cat(1, matWDVECT, WDVECT);
 matWPLEX = cat(3, matWPLEX, WPLEX);
-matWELOC = cat(1, matWELOC, WELOC);
 vecWDVEFLIP = cat(1, vecWDVEFLIP, WDVEFLIP);
-matWDVE = cat(1, matWDVE, WDVE);
-matWELST = cat(1, matWELST, WELST);
-matWEIDX = cat(1, matWEIDX, WEIDX);
 
 % WEATT needs special care when valTIMESTEP > 1
 matWEATT = cat(1, matWEATT, WEATT);
@@ -88,22 +104,17 @@ vecWSYMDVE = [vecWSYMDVE; vecWLEDVE(idx)];
 vecWSYM = [vecWSYM; matWEIDX(vecWSYMDVE, 1)];
 
 %% Wake circulation grid points
-% fcnPLOTWAKE(1, gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, 0);
-% view([90 90])
-
-WVGRID = [unique(matWELST(vecWLE,:)', 'stable')'; unique(matWELST(vecWTE,:)', 'stable')'];
-WEGRID = [vecWLE matWEIDX(vecWLEDVE,3) vecWTE]';
 WVMU = zeros(size(matWVLST,1),1);
 WEMU = zeros(size(matWELST,1),1);
 
 if valTIMESTEP == 1
-    matWVGRID = WVGRID;
-    matWEGRID = WEGRID;
+    matWVGRID = [unique(reshape(matWDVE(vecWLEDVE,2:3)',1,[],1)','stable')'; unique(reshape(matWDVE(vecWTEDVE,3:-2:1)',1,[],1)','stable')'];
+    matWEGRID = [vecWLE matWEIDX(vecWLEDVE,3) vecWTE]';
     vecWVMU = WVMU;
     vecWEMU = WEMU;
 else
-    matWVGRID = cat(1, matWVGRID, WVGRID);
-    matWEGRID = cat(1, matWEGRID, WEGRID);
+    matWVGRID = [unique(reshape(matWDVE(vecWLEDVE,2:3)',1,[],1)','stable')'; matWVGRID];
+    matWEGRID = [[vecWLE matWEIDX(vecWLEDVE,3)]'; matWEGRID];
     
     old_WVMU = vecWVMU;
     old_WEMU = vecWEMU;
@@ -120,6 +131,8 @@ tmp = permute(cat(3, matWVGRID(1:end-1,:), matWVGRID(2:end,:)), [1 3 2]);
 tmp = reshape(permute(tmp, [2 1 3]), size(tmp, 2), [])';
 [~,idx] = ismember(sort(tmp,2), sort(matWELST,2),'rows');
 matWE2GRID = reshape(idx, valTIMESTEP, size(matWVGRID,2));
+
+% fcnPLOTWAKE(1, gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, 0, matWVGRID);
 
 %% Coefficients
 [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG);

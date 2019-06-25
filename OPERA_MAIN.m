@@ -16,11 +16,11 @@ disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/test2.dat';
-% strFILE = 'inputs/test.dat';
+strFILE = 'inputs/test.dat';
 % strFILE = 'inputs/goland_wing.dat'
 % strFILE = 'inputs/rotor_test.dat'
 % strFILE = 'inputs/box_wing.dat'
-strFILE = 'inputs/TMotor.dat'
+% strFILE = 'inputs/TMotor.dat'
 % strFILE = 'inputs/TMotor_coarse.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
@@ -43,6 +43,7 @@ flagGIF = 1;
 
 % matUINF
 if strcmpi(strATYPE{1}, 'ROTOR')
+    vecHUB = [0 0 0];
     vecROTORRADPS = valRPM.*2.*pi./60;
     translation = valJ.*(valRPM./60).*valDIAM.*fcnUINFWING(valALPHA, 0);
     matUINF = cross(repmat([0,0,-vecROTORRADPS],length(matCENTER(:,1)),1),matCENTER) + translation;
@@ -116,7 +117,7 @@ for valTIMESTEP = 1:valMAXTIME
     end
     
     if strcmpi(strATYPE{1}, 'ROTOR')
-        [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matPLEX, matDVECT, matROTANG] = fcnMOVEROTOR(matUINF, matVUINF, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP);
+        [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matPLEX, matDVECT, matROTANG, vecHUB] = fcnMOVEROTOR(matUINF, matVUINF, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP, vecHUB);
     else
         [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(matUINF, valDELTIME, matVLST, matCENTER, matELST, vecTE);
     end
@@ -155,7 +156,7 @@ for valTIMESTEP = 1:valMAXTIME
         
         if flagGIF == 1 && valTIMESTEP > valPRESTEPS
             hFig1 = fcnGIF(valTIMESTEP - valPRESTEPS, valNELE, matDVE, matVLST, matCENTER, matELST, matDVECT, matPLEX, matCOEFF, matUINF, matROTANG, ...
-                valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, valWSIZE, valPRESTEPS, matWVGRID, valGIFNUM);
+                valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, valWSIZE, 20, matWVGRID, valGIFNUM);
         end
     end
     

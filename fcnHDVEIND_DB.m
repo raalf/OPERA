@@ -47,7 +47,7 @@ F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
 %%
-tol_alpha = 1e-5;
+tol_alpha = 1e-6;
 tol_S = 1e-3;
 tol_T = 1e-3;
 tol_u = 1e-20;

@@ -10,17 +10,17 @@ Steady or Unsteady:	strA3TYPE = STEADY
 Chordwise Spacing:	strSPACING = NORMAL
 
 Maximum Timesteps: 		valMAXTIME = 120
-Timestep Size: 			valDELTIME = 0.001
+Timestep Size: 			valDELTIME = 0.0005
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
-Angles of Attack: 		seqALPHA = 90
+Angles of Attack: 		seqALPHA = 20
 Angles of Sideslip: 	seqBETA = 0
 Density:				valDENSITY = 1.225
 
 Reference Diameter:		valDIAM = 0.4572
 Reference RPM:			valRPM = 3000
 Collective Pitch:		valCOLL = 0
-Advance Ratio:			valJ = 0.01
+Advance Ratio:			valJ = 1
 Number of Blades:		valBLADES = 2
 
 GEOMETRY
@@ -32,7 +32,7 @@ Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
 Number of spanwise elements:	vecN 		= 1. 
-Number of chordwise elements: 	vecM 		= 2.
+Number of chordwise elements: 	vecM 		= 1.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
@@ -43,7 +43,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 
 Panel #:4. 
 Number of spanwise elements:	vecN 		= 1. 
-Number of chordwise elements: 	vecM 		= 2.
+Number of chordwise elements: 	vecM 		= 1.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
@@ -54,7 +54,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 
 Panel #:7. 
 Number of spanwise elements:	vecN 		= 1. 
-Number of chordwise elements: 	vecM 		= 2.
+Number of chordwise elements: 	vecM 		= 1.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
@@ -65,7 +65,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 
 Panel #:10. 
 Number of spanwise elements:	vecN 		= 1. 
-Number of chordwise elements: 	vecM 		= 2.
+Number of chordwise elements: 	vecM 		= 1.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
@@ -76,7 +76,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 
 Panel #:13. 
 Number of spanwise elements:	vecN 		= 1. 
-Number of chordwise elements: 	vecM 		= 2.
+Number of chordwise elements: 	vecM 		= 1.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
@@ -87,7 +87,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 
 Panel #:16. 
 Number of spanwise elements:	vecN 		= 1. 
-Number of chordwise elements: 	vecM 		= 2.
+Number of chordwise elements: 	vecM 		= 1.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES

@@ -1,4 +1,4 @@
-function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP] = fcnOPREAD(strFILE)
+function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP, valBLADES] = fcnOPREAD(strFILE)
 
 fp = fopen(strFILE);
 
@@ -110,11 +110,19 @@ if strcmpi(strATYPE{1}, 'ROTOR')
         ch = fscanf(fp,'%c',1);
     end
     valJ = fscanf(fp,'%lf'); 
+    
+    % Advance ratio
+    ch = fscanf(fp,'%c',1);
+    while(ch~='=');
+        ch = fscanf(fp,'%c',1);
+    end
+    valBLADES = fscanf(fp,'%lf'); 
 else
     valDIAM = nan;
     valRPM = nan;
     valCOLL = nan;
     valJ = nan;
+    valBLADES = nan;
     
     % Reading reference area
     ch = fscanf(fp,'%c',1);

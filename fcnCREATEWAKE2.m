@@ -5,9 +5,8 @@ function [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWPLEX, m
     vecWSYM, matWVGRID, matWVLST, matWELST, matWEGRID, vecWVMU, vecWEMU, vecWDVEFLIP, matWCENTER, matWROTANG, matWDVECT, ...
     matWDVE, matWEIDX, vecWLEDVE, matWEATT)
 
-WDVEFLIP = [false(size(matNEWWAKE,1)./2, 1); true(size(matNEWWAKE,1)./2, 1)];
-
 valWNELE = valTIMESTEP*valWSIZE*2;
+WDVEFLIP = [false(size(matNEWWAKE,1)./2, 1); true(size(matNEWWAKE,1)./2, 1)];
 [~, WELST, WVLST, WDVE, ~, WEATT, WEIDX, WPLEX, WDVECT, ~, ~, WCENTER, WROTANG] = fcnTRIANG(matNEWWAKE, WDVEFLIP);
 
 if valTIMESTEP > 1
@@ -19,11 +18,11 @@ if valTIMESTEP > 1
     new = find(idx1);
     old = b1(idx1);
     for j = 1:length(new)
-        tmp_DVE = WDVE == new(j);
+        tmp_DVE = WDVE == new(j) & ~idx_WDVE;
         WDVE(tmp_DVE) = old(j);
         idx_WDVE = idx_WDVE | tmp_DVE;
         
-        tmp_WELST = WELST == new(j);
+        tmp_WELST = WELST == new(j) & ~idx_WELST;
         WELST(tmp_WELST) = old(j);
         idx_WELST = idx_WELST | tmp_WELST;
     end
@@ -104,6 +103,7 @@ vecWSYMDVE = [vecWSYMDVE; vecWLEDVE(idx)];
 vecWSYM = [vecWSYM; matWEIDX(vecWSYMDVE, 1)];
 
 %% Wake circulation grid points
+
 WVMU = zeros(size(matWVLST,1),1);
 WEMU = zeros(size(matWELST,1),1);
 
@@ -132,7 +132,6 @@ tmp = reshape(permute(tmp, [2 1 3]), size(tmp, 2), [])';
 [~,idx] = ismember(sort(tmp,2), sort(matWELST,2),'rows');
 matWE2GRID = reshape(idx, valTIMESTEP, size(matWVGRID,2));
 
-% fcnPLOTWAKE(1, gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, 0, matWVGRID);
 
 %% Coefficients
 [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG);

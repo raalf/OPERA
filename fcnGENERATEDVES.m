@@ -183,21 +183,7 @@ for i = 1:valPANELS
     end
     
     vecDVEFLIP = [vecDVEFLIP; true(length(idxStart:idxEnd),1); false(length(idxStart:idxEnd),1)];
-    
-    %     % Dealing with symmetry, assuming the symmetry plane is the YZ plane
-    %     % This is done in a way that SHOULD keep the normals consistant
-    %     if vecSYM(valPANELS) ~= 0
-    %         len = length(P1(idxStart:idxEnd,1));
-    %         temp_points_sym = cat(3, permute(reshape([P2(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P1(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P3(idxStart:idxEnd,:).*repmat([1 -1 1],len,1)],[],3,3), [3 2 1]), ...
-    %             permute(reshape([P3(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P1(idxStart:idxEnd,:).*repmat([1 -1 1],len,1) P4(idxStart:idxEnd,:).*repmat([1 -1 1],len,1)],[],3,3), [3 2 1]));
-    %         temp_points = cat(3, temp_points, temp_points_sym);
-    %
-    %         temp_shape = size(temp_le);
-    %         temp_le = [temp_le; temp_le.*repmat([1 -1 1],temp_shape(1), 1, temp_shape(3))];
-    %         temp_shape = size(temp_te);
-    %         temp_te = [temp_te; temp_te.*repmat([1 -1 1],temp_shape(1), 1, temp_shape(3))];
-    %     end
-    
+
     points = cat(3, points, temp_points);
     
     matTEPOINTS = [matTEPOINTS; temp_te];

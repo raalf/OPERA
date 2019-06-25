@@ -10,8 +10,7 @@ hold on
 % end
 
 plotDVE = [(valPRESTEPS.*valWSIZE.*2 + 1):valWNELE]';
-patch('Faces',matWDVE(plotDVE,:,1),'Vertices',matWVLST,'FaceColor','b','EdgeColor','b','LineWidth',2,'FaceAlpha',0.5);%,'EdgeAlpha',0.5);
-alpha(0.5);
+patch('Faces',matWDVE(plotDVE,:,1),'Vertices',matWVLST,'FaceColor','b','EdgeColor','b','LineWidth',2,'FaceAlpha',0.2,'EdgeAlpha',1);
 
 if verbose == 1
     for ii = 1:valWNELE

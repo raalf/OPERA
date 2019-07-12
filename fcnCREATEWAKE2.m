@@ -9,6 +9,7 @@ valWNELE = valTIMESTEP*valWSIZE*2;
 WDVEFLIP = [false(size(matNEWWAKE,1)./2, 1); true(size(matNEWWAKE,1)./2, 1)];
 [~, WELST, WVLST, WDVE, ~, WEATT, WEIDX, WPLEX, WDVECT, ~, ~, WCENTER, WROTANG] = fcnTRIANG(matNEWWAKE, WDVEFLIP);
 
+num_dves = size(matWDVE,1);
 if valTIMESTEP > 1
     [idx1,b1] = ismember(WVLST, matWVLST, 'rows');
     
@@ -65,6 +66,7 @@ else
     matWVLST = WVLST;
     matWELST = WELST;
     matWEIDX = WEIDX;
+    matWEATT = WEATT;
 end
 
 matWCENTER = cat(1, matWCENTER, WCENTER);
@@ -74,7 +76,15 @@ matWPLEX = cat(3, matWPLEX, WPLEX);
 vecWDVEFLIP = cat(1, vecWDVEFLIP, WDVEFLIP);
 
 % WEATT needs special care when valTIMESTEP > 1
+
+if valTIMESTEP > 1
+% remove duplicate edges (TE of wake row)
+WEATT(idx2,:) = [];
+WEATT(WEATT > 0) = WEATT(WEATT > 0) + num_dves;
+% rename new vertices to old
+% concatenate?
 matWEATT = cat(1, matWEATT, WEATT);
+end
 
 % Wake leading and trailing edge DVE identifications
 if valTIMESTEP > 1
@@ -84,8 +94,7 @@ vecWLEDVE = [(valWNELE - 2*valWSIZE + 1):(valWNELE - valWSIZE)]'; % Post trailin
 vecWTEDVE = [(valWNELE - valWSIZE + 1):valWNELE]';
 
 if valTIMESTEP > 1
-    matWEATT(matWEIDX(vecWLEDVE,3),:) = sort(matWEATT(matWEIDX(vecWLEDVE,3),:), 2);
-    matWEATT(matWEIDX(vecWLEDVE,1),1) = old_le_dve;
+    matWEATT(matWEIDX(old_le_dve,2),:) = [old_le_dve vecWLEDVE];
 end
 
 % Wake leading and trailing edge DVE identifications

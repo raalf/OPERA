@@ -10,7 +10,7 @@ Steady or Unsteady:	strA3TYPE = STEADY
 Chordwise Spacing:	strSPACING = HALFCOSINE
 
 Maximum Timesteps: 		valMAXTIME = 60
-Timestep Size: 			valDELTIME = 0.002
+Timestep Size: 			valDELTIME = 0.001
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
 Angles of Attack: 		seqALPHA = 90
@@ -21,7 +21,7 @@ Reference Diameter:		valDIAM = 0.6
 Reference RPM:			valRPM = 1020
 Collective Pitch:		valCOLL = 4
 Advance Ratio:			valJ = 0.3
-Number of Blades:		valBLADES = 2
+Number of Blades:		valBLADES = 1
 
 GEOMETRY
 
@@ -31,7 +31,7 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 2. 
+Number of spanwise elements:	vecN 		= 10. 
 Number of chordwise elements: 	vecM 		= 1.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES

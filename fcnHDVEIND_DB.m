@@ -1,6 +1,6 @@
 function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI, ztol)
 warning('on')
-tol = 1e-10;
+tol = 1e-2;
 
 fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
 
@@ -47,10 +47,10 @@ F_lim(:,:,1) = x_m - xi_3;
 F_lim(:,:,2) = x_m - xi_1;
 
 %%
-tol_alpha = 1e-6;
+tol_alpha = 1e-10;
 tol_S = 1e-3;
 tol_T = 1e-3;
-tol_u = 1e-20;
+tol_u = 1e-6;
 tol_ualpha = 1e-2;
 
 idx = [];
@@ -78,8 +78,11 @@ idx(:,:,18) = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs((u -
 idx(:,:,19) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
 idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
 
+% idx(:,:,1:20) = false([size(S) 20]);
+% idx(:,:,1) = alpha > tol_alpha;
+% idx(:,:,2) = alpha <= tol_alpha;
+% idx(:,:,20) = abs((u - alpha)./alpha) <= tol_ualpha;
 
-%%
 K0 = fcnK0(S, T, u, alpha, F_lim, tol, idx);
 K1 = fcnK1(S, T, u, alpha, F_lim, tol, idx);
 K2 = fcnK2(S, T, u, alpha, F_lim, tol, idx);
@@ -89,6 +92,22 @@ K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx);
 K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx);
 K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
 
+%%
+
+% F_lim = repmat(F_lim,1,2,1);
+% alpha = repmat(alpha,1,2,1);
+% K0 = fcnK0_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), 1);
+% K1 = fcnK1_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
+% K2 = fcnK2_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
+% K3 = fcnK3_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
+% K4 = fcnK4_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
+% K5 = fcnK5_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
+% K6 = fcnK6_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
+% K7 = fcnK7_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
+% 
+% idx = real((-T + sqrt(-4.*S.*u + T.^2))./(2.*S)) == F_lim | real((T + sqrt(-4.*S.*u + T.^2))./(-2.*S)) == F_lim;
+
+%%
 F(:,1) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K3+(6.*N.*S-3.*N).*K2+(-3.*L.*alpha+6.*L.*u).*K1 + ( +N.*alpha+2.*u.*N ).*K0]), 2);
 F(:,2) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(2.*L.*S+L).*K4+(6.*N.*S-3.*N-(2.*L.*S+L).*x_m).*K3+(-3.*L.*alpha+6.*L.*u-(6.*N.*S-3.*N).*x_m).*K2+(N.*alpha+2.*u.*N-(-3.*L.*alpha+6.*L.*u).*x_m).*K1 + ( -(N.*alpha+2.*u.*N).*x_m ).*K0]), 2);
 F(:,3) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K5+(6.*N.*S-3.*N-2.*(2.*L.*S+L).*x_m).*K4+(-3.*L.*alpha+6.*L.*u-2.*(6.*N.*S-3.*N).*x_m+(2.*L.*S+L).*x_m.^2).*K3+(N.*alpha+2.*u.*N-2.*(-3.*L.*alpha+6.*L.*u).*x_m+(6.*N.*S-3.*N).*x_m.^2).*K2+(-2.*(N.*alpha+2.*u.*N).*x_m+(-3.*L.*alpha+6.*L.*u).*x_m.^2).*K1 + ( +(N.*alpha+2.*u.*N).*x_m.^2 ).*K0]), 2);

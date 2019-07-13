@@ -2,20 +2,14 @@ function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, ma
 warning('on')
 tol = 1e-2;
 
+del_h = 0.01;
+
 fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
+len = size(fpl,1);
 
 x_m = fpl(:,1);
 y_m = fpl(:,2);
-z_m = fpl(:,3);
-
-idx_afx = abs(z_m) < ztol;
-z_m_orig = z_m(idx_afx);
-sgn = sign(z_m_orig);
-sgn(sgn == 0) = 1;
-z_m(idx_afx) = sgn.*ztol;
-
-%% Checking state of field point with relation to element surface
-margin_edge = 1e-10;
+h = fpl(:,3);
 
 xi_1 = permute(matPLEX(1,1,dvenum),[3 2 1]);
 xi_2 = permute(matPLEX(2,1,dvenum),[3 2 1]);
@@ -25,257 +19,456 @@ eta_1 = permute(matPLEX(1,2,dvenum),[3 2 1]);
 eta_2 = permute(matPLEX(2,2,dvenum),[3 2 1]);
 eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 
-idx_flp = xi_3 < xi_1; % Flipping influence of elements that need a good flippin
-if any(abs(xi_2 - xi_3) < margin_edge & abs(xi_1 - xi_2) > margin_edge)
-    disp('Issue in element orientation in HDVEIND.');
-end
-
+%%
 % Checking which elements are on the element
 C = (eta_3 - eta_2)./(xi_3 - xi_2);
 D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
 E = (eta_3 - eta_1)./(xi_3 - xi_1);
 D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
 
-%%
-alpha = z_m.^2;
-N = [-C.*x_m - D_LE + y_m, -E.*x_m - D_TE + y_m];
-S = [C.^2 + 1, E.^2 + 1];
-T = [2.*C.*N(:,1), 2.*E.*N(:,2)];
-u = [N(:,1).^2 + alpha, N(:,2).^2 + alpha];
-L = [C E];
-F_lim(:,:,1) = x_m - xi_3;
-F_lim(:,:,2) = x_m - xi_1;
+le_eta = C.*x_m + D_LE;
+te_eta = E.*x_m + D_TE;
+xi_left = min([xi_1, xi_3],[],2);
+xi_right = max([xi_1, xi_3],[],2);
+
+margin = 1e-3;
+idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin & abs(h) <= margin;
 
 %%
-tol_alpha = 1e-10;
-tol_S = 1e-3;
-tol_T = 1e-3;
-tol_u = 1e-6;
-tol_ualpha = 1e-2;
+% hFig1 = figure(1);
+% clf(1);
+% patch([xi_1(1) xi_2(1) xi_3(1)], [eta_1(1) eta_2(1) eta_3(1)],'w');
+% grid minor
+% box on
+% axis tight
+% axis equal
+% xlabel('Xi-Dir');
+% ylabel('Eta-Dir');
+% zlabel('Zi-Dir');
+% for i = 1:size(fpl,1)
+%     hold on
+%     scatter3(fpl(i,1), fpl(i,2), fpl(i,3), 'rs')
+%     hold off
+% end
 
-idx = [];
-F_lim = repmat(F_lim,1,2,1);
-alpha = repmat(alpha,1,2,1);
+% Call, xi-eta, edge (1, 2, or 3), point (1 or 2)
+epts = nan(len,2,3,2);
+epts(:,:,1,1:2) = cat(4, [xi_1 eta_1], [xi_2 eta_2]);
+epts(:,:,2,1:2) = cat(4, [xi_2 eta_2], [xi_3 eta_3]);
+epts(:,:,3,1:2) = cat(4, [xi_3 eta_3], [xi_1 eta_1]);
 
-idx(:,:,1)  = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u &  alpha >  tol_alpha;
-idx(:,:,2)  = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u &  alpha <= tol_alpha;
-idx(:,:,3)  = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) <= tol_u &  alpha >  tol_alpha;
-idx(:,:,4)  = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) <= tol_u &  alpha <= tol_alpha;
-idx(:,:,5)  = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) >  tol_u &  alpha >  tol_alpha;
-idx(:,:,6)  = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) >  tol_u &  alpha <= tol_alpha;
-idx(:,:,7)  = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) <= tol_u &  alpha >  tol_alpha;
-idx(:,:,8)  = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) <= tol_u &  alpha <= tol_alpha;
-idx(:,:,9)  = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) >  tol_u &  alpha >  tol_alpha;
-idx(:,:,10) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) >  tol_u &  alpha <= tol_alpha;
-idx(:,:,11) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) <= tol_u &  alpha >  tol_alpha;
-idx(:,:,12) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) <= tol_u &  alpha <= tol_alpha;
-idx(:,:,13) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u &  alpha >  tol_alpha;
-idx(:,:,14) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u &  alpha <= tol_alpha;
-idx(:,:,15) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) <= tol_u &  alpha >  tol_alpha;
-idx(:,:,16) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) <= tol_u &  alpha <= tol_alpha;
-idx(:,:,17) = abs(S - 1) >  tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
-idx(:,:,18) = abs(S - 1) >  tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
-idx(:,:,19) = abs(S - 1) <= tol_S & abs(T) >  tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
-idx(:,:,20) = abs(S - 1) <= tol_S & abs(T) <= tol_T & abs(u) >  tol_u & abs((u - alpha)./alpha) <=  tol_ualpha;
+% Edge direction and normal (d and n) (depth is edge number)
+nu_d = epts(:,:,:,2) - epts(:,:,:,1);
+nu_d = nu_d./sqrt(sum(nu_d.^2,2));
 
-% idx(:,:,1:20) = false([size(S) 20]);
-% idx(:,:,1) = alpha > tol_alpha;
-% idx(:,:,2) = alpha <= tol_alpha;
-% idx(:,:,20) = abs((u - alpha)./alpha) <= tol_ualpha;
+nu_n = nu_d(:,[2 1],:);
+nu_n(:,1,:) = nu_n(:,1,:).*-1;
 
-K0 = fcnK0(S, T, u, alpha, F_lim, tol, idx);
-K1 = fcnK1(S, T, u, alpha, F_lim, tol, idx);
-K2 = fcnK2(S, T, u, alpha, F_lim, tol, idx);
-K3 = fcnK3(S, T, u, alpha, F_lim, tol, idx);
-K4 = fcnK4(S, T, u, alpha, F_lim, tol, idx);
-K5 = fcnK5(S, T, u, alpha, F_lim, tol, idx);
-K6 = fcnK6(S, T, u, alpha, F_lim, tol, idx);
-K7 = fcnK7(S, T, u, alpha, F_lim, tol, idx);
+% Calculating parameters
+L1 = dot(nu_d, fpl(:,1:2) - epts(:,:,1:3,1), 2);
+L2 = dot(nu_d, fpl(:,1:2) - epts(:,:,1:3,2), 2);
+a = dot(nu_n, mean(epts,4) - fpl(:,1:2), 2);
+
+d_H = min(mean([sqrt(L1.^2 + a.^2) sqrt(L2.^2 + a.^2)],2),[],3);
+
+g = sqrt(a.^2 + h.^2);
+c1 = g.^2 + abs(h).*sqrt(L1.^2 + g.^2);
+c2 = g.^2 + abs(h).*sqrt(L2.^2 + g.^2);
+
+%% E
+% MXK = 5, MXQ = 5, MXFK = 16 + 5 - 2 = 19;
+
+% PAGE 183-184
+rho1 = sqrt(L1.^2 + g.^2);
+rho2 = sqrt(L2.^2 + g.^2);
+
+% a.)
+x2 = rho2.^-2;
+x1 = rho1.^-2;
+A2 = (epts(:,1,:,2) - x_m)./rho2;
+A1 = (epts(:,1,:,1) - x_m)./rho1;
+
+E211 = A2 - A1; 
+E213 = A2.*x2 - A1.*x1; 
+E215 = (x2 + x1).*E213 - (x1.*x2.*E211); 
+E217 = (x2 + x1).*E215 - (x1.*x2.*E213);
+E219 = (x2 + x1).*E217 - (x1.*x2.*E215);
+E2111 = (x2 + x1).*E219 - (x1.*x2.*E217);
+E2113 = (x2 + x1).*E2111 - (x1.*x2.*E219);
+E2115 = (x2 + x1).*E2113 - (x1.*x2.*E2111);
+E2117 = (x2 + x1).*E2115 - (x1.*x2.*E2113);
+E2119 = (x2 + x1).*E2117 - (x1.*x2.*E2115);
+E2121 = (x2 + x1).*E2119 - (x1.*x2.*E2117);
+E2123 = (x2 + x1).*E2121 - (x1.*x2.*E2119);
+E2125 = (x2 + x1).*E2123 - (x1.*x2.*E2121);
+E2127 = (x2 + x1).*E2125 - (x1.*x2.*E2123);
+E2129 = (x2 + x1).*E2127 - (x1.*x2.*E2125);
+E2131 = (x2 + x1).*E2129 - (x1.*x2.*E2127);
+E2133 = (x2 + x1).*E2131 - (x1.*x2.*E2129);
+
+% I = 3;
+% E215 = A2.*(x2.^(I - 1)) - A1.*(x1.^(I - 1)); 
+% I = 4;
+% E217 = A2.*(x2.^(I - 1)) - A1.*(x1.^(I - 1)); 
+% I = 5;
+% E219 = A2.*(x2.^(I - 1)) - A1.*(x1.^(I - 1)); 
+% I = 6;
+% E2111 = A2.*(x2.^(I - 1)) - A1.*(x1.^(I - 1)); 
+% I = 7;
+% E2113 = A2.*(x2.^(I - 1)) - A1.*(x1.^(I - 1)); 
+% I = 8;
+% E2115 = A2.*(x2.^(I - 1)) - A1.*(x1.^(I - 1)); 
+% I = 9;
+% E2117 = (x2 + x1).*E2115 - (x1.*x2.*E2113);
+
+% b.)
+A2 = (epts(:,2,:,2) - y_m)./rho2;
+A1 = (epts(:,2,:,1) - y_m)./rho1;
+
+E121 = A2 - A1; 
+E123 = A2.*x2 - A1.*x1; 
+E125 = (x2 + x1).*E123 - (x1.*x2.*E121); 
+E127 = (x2 + x1).*E125 - (x1.*x2.*E123);
+E129 = (x2 + x1).*E127 - (x1.*x2.*E125);
+E1211 = (x2 + x1).*E129 - (x1.*x2.*E127);
+E1213 = (x2 + x1).*E1211 - (x1.*x2.*E129);
+E1215 = (x2 + x1).*E1213 - (x1.*x2.*E1211);
+E1217 = (x2 + x1).*E1215 - (x1.*x2.*E1213);
+E1219 = (x2 + x1).*E1217 - (x1.*x2.*E1215);
+E1221 = (x2 + x1).*E1219 - (x1.*x2.*E1217);
+E1223 = (x2 + x1).*E1221 - (x1.*x2.*E1219);
+E1225 = (x2 + x1).*E1223 - (x1.*x2.*E1221);
+E1227 = (x2 + x1).*E1225 - (x1.*x2.*E1223);
+E1229 = (x2 + x1).*E1227 - (x1.*x2.*E1225);
+E1231 = (x2 + x1).*E1229 - (x1.*x2.*E1227);
+E1233 = (x2 + x1).*E1231 - (x1.*x2.*E1229);
+
+% c.)
+E11n1 = rho2 - rho1; % I = 1
+E12n1 = rho2.*(epts(:,2,:,2) - y_m) - rho1.*(epts(:,2,:,1) - y_m); % I = 2
+E13n1 = rho2.*(epts(:,2,:,2) - y_m).^2 - rho1.*(epts(:,2,:,1) - y_m).^2; % I = 3
+E14n1 = rho2.*(epts(:,2,:,2) - y_m).^3 - rho1.*(epts(:,2,:,1) - y_m).^3; % I = 4
+
+% d.)
+E21n1 = rho2.*(epts(:,1,:,2) - x_m) - rho1.*(epts(:,1,:,1) - x_m); % I = 2
+E31n1 = rho2.*(epts(:,1,:,2) - x_m).^2 - rho1.*(epts(:,1,:,1) - x_m).^2; % I = 3
+E41n1 = rho2.*(epts(:,1,:,2) - x_m).^3 - rho1.*(epts(:,1,:,1) - x_m).^3; % I = 4
+
+%e.)
+E111 = (1./rho2) - (1./rho1);
+
+%% F
+% MXK = 5, MXQ = 5, MXFK = 16 + 5 - 2 = 19;
+% PAGE 130
+% 1.)
+F111 = zeros(size(a));
+
+idx = L1 >= 0 & L2 >= 0;
+F111(idx) = log((rho2(idx) + L2(idx))./(rho1(idx) + L1(idx)));
+
+idx = L1 < 0 & L2 < 0;
+F111(idx) = log((rho1(idx) - L1(idx))./(rho2(idx) - L2(idx)));
+
+% idx = L1 < 0 & L2 >= 0;
+idx = (L1 < 0 & L2 >= 0) | (L1 >=0 & L2 < 0);
+F111(idx) = log(((rho1(idx) - L1(idx)).*(rho2(idx) + L2(idx)))./(g(idx).^2));
+
+idx = [g >= del_h.*d_H, g < del_h.*d_H];
+% 2.)
+nu_xi = nu_n(:,1,:);
+nu_eta = nu_n(:,2,:);
+
+F113 = zeros(size(F111));
+F115 = F113;
+F117 = F113;
+F119 = F113;
+F1111 = F113;
+F1113 = F113;
+F1115 = F113;
+F1117 = F113;
+F1119 = F113;
+
+F113(idx(:,1,:)) = (1./(g(idx(:,1,:)).^2)).*(-nu_eta(idx(:,1,:)).*E211(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E121(idx(:,1,:)));
+K = 5;
+F115(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F113(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E213(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E123(idx(:,1,:)));
+K = 7;
+F117(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F115(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E215(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E125(idx(:,1,:)));
+K = 9;
+F119(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F117(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E217(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E127(idx(:,1,:)));
+K = 11;
+F1111(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F119(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E219(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E129(idx(:,1,:)));
+K = 13;
+F1113(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F1111(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2111(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1211(idx(:,1,:)));
+K = 15;
+F1115(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F1113(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2113(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1213(idx(:,1,:)));
+K = 17;
+F1117(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F1115(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2115(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1215(idx(:,1,:)));
+K = 19;
+F1119(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F1117(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2117(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1217(idx(:,1,:)));
+
+% PAGE 132
+% NFK = 16, MXFK = 19
+F1135 = zeros(size(F111));
+F1133 = F1135;
+F1131 = F1135;
+F1129 = F1135;
+F1127 = F1135;
+F1125 = F1135;
+F1123 = F1135;
+F1121 = F1135;
+
+K = 35;
+F1133(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1135(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2133(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1233(idx(:,2,:)));
+K = 33;
+F1131(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1133(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2131(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1231(idx(:,2,:)));
+K = 31;
+F1129(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1131(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2129(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1229(idx(:,2,:)));
+K = 29;
+F1127(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1129(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2127(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1227(idx(:,2,:)));
+K = 27;
+F1125(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1127(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2125(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1225(idx(:,2,:)));
+K = 25;
+F1123(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1125(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2123(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1223(idx(:,2,:)));
+K = 23;
+F1121(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1123(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2121(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1221(idx(:,2,:)));
+K = 21;
+F1119(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1121(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2119(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1219(idx(:,2,:)));
+K = 19;
+F1117(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1119(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2117(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1217(idx(:,2,:)));
+K = 17;
+F1115(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1117(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2115(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1215(idx(:,2,:)));
+K = 15;
+F1113(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1115(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2113(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1213(idx(:,2,:)));
+K = 13;
+F1111(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1113(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E2111(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E1211(idx(:,2,:)));
+K = 11;
+F119(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F1111(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E219(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E129(idx(:,2,:)));
+K = 9;
+F117(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F119(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E217(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E127(idx(:,2,:)));
+K = 7;
+F115(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F117(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E215(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E125(idx(:,2,:)));
+K = 5;
+F113(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F115(idx(:,2,:)) + nu_eta(idx(:,2,:)).*E213(idx(:,2,:)) - nu_xi(idx(:,2,:)).*E123(idx(:,2,:)));
+
+% PAGE 130
+% 3.)
+% a)
+% (i)
+idx = abs(nu_eta) <= abs(nu_xi);
+F121 = zeros(size(F111));
+F131 = zeros(size(F111));
+F141 = zeros(size(F111));
+F151 = zeros(size(F111));
+F211 = zeros(size(F111));
+F221 = zeros(size(F111));
+F231 = zeros(size(F111));
+F241 = zeros(size(F111));
+F311 = zeros(size(F111));
+F321 = zeros(size(F111));
+F331 = zeros(size(F111));
+F411 = zeros(size(F111));
+F421 = zeros(size(F111));
+F511 = zeros(size(F111));
+
+h = repmat(h,1,1,3);
+F121(idx) = (a(idx).*nu_eta(idx).*F111(idx) + nu_xi(idx).*E11n1(idx));
+N = 3;
+F131(idx) = (1./(N - 1)).*((2.*N - 3).*a(idx).*nu_eta(idx).*F121(idx) - (a(idx).^2 + (nu_xi(idx).^2).*(h(idx).^2)).*F111(idx) + nu_xi(idx).*E12n1(idx));
+N = 4;
+F141(idx) = (1./(N - 1)).*((2.*N - 3).*a(idx).*nu_eta(idx).*F131(idx) - (a(idx).^2 + (nu_xi(idx).^2).*(h(idx).^2)).*F121(idx) + nu_xi(idx).*E13n1(idx));
+N = 5;
+F151(idx) = (1./(N - 1)).*((2.*N - 3).*a(idx).*nu_eta(idx).*F141(idx) - (a(idx).^2 + (nu_xi(idx).^2).*(h(idx).^2)).*F131(idx) + nu_xi(idx).*E14n1(idx));
+
+% PAGE 131
+% (ii)
+F211(idx) = (-nu_eta(idx)./nu_xi(idx)).*F121(idx) + (a(idx)./nu_xi(idx)).*F111(idx);
+F221(idx) = (-nu_eta(idx)./nu_xi(idx)).*F131(idx) + (a(idx)./nu_xi(idx)).*F121(idx);
+F231(idx) = (-nu_eta(idx)./nu_xi(idx)).*F141(idx) + (a(idx)./nu_xi(idx)).*F131(idx);
+F241(idx) = (-nu_eta(idx)./nu_xi(idx)).*F151(idx) + (a(idx)./nu_xi(idx)).*F141(idx);
+
+F311(idx) = (-nu_eta(idx)./nu_xi(idx)).*F221(idx) + (a(idx)./nu_xi(idx)).*F211(idx);
+F321(idx) = (-nu_eta(idx)./nu_xi(idx)).*F231(idx) + (a(idx)./nu_xi(idx)).*F221(idx);
+F331(idx) = (-nu_eta(idx)./nu_xi(idx)).*F241(idx) + (a(idx)./nu_xi(idx)).*F231(idx);
+
+F411(idx) = (-nu_eta(idx)./nu_xi(idx)).*F321(idx) + (a(idx)./nu_xi(idx)).*F311(idx);
+F421(idx) = (-nu_eta(idx)./nu_xi(idx)).*F331(idx) + (a(idx)./nu_xi(idx)).*F321(idx);
+
+F511(idx) = (-nu_eta(idx)./nu_xi(idx)).*F421(idx) + (a(idx)./nu_xi(idx)).*F411(idx);
+
+% b)
+% (i)
+idx = abs(nu_xi) <= abs(nu_eta);
+
+M = 2;
+F211(idx) = (1./(M - 1)).*((2.*M - 3).*a(idx).*nu_xi(idx).*F111(idx) - nu_eta(idx).*E11n1(idx));
+M = 3;
+F311(idx) = (1./(M - 1)).*((2.*M - 3).*a(idx).*nu_xi(idx).*F211(idx) - (M - 2).*(a(idx).^2 + (nu_eta(idx).^2).*(h(idx).^2)).*F111(idx) - nu_eta(idx).*E21n1(idx));
+M = 4;
+F411(idx) = (1./(M - 1)).*((2.*M - 3).*a(idx).*nu_xi(idx).*F311(idx) - (M - 2).*(a(idx).^2 + (nu_eta(idx).^2).*(h(idx).^2)).*F211(idx) - nu_eta(idx).*E31n1(idx));
+M = 5;
+F511(idx) = (1./(M - 1)).*((2.*M - 3).*a(idx).*nu_xi(idx).*F411(idx) - (M - 2).*(a(idx).^2 + (nu_eta(idx).^2).*(h(idx).^2)).*F311(idx) - nu_eta(idx).*E41n1(idx));
+
+% (ii)
+F121(idx) = (-nu_xi(idx)./nu_eta(idx)).*F211(idx) + (a(idx)./nu_eta(idx)).*F111(idx);
+F221(idx) = (-nu_xi(idx)./nu_eta(idx)).*F311(idx) + (a(idx)./nu_eta(idx)).*F211(idx);
+F321(idx) = (-nu_xi(idx)./nu_eta(idx)).*F411(idx) + (a(idx)./nu_eta(idx)).*F311(idx);
+F421(idx) = (-nu_xi(idx)./nu_eta(idx)).*F511(idx) + (a(idx)./nu_eta(idx)).*F411(idx);
+
+F131(idx) = (-nu_xi(idx)./nu_eta(idx)).*F221(idx) + (a(idx)./nu_eta(idx)).*F121(idx);
+F231(idx) = (-nu_xi(idx)./nu_eta(idx)).*F321(idx) + (a(idx)./nu_eta(idx)).*F221(idx);
+F331(idx) = (-nu_xi(idx)./nu_eta(idx)).*F421(idx) + (a(idx)./nu_eta(idx)).*F321(idx);
+
+F141(idx) = (-nu_xi(idx)./nu_eta(idx)).*F231(idx) + (a(idx)./nu_eta(idx)).*F131(idx);
+F241(idx) = (-nu_xi(idx)./nu_eta(idx)).*F331(idx) + (a(idx)./nu_eta(idx)).*F231(idx);
+
+F151(idx) = (-nu_xi(idx)./nu_eta(idx)).*F241(idx) + (a(idx)./nu_eta(idx)).*F141(idx);
+
+% PAGE 132
+% 4.)
+F123 = nu_eta.*a.*F113 - nu_xi.*E111;
+
+% 5.)
+F133 = 2.*a.*nu_eta.*F123 - (a.^2 + (nu_xi.^2).*(h.^2)).*F113 + (nu_xi.^2).*F111;
+F143 = 2.*a.*nu_eta.*F133 - (a.^2 + (nu_xi.^2).*(h.^2)).*F123 + (nu_xi.^2).*F121;
+F153 = 2.*a.*nu_eta.*F143 - (a.^2 + (nu_xi.^2).*(h.^2)).*F133 + (nu_xi.^2).*F131;
+
+% Correct F for proximity to perimeter
+
+%% H
+
+% abs(h) >= delta_h
+h = h(:,:,1);
+
+% PAGE 124
+% 1.)
+H111 = -abs(h).*sum(atan2(a.*(L2.*c1 - L1.*c2), c1.*c2 + (a.^2).*L1.*L2),3) + sum(a.*F111, 3);
+
+% PAGE 125
+% 2.)
+idx = [abs(h) >= del_h.*d_H, abs(h) < del_h.*d_H & ~idx_on_element abs(h) < del_h.*d_H & idx_on_element]; 
+H113(idx(:,1),1) = (1./h(idx(:,1)).^2).*(-1.*H111(idx(:,1)) + sum(a(idx(:,1),:,:).*F111(idx(:,1),:,:), 3));
+H115(idx(:,1),1) = (1./(3.*h(idx(:,1)).^2)).*(H113(idx(:,1)) + sum(a(idx(:,1),:,:).*F113(idx(:,1),:,:), 3));
+
+% PAGE 126
+% 1.)
+H1121 = zeros(size(H111));
+% 2.)
+K = 21;
+H1119(idx(:,2),1) = (1./(K - 4)).*((h(idx(:,2)).^2).*(K - 2).*H1121(idx(:,2)) - sum(a(idx(:,2),:,:).*F1119(idx(:,2),:,:), 3)); 
+K = 19;
+H1117(idx(:,2),1) = (1./(K - 4)).*((h(idx(:,2)).^2).*(K - 2).*H1119(idx(:,2)) - sum(a(idx(:,2),:,:).*F1117(idx(:,2),:,:), 3));
+K = 17;
+H1115(idx(:,2),1) = (1./(K - 4)).*((h(idx(:,2)).^2).*(K - 2).*H1117(idx(:,2)) - sum(a(idx(:,2),:,:).*F1115(idx(:,2),:,:), 3));
+K = 15;
+H1113(idx(:,2),1) = (1./(K - 4)).*((h(idx(:,2)).^2).*(K - 2).*H1115(idx(:,2)) - sum(a(idx(:,2),:,:).*F1113(idx(:,2),:,:), 3));
+K = 13;
+H1111(idx(:,2),1) = (1./(K - 4)).*((h(idx(:,2)).^2).*(K - 2).*H1113(idx(:,2)) - sum(a(idx(:,2),:,:).*F1111(idx(:,2),:,:), 3));
+K = 11;
+H119(idx(:,2),1) = (1./(K - 4)).*((h(idx(:,2)).^2).*(K - 2).*H1111(idx(:,2)) - sum(a(idx(:,2),:,:).*F119(idx(:,2),:,:), 3));
+K = 9;
+H117(idx(:,2),1) = (1./(K - 4)).*((h(idx(:,2)).^2).*(K - 2).*H119(idx(:,2)) - sum(a(idx(:,2),:,:).*F117(idx(:,2),:,:), 3));
+K = 7;
+H115(idx(:,2),1) = (1./(K - 4)).*((h(idx(:,2)).^2).*(K - 2).*H117(idx(:,2)) - sum(a(idx(:,2),:,:).*F115(idx(:,2),:,:), 3));
+K = 5;
+H113(idx(:,2),1) = (1./(K - 4)).*((h(idx(:,2)).^2).*(K - 2).*H115(idx(:,2)) - sum(a(idx(:,2),:,:).*F113(idx(:,2),:,:), 3));
+K = 3;
+H111(idx(:,2),1) = (1./(K - 4)).*((h(idx(:,2)).^2).*(K - 2).*H113(idx(:,2)) - sum(a(idx(:,2),:,:).*F111(idx(:,2),:,:), 3));
+
+% PAGE 125
+% 3.)
+H211 = (1/2).*((h.^2).*sum(nu_xi.*F111,3) + sum(a.*F211,3));
+H221 = (1/3).*((h.^2).*sum(nu_xi.*F121,3) + sum(a.*F221,3));
+H231 = (1/3).*((h.^2).*sum(nu_xi.*F131,3) + sum(a.*F231,3));
+H241 = (1/3).*((h.^2).*sum(nu_xi.*F141,3) + sum(a.*F241,3));
+
+% 4.)
+H121 = (1/2).*((h.^2).*sum(nu_eta.*F111,3) + sum(a.*F121,3));
+H131 = (1/3).*(-(h.^2).*H111 + (h.^2).*sum(nu_eta.*F121,3) + sum(a.*F131,3));
+H141 = (1/4).*(-(h.^2).*2.*H121 + (h.^2).*sum(nu_eta.*F131,3) + sum(a.*F141,3));
+H151 = (1/5).*(-(h.^2).*2.*H131 + (h.^2).*sum(nu_eta.*F141,3) + sum(a.*F151,3));
+
+% 5.)
+M = 3; N = 1;
+H311 = (1./(M + N - 1)).*(-(h.^2).*(M - 2).*H111 + (h.^2).*sum(nu_xi.*F211,3) + sum(a.*F311,3));
+M = 4; N = 1;
+H411 = (1./(M + N - 1)).*(-(h.^2).*(M - 2).*H211 + (h.^2).*sum(nu_xi.*F311,3) + sum(a.*F411,3));
+M = 5; N = 1;
+H511 = (1./(M + N - 1)).*(-(h.^2).*(M - 2).*H311 + (h.^2).*sum(nu_xi.*F411,3) + sum(a.*F511,3));
+
+M = 3; N = 2;
+H321 = (1./(M + N - 1)).*(-(h.^2).*(M - 2).*H121 + (h.^2).*sum(nu_xi.*F221,3) + sum(a.*F321,3));
+M = 4; N = 2;
+H421 = (1./(M + N - 1)).*(-(h.^2).*(M - 2).*H221 + (h.^2).*sum(nu_xi.*F321,3) + sum(a.*F421,3));
+
+M = 3; N = 3;
+H331 = (1./(M + N - 1)).*(-(h.^2).*(M - 2).*H131 + (h.^2).*sum(nu_xi.*F231,3) + sum(a.*F331,3));
+
+
+% PAGE 126
+% 6.)
+K = 3;
+H123 = (1./(K - 2)).*(-sum(nu_eta.*F111,3));
+N = 3; K = 3;
+H133 = (1./(K - 2)).*((N - 2).*H111 - sum(nu_eta.*F121,3));
+N = 4; K = 3;
+H143 = (1./(K - 2)).*((N - 2).*H121 - sum(nu_eta.*F131,3));
+N = 5; K = 3;
+H153 = (1./(K - 2)).*((N - 2).*H131 - sum(nu_eta.*F141,3));
+
+K = 5;
+H125 = (1./(K - 2)).*(-sum(nu_eta.*F113,3));
+N = 3; K = 5;
+H135 = (1./(K - 2)).*((N - 2).*H113 - sum(nu_eta.*F123,3));
+N = 4; K = 5;
+H145 = (1./(K - 2)).*((N - 2).*H123 - sum(nu_eta.*F133,3));
+N = 5; K = 5;
+H155 = (1./(K - 2)).*((N - 2).*H133 - sum(nu_eta.*F143,3));
+
+% 7.)
+K = 3;
+H213 = (1./(K - 2)).*(-sum(nu_xi.*F111,3));
+H223 = (1./(K - 2)).*(-sum(nu_xi.*F121,3));
+H233 = (1./(K - 2)).*(-sum(nu_xi.*F131,3));
+H243 = (1./(K - 2)).*(-sum(nu_xi.*F141,3));
+
+H215 = (1./(K - 2)).*(-sum(nu_xi.*F113,3));
+H225 = (1./(K - 2)).*(-sum(nu_xi.*F123,3));
+H235 = (1./(K - 2)).*(-sum(nu_xi.*F133,3));
+H245 = (1./(K - 2)).*(-sum(nu_xi.*F143,3));
+
+% 8.)
+H313 = -H133 - (h.^2).*H113 + H111;
+H413 = -H233 - (h.^2).*H213 + H211;
+H323 = -H143 - (h.^2).*H123 + H121;
+H333 = -H153 - (h.^2).*H133 + H131;
+H513 = -H333 - (h.^2).*H313 + H311;
+
+H315 = -H135 - (h.^2).*H115 + H113;
+H415 = -H235 - (h.^2).*H215 + H213;
+H325 = -H145 - (h.^2).*H125 + H123;
+H335 = -H155 - (h.^2).*H135 + H133;
+H515 = -H335 - (h.^2).*H315 + H313;
+
 
 %%
-
-% F_lim = repmat(F_lim,1,2,1);
-% alpha = repmat(alpha,1,2,1);
-% K0 = fcnK0_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), 1);
-% K1 = fcnK1_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
-% K2 = fcnK2_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
-% K3 = fcnK3_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
-% K4 = fcnK4_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
-% K5 = fcnK5_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
-% K6 = fcnK6_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
-% K7 = fcnK7_new(S, T, u, alpha, F_lim(:,:,1), F_lim(:,:,2), tol);
-% 
-% idx = real((-T + sqrt(-4.*S.*u + T.^2))./(2.*S)) == F_lim | real((T + sqrt(-4.*S.*u + T.^2))./(-2.*S)) == F_lim;
+J11 = [reshape(3.*h.*H215,1,1,[]); reshape(3.*h.*H125,1,1,[]); reshape(H113 - 3.*(h.^2).*H115,1,1,[])];
+J12 = [reshape(3.*h.*H225,1,1,[]); reshape(3.*h.*H135,1,1,[]); reshape(H123 - 3.*(h.^2).*H125,1,1,[])];
+J13 = [reshape(3.*h.*H235,1,1,[]); reshape(3.*h.*H145,1,1,[]); reshape(H133 - 3.*(h.^2).*H135,1,1,[])];
+J21 = [reshape(3.*h.*H315,1,1,[]); reshape(3.*h.*H225,1,1,[]); reshape(H213 - 3.*(h.^2).*H215,1,1,[])];
+J22 = [reshape(3.*h.*H325,1,1,[]); reshape(3.*h.*H235,1,1,[]); reshape(H223 - 3.*(h.^2).*H225,1,1,[])];
+J31 = [reshape(3.*h.*H415,1,1,[]); reshape(3.*h.*H325,1,1,[]); reshape(H313 - 3.*(h.^2).*H315,1,1,[])];
 
 %%
-F(:,1) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K3+(6.*N.*S-3.*N).*K2+(-3.*L.*alpha+6.*L.*u).*K1 + ( +N.*alpha+2.*u.*N ).*K0]), 2);
-F(:,2) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(2.*L.*S+L).*K4+(6.*N.*S-3.*N-(2.*L.*S+L).*x_m).*K3+(-3.*L.*alpha+6.*L.*u-(6.*N.*S-3.*N).*x_m).*K2+(N.*alpha+2.*u.*N-(-3.*L.*alpha+6.*L.*u).*x_m).*K1 + ( -(N.*alpha+2.*u.*N).*x_m ).*K0]), 2);
-F(:,3) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K5+(6.*N.*S-3.*N-2.*(2.*L.*S+L).*x_m).*K4+(-3.*L.*alpha+6.*L.*u-2.*(6.*N.*S-3.*N).*x_m+(2.*L.*S+L).*x_m.^2).*K3+(N.*alpha+2.*u.*N-2.*(-3.*L.*alpha+6.*L.*u).*x_m+(6.*N.*S-3.*N).*x_m.^2).*K2+(-2.*(N.*alpha+2.*u.*N).*x_m+(-3.*L.*alpha+6.*L.*u).*x_m.^2).*K1 + ( +(N.*alpha+2.*u.*N).*x_m.^2 ).*K0]), 2);
-F(:,4) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([K4+(2.*L.*S.*y_m+y_m.*L).*K3+(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha).*K2+(-3.*L.*alpha.*y_m+6.*L.*u.*y_m).*K1 + ( +N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2 ).*K0]), 2);
-F(:,5) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(L.*S-L).*K5+(3.*N.*S-3.*N+2.*y_m).*K4+(2.*L.*S.*y_m.^2+L.*S.*alpha+L.*y_m.^2-4.*L.*alpha+3.*L.*u).*K3+(6.*N.*S.*y_m.^2+3.*N.*S.*alpha-3.*N.*y_m.^2-4.*N.*alpha+N.*u+4.*alpha.*y_m).*K2+(-3.*L.*alpha.*y_m.^2+6.*L.*u.*y_m.^2-3.*L.*alpha.^2+3.*L.*alpha.*u).*K1 + ( +N.*alpha.*y_m.^2+2.*N.*u.*y_m.^2-N.*alpha.^2+N.*alpha.*u+2.*y_m.*alpha.^2 ).*K0]), 2);
-F(:,6) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([K5+(2.*L.*S.*y_m+y_m.*L-x_m).*K4+(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha-(2.*L.*S.*y_m+y_m.*L).*x_m).*K3+(-3.*L.*alpha.*y_m+6.*L.*u.*y_m-(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha).*x_m).*K2+(N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2-(-3.*L.*alpha.*y_m+6.*L.*u.*y_m).*x_m).*K1 + ( -(N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2).*x_m ).*K0]), 2);
-F(:,7) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(2.*L.*S+L).*K6+(-3.*x_m.*(2.*L.*S+L)+6.*N.*S-3.*N).*K5+(3.*x_m.^2.*(2.*L.*S+L)-3.*x_m.*(6.*N.*S-3.*N)-3.*L.*alpha+6.*L.*u).*K4+(-x_m.^3.*(2.*L.*S+L)+3.*x_m.^2.*(6.*N.*S-3.*N)-3.*x_m.*(-3.*L.*alpha+6.*L.*u)+N.*alpha+2.*u.*N).*K3+(-x_m.^3.*(6.*N.*S-3.*N)+3.*x_m.^2.*(-3.*L.*alpha+6.*L.*u)-3.*x_m.*(N.*alpha+2.*u.*N)).*K2+(-x_m.^3.*(-3.*L.*alpha+6.*L.*u)+3.*x_m.^2.*(N.*alpha+2.*u.*N)).*K1 + ( -x_m.^3.*(N.*alpha+2.*u.*N) ).*K0]), 2);
-F(:,8) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(3.*S-1).*K6+(3.*L.*S.*y_m+6.*L.*N-3.*L.*y_m).*K5+(9.*N.*S.*y_m-9.*N.*y_m+6.*S.*alpha+3.*y_m.^2-3.*alpha+3.*u).*K4+(2.*L.*S.*y_m.^3+3.*L.*S.*alpha.*y_m+L.*y_m.^3+12.*L.*N.*alpha-12.*L.*alpha.*y_m+9.*L.*u.*y_m).*K3+(6.*N.*S.*y_m.^3+9.*N.*S.*alpha.*y_m-3.*N.*y_m.^3-12.*N.*alpha.*y_m+3.*N.*u.*y_m+3.*S.*alpha.^2+6.*alpha.*y_m.^2-3.*alpha.^2+6.*alpha.*u).*K2+(-3.*L.*alpha.*y_m.^3+6.*L.*u.*y_m.^3+6.*L.*N.*alpha.^2-9.*L.*alpha.^2.*y_m+9.*L.*alpha.*u.*y_m).*K1 + ( +N.*alpha.*y_m.^3+2.*N.*u.*y_m.^3-3.*N.*alpha.^2.*y_m+3.*N.*alpha.*u.*y_m+3.*alpha.^2.*y_m.^2-alpha.^3+3.*alpha.^2.*u ).*K0]), 2);
-F(:,9) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([K6+(2.*L.*S.*y_m+y_m.*L-2.*x_m).*K5+(x_m.^2-2.*x_m.*(2.*L.*S.*y_m+y_m.*L)+6.*N.*y_m.*S-3.*N.*y_m+2.*alpha).*K4+(x_m.^2.*(2.*L.*S.*y_m+y_m.*L)-2.*x_m.*(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha)-3.*L.*alpha.*y_m+6.*L.*u.*y_m).*K3+(x_m.^2.*(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha)-2.*x_m.*(-3.*L.*alpha.*y_m+6.*L.*u.*y_m)+N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2).*K2+(x_m.^2.*(-3.*L.*alpha.*y_m+6.*L.*u.*y_m)-2.*x_m.*(N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2)).*K1 + ( +x_m.^2.*(N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2) ).*K0]), 2);
-F(:,10) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(L.*S-L).*K6+(3.*N.*S-3.*N+2.*y_m-(L.*S-L).*x_m).*K5+(2.*L.*S.*y_m.^2+L.*S.*alpha+L.*y_m.^2-4.*L.*alpha+3.*L.*u-(3.*N.*S-3.*N+2.*y_m).*x_m).*K4+(6.*N.*S.*y_m.^2+3.*N.*S.*alpha-3.*N.*y_m.^2-4.*N.*alpha+N.*u+4.*alpha.*y_m-(2.*L.*S.*y_m.^2+L.*S.*alpha+L.*y_m.^2-4.*L.*alpha+3.*L.*u).*x_m).*K3+(-3.*L.*alpha.*y_m.^2+6.*L.*u.*y_m.^2-3.*L.*alpha.^2+3.*L.*alpha.*u-(6.*N.*S.*y_m.^2+3.*N.*S.*alpha-3.*N.*y_m.^2-4.*N.*alpha+N.*u+4.*alpha.*y_m).*x_m).*K2+(N.*alpha.*y_m.^2+2.*N.*u.*y_m.^2-N.*alpha.^2+N.*alpha.*u+2.*y_m.*alpha.^2-(-3.*L.*alpha.*y_m.^2+6.*L.*u.*y_m.^2-3.*L.*alpha.^2+3.*L.*alpha.*u).*x_m).*K1 + ( -(N.*alpha.*y_m.^2+2.*N.*u.*y_m.^2-N.*alpha.^2+N.*alpha.*u+2.*y_m.*alpha.^2).*x_m ).*K0]), 2);
-F(:,11) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(2.*L.*S+L).*K7+(6.*N.*S-3.*N-4.*(2.*L.*S+L).*x_m).*K6+(-3.*L.*alpha+6.*L.*u-4.*(6.*N.*S-3.*N).*x_m+6.*(2.*L.*S+L).*x_m.^2).*K5+(N.*alpha+2.*u.*N-4.*(-3.*L.*alpha+6.*L.*u).*x_m+6.*(6.*N.*S-3.*N).*x_m.^2-4.*(2.*L.*S+L).*x_m.^3).*K4+(-4.*(N.*alpha+2.*u.*N).*x_m+6.*(-3.*L.*alpha+6.*L.*u).*x_m.^2-4.*(6.*N.*S-3.*N).*x_m.^3+(2.*L.*S+L).*x_m.^4).*K3+(6.*(N.*alpha+2.*u.*N).*x_m.^2-4.*(-3.*L.*alpha+6.*L.*u).*x_m.^3+(6.*N.*S-3.*N).*x_m.^4).*K2+(-4.*(N.*alpha+2.*u.*N).*x_m.^3+(-3.*L.*alpha+6.*L.*u).*x_m.^4).*K1 + ( +(N.*alpha+2.*u.*N).*x_m.^4 ).*K0]), 2);
-F(:,12) = sum(([0.1e1./0.3e1,-0.1e1./0.3e1]).*([(L.*S-L).*K7+(-2.*x_m.*(L.*S-L)+3.*N.*S-3.*N+2.*y_m).*K6+(x_m.^2.*(L.*S-L)-2.*x_m.*(3.*N.*S-3.*N+2.*y_m)+2.*L.*S.*y_m.^2+L.*S.*alpha+L.*y_m.^2-4.*L.*alpha+3.*L.*u).*K5+(x_m.^2.*(3.*N.*S-3.*N+2.*y_m)-2.*x_m.*(2.*L.*S.*y_m.^2+L.*S.*alpha+L.*y_m.^2-4.*L.*alpha+3.*L.*u)+6.*N.*S.*y_m.^2+3.*N.*S.*alpha-3.*N.*y_m.^2-4.*N.*alpha+N.*u+4.*alpha.*y_m).*K4+(x_m.^2.*(2.*L.*S.*y_m.^2+L.*S.*alpha+L.*y_m.^2-4.*L.*alpha+3.*L.*u)-2.*x_m.*(6.*N.*S.*y_m.^2+3.*N.*S.*alpha-3.*N.*y_m.^2-4.*N.*alpha+N.*u+4.*alpha.*y_m)-3.*L.*alpha.*y_m.^2+6.*L.*u.*y_m.^2-3.*L.*alpha.^2+3.*L.*alpha.*u).*K3+(x_m.^2.*(6.*N.*S.*y_m.^2+3.*N.*S.*alpha-3.*N.*y_m.^2-4.*N.*alpha+N.*u+4.*alpha.*y_m)-2.*x_m.*(-3.*L.*alpha.*y_m.^2+6.*L.*u.*y_m.^2-3.*L.*alpha.^2+3.*L.*alpha.*u)+N.*alpha.*y_m.^2+2.*N.*u.*y_m.^2-N.*alpha.^2+N.*alpha.*u+2.*y_m.*alpha.^2).*K2+(x_m.^2.*(-3.*L.*alpha.*y_m.^2+6.*L.*u.*y_m.^2-3.*L.*alpha.^2+3.*L.*alpha.*u)-2.*x_m.*(N.*alpha.*y_m.^2+2.*N.*u.*y_m.^2-N.*alpha.^2+N.*alpha.*u+2.*y_m.*alpha.^2)).*K1 + ( +x_m.^2.*(N.*alpha.*y_m.^2+2.*N.*u.*y_m.^2-N.*alpha.^2+N.*alpha.*u+2.*y_m.*alpha.^2) ).*K0]), 2);
-F(:,13) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(4.*L.*S-L).*K7+(12.*N.*S-12.*S.*y_m-9.*N+4.*y_m).*K6+(-6.*L.*S.*y_m.^2-24.*L.*N.*y_m+8.*L.*S.*alpha+6.*L.*y_m.^2-11.*L.*alpha+12.*L.*u).*K5+(-18.*N.*S.*y_m.^2+24.*N.*S.*alpha+18.*N.*y_m.^2-24.*S.*alpha.*y_m-4.*y_m.^3-19.*N.*alpha+4.*N.*u+12.*alpha.*y_m-12.*u.*y_m).*K4+(-2.*L.*S.*y_m.^4-6.*L.*S.*alpha.*y_m.^2-L.*y_m.^4-48.*L.*N.*alpha.*y_m+4.*L.*S.*alpha.^2+24.*L.*alpha.*y_m.^2-18.*L.*u.*y_m.^2-19.*L.*alpha.^2+24.*L.*alpha.*u).*K3+(-6.*N.*S.*y_m.^4-18.*N.*S.*alpha.*y_m.^2+3.*N.*y_m.^4+12.*N.*S.*alpha.^2+24.*N.*alpha.*y_m.^2-6.*N.*u.*y_m.^2-12.*S.*alpha.^2.*y_m-8.*alpha.*y_m.^3-11.*N.*alpha.^2+8.*N.*alpha.*u+12.*alpha.^2.*y_m-24.*alpha.*u.*y_m).*K2+(3.*L.*alpha.*y_m.^4-6.*L.*u.*y_m.^4-24.*L.*N.*alpha.^2.*y_m+18.*L.*alpha.^2.*y_m.^2-18.*L.*alpha.*u.*y_m.^2-9.*L.*alpha.^3+12.*L.*alpha.^2.*u).*K1 + ( -N.*alpha.*y_m.^4-2.*N.*u.*y_m.^4+6.*N.*alpha.^2.*y_m.^2-6.*N.*alpha.*u.*y_m.^2-4.*alpha.^2.*y_m.^3-N.*alpha.^3+4.*N.*alpha.^2.*u+4.*y_m.*alpha.^3-12.*alpha.^2.*u.*y_m ).*K0]), 2) ...
-    - fcnH_7(E, -E.*x_m - D_TE + y_m, alpha(:,1), F_lim(:,1,1), F_lim(:,1,2), tol) + fcnH_7(C, -C.*x_m - D_LE + y_m, alpha(:,1), F_lim(:,1,1), F_lim(:,1,2), tol);
-F(:,14) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([(3.*S-1).*K7+(-x_m.*(3.*S-1)+3.*L.*S.*y_m+6.*L.*N-3.*y_m.*L).*K6+(-x_m.*(3.*L.*S.*y_m+6.*L.*N-3.*y_m.*L)+9.*N.*y_m.*S-9.*N.*y_m+6.*alpha.*S+3.*y_m.^2-3.*alpha+3.*u).*K5+(-x_m.*(9.*N.*y_m.*S-9.*N.*y_m+6.*alpha.*S+3.*y_m.^2-3.*alpha+3.*u)+2.*L.*S.*y_m.^3+3.*L.*S.*alpha.*y_m+L.*y_m.^3+12.*L.*N.*alpha-12.*L.*alpha.*y_m+9.*L.*u.*y_m).*K4+(-x_m.*(2.*L.*S.*y_m.^3+3.*L.*S.*alpha.*y_m+L.*y_m.^3+12.*L.*N.*alpha-12.*L.*alpha.*y_m+9.*L.*u.*y_m)+6.*N.*y_m.^3.*S+9.*N.*y_m.*alpha.*S-3.*N.*y_m.^3-12.*N.*y_m.*alpha+3.*N.*y_m.*u+3.*S.*alpha.^2+6.*alpha.*y_m.^2-3.*alpha.^2+6.*alpha.*u).*K3+(-x_m.*(6.*N.*y_m.^3.*S+9.*N.*y_m.*alpha.*S-3.*N.*y_m.^3-12.*N.*y_m.*alpha+3.*N.*y_m.*u+3.*S.*alpha.^2+6.*alpha.*y_m.^2-3.*alpha.^2+6.*alpha.*u)-3.*L.*alpha.*y_m.^3+6.*L.*u.*y_m.^3+6.*L.*N.*alpha.^2-9.*L.*alpha.^2.*y_m+9.*L.*alpha.*u.*y_m).*K2+(-x_m.*(-3.*L.*alpha.*y_m.^3+6.*L.*u.*y_m.^3+6.*L.*N.*alpha.^2-9.*L.*alpha.^2.*y_m+9.*L.*alpha.*u.*y_m)+N.*alpha.*y_m.^3+2.*N.*u.*y_m.^3-3.*N.*alpha.^2.*y_m+3.*N.*alpha.*u.*y_m+3.*alpha.^2.*y_m.^2-alpha.^3+3.*alpha.^2.*u).*K1 + ( -x_m.*(N.*alpha.*y_m.^3+2.*N.*u.*y_m.^3-3.*N.*alpha.^2.*y_m+3.*N.*alpha.*u.*y_m+3.*alpha.^2.*y_m.^2-alpha.^3+3.*alpha.^2.*u) ).*K0]), 2);
-F(:,15) = sum(([-0.1e1./0.3e1,0.1e1./0.3e1]).*([K7+(2.*L.*S.*y_m+y_m.*L-3.*x_m).*K6+(3.*x_m.^2-3.*x_m.*(2.*L.*S.*y_m+y_m.*L)+6.*N.*y_m.*S-3.*N.*y_m+2.*alpha).*K5+(-x_m.^3+3.*x_m.^2.*(2.*L.*S.*y_m+y_m.*L)-3.*x_m.*(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha)-3.*L.*alpha.*y_m+6.*L.*u.*y_m).*K4+(-x_m.^3.*(2.*L.*S.*y_m+y_m.*L)+3.*x_m.^2.*(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha)-3.*x_m.*(-3.*L.*alpha.*y_m+6.*L.*u.*y_m)+N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2).*K3+(-x_m.^3.*(6.*N.*y_m.*S-3.*N.*y_m+2.*alpha)+3.*x_m.^2.*(-3.*L.*alpha.*y_m+6.*L.*u.*y_m)-3.*x_m.*(N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2)).*K2+(-x_m.^3.*(-3.*L.*alpha.*y_m+6.*L.*u.*y_m)+3.*x_m.^2.*(N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2)).*K1 + ( -x_m.^3.*(N.*y_m.*alpha+2.*y_m.*u.*N+alpha.^2) ).*K0]), 2);
+y = reshape(y_m,1,1,[]);
+x = reshape(x_m,1,1,[]);
+infl_loc(:,1,:) = 0.5.*(y.^2).*J11 + y.*J12 + 0.5.*J13;
+infl_loc(:,2,:) = J11.*y + J12;
+infl_loc(:,3,:) = 0.5.*(x.^2).*J11 + x.*J21 + 0.5.*J31;
+infl_loc(:,4,:) = J11.*x + J21;
+infl_loc(:,5,:) = J11.*y.*x + J12.*x + J21.*y + J22;
+infl_loc(:,6,:) = J11;
 
-F = real(F);
-
-%%
-tmp11 = (-3/2).*F(:,5).*x_m.*z_m + (3/2).*F(:,10).*z_m;
-tmp12 = -3.*F(:,4).*x_m.*z_m + 3.*F(:,6).*z_m;
-tmp13 = (-3/2).*F(:,3).*x_m.*z_m + (3/2).*F(:,7).*z_m;
-tmp14 = -3.*F(:,2).*x_m.*z_m + 3.*F(:,3).*z_m;
-tmp15 = -3.*F(:,6).*x_m.*z_m + 3.*F(:,9).*z_m;
-tmp16 = -3.*F(:,1).*x_m.*z_m + 3.*F(:,2).*z_m;
-
-tmp21 = (3/2).*F(:,8).*z_m - (3/2).*F(:,5).*y_m.*z_m;
-tmp22 = -3.*F(:,4).*y_m.*z_m + 3.*F(:,5).*z_m;
-tmp23 = (3/2).*F(:,9).*z_m - (3/2).*F(:,3).*y_m.*z_m;
-tmp24 = -3.*F(:,2).*y_m.*z_m + 3.*F(:,6).*z_m;
-tmp25 = -3.*F(:,6).*y_m.*z_m + 3.*F(:,10).*z_m;
-tmp26 = -3.*F(:,1).*y_m.*z_m + 3.*F(:,4).*z_m;
-
-tmp31 = 0.5.*(x_m.^2 + y_m.^2 - 2.*z_m.^2).*F(:,5) - F(:,8).*y_m - F(:,10).*x_m + 0.5.*F(:,12) + 0.5.*F(:,13);
-tmp32 = (x_m.^2 + y_m.^2 - 2.*z_m.^2).*F(:,4) - 2.*F(:,5).*y_m - 2.*F(:,6).*x_m + F(:,8) + F(:,9);
-tmp33 = 0.5.*(x_m.^2 + y_m.^2 - 2.*z_m.^2).*F(:,3) - F(:,7).*x_m - F(:,9).*y_m + 0.5.*F(:,11) + 0.5.*F(:,12);
-tmp34 = (x_m.^2 + y_m.^2 - 2.*z_m.^2).*F(:,2) - 2.*F(:,3).*x_m - 2.*F(:,6).*y_m + F(:,7) + F(:,10);
-tmp35 = (x_m.^2 + y_m.^2 - 2.*z_m.^2).*F(:,6) - 2.*F(:,9).*x_m - 2.*F(:,10).*y_m + F(:,14) + F(:,15);
-tmp36 = (x_m.^2 + y_m.^2 - 2.*z_m.^2).*F(:,1) - 2.*F(:,2).*x_m - 2.*F(:,4).*y_m + F(:,3) + F(:,5);
-
-
-%% Bound induction
-
-if any(vecBI)
-    z_m(idx_afx) = z_m_orig;
-    
-    t11 = ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (C(vecBI) .^ 2 .* xi_2(vecBI) .^ 2 + C(vecBI) .* (C(vecBI) .* xi_3(vecBI) + 3 .* D_LE(vecBI)) .* xi_2(vecBI) + C(vecBI) .^ 2 .* xi_3(vecBI) .^ 2 + 3 .* C(vecBI) .* D_LE(vecBI) .* xi_3(vecBI) + 3 .* D_LE(vecBI) .^ 2) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (eta_2(vecBI) - eta_3(vecBI)) .* (((x_m(vecBI) - xi_3(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .^ 2 - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) - (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* z_m(vecBI) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((6 .* eta_3(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_3(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((12 .* y_m(vecBI) - 12 .* eta_3(vecBI)) .* eta_2(vecBI) - 12 .* y_m(vecBI) .^ 2 + 12 .* y_m(vecBI) .* eta_3(vecBI) - 12 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 12 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (6 .* eta_2(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_2(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 12 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 6 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t12 = ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (C(vecBI) .* xi_2(vecBI) + C(vecBI) .* xi_3(vecBI) + 2 .* D_LE(vecBI)) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (eta_2(vecBI) - eta_3(vecBI)) .* (((x_m(vecBI) - xi_3(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .^ 2 - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) - (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* z_m(vecBI) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((2 .* eta_3(vecBI) .^ 2 - 4 .* y_m(vecBI) .* eta_3(vecBI) + 2 .* y_m(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((4 .* y_m(vecBI) - 4 .* eta_3(vecBI)) .* eta_2(vecBI) - 4 .* y_m(vecBI) .^ 2 + 4 .* y_m(vecBI) .* eta_3(vecBI) - 4 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 4 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (2 .* eta_2(vecBI) .^ 2 - 4 .* y_m(vecBI) .* eta_2(vecBI) + 2 .* y_m(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 4 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 2 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t13 = -(-xi_3(vecBI) + xi_2(vecBI)) .* (eta_2(vecBI) - eta_3(vecBI)) .* (xi_2(vecBI) .^ 2 + xi_3(vecBI) .* xi_2(vecBI) + xi_3(vecBI) .^ 2) .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* z_m(vecBI) .* (((-y_m(vecBI) + eta_3(vecBI)) .* eta_2(vecBI) - eta_3(vecBI) .^ 2 + y_m(vecBI) .* eta_3(vecBI) - (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) + (-eta_2(vecBI) .^ 2 + (y_m(vecBI) + eta_3(vecBI)) .* eta_2(vecBI) - y_m(vecBI) .* eta_3(vecBI) + (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((6 .* x_m(vecBI) .^ 2 - 12 .* x_m(vecBI) .* xi_3(vecBI) + 6 .* xi_3(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* eta_2(vecBI) .^ 2 + (((12 .* x_m(vecBI) - 12 .* xi_3(vecBI)) .* xi_2(vecBI) - 12 .* x_m(vecBI) .^ 2 + 12 .* x_m(vecBI) .* xi_3(vecBI) - 12 .* z_m(vecBI) .^ 2) .* eta_3(vecBI) - 12 .* y_m(vecBI) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_3(vecBI))) .* eta_2(vecBI) + (6 .* x_m(vecBI) .^ 2 - 12 .* x_m(vecBI) .* xi_2(vecBI) + 6 .* xi_2(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* eta_3(vecBI) .^ 2 + 12 .* y_m(vecBI) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_2(vecBI)) .* eta_3(vecBI) + 6 .* (-xi_3(vecBI) + xi_2(vecBI)) .^ 2 .* (y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t14 = -(-xi_3(vecBI) + xi_2(vecBI)) .* (eta_2(vecBI) - eta_3(vecBI)) .* (xi_2(vecBI) + xi_3(vecBI)) .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* z_m(vecBI) .* (((-y_m(vecBI) + eta_3(vecBI)) .* eta_2(vecBI) - eta_3(vecBI) .^ 2 + y_m(vecBI) .* eta_3(vecBI) - (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) + (-eta_2(vecBI) .^ 2 + (y_m(vecBI) + eta_3(vecBI)) .* eta_2(vecBI) - y_m(vecBI) .* eta_3(vecBI) + (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((2 .* x_m(vecBI) .^ 2 - 4 .* x_m(vecBI) .* xi_3(vecBI) + 2 .* xi_3(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* eta_2(vecBI) .^ 2 + (((-4 .* xi_3(vecBI) + 4 .* x_m(vecBI)) .* xi_2(vecBI) - 4 .* z_m(vecBI) .^ 2 + 4 .* x_m(vecBI) .* xi_3(vecBI) - 4 .* x_m(vecBI) .^ 2) .* eta_3(vecBI) - 4 .* y_m(vecBI) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_3(vecBI))) .* eta_2(vecBI) + (2 .* x_m(vecBI) .^ 2 - 4 .* x_m(vecBI) .* xi_2(vecBI) + 2 .* xi_2(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* eta_3(vecBI) .^ 2 + 4 .* y_m(vecBI) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_2(vecBI)) .* eta_3(vecBI) + 2 .* (-xi_3(vecBI) + xi_2(vecBI)) .^ 2 .* (y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t15 = 0.2e1 .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (eta_2(vecBI) - eta_3(vecBI)) .* ((C(vecBI) .* xi_2(vecBI) .^ 2) + ((C(vecBI) .* xi_3(vecBI)) + 0.3e1 ./ 0.2e1 .* D_LE(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .* ((C(vecBI) .* xi_3(vecBI)) + 0.3e1 ./ 0.2e1 .* D_LE(vecBI))) .* (((x_m(vecBI) - xi_3(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .^ 2 - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) - (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* z_m(vecBI) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((6 .* eta_3(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_3(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((12 .* y_m(vecBI) - 12 .* eta_3(vecBI)) .* eta_2(vecBI) - 12 .* y_m(vecBI) .^ 2 + 12 .* y_m(vecBI) .* eta_3(vecBI) - 12 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 12 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (6 .* eta_2(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_2(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 12 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 6 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t16 = -(-xi_3(vecBI) + xi_2(vecBI)) .* (eta_2(vecBI) - eta_3(vecBI)) .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* z_m(vecBI) .* (((-y_m(vecBI) + eta_3(vecBI)) .* eta_2(vecBI) - eta_3(vecBI) .^ 2 + y_m(vecBI) .* eta_3(vecBI) - (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) + (-eta_2(vecBI) .^ 2 + (y_m(vecBI) + eta_3(vecBI)) .* eta_2(vecBI) - y_m(vecBI) .* eta_3(vecBI) + (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + z_m(vecBI) .^ 2) .* eta_2(vecBI) .^ 2 + (((2 .* x_m(vecBI) - 2 .* xi_3(vecBI)) .* xi_2(vecBI) - 2 .* x_m(vecBI) .^ 2 + 2 .* x_m(vecBI) .* xi_3(vecBI) - 2 .* z_m(vecBI) .^ 2) .* eta_3(vecBI) - 2 .* y_m(vecBI) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_3(vecBI))) .* eta_2(vecBI) + (x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + z_m(vecBI) .^ 2) .* eta_3(vecBI) .^ 2 + 2 .* y_m(vecBI) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (x_m(vecBI) - xi_2(vecBI)) .* eta_3(vecBI) + (-xi_3(vecBI) + xi_2(vecBI)) .^ 2 .* (y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t21 = -((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (C(vecBI) .^ 2 .* xi_2(vecBI) .^ 2 + C(vecBI) .* (C(vecBI) .* xi_3(vecBI) + 3 .* D_LE(vecBI)) .* xi_2(vecBI) + C(vecBI) .^ 2 .* xi_3(vecBI) .^ 2 + 3 .* C(vecBI) .* D_LE(vecBI) .* xi_3(vecBI) + 3 .* D_LE(vecBI) .^ 2) .* ((-xi_3(vecBI) + xi_2(vecBI)) .^ 2) .* (((x_m(vecBI) - xi_3(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .^ 2 - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) - (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* z_m(vecBI) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((6 .* eta_3(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_3(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((12 .* y_m(vecBI) - 12 .* eta_3(vecBI)) .* eta_2(vecBI) - 12 .* y_m(vecBI) .^ 2 + 12 .* y_m(vecBI) .* eta_3(vecBI) - 12 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 12 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (6 .* eta_2(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_2(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 12 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 6 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t22 = -((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (C(vecBI) .* xi_2(vecBI) + C(vecBI) .* xi_3(vecBI) + 2 .* D_LE(vecBI)) .* ((-xi_3(vecBI) + xi_2(vecBI)) .^ 2) .* (((x_m(vecBI) - xi_3(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .^ 2 - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) - (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* z_m(vecBI) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((2 .* eta_3(vecBI) .^ 2 - 4 .* y_m(vecBI) .* eta_3(vecBI) + 2 .* y_m(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((4 .* y_m(vecBI) - 4 .* eta_3(vecBI)) .* eta_2(vecBI) - 4 .* y_m(vecBI) .^ 2 + 4 .* y_m(vecBI) .* eta_3(vecBI) - 4 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 4 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (2 .* eta_2(vecBI) .^ 2 - 4 .* y_m(vecBI) .* eta_2(vecBI) + 2 .* y_m(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 4 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 2 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t23 = ((-xi_3(vecBI) + xi_2(vecBI)) .^ 2) .* (xi_2(vecBI) .^ 2 + xi_2(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2) .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* z_m(vecBI) .* (((xi_3(vecBI) - x_m(vecBI)) .* xi_2(vecBI) - xi_3(vecBI) .^ 2 + x_m(vecBI) .* xi_3(vecBI) - (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) + (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((6 .* eta_3(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_3(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((12 .* y_m(vecBI) - 12 .* eta_3(vecBI)) .* eta_2(vecBI) - 12 .* y_m(vecBI) .^ 2 + 12 .* y_m(vecBI) .* eta_3(vecBI) - 12 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 12 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (6 .* eta_2(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_2(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 12 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 6 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t24 = ((-xi_3(vecBI) + xi_2(vecBI)) .^ 2) .* (xi_2(vecBI) + xi_3(vecBI)) .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* z_m(vecBI) .* (((xi_3(vecBI) - x_m(vecBI)) .* xi_2(vecBI) - xi_3(vecBI) .^ 2 + x_m(vecBI) .* xi_3(vecBI) - (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) + (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((2 .* eta_3(vecBI) .^ 2 - 4 .* y_m(vecBI) .* eta_3(vecBI) + 2 .* y_m(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((4 .* y_m(vecBI) - 4 .* eta_3(vecBI)) .* eta_2(vecBI) - 4 .* y_m(vecBI) .^ 2 + 4 .* y_m(vecBI) .* eta_3(vecBI) - 4 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 4 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (2 .* eta_2(vecBI) .^ 2 - 4 .* y_m(vecBI) .* eta_2(vecBI) + 2 .* y_m(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 4 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 2 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t25 = -0.2e1 .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* ((-xi_3(vecBI) + xi_2(vecBI)) .^ 2) .* ((C(vecBI) .* xi_2(vecBI) .^ 2) + ((C(vecBI) .* xi_3(vecBI)) + 0.3e1 ./ 0.2e1 .* D_LE(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .* ((C(vecBI) .* xi_3(vecBI)) + 0.3e1 ./ 0.2e1 .* D_LE(vecBI))) .* (((x_m(vecBI) - xi_3(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .^ 2 - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) - (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* z_m(vecBI) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((6 .* eta_3(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_3(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((12 .* y_m(vecBI) - 12 .* eta_3(vecBI)) .* eta_2(vecBI) - 12 .* y_m(vecBI) .^ 2 + 12 .* y_m(vecBI) .* eta_3(vecBI) - 12 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 12 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (6 .* eta_2(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_2(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 12 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 6 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t26 = ((-xi_3(vecBI) + xi_2(vecBI)) .^ 2) .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* z_m(vecBI) .* (((xi_3(vecBI) - x_m(vecBI)) .* xi_2(vecBI) - xi_3(vecBI) .^ 2 + x_m(vecBI) .* xi_3(vecBI) - (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) + (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((2 .* y_m(vecBI) - 2 .* eta_3(vecBI)) .* eta_2(vecBI) - 2 .* y_m(vecBI) .^ 2 + 2 .* y_m(vecBI) .* eta_3(vecBI) - 2 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 2 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 2 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t31 = -((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (C(vecBI) .^ 2 .* xi_2(vecBI) .^ 2 + C(vecBI) .* (C(vecBI) .* xi_3(vecBI) + 3 .* D_LE(vecBI)) .* xi_2(vecBI) + C(vecBI) .^ 2 .* xi_3(vecBI) .^ 2 + 3 .* C(vecBI) .* D_LE(vecBI) .* xi_3(vecBI) + 3 .* D_LE(vecBI) .^ 2) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (((x_m(vecBI) - xi_3(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .^ 2 - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) - (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* ((-y_m(vecBI) + eta_3(vecBI)) .* xi_2(vecBI) + (y_m(vecBI) - eta_2(vecBI)) .* xi_3(vecBI) + x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI))) ./ ((6 .* eta_3(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_3(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((12 .* y_m(vecBI) - 12 .* eta_3(vecBI)) .* eta_2(vecBI) - 12 .* y_m(vecBI) .^ 2 + 12 .* y_m(vecBI) .* eta_3(vecBI) - 12 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 12 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (6 .* eta_2(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_2(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 12 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 6 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t32 = -((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (C(vecBI) .* xi_2(vecBI) + C(vecBI) .* xi_3(vecBI) + 2 .* D_LE(vecBI)) .* (-xi_3(vecBI) + xi_2(vecBI)) .* (((x_m(vecBI) - xi_3(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .^ 2 - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) - (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* ((-y_m(vecBI) + eta_3(vecBI)) .* xi_2(vecBI) + (y_m(vecBI) - eta_2(vecBI)) .* xi_3(vecBI) + x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI))) ./ ((2 .* eta_3(vecBI) .^ 2 - 4 .* y_m(vecBI) .* eta_3(vecBI) + 2 .* y_m(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((4 .* y_m(vecBI) - 4 .* eta_3(vecBI)) .* eta_2(vecBI) - 4 .* y_m(vecBI) .^ 2 + 4 .* y_m(vecBI) .* eta_3(vecBI) - 4 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 4 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (2 .* eta_2(vecBI) .^ 2 - 4 .* y_m(vecBI) .* eta_2(vecBI) + 2 .* y_m(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 4 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 2 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t33 = (-xi_3(vecBI) + xi_2(vecBI)) .* (xi_2(vecBI) .^ 2 + xi_3(vecBI) .* xi_2(vecBI) + xi_3(vecBI) .^ 2) .* ((-y_m(vecBI) + eta_3(vecBI)) .* xi_2(vecBI) + (y_m(vecBI) - eta_2(vecBI)) .* xi_3(vecBI) + x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI))) .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (((xi_3(vecBI) - x_m(vecBI)) .* xi_2(vecBI) - xi_3(vecBI) .^ 2 + x_m(vecBI) .* xi_3(vecBI) - (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) + (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((6 .* eta_3(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_3(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((12 .* y_m(vecBI) - 12 .* eta_3(vecBI)) .* eta_2(vecBI) - 12 .* y_m(vecBI) .^ 2 + 12 .* y_m(vecBI) .* eta_3(vecBI) - 12 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 12 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (6 .* eta_2(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_2(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 12 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 6 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t34 = (-xi_3(vecBI) + xi_2(vecBI)) .* (xi_2(vecBI) + xi_3(vecBI)) .* ((-y_m(vecBI) + eta_3(vecBI)) .* xi_2(vecBI) + (y_m(vecBI) - eta_2(vecBI)) .* xi_3(vecBI) + x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI))) .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (((xi_3(vecBI) - x_m(vecBI)) .* xi_2(vecBI) - xi_3(vecBI) .^ 2 + x_m(vecBI) .* xi_3(vecBI) - (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) + (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((2 .* eta_3(vecBI) .^ 2 - 4 .* y_m(vecBI) .* eta_3(vecBI) + 2 .* y_m(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((4 .* y_m(vecBI) - 4 .* eta_3(vecBI)) .* eta_2(vecBI) - 4 .* y_m(vecBI) .^ 2 + 4 .* y_m(vecBI) .* eta_3(vecBI) - 4 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 4 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (2 .* eta_2(vecBI) .^ 2 - 4 .* y_m(vecBI) .* eta_2(vecBI) + 2 .* y_m(vecBI) .^ 2 + 2 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 4 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 2 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t35 = -0.2e1 .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (-xi_3(vecBI) + xi_2(vecBI)) .* ((C(vecBI) .* xi_2(vecBI) .^ 2) + ((C(vecBI) .* xi_3(vecBI)) + 0.3e1 ./ 0.2e1 .* D_LE(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .* ((C(vecBI) .* xi_3(vecBI)) + 0.3e1 ./ 0.2e1 .* D_LE(vecBI))) .* (((x_m(vecBI) - xi_3(vecBI)) .* xi_2(vecBI) + xi_3(vecBI) .^ 2 - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) - (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* ((-y_m(vecBI) + eta_3(vecBI)) .* xi_2(vecBI) + (y_m(vecBI) - eta_2(vecBI)) .* xi_3(vecBI) + x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI))) ./ ((6 .* eta_3(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_3(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((12 .* y_m(vecBI) - 12 .* eta_3(vecBI)) .* eta_2(vecBI) - 12 .* y_m(vecBI) .^ 2 + 12 .* y_m(vecBI) .* eta_3(vecBI) - 12 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 12 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (6 .* eta_2(vecBI) .^ 2 - 12 .* y_m(vecBI) .* eta_2(vecBI) + 6 .* y_m(vecBI) .^ 2 + 6 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 12 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + 6 .* (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    t36 = (-xi_3(vecBI) + xi_2(vecBI)) .* ((-y_m(vecBI) + eta_3(vecBI)) .* xi_2(vecBI) + (y_m(vecBI) - eta_2(vecBI)) .* xi_3(vecBI) + x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI))) .* ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) .* (((xi_3(vecBI) - x_m(vecBI)) .* xi_2(vecBI) - xi_3(vecBI) .^ 2 + x_m(vecBI) .* xi_3(vecBI) - (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* sqrt((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2)) + (-xi_2(vecBI) .^ 2 + (xi_3(vecBI) + x_m(vecBI)) .* xi_2(vecBI) - x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI))) .* sqrt((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_3(vecBI) + xi_3(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2))) .* ((eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + x_m(vecBI) .^ 2 - 2 .* x_m(vecBI) .* xi_2(vecBI) + xi_2(vecBI) .^ 2 + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .^ (-0.1e1 ./ 0.2e1)) ./ ((eta_3(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_3(vecBI) + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .* xi_2(vecBI) .^ 2 + (((2 .* y_m(vecBI) - 2 .* eta_3(vecBI)) .* eta_2(vecBI) - 2 .* y_m(vecBI) .^ 2 + 2 .* y_m(vecBI) .* eta_3(vecBI) - 2 .* z_m(vecBI) .^ 2) .* xi_3(vecBI) - 2 .* x_m(vecBI) .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_3(vecBI))) .* xi_2(vecBI) + (eta_2(vecBI) .^ 2 - 2 .* y_m(vecBI) .* eta_2(vecBI) + y_m(vecBI) .^ 2 + z_m(vecBI) .^ 2) .* xi_3(vecBI) .^ 2 + 2 .* (eta_2(vecBI) - eta_3(vecBI)) .* (y_m(vecBI) - eta_2(vecBI)) .* x_m(vecBI) .* xi_3(vecBI) + (eta_2(vecBI) - eta_3(vecBI)) .^ 2 .* (x_m(vecBI) .^ 2 + z_m(vecBI) .^ 2));
-    
-    eps = 1e-10;
-    r1 = [xi_2(vecBI) eta_2(vecBI) xi_2(vecBI).*0] - [x_m(vecBI) y_m(vecBI) z_m(vecBI)];
-    r2 = [xi_3(vecBI) eta_3(vecBI) xi_3(vecBI).*0] - [x_m(vecBI) y_m(vecBI) z_m(vecBI)];
-    idx_corr = sqrt(sum(r1.^2,2)) < eps | sqrt(sum(r2.^2,2)) < eps | sqrt(sum(cross(r1,r2,2).^2,2)) < eps;
-    
-    vecBI(vecBI) = vecBI(vecBI) & ~idx_corr;
-    tmp11(vecBI) = tmp11(vecBI) + t11(~idx_corr);
-    tmp12(vecBI) = tmp12(vecBI) + t12(~idx_corr);
-    tmp13(vecBI) = tmp13(vecBI) + t13(~idx_corr);
-    tmp14(vecBI) = tmp14(vecBI) + t14(~idx_corr);
-    tmp15(vecBI) = tmp15(vecBI) + t15(~idx_corr);
-    tmp16(vecBI) = tmp16(vecBI) + t16(~idx_corr);
-    
-    tmp21(vecBI) = tmp21(vecBI) + t21(~idx_corr);
-    tmp22(vecBI) = tmp22(vecBI) + t22(~idx_corr);
-    tmp23(vecBI) = tmp23(vecBI) + t23(~idx_corr);
-    tmp24(vecBI) = tmp24(vecBI) + t24(~idx_corr);
-    tmp25(vecBI) = tmp25(vecBI) + t25(~idx_corr);
-    tmp26(vecBI) = tmp26(vecBI) + t26(~idx_corr);
-    
-    tmp31(vecBI) = tmp31(vecBI) + t31(~idx_corr);
-    tmp32(vecBI) = tmp32(vecBI) + t32(~idx_corr);
-    tmp33(vecBI) = tmp33(vecBI) + t33(~idx_corr);
-    tmp34(vecBI) = tmp34(vecBI) + t34(~idx_corr);
-    tmp35(vecBI) = tmp35(vecBI) + t35(~idx_corr);
-    tmp36(vecBI) = tmp36(vecBI) + t36(~idx_corr);
-    
-    %     tmp11 = tmp11.*0;
-    %     tmp12 = tmp11;
-    %     tmp13 = tmp11;
-    %     tmp14 = tmp11;
-    %     tmp15 = tmp11;
-    %     tmp16 = tmp11;
-    %
-    %     tmp21 = tmp11;
-    %     tmp22 = tmp11;
-    %     tmp23 = tmp11;
-    %     tmp24 = tmp11;
-    %     tmp25 = tmp11;
-    %     tmp26 = tmp11;
-    %
-    %     tmp31 = tmp11;
-    %     tmp32 = tmp11;
-    %     tmp33 = tmp11;
-    %     tmp34 = tmp11;
-    %     tmp35 = tmp11;
-    %     tmp36 = tmp11;
-    %
-    %     tmp11(vecBI) = t11(~idx_corr);
-    %     tmp12(vecBI) = t12(~idx_corr);
-    %     tmp13(vecBI) = t13(~idx_corr);
-    %     tmp14(vecBI) = t14(~idx_corr);
-    %     tmp15(vecBI) = t15(~idx_corr);
-    %     tmp16(vecBI) = t16(~idx_corr);
-    %
-    %     tmp21(vecBI) = t21(~idx_corr);
-    %     tmp22(vecBI) = t22(~idx_corr);
-    %     tmp23(vecBI) = t23(~idx_corr);
-    %     tmp24(vecBI) = t24(~idx_corr);
-    %     tmp25(vecBI) = t25(~idx_corr);
-    %     tmp26(vecBI) = t26(~idx_corr);
-    %
-    %     tmp31(vecBI) = t31(~idx_corr);
-    %     tmp32(vecBI) = t32(~idx_corr);
-    %     tmp33(vecBI) = t33(~idx_corr);
-    %     tmp34(vecBI) = t34(~idx_corr);
-    %     tmp35(vecBI) = t35(~idx_corr);
-    %     tmp36(vecBI) = t36(~idx_corr);
-end
-
-%%
-infl_new(1,1,:) = reshape(tmp11,1,1,[]);
-infl_new(1,2,:) = reshape(tmp12,1,1,[]);
-infl_new(1,3,:) = reshape(tmp13,1,1,[]);
-infl_new(1,4,:) = reshape(tmp14,1,1,[]);
-infl_new(1,5,:) = reshape(tmp15,1,1,[]);
-infl_new(1,6,:) = reshape(tmp16,1,1,[]);
-
-infl_new(2,1,:) = reshape(tmp21,1,1,[]);
-infl_new(2,2,:) = reshape(tmp22,1,1,[]);
-infl_new(2,3,:) = reshape(tmp23,1,1,[]);
-infl_new(2,4,:) = reshape(tmp24,1,1,[]);
-infl_new(2,5,:) = reshape(tmp25,1,1,[]);
-infl_new(2,6,:) = reshape(tmp26,1,1,[]);
-
-infl_new(3,1,:) = reshape(tmp31,1,1,[]);
-infl_new(3,2,:) = reshape(tmp32,1,1,[]);
-infl_new(3,3,:) = reshape(tmp33,1,1,[]);
-infl_new(3,4,:) = reshape(tmp34,1,1,[]);
-infl_new(3,5,:) = reshape(tmp35,1,1,[]);
-infl_new(3,6,:) = reshape(tmp36,1,1,[]);
-
-%%
-infl_loc = real(infl_new);
-infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
-
-idx_nan = find(reshape(sum(any(isnan(infl_new) | isinf(infl_new))),[],1) > 0);
-if any(idx_nan)
-    disp('Nan induction in fcnHDVEIND_DB');
-end
-infl_loc(isnan(infl_loc) | isinf(infl_loc)) = 0;
-
-infl_loc(1:2,:,idx_afx) = infl_loc(1:2,:,idx_afx).*reshape((z_m_orig./ztol),1,1,[]);
+infl_loc(:,:,idx_on_element) = infl_loc(:,:,idx_on_element).*0;
+disp('Turning off on element');
 
 end

@@ -7,7 +7,8 @@ load('single_dve.mat');
 % h -> height above surface, z_m
 % L -> distance (from pt1 or pt2) along edge to field point intersection
 
-fpg = [1 2.2 1; 0 0 0; 0 1 0; -1 -1 -0.4];
+% fpg = [1 2.2 1; 0 0 0; 0 1 0; -1 -1 -0.4];
+fpg = [1.3 2.2 2];
 dvenum = ones(size(fpg,1),1);
 
 %%
@@ -28,23 +29,24 @@ eta_1 = permute(matPLEX(1,2,dvenum),[3 2 1]);
 eta_2 = permute(matPLEX(2,2,dvenum),[3 2 1]);
 eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 
-% hFig1 = figure(1);
-% clf(1);
-% patch([xi_1(1) xi_2(1) xi_3(1)], [eta_1(1) eta_2(1) eta_3(1)],'w');
-% grid minor
-% box on
-% axis tight
-% axis equal
-% xlabel('Xi-Dir');
-% ylabel('Eta-Dir');
-% zlabel('Zi-Dir');
-% for i = 1:size(fpl,1)
-%     hold on
-%     textscatter3(fpl(i,1), fpl(i,2), fpl(i,3), {num2str(i)})
-%     hold off
-% end
+hFig1 = figure(1);
+clf(1);
+patch([xi_1(1) xi_2(1) xi_3(1)], [eta_1(1) eta_2(1) eta_3(1)],'w');
+grid minor
+box on
+axis tight
+axis equal
+xlabel('Xi-Dir');
+ylabel('Eta-Dir');
+zlabel('Zi-Dir');
+for i = 1:size(fpl,1)
+    hold on
+    scatter3(fpl(i,1), fpl(i,2), fpl(i,3), 'rs')
+    hold off
+end
 
 % Call, xi-eta, edge (1, 2, or 3), point (1 or 2)
+epts = nan(len,2,3,2);
 epts(:,:,1,1:2) = cat(4, [xi_1 eta_1], [xi_2 eta_2]);
 epts(:,:,2,1:2) = cat(4, [xi_2 eta_2], [xi_3 eta_3]);
 epts(:,:,3,1:2) = cat(4, [xi_3 eta_3], [xi_1 eta_1]);
@@ -54,7 +56,7 @@ nu_d = epts(:,:,:,2) - epts(:,:,:,1);
 nu_d = nu_d./sqrt(sum(nu_d.^2,2));
 
 nu_n = nu_d(:,[2 1],:);
-nu_n(:,:,1) = nu_n(:,:,1).*-1;
+nu_n(:,1,:) = nu_n(:,1,:).*-1;
 
 % Calculating parameters
 L1 = dot(nu_d, fpl(:,1:2) - epts(:,:,1:3,1), 2);

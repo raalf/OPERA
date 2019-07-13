@@ -67,19 +67,25 @@ matCOEFF = -[0 0 -2 0.17 0 0.056];
 % % z = [-0.05 0.05];
 % % z = 0;
 
-granularity = 0.1
-x = [-0.5:granularity:1.5];
-y = [-0.8:granularity:1.3];
-z = [-1:granularity:1];
-% z = [-0.05 0.05];
-% z = 0;
-
 % granularity = 0.1
-% x = [-1:granularity:2];
-% y = [-1:granularity:2];
-% z = [1:granularity:2];
-% z = [1e-5 -1e-5];
+% x = [-0.5:granularity:1.5];
+% y = [-0.8:granularity:1.3];
+% z = [-1:granularity:1];
+% % z = [-0.5 0.5];
+% % z = 0;
+
+granularity = 0.25
+x = [-1:granularity:2];
+y = [-1:granularity:2];
+z = [-2:granularity:2];
+% z = [1e-1 -1e-1];
 % z = 0;
+% z(z == 0) = []
+
+% granularity = 0.5
+% x = [-3:granularity:5];
+% y = [-3:granularity:5];
+% z = [-4:granularity:5];
 % z(z == 0) = []
 
 % granularity = 0.00125;
@@ -119,10 +125,10 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = [0 0.2 0; x1 0.2 0];
 % vecBOUNDIND = true(size(fpg,1),1);
 % vecBOUNDIND = false(size(fpg,1),1);
-fpg = [fpg; matCENTER];
+% fpg = [fpg];
 
-% fpg = [1.4 -0.2 0; 1.4 -0.2 0.2];
-[q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, [], 2e-2);
+% fpg = [-0.5 0.75 0; -0.5 0.625 0];
+[q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, [], 0);
 
 % vecBOUNDIND = true(size(fpg,1),1);
 % [q_ind2] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, vecBOUNDIND);

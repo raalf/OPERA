@@ -19,6 +19,13 @@ eta_1 = permute(matPLEX(1,2,dvenum),[3 2 1]);
 eta_2 = permute(matPLEX(2,2,dvenum),[3 2 1]);
 eta_3 = permute(matPLEX(3,2,dvenum),[3 2 1]);
 
+
+idx_afx = abs(h) < ztol;
+h_orig = h(idx_afx);
+sgn = sign(h_orig);
+sgn(sgn == 0) = 1;
+h(idx_afx) = sgn.*ztol;
+
 %%
 % Checking which elements are on the element
 C = (eta_3 - eta_2)./(xi_3 - xi_2);
@@ -33,6 +40,11 @@ xi_right = max([xi_1, xi_3],[],2);
 
 margin = 1e-3;
 idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin & abs(h) <= margin;
+
+idx_flp = xi_3 < xi_1; % Flipping influence of elements that need a good flippin
+if any(abs(xi_2 - xi_3) < margin & abs(xi_1 - xi_2) > margin)
+    disp('Issue in element orientation in HDVEIND.');
+end
 
 %%
 % hFig1 = figure(1);
@@ -345,7 +357,9 @@ H111 = -abs(h).*sum(atan2(a.*(L2.*c1 - L1.*c2), c1.*c2 + (a.^2).*L1.*L2),3) + su
 
 % PAGE 125
 % 2.)
-idx = [abs(h) >= del_h.*d_H, abs(h) < del_h.*d_H & ~idx_on_element abs(h) < del_h.*d_H & idx_on_element]; 
+% idx = [abs(h) >= del_h.*d_H, abs(h) < del_h.*d_H & ~idx_on_element abs(h) < del_h.*d_H & idx_on_element]; 
+idx = [abs(h) >= del_h.*d_H, abs(h) < del_h.*d_H]; 
+
 H113(idx(:,1),1) = (1./h(idx(:,1)).^2).*(-1.*H111(idx(:,1)) + sum(a(idx(:,1),:,:).*F111(idx(:,1),:,:), 3));
 H115(idx(:,1),1) = (1./(3.*h(idx(:,1)).^2)).*(H113(idx(:,1)) + sum(a(idx(:,1),:,:).*F113(idx(:,1),:,:), 3));
 
@@ -449,6 +463,8 @@ H325 = -H145 - (h.^2).*H125 + H123;
 H335 = -H155 - (h.^2).*H135 + H133;
 H515 = -H335 - (h.^2).*H315 + H313;
 
+% PAGE 127 / PAGE 187
+% out = eps(1,3,5,h);
 
 %%
 J11 = [reshape(3.*h.*H215,1,1,[]); reshape(3.*h.*H125,1,1,[]); reshape(H113 - 3.*(h.^2).*H115,1,1,[])];
@@ -468,7 +484,31 @@ infl_loc(:,4,:) = J11.*x + J21;
 infl_loc(:,5,:) = J11.*y.*x + J12.*x + J21.*y + J22;
 infl_loc(:,6,:) = J11;
 
-infl_loc(:,:,idx_on_element) = infl_loc(:,:,idx_on_element).*0;
-disp('Turning off on element');
+infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
+
+infl_loc(1:2,:,idx_afx) = infl_loc(1:2,:,idx_afx).*reshape((h_orig./ztol),1,1,[]);
+
+% infl_loc(:,:,idx_on_element) = infl_loc(:,:,idx_on_element).*0;
+% disp('Turning off on element');
 
 end
+
+function out = eps(M,N,K,h)
+
+nu = 0;
+
+if rem(M,2) ~= 0 && rem(N,2) ~= 0
+    tmp1 = prod([1 1:2:(M - 2)]);
+    tmp2 = prod([1 1:2:(N - 2)]);
+    tmp3 = prod(K - (2:2:(M + N)));
+    nu = (tmp1*tmp2)/tmp3;
+end
+
+out = (2*pi*nu).*(abs(h).^(M + N - K));
+
+end
+
+
+
+
+

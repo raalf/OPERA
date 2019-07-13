@@ -5,7 +5,7 @@ function [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, 
 valTIMESTEP = valWNELE./(valWSIZE*2);
 dvegrid = flipud(repmat([1 (1:valWSIZE)+valWSIZE], valTIMESTEP, 1) + [0:(valWSIZE*2):(valWSIZE*valTIMESTEP*2 - 1)]');
 
-tmp1 = fcnSDVEVEL(matWCENTER(dvegrid(:),:), valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 2e-2) + fcnSDVEVEL(matWCENTER(dvegrid(:),:), valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 2e-2);
+tmp1 = fcnSDVEVEL(matWCENTER(dvegrid(:),:), valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 2e-1) + fcnSDVEVEL(matWCENTER(dvegrid(:),:), valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 2e-1);
 
 tmp3 = zeros(size(matWELST,1),3);
 tmp3(matWE2GRID(:),:) = tmp1;

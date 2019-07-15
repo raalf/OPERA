@@ -70,7 +70,7 @@ tmp = nan(len,1,3);
 idx = sign(L1) ~= sign(L2);
 tmp(idx) = a(idx);
 idx = (sign(L1) == sign(L2)) & ~idx;
-tmp(idx) = min([L1(idx) L2(idx)],[],2);
+tmp(idx) = max([abs(a(idx)) min([abs(L1(idx)) abs(L2(idx))],[],2)], [], 2);
 if any(isnan(tmp),'all')
     disp('Issue in determining d_H');
 end

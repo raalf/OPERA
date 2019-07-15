@@ -66,21 +66,23 @@ matCOEFF = -[0 0 -2 0.17 0 0.056];
 % z = 0;
 % z(z == 0) = []
 
-% granularity = 0.5
-% x = [-3:granularity:5];
-% y = [-3:granularity:5];
-% z = [-4:granularity:5];
+granularity = 0.05
+x = [-3:granularity:5];
+y = [-3:granularity:5];
+z = [-4:granularity:5];
 % z(z == 0) = []
+z = 0
 
-granularity = 0.00005;
-x = 0.5;
-y = 0.15;
-z = [-0.01:granularity:0.01];
+% granularity = 0.00005;
+% x = 0.5;
+% y = 0.15;
+% z = [-0.01:granularity:0.01];
 
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
 % fpg = [0.5 0.15 0.0001; 0.1 0.05 0.0001]
+% fpg = [-2.5 3.5 0]
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, [], 0);
 
 points = fcnGLOBSTAR([0.5 0.15 0] - matCENTER, matROTANG);
@@ -97,12 +99,12 @@ quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'b')
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind2(:,1), q_ind2(:,2), q_ind2(:,3), 1, 'm')
 hold off
 
-figure(2);
-clf(2);
-plot(q_ind(:,2), z, '-ok')
-grid minor
-box on
-axis tight
+% figure(2);
+% clf(2);
+% plot(q_ind(:,2), z, '-ok')
+% grid minor
+% box on
+% axis tight
 
 
 

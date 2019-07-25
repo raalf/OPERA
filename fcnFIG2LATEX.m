@@ -75,7 +75,7 @@ fullfilepath = strcat(PATH,FILENAME);
 
 
 
-set(hFig,'Renderer','opengl'); % ensure vector output
+set(hFig,'Renderer','painters'); % ensure vector output
 set(hFig,'Units','Inches');
 set(hFig,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',WH)
 

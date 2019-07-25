@@ -20,16 +20,21 @@ vecSYM = [];
 matPOINTS(:,:,1) = [1 0 0];
 matPOINTS(:,:,2) = [0  0 0];
 % matPOINTS(:,:,3) = [0.9  0.5 0];
-% xp = 0
+xp = 0
 % xp = 0.99
-xp = 0.5
+% xp = 0.5
 
-matPOINTS(:,:,3) = [xp  -0.5 0];
-
-[TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-    matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS,true);
+% matPOINTS(:,:,3) = [xp  -0.5 0];
+% 
+% [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
+%     matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS,true);
 
 matPOINTS(:,:,3) = [xp  0.5 0];
+
+
+% matPOINTS(:,:,1) = [ 1.0000         0         0];
+% matPOINTS(:,:,2) = [-3.9810         0   -0.4358];
+% matPOINTS(:,:,3) = [-3.9810    0.7500   -0.4358];
 
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
     matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL] = fcnTRIANG(matPOINTS, false);
@@ -38,8 +43,9 @@ vecDVESYM = false(size(matCENTER, 1), 1);
 
 vecUINF = fcnUINFWING(valALPHA, 0);
 
-matCOEFF = -[0 0 -2 0.17 0 0.056];
+matCOEFF = [0.0000   -0.0000    0.6799   -0.3236    0.0000   -0.1021];
 % matCOEFF = -[10 0 -20 1 0 1];
+% matCOEFF = -[0 0 0 0 0 1];
 
 %% Plot
 
@@ -51,60 +57,105 @@ matCOEFF = -[0 0 -2 0.17 0 0.056];
 % y = [-0.1:granularity:0.6];
 % z = [-0.1:granularity:0.1];
 
-% granularity = 0.005
+% granularity = 0.0125;
 % x = [-0.5:granularity:1.5];
 % y = [-0.8:granularity:1.3];
 % z = [-1:granularity:1];
 % % z = [-0.5 0.5];
 % z = 0;
 
-% granularity = 0.25
-% x = [-1:granularity:2];
-% y = [-1:granularity:2];
-% z = [-2:granularity:2];
-% z = [1e-1 -1e-1];
+% granularity = 0.0125
+% y = [-0.5:granularity:1.5];
+% x = matCENTER(1);
+% z = matCENTER(3);
+
+% granularity = 0.000125
+% x = [-0.1:granularity:0.1];
+% y = 0.25;
 % z = 0;
-% z(z == 0) = []
 
-granularity = 0.05
-x = [-3:granularity:5];
-y = [-3:granularity:5];
-z = [-4:granularity:5];
-% z(z == 0) = []
-z = 0
+% granularity = 0.5
+% x = [-3:granularity:5];
+% y = [-3:granularity:5];
+% z = [-4:granularity:5];
+% % z(z == 0) = []
+% % z = 0
 
-% granularity = 0.00005;
-% x = 0.5;
-% y = 0.15;
-% z = [-0.01:granularity:0.01];
+granularity = 0.01;
+x = matCENTER(1);
+y = matCENTER(2);
+x = 0;
+y = 0.5;
+% x = 0.25;
+% y = 0.25;
+% x = 1;
+% y = 2;
+z = [-1:granularity:1];
 
 [X,Y,Z] = meshgrid(x,y,z);
 fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 
-% fpg = [0.5 0.15 0.0001; 0.1 0.05 0.0001]
-% fpg = [-2.5 3.5 0]
+% fpg = [0 0.25 0]
+% fpg = [0 0 0; 1 0 0; 0.5 0.5 0]
+% fpg = [x 0 z];
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, [], 0);
+[q_ind2] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, [], 0.01);
 
-points = fcnGLOBSTAR([0.5 0.15 0] - matCENTER, matROTANG);
-vort = [matCOEFF(1,3).*points(:,1) + matCOEFF(1,4), matCOEFF(1,1).*points(:,2) + matCOEFF(1,2), points(:,2).*0];
+%%
+% figure(2);
+% clf(2);
+% plot(q_ind(:,3), y, '-ok')
+% hold on
+% plot(q_ind2(:,3), y, '--b^')
+% hold off
+% grid minor
+% box on
+% axis tight
+
+%%
+figure(2);
+clf(2);
+subplot(3,1,1)
+plot(q_ind(:,1), z, '-ok')
+hold on
+plot(q_ind2(:,1), z, '--b^')
+hold off
+grid minor
+box on
+axis tight
+
+subplot(3,1,2)
+plot(q_ind(:,2), z, '-ok')
+hold on
+plot(q_ind2(:,2), z, '--b^')
+hold off
+grid minor
+box on
+axis tight
+
+subplot(3,1,3)
+plot(q_ind(:,3), z, '-ok')
+hold on
+plot(q_ind2(:,3), z, '--b^')
+hold off
+grid minor
+box on
+axis tight
+
+% points = fcnGLOBSTAR([0 0.25 0] - matCENTER, matROTANG);
+% vort = [matCOEFF(1,3).*points(:,1) + matCOEFF(1,4), matCOEFF(1,1).*points(:,2) + matCOEFF(1,2), points(:,2).*0];
 
 % vecBOUNDIND = true(size(fpg,1),1);
 % [q_ind2] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, vecBOUNDIND);
 
 %%
-% figure(1);
-% clf(1);
-hold on
-quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'b')
-% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind2(:,1), q_ind2(:,2), q_ind2(:,3), 1, 'm')
-hold off
+% % figure(1);
+% % clf(1);
+% hold on
+% quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3), 'b')
+% % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind2(:,1), q_ind2(:,2), q_ind2(:,3), 1, 'm')
+% hold off
 
-% figure(2);
-% clf(2);
-% plot(q_ind(:,2), z, '-ok')
-% grid minor
-% box on
-% axis tight
 
 
 

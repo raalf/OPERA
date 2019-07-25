@@ -1,9 +1,9 @@
-clear
-addpath('addaxis')
-
+% clear
+% addpath('addaxis')
+% 
 % cd G:\GIT\opera
 % 
-% tmpstrSPACING = 'COSINE';
+% tmpstrSPACING = 'NORMAL';
 % tmpvalALPHA = 4;
 % tmpAR = 7;
 % 
@@ -12,25 +12,27 @@ addpath('addaxis')
 % 
 % xtcr = 1;
 % % N
-% inp = 2:3:17;
-% tmpvecM = 8;
-% for i = 1:length(inp)
-%     elliptical_wing_o_matic(inp(i), tmpvecM, tmpvalALPHA, tmpstrSPACING, 'HALFCOSINE', tmpvalDELTIME, tmpvalMAXTIME, tmpAR, xtcr);
+% % inp = 2:3:17;
+% inp = 2:3:5;
+% tmpvecM = 3;
+% for ii = 1:length(inp)
+%     elliptical_wing_o_matic(inp(ii), tmpvecM, tmpvalALPHA, tmpstrSPACING, 'HALFCOSINE', tmpvalDELTIME, tmpvalMAXTIME, tmpAR, xtcr, []);
 %     OPERA_MAIN
-%     tmpCL_N(i) = CL(end);
-%     tmpCDi_N(i) = CDi(end);
-%     clearvars -except i tmpCL_N tmpCDi_N tmpCL_M tmpCDi_M inp tmpvecN tmpvecM tmpstrSPACING tmpvalALPHA tmpAR tmpvalMAXTIME tmpvalDELTIME xtcr
+%     tmpCL_N(ii) = CL(end);
+%     tmpCDi_N(ii) = CDi(end);
+%     clearvars -except ii tmpCL_N tmpCDi_N tmpCL_M tmpCDi_M inp tmpvecN tmpvecM tmpstrSPACING tmpvalALPHA tmpAR tmpvalMAXTIME tmpvalDELTIME xtcr
 % end
 % 
 % % M 
-% inp = 1:2:12;
+% % inp = 1:2:12;
+% inp = 1:2:4;
 % tmpvecN = 11;
-% for i = 1:length(inp)
-%     elliptical_wing_o_matic(tmpvecN, inp(i), tmpvalALPHA, tmpstrSPACING, 'HALFCOSINE', tmpvalDELTIME, tmpvalMAXTIME, tmpAR, xtcr );
+% for ii = 1:length(inp)
+%     elliptical_wing_o_matic(tmpvecN, inp(ii), tmpvalALPHA, tmpstrSPACING, 'HALFCOSINE', tmpvalDELTIME, tmpvalMAXTIME, tmpAR, xtcr , []);
 %     OPERA_MAIN
-%     tmpCL_M(i) = CL(end);
-%     tmpCDi_M(i) = CDi(end);
-%     clearvars -except i tmpCL_N tmpCDi_N tmpCL_M tmpCDi_M inp tmpvecN tmpvecM tmpstrSPACING tmpvalALPHA tmpAR tmpvalMAXTIME tmpvalDELTIME xtcr
+%     tmpCL_M(ii) = CL(end);
+%     tmpCDi_M(ii) = CDi(end);
+%     clearvars -except ii tmpCL_N tmpCDi_N tmpCL_M tmpCDi_M inp tmpvecN tmpvecM tmpstrSPACING tmpvalALPHA tmpAR tmpvalMAXTIME tmpvalDELTIME xtcr
 % end
 % 
 % save('Elliptical_Panel_Density_Deltime_1.mat')
@@ -38,7 +40,7 @@ addpath('addaxis')
 %%
 load('Elliptical_Panel_Density_Deltime_1.mat');
 
-nvals = (2:3:17);
+nvals = 2:3:5;
 
 hFig1 = figure(1);
 clf(1);
@@ -65,7 +67,7 @@ annotation('textbox',dim,'String',str,'FitBoxToText','on');
 
 %%
 
-nvals = (1:2:12);
+nvals = 1:2:4;
 
 hFig2 = figure(2);
 clf(2);

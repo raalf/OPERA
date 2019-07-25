@@ -131,8 +131,8 @@ else
     vecWEMU = zeros(size(matWELST,1),1);
     
     if strcmpi(strATYPE{3},'UNSTEADY')
-        vecWVMU(vmap) = old_WVMU;
-        vecWEMU(emap) = old_WEMU;
+        vecWVMU(1:length(old_WVMU)) = old_WVMU;
+        vecWEMU(1:length(old_WEMU)) = old_WEMU;
     end
 end
 

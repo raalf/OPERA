@@ -13,7 +13,7 @@ Maximum Timesteps: 		valMAXTIME = 120
 Timestep Size: 			valDELTIME = 0.0005
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
-Angles of Attack: 		seqALPHA = 20
+Angles of Attack: 		seqALPHA = 90
 Angles of Sideslip: 	seqBETA = 0
 Density:				valDENSITY = 1.225
 

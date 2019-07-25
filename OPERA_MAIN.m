@@ -16,12 +16,13 @@ disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/test2.dat';
-strFILE = 'inputs/test.dat';
+% strFILE = 'inputs/test1.dat';
+% strFILE = 'inputs/test.dat';
 % strFILE = 'inputs/goland_wing.dat'
 % strFILE = 'inputs/rotor_test.dat'
 % strFILE = 'inputs/box_wing.dat'
 % strFILE = 'inputs/TMotor.dat'
-% strFILE = 'inputs/TMotor_coarse.dat'
+strFILE = 'inputs/TMotor_coarse.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP, valBLADES] = fcnOPREAD(strFILE);
@@ -37,9 +38,8 @@ end
 
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR, vecSYM, vecSYMDVE, matELST] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS, vecSYM);
 
-flagRELAX = 1
+flagRELAX = 0
 flagGIF = 1;
-valMAXTIME = 60
 
 %%
 % matUINF
@@ -79,7 +79,7 @@ matWALIGN = []; matWCENTER = [];
 matWAKEGEOM = []; matWCOEFF = []; matWVLST = []; matWROTANG = [];
 matWPLANE = []; vecWVMU = []; vecWEMU = []; matWVGRID = [];
 matWEGRID = []; vecWDVEFLIP = logical([]); vecWLEDVE = []; vecWTEDVE = [];
-vecWDVECIRC = []; CL = nan(valMAXTIME,1); CDi = nan(valMAXTIME,1);
+vecWDVECIRC = []; CL = nan(valMAXTIME,1); CDi = nan(valMAXTIME,1); CT = nan(valMAXTIME,1);
 
 e = nan(valMAXTIME,1); gust_vel_old = matCENTER.*0; vecWDVESYM = logical([]); vecWSYMDVE = []; vecWSYM = [];
 
@@ -94,15 +94,16 @@ matCOEFF = fcnSOLVED(matD, vecR, valNELE);
 matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
 matCOEFF_HSTRY(:,:,1) = matCOEFF;
 
-    hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
-    fcnPLOTCIRC(gcf, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'b', 30);
+hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+fcnPLOTCIRC(gcf, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'b', 30);
+% view([90 90])
 
 % valGUSTAMP = 0.0025;
 % valGUSTL = 7.3152;
-valGUSTAMP = 0.2;
-valGUSTL = 7;
+valGUSTAMP = 0.10;
+valGUSTL = 4;
 flagGUSTMODE = 2;
-valGUSTSTART = 210;
+valGUSTSTART = 0;
 
 if strcmpi(strATYPE{1}, 'WING')
     valPRESTEPS = 20
@@ -118,6 +119,10 @@ for valTIMESTEP = 1:valMAXTIME
     if strcmpi(strATYPE{1}, 'WING') && valTIMESTEP == valPRESTEPS + 1
         valDELTIME = valDELTIME/10;
         strWAKE_TYPE = strATYPE{3};
+    end
+    
+    if valGUSTSTART > 0 && valTIMESTEP > valPRESTEPS
+        [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, flagGUSTMODE, valDELTIME, 1, valGUSTSTART, matCENTER, gust_vel_old, valPRESTEPS*valDELTIME*10);
     end
     
     if strcmpi(strATYPE{1}, 'ROTOR')
@@ -147,15 +152,11 @@ for valTIMESTEP = 1:valMAXTIME
         
         % Relaxing Wake
         if flagRELAX == 1 && valTIMESTEP > valPRESTEPS
-%             hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
-%             fcnPLOTWAKE(0, gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID);
+            %             hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+            %             fcnPLOTWAKE(0, gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID);
             [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG, matWVGRID] = ...
-                fcnRELAX5(valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
-                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP);
-            
-%             [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG, matWVGRID] = ...
-%                 fcnRELAX6(valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
-%                 matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP, matWE2GRID, matWEATT);
+                fcnRELAX7(valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
+                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWE2GRID);
             
             % Update all wake coefficients
             matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
@@ -170,44 +171,80 @@ for valTIMESTEP = 1:valMAXTIME
         end
     end
     
-%     hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
-%     fcnPLOTWAKE(0, gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID);
-%     fcnPLOTCIRC(gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, matUINF, matWROTANG, 'b', 30);
-%     fcnPLOTCIRC(gcf, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'b', 30);
+    %     hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+    %     fcnPLOTWAKE(0, gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID);
+    %     fcnPLOTCIRC(gcf, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, matUINF, matWROTANG, 'b', 100);
+    %     fcnPLOTCIRC(gcf, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'b', 100);
     
     %% Calculating Forces
-        [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matSIDE_DIR] = fcnFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, ...
+    if strcmpi(strATYPE{1}, 'WING')
+        [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matSIDE_DIR] = fcnWFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, ...
             matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM);
+    elseif strcmpi(strATYPE{1}, 'ROTOR')
+        CT(valTIMESTEP,1) = fcnRFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, ...
+            matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, valDIAM, valRPM);
+    end
+    
+    %         hFig21 = figure(21);
+    %         clf(21);
+    %         count = 1;
+    %         for jj = 1:2:size(matWVGRID,2).*2
+    %             hold on
+    %             plot3(1:size(matWVGRID(:,count),1)', repmat(jj, size(matWVGRID,1), 1), vecWVMU(matWVGRID(:,count)), '-ok');
+    %             hold off
+    %             count = count + 1;
+    %         end
+    %
+    %         count = 1;
+    %         for jj = 2:2:size(matWEGRID,2).*2
+    %             hold on
+    %             plot3(linspace(1,size(matWVGRID(:,count),1),size(matWEGRID(:,count),1)), repmat(jj, size(matWEGRID,1), 1), vecWEMU(matWEGRID(:,count)), '--^m');
+    %             hold off
+    %             count = count + 1;
+    %         end
+    %
+    %         count = 1;
+    %         for jj = 1:2:size(matWE2GRID,2).*2
+    %             hold on
+    %             plot3(1.5:1:(size(matWE2GRID(:,count),1)+0.5)', repmat(jj, size(matWE2GRID,1), 1), vecWEMU(matWE2GRID(:,count)), '-.ks');
+    %             hold off
+    %             count = count + 1;
+    %         end
+    %
+    %         grid minor
+    %         box on
+    %         axis tight
+    %         axis equal
+    
 end
 
-% % q_ind = fcnSDVEVEL(matCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM) + matUINF;
-% % hold on
-% % quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
-% % hold off
-% % view([153 15])
-% 
-% granularity = 0.05;
-% % x = [-0.1:granularity:0.8];
-% % x = 0.5;
-% x = 0;
-% y = [-1:granularity:7];
-% % y = 0.3
-% % z = [-0.5 0 0.5];
-% z = [0];
-% [X,Y,Z] = meshgrid(x,y,z);
-% fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
-% 
-% q_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM,[],0);
-% 
+% v1 = matELST(vecLE(1),:);
+% v2 = matELST(vecLE(2),:);
+%
+% len = 200;
+% x = repmat(0.5,len,1);
+% y = [linspace(matVLST(v1(1),2), matVLST(v1(2),2), len/2)'; linspace(matVLST(v2(1),2), matVLST(v2(2),2), len/2)'];
+% z = [linspace(matVLST(v1(1),3), matVLST(v1(2),3), len/2)'; linspace(matVLST(v2(1),3), matVLST(v2(2),3), len/2)'];
+% fpg = [x y z];
+%
+% % fpg = [0.5 0.5 0];
+% q_ind = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM,[], 0);
+% q_ind2 = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM,[], 1e-20);
+%
 % hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
 % hold on
 % quiver3(fpg(:,1), fpg(:,2), fpg(:,3), q_ind(:,1), q_ind(:,2), q_ind(:,3))
 % hold off
 % view([153 15])
-% 
+%
+% p1 = sqrt(sum(q_ind.^2,2));
+% p2 = sqrt(sum(q_ind2.^2,2));
 % figure(2);
 % clf(2);
-% plot(y, q_ind(:,3), '-ok');
+% hold on
+% plot(y, p1, '-ok');
+% plot(y, p2, '--^m');
+% hold off
 % box on
 % grid minor
 % axis tight

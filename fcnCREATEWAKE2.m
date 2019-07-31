@@ -1,9 +1,9 @@
 function [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWCOEFF, matWROTANG, vecWLE, vecWTE, ...
     vecWLEDVE, vecWTEDVE, vecWDVECIRC, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVGRID, vecWOTE, ...
-    vecWOTEDVE, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, vecWDVEFLIP] = fcnCREATEWAKE2(valTIMESTEP, strATYPE, matNEWWAKE, matCOEFF, valWSIZE, ...
+    vecWOTEDVE, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, vecWDVEFLIP, vecWDVESURFACE] = fcnCREATEWAKE2(valTIMESTEP, strATYPE, matNEWWAKE, matCOEFF, valWSIZE, ...
     vecTEDVE, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC, vecWSYMDVE, vecSYMDVE, vecWDVESYM, vecDVESYM, ...
     vecWSYM, matWVGRID, matWVLST, matWELST, matWEGRID, vecWVMU, vecWEMU, vecWDVEFLIP, matWCENTER, matWROTANG, matWDVECT, ...
-    matWDVE, matWEIDX, vecWLEDVE, matWEATT)
+    matWDVE, matWEIDX, vecWLEDVE, matWEATT, vecDVESURFACE, vecWDVESURFACE)
 
 valWNELE = valTIMESTEP*valWSIZE*2;
 WDVEFLIP = [false(size(matNEWWAKE,1)./2, 1); true(size(matNEWWAKE,1)./2, 1)];
@@ -74,6 +74,7 @@ matWROTANG = cat(1, matWROTANG, WROTANG);
 matWDVECT = cat(1, matWDVECT, WDVECT);
 matWPLEX = cat(3, matWPLEX, WPLEX);
 vecWDVEFLIP = cat(1, vecWDVEFLIP, WDVEFLIP);
+vecWDVESURFACE = [vecWDVESURFACE; repmat(vecDVESURFACE(vecTEDVE), 2, 1)];
 
 % WEATT needs special care when valTIMESTEP > 1
 

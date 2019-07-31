@@ -1,16 +1,17 @@
-function [hFig1] = fcnPLOTWAKE(verbose, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID)
-%FCNPLOTWAKE Summary of this function goes here
-%   Detailed explanation goes here
+function [hFig1] = fcnPLOTWAKE(verbose, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID, vecWDVESURFACE)
 
 set(0,'CurrentFigure',hFig1);
+
+col = single(vecWDVESURFACE)./max(single(vecWDVESURFACE));
 hold on
+colormap parula
 
 % for j = 1:size(matWVGRID,2)
 %     plot3(matWVLST(matWVGRID(1:end-valPRESTEPS,j),1),matWVLST(matWVGRID(1:end-valPRESTEPS,j),2),matWVLST(matWVGRID(1:end-valPRESTEPS,j),3),'-b','LineWidth',2);
 % end
 
 plotDVE = [(valPRESTEPS.*valWSIZE.*2 + 1):valWNELE]';
-patch('Faces',matWDVE(plotDVE,:,1),'Vertices',matWVLST,'FaceColor','b','EdgeColor','b','LineWidth',2,'FaceAlpha',0.2,'EdgeAlpha',1);
+patch('Faces',matWDVE(plotDVE,:,1),'Vertices',matWVLST,'FaceVertexCData',col(plotDVE),'FaceColor','flat','EdgeAlpha',0.4,'FaceAlpha',0.4);
 
 if verbose == 1
     for ii = 1:valWNELE

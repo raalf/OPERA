@@ -29,11 +29,11 @@ Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
 Number of spanwise elements:	vecN 		= 8. 
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 2.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
 Spanwise Element Spacing:		strPSPACE	= NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.000000	0.000000	0.000000	1.000000	0.000000	NACA 0015
-0.000000	6.000000	0.000000	1.000000	0.000000	NACA 0015
+0.000000	8.000000	0.000000	1.000000	0.000000	NACA 0015

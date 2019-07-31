@@ -1,6 +1,8 @@
 function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI, ztol)
 warning('on')
 
+del_h = 0.1;
+
 fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
 len = size(fpl,1);
 
@@ -28,7 +30,7 @@ xi_left = min([xi_1, xi_3],[],2);
 xi_right = max([xi_1, xi_3],[],2);
 
 margin = 1e-3;
-idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin & abs(fpl(:,3)) < ztol*2;
+idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin & abs(fpl(:,3)) < 1;
 
 margin = 1e-5;
 idx_flp = xi_3 < xi_1; % Flipping influence of elements that need a good flippin
@@ -39,6 +41,7 @@ end
 %%
 h = fpl(:,3);
 h(idx_on_element) = sign(h(idx_on_element)).*sqrt(fpl(idx_on_element,3).^2 + ztol.^2);
+% h(idx_on_element) = sqrt(fpl(idx_on_element,3).^2 + ztol.^2);
 h(idx_on_element & h == 0) = ztol;
 abs_h = abs(h);
 hs = h.^2;
@@ -66,15 +69,15 @@ L1 = dot(nu_d, fpl(:,1:2) - epts(:,:,1:3,1), 2);
 L2 = dot(nu_d, fpl(:,1:2) - epts(:,:,1:3,2), 2);
 a = dot(nu_n, mean(epts,4) - fpl(:,1:2), 2);
 
-% tmp = nan(len,1,3);
-% idx = sign(L1) ~= sign(L2);
-% tmp(idx) = a(idx);
-% idx = (sign(L1) == sign(L2)) & ~idx;
-% tmp(idx) = max([abs(a(idx)) min([abs(L1(idx)) abs(L2(idx))],[],2)], [], 2);
-% if any(isnan(tmp),'all')
-%     disp('Issue in determining d_H');
-% end
-% d_H = min(abs(tmp),[],3);
+tmp = nan(len,1,3);
+idx = sign(L1) ~= sign(L2);
+tmp(idx) = a(idx);
+idx = (sign(L1) == sign(L2)) & ~idx;
+tmp(idx) = max([abs(a(idx)) min([abs(L1(idx)) abs(L2(idx))],[],2)], [], 2);
+if any(isnan(tmp),'all')
+    disp('Issue in determining d_H');
+end
+d_H = min(abs(tmp),[],3);
 
 g = sqrt(a.^2 + hs);
 c1 = g.^2 + abs_h.*sqrt(L1.^2 + g.^2);
@@ -147,16 +150,18 @@ F111 = zeros(size(a));
 
 idx = L1 >= 0 & L2 >= 0;
 F111(idx) = log((rho2(idx) + L2(idx))./(rho1(idx) + L1(idx)));
+% F111(idx) = log((rho2(idx) + L2(idx) + k(idx))./(rho1(idx) + L1(idx) + k(idx)));
 
 idx = L1 < 0 & L2 < 0;
 F111(idx) = log((rho1(idx) - L1(idx))./(rho2(idx) - L2(idx)));
+% F111(idx) = log((rho1(idx) - L1(idx) + k(idx))./(rho2(idx) - L2(idx) + k(idx)));
 
-% idx = L1 < 0 & L2 >= 0;
-idx = (L1 < 0 & L2 >= 0) | (L1 >= 0 & L2 < 0);
+% % idx = L1 < 0 & L2 >= 0;
+% idx = (L1 < 0 & L2 >= 0) | (L1 >=0 & L2 < 0);
 F111(idx) = log(((rho1(idx) - L1(idx)).*(rho2(idx) + L2(idx)) + k(idx))./(g(idx).^2 + k(idx)));
 
-% idx = [g > del_h.*d_H, g <= del_h.*d_H];
-idx = [g > 1e-5, g <= 1e-5];
+idx = [g > del_h.*d_H, g <= del_h.*d_H];
+% idx = [g > 1e-5, g <= 1e-5];
 % 2.)
 nu_xi = nu_n(:,1,:);
 nu_eta = nu_n(:,2,:);
@@ -272,8 +277,8 @@ H111 = -abs_h.*sum(atan2(a.*(L2.*c1 - L1.*c2), c1.*c2 + (a.^2).*L1.*L2),3) + sum
 
 % PAGE 125
 % 2.)
-% idx = [abs_h > del_h.*d_H, abs_h <= del_h.*d_H]; 
-idx = [abs_h > 1e-5, abs_h <= 1e-5]; 
+idx = [abs_h > del_h.*d_H, abs_h <= del_h.*d_H]; 
+% idx = [abs_h > 1e-5, abs_h <= 1e-5]; 
 
 H113(idx(:,1),1) = (1./hs(idx(:,1))).*(-1.*H111(idx(:,1)) + sum(a(idx(:,1),:,:).*F111(idx(:,1),:,:), 3));
 H115(idx(:,1),1) = (1./(3.*hs(idx(:,1)))).*(H113(idx(:,1)) + sum(a(idx(:,1),:,:).*F113(idx(:,1),:,:), 3));
@@ -320,9 +325,9 @@ H133 = (1./(K - 2)).*((N - 2).*H111 - sum(nu_eta.*F121,3));
 
 K = 5;
 H125 = (1./(K - 2)).*(-sum(nu_eta.*F113,3));
-N = 3;
+N = 3; K = 5;
 H135 = (1./(K - 2)).*((N - 2).*H113 - sum(nu_eta.*F123,3));
-N = 4;
+N = 4; K = 5;
 H145 = (1./(K - 2)).*((N - 2).*H123 - sum(nu_eta.*F133,3));
 
 % 7.)
@@ -330,7 +335,6 @@ K = 3;
 H213 = (1./(K - 2)).*(-sum(nu_xi.*F111,3));
 H223 = (1./(K - 2)).*(-sum(nu_xi.*F121,3));
 
-K = 5;
 H215 = (1./(K - 2)).*(-sum(nu_xi.*F113,3));
 H225 = (1./(K - 2)).*(-sum(nu_xi.*F123,3));
 H235 = (1./(K - 2)).*(-sum(nu_xi.*F133,3));
@@ -351,8 +355,8 @@ J22 = [reshape(3.*h.*H325,1,1,[]); reshape(3.*h.*H235,1,1,[]); reshape(H223 - 3.
 J31 = [reshape(3.*h.*H415,1,1,[]); reshape(3.*h.*H325,1,1,[]); reshape(H313 - 3.*(hs).*H315,1,1,[])];
 
 %%
-x = reshape(x_m,1,1,[]);
 y = reshape(y_m,1,1,[]);
+x = reshape(x_m,1,1,[]);
 
 infl_loc(:,1,:) = 0.5.*(y.^2).*J11 + y.*J12 + 0.5.*J13;
 infl_loc(:,2,:) = J11.*y + J12;

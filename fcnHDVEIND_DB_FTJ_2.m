@@ -1,5 +1,7 @@
-function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI, ztol)
+function [infl_loc] = fcnHDVEIND_DB_FTJ_2(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI, ztol)
 warning('on')
+
+del_h = 0.1;
 
 fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
 len = size(fpl,1);
@@ -28,7 +30,7 @@ xi_left = min([xi_1, xi_3],[],2);
 xi_right = max([xi_1, xi_3],[],2);
 
 margin = 1e-3;
-idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin & abs(fpl(:,3)) < ztol*2;
+idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin & abs(fpl(:,3)) < 1;
 
 margin = 1e-5;
 idx_flp = xi_3 < xi_1; % Flipping influence of elements that need a good flippin
@@ -38,8 +40,9 @@ end
 
 %%
 h = fpl(:,3);
-h(idx_on_element) = sign(h(idx_on_element)).*sqrt(fpl(idx_on_element,3).^2 + ztol.^2);
-h(idx_on_element & h == 0) = ztol;
+h(idx_on_element) = sqrt(fpl(idx_on_element,3).^2 + ztol.^2);
+% h(idx_on_element) = sign(h(idx_on_element)).*sqrt(fpl(idx_on_element,3).^2 + ztol.^2);
+% h(idx_on_element & h == 0) = ztol;
 abs_h = abs(h);
 hs = h.^2;
 

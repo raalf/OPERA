@@ -12,6 +12,5 @@ q_ind = reshape(permute(q_ind,[3 1 2]),[],3,1)./(4*pi);
 
 q_ind = fcnSTARGLOB(q_ind, matROTANG(dvenum,:));
 
-
 end
 

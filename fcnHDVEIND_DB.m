@@ -361,6 +361,11 @@ infl_loc(:,4,:) = J11.*x + J21;
 infl_loc(:,5,:) = J11.*y.*x + J12.*x + J21.*y + J22;
 infl_loc(:,6,:) = J11;
 
+if any(vecBI)
+    infl_BI = fcnBOUNDIND(dvenum(vecBI), dvetype(vecBI), fpg(vecBI,:), matPLEX, matROTANG, matCONTROL, vecBI(vecBI), 0);
+    infl_loc(:,:,vecBI) = infl_loc(:,:,vecBI) - infl_BI;
+end
+
 infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
 
 end

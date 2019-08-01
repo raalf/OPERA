@@ -1,18 +1,12 @@
-function [CL, CDi, CY, e, vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR] = fcnWFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM)
+function [CL, CDi, CY, e, vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA] = fcnWFORCES(valTIMESTEP, strWAKE_TYPE, valDELTIME, matVLST, matCENTER, matELST, matROTANG, ...
+                        matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
+                        matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, matAINF)
 lim = 1e10;
 
 %% Initializing
-vecDVELIFT = nan(valNELE,1);
-vecDVEDRAG = nan(valNELE,1);
-vecDVESIDE = nan(valNELE,1);
-% matDVEDRAG_DIR = matUINF./sqrt(sum(matUINF.^2,2));
-% matDVELIFT_DIR = cross(matDVEDRAG_DIR, matSPANDIR, 2);
-% matDVESIDE_DIR = cross(matDVELIFT_DIR, matDVEDRAG_DIR, 2);
-
-
-matDVEDRAG_DIR = repmat(matUINF(1,:)./sqrt(sum(matUINF(1,:).^2,2)), valNELE, 1);
-matDVELIFT_DIR = repmat(cross(matDVEDRAG_DIR(1,:), matSPANDIR(1,:), 2), valNELE, 1);
-matDVESIDE_DIR = repmat(cross(matDVELIFT_DIR(1,:), matDVEDRAG_DIR(1,:), 2), valNELE,1);
+matDVEDRAG_DIR = matUINF./sqrt(sum(matUINF.^2,2));
+matDVELIFT_DIR = cross(matDVEDRAG_DIR, matSPANDIR, 2);
+matDVESIDE_DIR = cross(matDVELIFT_DIR, matDVEDRAG_DIR, 2);
 
 liftfree = nan(valNELE,1);
 sidefree = nan(valNELE,1);
@@ -111,6 +105,31 @@ F = fcnSTARGLOB(-F, matROTANG(vecTEDVE,:));
 liftind(vecTEDVE,1) = dot(F, matDVELIFT_DIR(vecTEDVE,:), 2);
 sideind(vecTEDVE,1) = dot(F, matDVESIDE_DIR(vecTEDVE,:), 2);
 dragind(vecTEDVE,1) = dot(F, matDVEDRAG_DIR(vecTEDVE,:), 2);
+
+%% Combining forces
+% Apparent mass
+
+if strcmpi(strWAKE_TYPE, 'UNSTEADY')
+%     lambda = 0.5;
+    
+%     if valTIMESTEP > 1
+%         % dG/dt = (dG/dn)(dn/dt)
+%         % dG/dn = A1*eta + C2*xi + A2
+%         d2G_dn2 = matCOEFF(:,1); % Rate of change of gamma in streamwise direction at control point
+%         d2n_dt2 = sqrt(sum(matAINF.^2,2));
+%         vecDGAMMA_DT = d2G_dn2.*d2n_dt2.*valDELTIME; 
+        L_a = (valDENSITY.*pi*(1.8288/2).^2).*(dot(matDVECT(:,:,3), matAINF, 2));
+        
+%         vecDGAMMA_DT = lambda.*(matCOEFF(:,2) - vecDGAMMA_DETA)./valDELTIME + (1 - lambda).*vecDGAMMA_DT; 
+%         vecDGAMMA_DETA = matCOEFF(:,2);
+%     end
+
+%     if valTIMESTEP > 1
+        liftfree = liftfree + L_a.*0.5806;
+%         vecDGAMMA_DETA = matCOEFF(:,2);
+%     end
+end
+
 
 % vecDVELIFT = liftfree + liftind;
 vecDVELIFT = liftfree;

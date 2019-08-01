@@ -107,25 +107,32 @@ for i = 1:valPANELS
     if strcmpi(strATYPE{2}, 'PANEL') || size(strAIRFOIL,2) > 1
         % root
         airfoil(i,1).coord = dlmread(['airfoils/', strAIRFOIL{i,1}, '.dat'],'',1,0);
-        airfoil(i,1).coord = airfoil(i,1).coord.*matGEOM(1,4,i);
-        R = rotz(rad2deg(-repsilon));
-        airfoil(i,1).coord = [R(1:2,1:2)*airfoil(i,1).coord']';
+        airfoil(i,1).coord = airfoil(i,1).coord.*(1./max(airfoil(i,1).coord(:,1)));
+
+%         airfoil(i,1).coord = dlmread(['airfoils/', strAIRFOIL{i,1}, '.dat'],'',1,0);
+%         airfoil(i,1).coord = airfoil(i,1).coord.*matGEOM(1,4,i);
+%         R = rotz(rad2deg(-repsilon));
+%         airfoil(i,1).coord = [R(1:2,1:2)*airfoil(i,1).coord']';
         [~,idx] = min(airfoil(i,1).coord(:,1));
         airfoil(i,1).le_idx = idx;
-        ac_shift = -airfoil(i,1).coord(idx,:) + matGEOM(1,1:2:3,i);
-        airfoil(i,1).coord = airfoil(i,1).coord + ac_shift;
+%         ac_shift = -airfoil(i,1).coord(idx,:) + matGEOM(1,1:2:3,i);
+%         airfoil(i,1).coord = airfoil(i,1).coord + ac_shift;
         
+
         airfoil(i,2).coord = dlmread(['airfoils/', strAIRFOIL{i,2}, '.dat'],'',1,0);
-        airfoil(i,2).coord = airfoil(i,2).coord.*matGEOM(2,4,i);
-        R = rotz(rad2deg(-tepsilon));
-        airfoil(i,2).coord = [R(1:2,1:2)*airfoil(i,2).coord']';
+        airfoil(i,2).coord = airfoil(i,2).coord.*(1./max(airfoil(i,2).coord(:,1)));
+        
+%         airfoil(i,2).coord = dlmread(['airfoils/', strAIRFOIL{i,2}, '.dat'],'',1,0);
+%         airfoil(i,2).coord = airfoil(i,2).coord.*matGEOM(2,4,i);
+%         R = rotz(rad2deg(-tepsilon));
+%         airfoil(i,2).coord = [R(1:2,1:2)*airfoil(i,2).coord']';
         [~,idx] = min(airfoil(i,2).coord(:,1));
         airfoil(i,2).le_idx = idx;
-        ac_shift = -airfoil(i,2).coord(idx,:) + matGEOM(2,1:2:3,i);
-        airfoil(i,2).coord = airfoil(i,2).coord + ac_shift;
+%         ac_shift = -airfoil(i,2).coord(idx,:) + matGEOM(2,1:2:3,i);
+%         airfoil(i,2).coord = airfoil(i,2).coord + ac_shift;
         
-        panel4corners(4,1:2:3) = (airfoil(i,1).coord(1,:) + airfoil(i,1).coord(end,:))./2;
-        panel4corners(3,1:2:3) = (airfoil(i,2).coord(1,:) + airfoil(i,2).coord(end,:))./2;
+%         panel4corners(4,1:2:3) = (airfoil(i,1).coord(1,:) + airfoil(i,1).coord(end,:))./2;
+%         panel4corners(3,1:2:3) = (airfoil(i,2).coord(1,:) + airfoil(i,2).coord(end,:))./2;
     else
         airfoil = [];
     end

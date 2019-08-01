@@ -9,15 +9,15 @@ Steady or Unsteady:	strA3TYPE = UNSTEADY
 
 Chordwise Spacing:	strSPACING = NORMAL
 
-Maximum Timesteps: 		valMAXTIME = 100
+Maximum Timesteps: 		valMAXTIME = 200
 Timestep Size: 			valDELTIME = 0.5
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
-Angles of Attack: 		seqALPHA = 4
+Angles of Attack: 		seqALPHA = 0
 Angles of Sideslip: 	seqBETA = 0
 
-Density:			valDENSITY = 1
-Reference Area:		valAREA = 11.0947
+Density:			valDENSITY = 1.225
+Reference Area:		valAREA = 22.2967
 Reference Span:		valSPAN = 6.096
 
 GEOMETRY
@@ -29,11 +29,11 @@ Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
 Number of spanwise elements:	vecN 		= 7. 
-Number of chordwise elements: 	vecM 		= 3.
+Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
-Spanwise Element Spacing:		strPSPACE	= COSINE
+Spanwise Element Spacing:		strPSPACE	= NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
-0.000000	0.000000	0.000000	1.828800	0.000000	NACA 0015
+0.000000	-6.096000	0.000000	1.828800	0.000000	NACA 0015
 0.000000	6.096000	0.000000	1.828800	0.000000	NACA 0015

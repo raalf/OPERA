@@ -1,4 +1,6 @@
-function [CT] = fcnRFORCES(valTIMESTEP, matVLST, matCENTER, matELST, matROTANG, matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, valDIAM, valRPM)
+function [CT] = fcnRFORCES(valTIMESTEP, strWAKE_TYPE, matVLST, matCENTER, matELST, matROTANG, matUINF, matCOEFF, vecTEDVE, valDENSITY, ...
+                    valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, ...
+                    matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, valDIAM, valRPM, vecDGAMMADT)
 lim = 1e10;
 
 %% Initializing
@@ -112,12 +114,8 @@ vecDVELIFT = liftfree;
 % vecDVEDRAG(vecDVESYM) = vecDVEDRAG(vecDVESYM)*2;
 
 %% Output
-CT = nansum(vecDVELIFT)./(valDENSITY.*((valRPM/60).^2).*(valDIAM.^4));
-% CDi = nansum(vecDVEDRAG)./(0.5.*valDENSITY.*valAREA);
-% CY = nansum(vecDVESIDE)./(0.5.*valDENSITY.*valAREA);
-% e = (CL.^2)./(pi.*((valSPAN.^2)./valAREA).*CDi);
-% q_inf = 0.5.*valDENSITY;
-% e = ((nansum(vecDVELIFT)./q_inf).^2)./(pi.*(valSPAN.^2).*(nansum(vecDVEDRAG)./q_inf));
+% CT = nansum(vecDVELIFT)./(valDENSITY.*((valRPM/60).^2).*(valDIAM.^4));
+CT = nansum(vecDVELIFT)./(valDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
 
 fprintf('Timestep: %d\t\tCT = %0.5f\n', valTIMESTEP, CT);
 

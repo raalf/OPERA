@@ -1,10 +1,6 @@
-clear
-% clc
 
-addpath('K Functions')
-
-profile('off')
-profile('-memory','on');
+% profile('off')
+% profile('-memory','on');
 
 %% Header
 disp('====================================================================');
@@ -36,7 +32,8 @@ strFILE = 'inputs/TMotor.dat'
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
-flagRELAX = 0
+valJ = J(jj)
+flagRELAX = 1
 flagGIF = 1;
 
 % % Goland
@@ -73,10 +70,9 @@ end
 if strcmpi(strATYPE{1}, 'ROTOR')
     vecHUB = [0 0 0];
     vecROTORRADPS = valRPM.*2.*pi./60;
-%     translation = valJ.*(valRPM./60).*valDIAM.*fcnUINFWING(valALPHA, 0);
     translation = valJ.*(valRPM.*(pi/30)).*(valDIAM/2).*fcnUINFWING(valALPHA, 0);
-    matUINF = cross(repmat([0,0,-vecROTORRADPS],length(matCENTER(:,1)),1),matCENTER) + translation;
-    matVUINF = cross(repmat([0,0,-vecROTORRADPS],length(matVLST(:,1)),1),matVLST) + translation;
+    matUINF = cross(repmat([0,0,-vecROTORRADPS],length(matCENTER(:,1)),1),matCENTER) - translation;
+    matVUINF = cross(repmat([0,0,-vecROTORRADPS],length(matVLST(:,1)),1),matVLST) - translation;
 else
     matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
     matVUINF = repmat(fcnUINFWING(valALPHA, 0), size(matVLST,1), 1);
@@ -171,7 +167,7 @@ for valTIMESTEP = 1:valMAXTIME
             
             % Update wake coefficients
             [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG);
-%             matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
+            matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
             
             % Relaxing Wake
             if flagRELAX == 1 && valTIMESTEP > valPRESTEPS
@@ -193,12 +189,12 @@ for valTIMESTEP = 1:valMAXTIME
                 valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, vecWDVESURFACE, valWSIZE, 0, matWVGRID, valGIFNUM);
         end
     end
-    
+       
     %% Calculating Forces
     if strcmpi(strATYPE{1}, 'WING')
         [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matSIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA] = fcnWFORCES(valTIMESTEP, strATYPE{3}, valDELTIME, matVLST, matCENTER, matELST, matROTANG, ...
             matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, ...
-            vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, matAINF);
+            vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, matAINF, vecLEDVE);
     elseif strcmpi(strATYPE{1}, 'ROTOR')
         CT(valTIMESTEP,1) = fcnRFORCES(valTIMESTEP, strATYPE{3}, matVLST, matCENTER, matELST, matROTANG, ...
             matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, ...
@@ -206,4 +202,4 @@ for valTIMESTEP = 1:valMAXTIME
     end
     
 end
-profile viewer
+% profile viewer

@@ -1,6 +1,6 @@
 function [CL, CDi, CY, e, vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA] = fcnWFORCES(valTIMESTEP, strWAKE_TYPE, valDELTIME, matVLST, matCENTER, matELST, matROTANG, ...
                         matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
-                        matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, matAINF)
+                        matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, matAINF, vecLEDVE)
 lim = 1e10;
 
 %% Initializing
@@ -110,24 +110,11 @@ dragind(vecTEDVE,1) = dot(F, matDVEDRAG_DIR(vecTEDVE,:), 2);
 % Apparent mass
 
 if strcmpi(strWAKE_TYPE, 'UNSTEADY')
-%     lambda = 0.5;
     
-%     if valTIMESTEP > 1
-%         % dG/dt = (dG/dn)(dn/dt)
-%         % dG/dn = A1*eta + C2*xi + A2
-%         d2G_dn2 = matCOEFF(:,1); % Rate of change of gamma in streamwise direction at control point
-%         d2n_dt2 = sqrt(sum(matAINF.^2,2));
-%         vecDGAMMA_DT = d2G_dn2.*d2n_dt2.*valDELTIME; 
-        L_a = (valDENSITY.*pi*(1.8288/2).^2).*(dot(matDVECT(:,:,3), matAINF, 2));
-        
-%         vecDGAMMA_DT = lambda.*(matCOEFF(:,2) - vecDGAMMA_DETA)./valDELTIME + (1 - lambda).*vecDGAMMA_DT; 
-%         vecDGAMMA_DETA = matCOEFF(:,2);
-%     end
+    
+    
+    
 
-%     if valTIMESTEP > 1
-        liftfree = liftfree + L_a.*0.5806;
-%         vecDGAMMA_DETA = matCOEFF(:,2);
-%     end
 end
 
 

@@ -4,7 +4,7 @@ function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matPLEX, matDVECT, 
 old_te = matVLST(matELST(vecTE,:),:);
 
 %%
-vecROTORRADPS = valRPM.*2.*pi./60;
+vecROTORRADPS = valRPM.*pi./30;
 vecROTORDEL = vecROTORRADPS.*valDELTIME;
 dcmROTORSTEP = angle2dcm(vecROTORDEL,0,0,'ZXY');
 
@@ -13,8 +13,8 @@ translation = valJ.*(valRPM./60).*valDIAM.*fcnUINFWING(valALPHA, 0);
 tmpVLST = matVLST - vecHUB;
 tmpVLST = tmpVLST*dcmROTORSTEP;
 
-matUINF = cross(repmat([0,0,-vecROTORRADPS],length(matCENTER(:,1)),1),matCENTER - vecHUB) + translation;
-matVUINF = cross(repmat([0,0,-vecROTORRADPS],length(matVLST(:,1)),1),matVLST - vecHUB) + translation;
+matUINF = cross(repmat([0,0,-vecROTORRADPS],length(matCENTER(:,1)),1),matCENTER - vecHUB) - translation;
+matVUINF = cross(repmat([0,0,-vecROTORRADPS],length(matVLST(:,1)),1),matVLST - vecHUB) - translation;
 
 vecHUB = vecHUB + translation.*valDELTIME;
 matVLST = tmpVLST + vecHUB;

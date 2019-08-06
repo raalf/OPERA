@@ -9,9 +9,9 @@ function [matCOEFF] = fcnSOLVED(matD, vecR, valNELE)
 % OUTPUT:
 %   matCOEFF - NELE x 5 x 1 matrix of (A1, A2, B1, B2, C3) coefficients for each HDVE  
 
-matCOEFF = matD\vecR;
-
-matCOEFF = reshape(matCOEFF,6,valNELE,1)';
+% matCOEFF = matD\vecR;
+matCOEFF = lsqminnorm(matD, vecR);
+matCOEFF = full(reshape(matCOEFF,6,valNELE,1)');
 
 
 

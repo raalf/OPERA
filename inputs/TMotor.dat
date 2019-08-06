@@ -9,7 +9,7 @@ Steady or Unsteady:	strA3TYPE = STEADY
 
 Chordwise Spacing:	strSPACING = NORMAL
 
-Maximum Timesteps: 		valMAXTIME = 300
+Maximum Timesteps: 		valMAXTIME = 160
 Timestep Size: 			valDELTIME = 0.001
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 

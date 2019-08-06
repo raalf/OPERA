@@ -354,6 +354,7 @@ J31 = [reshape(3.*h.*H415,1,1,[]); reshape(3.*h.*H325,1,1,[]); reshape(H313 - 3.
 x = reshape(x_m,1,1,[]);
 y = reshape(y_m,1,1,[]);
 
+infl_loc = nan(3,6,length(dvenum));
 infl_loc(:,1,:) = 0.5.*(y.^2).*J11 + y.*J12 + 0.5.*J13;
 infl_loc(:,2,:) = J11.*y + J12;
 infl_loc(:,3,:) = 0.5.*(x.^2).*J11 + x.*J21 + 0.5.*J31;

@@ -3,7 +3,7 @@ function [vecR] = fcnRWING(valDLEN, valTIMESTEP, matUINF, valWNELE, matWCOEFF, m
 % Kinematic resultant is the freestream (and wake-induced velocities summed) dotted with the
 % norm of the point we are influencing on, multiplied by 4*pi
 
-vecR = zeros(valDLEN,1);
+vecR = sparse(valDLEN,1);
 
 normals = matDVECT(matKINCON_DVE,:,3);
 len = length(normals(:,1));

@@ -1,6 +1,6 @@
 
-% profile('off')
-% profile('-memory','on');
+profile('off')
+profile('-memory','on');
 
 %% Header
 disp('====================================================================');
@@ -166,7 +166,7 @@ for valTIMESTEP = 1:valMAXTIME
             matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
             
             % Update wake coefficients
-            [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG);
+            [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE);
             matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
             
             % Relaxing Wake
@@ -202,4 +202,4 @@ for valTIMESTEP = 1:valMAXTIME
     end
     
 end
-% profile viewer
+profile viewer

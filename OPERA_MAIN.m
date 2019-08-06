@@ -1,6 +1,6 @@
 
-profile('off')
-profile('-memory','on');
+%profile('off')
+%profile('-memory','on');
 
 %% Header
 disp('====================================================================');
@@ -202,4 +202,4 @@ for valTIMESTEP = 1:valMAXTIME
     end
     
 end
-profile viewer
+%profile viewer

@@ -79,7 +79,7 @@ while(ch~='=');
 end
 valDENSITY = fscanf(fp,'%lf');
 
-if strcmpi(strATYPE{1}, 'ROTOR')
+if (strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER'))
     valAREA = nan;
     valSPAN = nan;
     
@@ -247,6 +247,11 @@ for i = 1:valPANELS
         strAIRFOIL{i,2} = strtrim(fgetl(fp));
     end
     
+end
+
+
+if (strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER')) && valCOLL ~= 0
+   matGEOM(:,5,:) = matGEOM(:,5,:) + valCOLL;    
 end
 
 fclose(fp);

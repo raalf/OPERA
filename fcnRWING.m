@@ -10,11 +10,11 @@ len = length(normals(:,1));
 
 if valTIMESTEP < 1
     % Flow tangency at control points goes at the bottom of the resultant
-    vecR(end-(len-1):end) = -(4*pi).*dot(matUINF(matKINCON_DVE,:), normals,2);
+    vecR(end-(len-1):end) = (4*pi).*dot(matUINF(matKINCON_DVE,:), normals,2);
 else
     % WAKE INDUCED SHIT HERE
-    w_ind = fcnSDVEVEL(matKINCON_P, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 0);
-    vecR(end-(len-1):end) = -(4*pi).*dot(matUINF(matKINCON_DVE,:) + w_ind, normals, 2);
+    w_ind = fcnSDVEVEL(matKINCON_P, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 1e-4);
+    vecR(end-(len-1):end) = (4*pi).*dot(matUINF(matKINCON_DVE,:) + w_ind, normals, 2);
 end
 
 end

@@ -29,14 +29,14 @@ panel4corners(4:6)= [tLE(1),tLE(2),tLE(3)];
 
 
 % TE tip (X,Y,Z), take LE tip and add
-panel4corners(7:9) = panel4corners(4:6) + [tchord*cos(tepsilon),tchord*sin(tepsilon)*sin(nu),tchord*-sin(tepsilon)*cos(nu)];
+panel4corners(7:9) = panel4corners(4:6) + [tchord*cos(tepsilon),tchord*sin(tepsilon)*sin(nu).*0,tchord*-sin(tepsilon)*cos(nu)];
 
 % TE root (X,Y,Z)
 
 % the TE root location is built off the LE root specified
 % in the design.txt with the given root chord, epsilon and the calculated
 % dihedral (nu)
-panel4corners(10:12) = panel4corners(1:3) + [rchord*cos(repsilon),rchord*sin(repsilon)*sin(nu),rchord*-sin(repsilon)*cos(nu)];
+panel4corners(10:12) = panel4corners(1:3) + [rchord*cos(repsilon),rchord*sin(repsilon)*sin(nu).*0,rchord*-sin(repsilon)*cos(nu)];
 
 
 end

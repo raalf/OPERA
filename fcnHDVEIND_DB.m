@@ -156,7 +156,9 @@ idx = (L1 < 0 & L2 >= 0) | (L1 >= 0 & L2 < 0);
 F111(idx) = log(((rho1(idx) - L1(idx)).*(rho2(idx) + L2(idx)) + k(idx))./(g(idx).^2 + k(idx)));
 
 % idx = [g > del_h.*d_H, g <= del_h.*d_H];
-idx = [g > 1e-5, g <= 1e-5];
+idx = [g > 1e-3, g <= 1e-3];
+% idx = [g > 1e-5, g <= 1e-5];
+% idx = [g > 1e-8, g <= 1e-8];
 % 2.)
 nu_xi = nu_n(:,1,:);
 nu_eta = nu_n(:,2,:);
@@ -362,12 +364,14 @@ infl_loc(:,4,:) = J11.*x + J21;
 infl_loc(:,5,:) = J11.*y.*x + J12.*x + J21.*y + J22;
 infl_loc(:,6,:) = J11;
 
+infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
+
 if any(vecBI)
     infl_BI = fcnBOUNDIND(dvenum(vecBI), dvetype(vecBI), fpg(vecBI,:), matPLEX, matROTANG, matCONTROL, vecBI(vecBI), 0);
-    infl_loc(:,:,vecBI) = infl_loc(:,:,vecBI) - infl_BI;
+    infl_loc(:,:,vecBI) = infl_loc(:,:,vecBI) + infl_BI;
 end
 
-infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
+
 
 end
 

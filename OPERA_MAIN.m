@@ -31,6 +31,7 @@ disp('====================================================================');
 % strFILE = 'inputs/TMotor_coarse.dat'
 % strFILE = 'inputs/APC_9x4.dat'
 strFILE = 'inputs/Leishman_Rotor.dat'
+% strFILE = 'inputs/Caradonna_Rotor.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP, valBLADES] = fcnOPREAD(strFILE);
@@ -38,7 +39,6 @@ strFILE = 'inputs/Leishman_Rotor.dat'
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
 % valJ = J(jj)
-valJ = 0.0
 flagRELAX = 1
 flagGIF = 1;
 
@@ -60,8 +60,6 @@ valGUSTL = 0;
 flagGUSTMODE = 0;
 valGUSTSTART = 0;
 
-% fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl')
-
 %% Preliminary Geometry Stuff
 % Duplicating blades for rotors
 if valBLADES > 1
@@ -70,6 +68,8 @@ if valBLADES > 1
         matROTANG, matVATT, matTEPOINTS, matLEPOINTS] = fcnDUPBLADE(valBLADES, valNELE, matVLST, matELST, matDVE, ...
         matCENTER, matPLEX, vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, matROTANG, matVATT, matTEPOINTS, matLEPOINTS);
 end
+
+fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl')
 
 % Generating leading and trailing edge information
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR, vecSYM, vecSYMDVE, matELST] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS, vecSYM);
@@ -139,10 +139,10 @@ if strcmpi(strATYPE{1}, 'WING')
     valDELTIME = valDELTIME*10;
     strWAKE_TYPE = 'STEADY';
 else
-    valPRESTEPS = 60;
+    valPRESTEPS = 0;
     strWAKE_TYPE = 'STEADY';
     valJ_o = valJ;
-    valJ = 0.1;
+    valJ = 0;
 end
 
 %% Timestep to solution
@@ -208,19 +208,20 @@ for valTIMESTEP = 1:valMAXTIME
     end
        
     %% Calculating Forces
-    if strcmpi(strATYPE{1}, 'WING')
-        [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matSIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA] = fcnWFORCES(valTIMESTEP, strATYPE{3}, valDELTIME, matVLST, matCENTER, matELST, matROTANG, ...
-            matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, ...
-            vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, matAINF, vecLEDVE);
-    elseif strcmpi(strATYPE{1}, 'ROTOR')
-        CT(valTIMESTEP,1) = fcnRFORCES(valTIMESTEP, strATYPE{3}, matVLST, matCENTER, matELST, matROTANG, ...
-            matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, ...
-            valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, valDIAM, valRPM, []);
-    elseif strcmpi(strATYPE{1}, 'PROPELLER')
-        CT(valTIMESTEP,1) = fcnPFORCES(valTIMESTEP, strATYPE{3}, matVLST, matCENTER, matELST, matROTANG, ...
-            matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, ...
-            valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, valDIAM, valRPM, []);
-    end
+%     fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+%     if strcmpi(strATYPE{1}, 'WING')
+%         [CL(valTIMESTEP,1), CDi(valTIMESTEP,1), CY(valTIMESTEP,1), e(valTIMESTEP,1), vecDVELIFT, vecDVEDRAG, matDVEDRAG_DIR, matDVELIFT_DIR, matSIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA] = fcnWFORCES(valTIMESTEP, strATYPE{3}, valDELTIME, matVLST, matCENTER, matELST, matROTANG, ...
+%             matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, ...
+%             vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, matAINF, vecLEDVE);
+%     elseif strcmpi(strATYPE{1}, 'ROTOR')
+%         CT(valTIMESTEP,1) = fcnRFORCES(valTIMESTEP, strATYPE{3}, matVLST, matCENTER, matELST, matROTANG, ...
+%             matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, ...
+%             valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, valDIAM, valRPM, []);
+%     elseif strcmpi(strATYPE{1}, 'PROPELLER')
+%         CT(valTIMESTEP,1) = fcnPFORCES(valTIMESTEP, strATYPE{3}, matVLST, matCENTER, matELST, matROTANG, ...
+%             matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, vecDVEAREA, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, ...
+%             valSPAN, matWDVECT, matDVECT, vecDVESYM, vecWDVESYM, valDIAM, valRPM, []);
+%     end
     
 end
 %profile viewer

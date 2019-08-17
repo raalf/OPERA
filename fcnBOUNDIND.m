@@ -108,7 +108,7 @@ infl_new(3,6,:) = reshape(tmp36,1,1,[]);
 
 %%
 infl_loc = real(infl_new);
-% infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
+infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
 
 idx_nan = find(reshape(sum(any(isnan(infl_new) | isinf(infl_new))),[],1) > 0);
 if any(idx_nan)

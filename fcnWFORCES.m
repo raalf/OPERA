@@ -44,11 +44,11 @@ D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
 %% Freestream Forces (via Kutty J)
 % Integrating the cross product of the circulation along the TE and U_INF.
 % T.D.K 2019-01-23 230 KING ST. EAST, TORONTO, ON, CANADA
-% tescale = sqrt(sum([xi_3 - xi_1 eta_3 - eta_1].^2,2))./(xi_3 - xi_1);
 
 % Velocity along the TE
 locations = [0.2:0.3:0.8]';
 uvw_te = locations.*reshape(matVUINF(matELST(vecTE,1),:)', 1, 3, []) + (1 - locations).*reshape(matVUINF(matELST(vecTE,2),:)', 1, 3, []);
+
 fpl_te = locations.*reshape([xi_1 eta_1 xi_1.*0]', 1, 3, []) + (1 - locations).*reshape([xi_3 eta_3 xi_3.*0]', 1, 3, []);
 
 tau = fpl_te(:,1,:);
@@ -62,12 +62,12 @@ end
 A_1 = matCOEFF(vecTEDVE,1); A_2 = matCOEFF(vecTEDVE,2); B_1 = matCOEFF(vecTEDVE,3);
 B_2 = matCOEFF(vecTEDVE,4); C_2 = matCOEFF(vecTEDVE,5); C_3 = matCOEFF(vecTEDVE,6);
 
-u_out = fcnKJU(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, lim);
-v_out = fcnKJV(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, lim);
-w_out = fcnKJW(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, lim);
-F = [u_out v_out w_out];
-
-F = fcnSTARGLOB(-F, matROTANG(vecTEDVE,:));
+% Freestream lift and side force (U x spanwise_direction)
+tmp = fcnGLOBSTAR(matSPANDIR(vecTEDVE,:), matROTANG(vecTEDVE,:));
+u_out = fcnKJU(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, tmp(:,1), tmp(:,2), tmp(:,3), lim);
+v_out = fcnKJV(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, tmp(:,1), tmp(:,2), tmp(:,3), lim);
+w_out = fcnKJW(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, tmp(:,1), tmp(:,2), tmp(:,3), lim);
+F = fcnSTARGLOB([u_out v_out w_out], matROTANG(vecTEDVE,:));
 
 % Splitting special force into lift and side forces
 liftfree(vecTEDVE,1) = dot(F, matDVELIFT_DIR(vecTEDVE,:), 2);
@@ -77,12 +77,16 @@ sidefree(vecTEDVE,1) = dot(F, matDVESIDE_DIR(vecTEDVE,:), 2);
 % Induced velocities at wake leading edge DVEs (wind is 3 x 3 x num_dve) 
 fpg_og = reshape(locations,1,1,[]).*matWVLST(matWELST(vecWLE,1),:) + (1 - reshape(locations,1,1,[])).*matWVLST(matWELST(vecWLE,2),:);
 fpg_og = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';
-vecBOUNDIND = false(valWNELE,1);
-% vecBOUNDIND(vecWLEDVE) = true;
-wind = fcnSDVEVEL(fpg_og, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, vecBOUNDIND, 0);
-% hold on
-% quiver3(fpg_og(:,1), fpg_og(:,2), fpg_og(:,3), wind(:,1), wind(:,2), wind(:,3), 'b');
-% hold off
+
+boundind = false(valWNELE,1);
+% boundind(vecWLEDVE) = true;
+wind = fcnSDVEVEL(fpg_og, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, boundind, 1e-8);
+
+hold on
+quiver3(fpg_og(:,1), fpg_og(:,2), fpg_og(:,3), wind(:,1), wind(:,2), wind(:,3));
+hold off
+view([78 20])
+
 wind = permute(reshape(wind', 3, [], 3), [3 1 2]);
 
 % Velocity along the TE
@@ -94,17 +98,22 @@ for i = 1:size(vecTEDVE,1)
     w(i,:) = polyfit(tau(:,1,i), uvw(:,3), 2);   
 end
 
-u_out = fcnKJU(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, lim);
-v_out = fcnKJV(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, lim);
-w_out = fcnKJW(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, lim);
-F = [u_out v_out w_out];
+% Induced lift and side force (Wind x spanwise_direction)
+tmp = fcnGLOBSTAR(matSPANDIR(vecTEDVE,:), matROTANG(vecTEDVE,:));
+u_out = fcnKJU(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, tmp(:,1), tmp(:,2), tmp(:,3), lim);
+v_out = fcnKJV(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, tmp(:,1), tmp(:,2), tmp(:,3), lim);
+w_out = fcnKJW(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, u, v, w, valDENSITY, tmp(:,1), tmp(:,2), tmp(:,3), lim);
+F = fcnSTARGLOB([u_out v_out w_out], matROTANG(vecTEDVE,:));
 
-F = fcnSTARGLOB(-F, matROTANG(vecTEDVE,:));
+tmp = matVLST(matELST(vecTE,2),:) - matVLST(matELST(vecTE,1),:);
+tmp = abs(sqrt(sum(tmp.^2,2))./(xi_3 - xi_1));
 
-% Splitting induced force into lift and side forces
-liftind(vecTEDVE,1) = dot(F, matDVELIFT_DIR(vecTEDVE,:), 2);
-sideind(vecTEDVE,1) = dot(F, matDVESIDE_DIR(vecTEDVE,:), 2);
-dragind(vecTEDVE,1) = dot(F, matDVEDRAG_DIR(vecTEDVE,:), 2);
+% Splitting special force into lift and side forces
+liftind(vecTEDVE,1) = dot(F./tmp, matDVELIFT_DIR(vecTEDVE,:), 2);
+sideind(vecTEDVE,1) = dot(F./tmp, matDVESIDE_DIR(vecTEDVE,:), 2);
+dragind(vecTEDVE,1) = dot(F./tmp, matDVEDRAG_DIR(vecTEDVE,:), 2);
+
+
 
 %% Combining forces
 % Apparent mass
@@ -118,8 +127,7 @@ if strcmpi(strWAKE_TYPE, 'UNSTEADY')
 end
 
 
-% vecDVELIFT = liftfree + liftind;
-vecDVELIFT = liftfree;
+vecDVELIFT = liftfree + liftind;
 vecDVESIDE = sidefree + sideind;
 vecDVEDRAG = dragind;
 

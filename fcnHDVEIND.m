@@ -15,8 +15,11 @@ for i = 1:chunk_sz:num_pts
         idx_chunk(i:num_pts) = true;
     end    
     
-    infl_loc(:,:,idx_chunk) = fcnHDVEIND_DB(dvenum(idx_chunk), dvetype(idx_chunk), fpg(idx_chunk,:), matPLEX, matROTANG, matCONTROL, [], ztol);
-    
+    if ~isempty(vecBI)
+        infl_loc(:,:,idx_chunk) = fcnHDVEIND_DB(dvenum(idx_chunk), dvetype(idx_chunk), fpg(idx_chunk,:), matPLEX, matROTANG, matCONTROL, vecBI(idx_chunk), ztol);
+    else
+        infl_loc(:,:,idx_chunk) = fcnHDVEIND_DB(dvenum(idx_chunk), dvetype(idx_chunk), fpg(idx_chunk,:), matPLEX, matROTANG, matCONTROL, [], ztol);   
+    end
 end
 
 end

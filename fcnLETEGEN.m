@@ -1,7 +1,5 @@
-function [vecLE, vecLEDVE, vecTE, vecTEDVE, matSPANDIR, vecSYM, vecSYMDVE, matELST] = fcnLETEGEN(strATYPE, valNELE, matVLST, matELST, matDVECT, matEATT, matLEPOINTS, matTEPOINTS, vecSYM_old)
+function [vecLE, vecLEDVE, vecTE, vecTEDVE, vecSYM, vecSYMDVE, matELST] = fcnLETEGEN(strATYPE, matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS, vecSYM_old)
 
-matSPANDIR = repmat([0 1 0],valNELE,1);
-matSPANDIR = matSPANDIR - (dot(matSPANDIR, matDVECT(:,:,3),2)).*matDVECT(:,:,3);
 vecLE = [];
 vecTE = [];
 vecLEDVE = [];

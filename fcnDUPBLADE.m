@@ -1,7 +1,7 @@
 function [valNELE, matVLST, matELST, matDVE, matCENTER, matPLEX, vecDVEAREA, ...
     matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, ...
-    matROTANG, matVATT, matTEPOINTS, matLEPOINTS] = fcnDUPBLADE(valBLADES, valNELE, matVLST, matELST, matDVE, ...
-    matCENTER, matPLEX, vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, matROTANG, matVATT, matTEPOINTS, matLEPOINTS)
+    matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR] = fcnDUPBLADE(valBLADES, valNELE, matVLST, matELST, matDVE, ...
+    matCENTER, matPLEX, vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR)
 
 theta = (2*pi)/valBLADES;
 valNELE = valNELE*valBLADES;
@@ -17,6 +17,7 @@ for j = 2:valBLADES
     
     matVLST = [matVLST; matVLST(1:verts,:)*dcmROTORSTEP];
     matCENTER = [matCENTER; matCENTER(1:dves,:)*dcmROTORSTEP];
+    matSPANDIR = [matSPANDIR; matSPANDIR(1:dves,:)*dcmROTORSTEP];
     vecDVEAREA = [vecDVEAREA; vecDVEAREA(1:dves)];
     matDVE = [matDVE; matDVE(1:dves,:) + (verts*(j-1))];
     matELST = [matELST; matELST(1:edges,:) + (verts*(j-1))];

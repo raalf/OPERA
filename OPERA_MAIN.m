@@ -21,10 +21,11 @@ disp('====================================================================');
 % strFILE = 'inputs/goland_wing.dat'
 % strFILE = 'inputs/kussner.dat'
 % strFILE = 'inputs/box_wing.dat'
-strFILE = 'inputs/TMotor.dat'
+% strFILE = 'inputs/TMotor.dat'
 % strFILE = 'inputs/TMotor_nocamber.dat'
 % strFILE = 'inputs/Leishman_Rotor.dat'
 % strFILE = 'inputs/Caradonna_Rotor.dat'
+strFILE = 'inputs/Columbia_234_Rotor.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP, valBLADES] = fcnOPREAD(strFILE);
@@ -32,7 +33,7 @@ strFILE = 'inputs/TMotor.dat'
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
 % valJ = J(jj)
-flagRELAX = 0
+flagRELAX = 1
 flagGIF = 1;
 
 % % Goland
@@ -61,7 +62,6 @@ if valBLADES > 1
         matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR] = fcnDUPBLADE(valBLADES, valNELE, matVLST, matELST, matDVE, ...
         matCENTER, matPLEX, vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR);
 end
-% fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl')
 
 % Generating leading and trailing edge information
 [vecLE, vecLEDVE, vecTE, vecTEDVE, vecSYM, vecSYMDVE, matELST] = fcnLETEGEN(strATYPE, matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS, vecSYM);
@@ -125,6 +125,9 @@ matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, ma
 matCOEFF_HSTRY(:,:,1) = matCOEFF;
 vecDGAMMA_DETA = matCOEFF(:,2);
 
+% hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl')
+% fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'r', 100)
+
 % Setting prestep conditions
 if strcmpi(strATYPE{1}, 'WING')
     valPRESTEPS = 0;
@@ -134,7 +137,7 @@ else
     valPRESTEPS = 0;
     strWAKE_TYPE = 'STEADY';
     valJ_o = valJ;
-    valJ = 0;
+    valJ = 0.1;
 end
 
 %% Timestep to solution

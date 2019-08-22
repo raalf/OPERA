@@ -35,6 +35,7 @@ strFILE = 'inputs/Columbia_234_Rotor.dat'
 % valJ = J(jj)
 flagRELAX = 1
 flagGIF = 1;
+flagHVRMOD = false;
 
 % % Goland
 % valGUSTAMP = 0.001;
@@ -113,7 +114,7 @@ matWEGRID = []; vecWDVEFLIP = logical([]); vecWLEDVE = []; vecWTEDVE = [];
 vecWDVECIRC = []; CL = nan(valMAXTIME,1); CDi = nan(valMAXTIME,1); CT = nan(valMAXTIME,1);
 e = nan(valMAXTIME,1); gust_vel_old = matCENTER.*0; vecWDVESYM = logical([]);
 vecWSYMDVE = []; vecWSYM = []; valWSIZE = length(vecTE); vecWDVESURFACE = [];
-vecDGAMMA_DT = zeros(size(vecDVESURFACE));
+vecDGAMMA_DT = zeros(size(vecDVESURFACE)); valPRESTEPS = 0; strWAKE_TYPE = strATYPE{3};
 
 % Building wing resultant
 vecR = fcnRWING(valDLEN, 0, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matCENTER, matKINCON_DVE, matDVECT, []);
@@ -133,11 +134,8 @@ if strcmpi(strATYPE{1}, 'WING')
     valPRESTEPS = 0;
     valDELTIME = valDELTIME*10;
     strWAKE_TYPE = 'STEADY';
-else
-    valPRESTEPS = 0;
-    strWAKE_TYPE = 'STEADY';
-    valJ_o = valJ;
-    valJ = 0.1;
+elseif (strcmpi(strATYPE{1}, 'PROPELLER') && valJ == 0) || (strcmpi(strATYPE{1}, 'ROTOR') && valJ == 0)
+    flagHVRMOD = true;
 end
 
 %% Timestep to solution
@@ -145,9 +143,6 @@ for valTIMESTEP = 1:valMAXTIME
     if strcmpi(strATYPE{1}, 'WING') && valTIMESTEP == valPRESTEPS + 1
         valDELTIME = valDELTIME/10;
         strWAKE_TYPE = strATYPE{3};
-    elseif (strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER')) && valTIMESTEP == valPRESTEPS + 1
-        strWAKE_TYPE = strATYPE{3};
-        valJ = valJ_o;
     end
     
     if valGUSTSTART > 0 && valTIMESTEP > valPRESTEPS
@@ -186,7 +181,7 @@ for valTIMESTEP = 1:valMAXTIME
                 matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
                 
                 [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG, matWVGRID] = ...
-                    fcnRELAX7(valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
+                    fcnRELAX7(flagHVRMOD, valDELTIME, valTIMESTEP, valRPM, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
                     matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWE2GRID);
                 
                 % Update all wake coefficients
@@ -203,10 +198,16 @@ for valTIMESTEP = 1:valMAXTIME
     end
     
     %% Calculating Forces
-    %     fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+%         fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
     [vecDVELIFT, vecDVEDRAG, vecDVESIDE, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA] = fcnDVEFORCES(valTIMESTEP, strWAKE_TYPE, matVLST, matELST, matROTANG, ...
         matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
         matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA);
+    
+%     hold on
+%     quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVELIFT_DIR(:,1), matDVELIFT_DIR(:,2), matDVELIFT_DIR(:,3), 'b');
+%     quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVEDRAG_DIR(:,1), matDVEDRAG_DIR(:,2), matDVEDRAG_DIR(:,3), 'r');
+%     quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVESIDE_DIR(:,1), matDVESIDE_DIR(:,2), matDVESIDE_DIR(:,3), 'm');
+%     hold off
     
     if strcmpi(strATYPE{1}, 'WING')
         [CL, CDi, CY, e] = fcnWFORCES(valTIMESTEP, vecDVELIFT, vecDVEDRAG, vecDVESIDE, valDENSITY, valAREA, valSPAN);

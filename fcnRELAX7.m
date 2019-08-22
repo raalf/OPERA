@@ -1,5 +1,5 @@
 function [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG, matWVGRID] = ...
-    fcnRELAX7(valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
+    fcnRELAX7(flagHVRMOD, valDELTIME, valTIMESTEP, valRPM, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
     matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWE2GRID)
 
 presteps = matWVGRID((end - valPRESTEPS+1):end,:);
@@ -12,7 +12,7 @@ tmp1 = zeros(size(matWELST,1),3);
 tmp1(matWE2GRID(1:(end - valPRESTEPS),:),:) = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 1e-3) + fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 1e-3);
 
 if size(move,1) > 2
-    tmp2(move(2:end-1,:),:) = (tmp1(matWE2GRID(1:end-1-valPRESTEPS,:),:) + tmp1(matWE2GRID(2:end-valPRESTEPS,:),:))./2; 
+    tmp2(move(2:end-1,:),:) = (tmp1(matWE2GRID(1:end-1-valPRESTEPS,:),:) + tmp1(matWE2GRID(2:end-valPRESTEPS,:),:))./2;
 end
 tmp2(move(end,:),:) = tmp1(matWE2GRID(end-valPRESTEPS,:),:);
 
@@ -27,6 +27,16 @@ end
 % oldest_edge = matWEIDX((1:valWSIZE) + valWSIZE,3); % Trailing edge of oldest wake row
 % dont_move = unique([matWELST(vecWLE,:); matWELST(oldest_edge,:)]);
 % tmp2(dont_move,:) = tmp2(dont_move,:).*0;
+
+maxRot = 2;
+startVel = 6;
+if flagHVRMOD && (valTIMESTEP*valDELTIME <= (maxRot/(valRPM/60)))
+    Vel = -startVel/maxRot*((valTIMESTEP*valDELTIME).*(valRPM/60))+startVel;
+    tmp2(:,3) = tmp2(:,3) - Vel;
+end
+
+dont_move = unique(matWELST(vecWLE,:));
+tmp2(dont_move,:) = tmp2(dont_move,:).*0;
 
 %% Moving
 % Moving vertices

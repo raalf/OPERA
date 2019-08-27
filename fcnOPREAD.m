@@ -1,4 +1,22 @@
-function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP, valBLADES] = fcnOPREAD(strFILE)
+function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALPHA, seqBETA, ...
+    matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, ...
+    valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP, valBLADES, valGUSTAMP, valGUSTL, valGUSTMODE, valGUSTSTART, ...
+    strHTYPE, matHINGELOC, matHINGEDIR, matHINGEANG] = fcnOPREAD(strFILE)
+
+valDIAM = nan;
+valRPM = nan;
+valCOLL = nan;
+valJ = nan;
+valBLADES = nan;
+
+valGUSTAMP = [];
+valGUSTL = [];
+valGUSTMODE = [];
+valGUSTSTART = [];
+strHTYPE = [];
+matHINGELOC = [];
+matHINGEDIR = [];
+matHINGEANG = [];
 
 fp = fopen(strFILE);
 
@@ -95,48 +113,65 @@ if (strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER'))
     while(ch~='=');
         ch = fscanf(fp,'%c',1);
     end
-    valRPM = fscanf(fp,'%lf'); 
-    
-    % Collective
-    ch = fscanf(fp,'%c',1);
-    while(ch~='=');
-        ch = fscanf(fp,'%c',1);
-    end
-    valCOLL = fscanf(fp,'%lf'); 
+    valRPM = fscanf(fp,'%lf');
     
     % Advance ratio
     ch = fscanf(fp,'%c',1);
     while(ch~='=');
         ch = fscanf(fp,'%c',1);
     end
-    valJ = fscanf(fp,'%lf'); 
+    valJ = fscanf(fp,'%lf');
     
     % Advance ratio
     ch = fscanf(fp,'%c',1);
     while(ch~='=');
         ch = fscanf(fp,'%c',1);
     end
-    valBLADES = fscanf(fp,'%lf'); 
+    valBLADES = fscanf(fp,'%lf');
 else
-    valDIAM = nan;
-    valRPM = nan;
-    valCOLL = nan;
-    valJ = nan;
-    valBLADES = nan;
-    
     % Reading reference area
     ch = fscanf(fp,'%c',1);
     while(ch~='=');
         ch = fscanf(fp,'%c',1);
     end
     valAREA = fscanf(fp,'%lf');
-
+    
     % Reading reference span
     ch = fscanf(fp,'%c',1);
     while(ch~='=');
         ch = fscanf(fp,'%c',1);
     end
-    valSPAN = fscanf(fp,'%lf');    
+    valSPAN = fscanf(fp,'%lf');
+    
+    % Gust mode
+    ch = fscanf(fp,'%c',1);
+    while(ch~='=');
+        ch = fscanf(fp,'%c',1);
+    end
+    valGUSTMODE = fscanf(fp,'%d');
+    
+    if valGUSTMODE > 0
+        
+        ch = fscanf(fp,'%c',1);
+        while(ch~='=');
+            ch = fscanf(fp,'%c',1);
+        end
+        valGUSTAMP = fscanf(fp,'%lf');
+        
+        ch = fscanf(fp,'%c',1);
+        while(ch~='=');
+            ch = fscanf(fp,'%c',1);
+        end
+        valGUSTL = fscanf(fp,'%lf');
+        
+        ch = fscanf(fp,'%c',1);
+        while(ch~='=');
+            ch = fscanf(fp,'%c',1);
+        end
+        valGUSTSTART = fscanf(fp,'%lf');
+        
+    end
+    
 end
 
 %% Reading panel/wing/lifting line information
@@ -215,7 +250,7 @@ for i = 1:valPANELS
     while(ch~='=');
         ch = fscanf(fp,'%c',1);
     end
-    strPSPACE{i} = fscanf(fp,'%s',1);    
+    strPSPACE{i} = fscanf(fp,'%s',1);
     
     % Skipping geometry column header
     fgets(fp);
@@ -237,24 +272,20 @@ for i = 1:valPANELS
                 6 boundary condition
             z is panel number
     %}
-
+    
     matGEOM(1,:,i) = fscanf(fp,'%lf',5);
     try
         strAIRFOIL{i,1} = strtrim(fgetl(fp));
     end
-        matGEOM(2,:,i) = fscanf(fp,'%lf',5);
+    matGEOM(2,:,i) = fscanf(fp,'%lf',5);
     try
         strAIRFOIL{i,2} = strtrim(fgetl(fp));
     end
     
 end
 
-
-if (strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER')) && valCOLL ~= 0
-   matGEOM(:,5,:) = matGEOM(:,5,:) + valCOLL;    
-end
-
 fclose(fp);
+
 [matPOINTS, matTEPOINTS, matLEPOINTS, vecULS, vecDVESYM, vecDVESURFACE, vecDVEFLIP] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE, vecWING);
 
 

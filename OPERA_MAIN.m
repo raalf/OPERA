@@ -1,5 +1,4 @@
-
-clear
+% clear
 
 %profile('off')
 %profile('-memory','on');
@@ -25,47 +24,41 @@ disp('====================================================================');
 % strFILE = 'inputs/TMotor_nocamber.dat'
 % strFILE = 'inputs/Leishman_Rotor.dat'
 % strFILE = 'inputs/Caradonna_Rotor.dat'
-strFILE = 'inputs/Columbia_234_Rotor.dat'
+strFILE = 'Stuff/Columbia/Columbia_234_Rotor.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
-    valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP, valBLADES] = fcnOPREAD(strFILE);
+    valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, ...
+    valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP, valBLADES, valGUSTAMP, valGUSTL, valGUSTMODE, valGUSTSTART, ...
+    strHTYPE, matHINGELOC, matHINGEDIR, matHINGEANG] = fcnOPREAD(strFILE);
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
-% valJ = J(jj)
 flagRELAX = 1
 flagGIF = 1;
 flagHVRMOD = false;
 
-% % Goland
-% valGUSTAMP = 0.001;
-% valGUSTL = 1.828800.*4;
-% flagGUSTMODE = 2;
-% valGUSTSTART = 2;
-
-% % Kussner
-% valGUSTAMP = 0.05;
-% valGUSTL = 1.*4;
-% flagGUSTMODE = 3;
-% valGUSTSTART = 1;
-
-% None
-valGUSTAMP = 0;
-valGUSTL = 0;
-flagGUSTMODE = 0;
-valGUSTSTART = 0;
+% Hinge
+strHTYPE = 'FPL';
+matHINGELOC = cat(3, [0 0.2032 0], [0 0.2032 0], [0 0.7493 0]);
+matHINGEDIR = cat(3, [1 0 0], [0 1 0], [0 0 1]);
+matHINGEANG = repmat([FLAP PITCH 0], 3, 1);
 
 %% Preliminary Geometry Stuff
 % Duplicating blades for rotors
 if valBLADES > 1
     [valNELE, matVLST, matELST, matDVE, matCENTER, matPLEX, vecDVEAREA, ...
         matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, ...
-        matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR] = fcnDUPBLADE(valBLADES, valNELE, matVLST, matELST, matDVE, ...
-        matCENTER, matPLEX, vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR);
+        matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR, matHINGELOC, matHINGEDIR] = fcnDUPBLADE(valBLADES, valNELE, matVLST, matELST, matDVE, ...
+        matCENTER, matPLEX, vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR, matHINGELOC, matHINGEDIR);
 end
 
 % Generating leading and trailing edge information
 [vecLE, vecLEDVE, vecTE, vecTEDVE, vecSYM, vecSYMDVE, matELST] = fcnLETEGEN(strATYPE, matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS, vecSYM);
+
+if ~isempty(strHTYPE)
+    % Setting blade angles for propellers
+    [matHINGELOC, matHINGEDIR, matVLST, matCENTER, matPLEX, matDVECT, matROTANG] = fcnSETHANG(matHINGEANG, matHINGELOC, matHINGEDIR, matVLST, matDVE, vecDVESURFACE, valBLADES, vecDVEFLIP);
+end
 
 % Calculating matUINF for rotor or wing
 if strcmpi(strATYPE{1}, 'ROTOR')
@@ -105,15 +98,11 @@ valDLEN = length(matD);
 
 %% Preparing to timestep
 % Initializing
-matWELST = []; matWDVE = []; valWNELE = [];
-matWEATT = []; matWEIDX = []; matWPLEX = []; matWDVECT = [];
-matWALIGN = []; matWCENTER = [];
-matWAKEGEOM = []; matWCOEFF = []; matWVLST = []; matWROTANG = [];
-matWPLANE = []; vecWVMU = []; vecWEMU = []; matWVGRID = [];
-matWEGRID = []; vecWDVEFLIP = logical([]); vecWLEDVE = []; vecWTEDVE = [];
+matWELST = []; matWDVE = []; valWNELE = []; matWEATT = []; matWEIDX = []; matWPLEX = []; matWDVECT = [];
+matWALIGN = []; matWCENTER = []; matWAKEGEOM = []; matWCOEFF = []; matWVLST = []; matWROTANG = [];
+matWPLANE = []; vecWVMU = []; vecWEMU = []; matWVGRID = []; matWEGRID = []; vecWDVEFLIP = logical([]); vecWLEDVE = []; vecWTEDVE = [];
 vecWDVECIRC = []; CL = nan(valMAXTIME,1); CDi = nan(valMAXTIME,1); CT = nan(valMAXTIME,1);
-e = nan(valMAXTIME,1); gust_vel_old = matCENTER.*0; vecWDVESYM = logical([]);
-vecWSYMDVE = []; vecWSYM = []; valWSIZE = length(vecTE); vecWDVESURFACE = [];
+e = nan(valMAXTIME,1); gust_vel_old = matCENTER.*0; vecWDVESYM = logical([]); vecWSYMDVE = []; vecWSYM = []; valWSIZE = length(vecTE); vecWDVESURFACE = [];
 vecDGAMMA_DT = zeros(size(vecDVESURFACE)); valPRESTEPS = 0; strWAKE_TYPE = strATYPE{3};
 
 % Building wing resultant
@@ -125,9 +114,6 @@ matCOEFF = fcnSOLVED(matD, vecR, valNELE);
 matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
 matCOEFF_HSTRY(:,:,1) = matCOEFF;
 vecDGAMMA_DETA = matCOEFF(:,2);
-
-% hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl')
-% fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'r', 100)
 
 % Setting prestep conditions
 if strcmpi(strATYPE{1}, 'WING')
@@ -145,9 +131,9 @@ for valTIMESTEP = 1:valMAXTIME
         strWAKE_TYPE = strATYPE{3};
     end
     
-    if valGUSTSTART > 0 && valTIMESTEP > valPRESTEPS
+    if ~isempty(valGUSTSTART) && valGUSTSTART > 0 && valTIMESTEP > valPRESTEPS
         tmatUINF = matUINF;
-        [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, flagGUSTMODE, valDELTIME, 1, valGUSTSTART, matCENTER, gust_vel_old, valPRESTEPS*valDELTIME*10);
+        [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, valGUSTMODE, valDELTIME, 1, valGUSTSTART, matCENTER, gust_vel_old, valPRESTEPS*valDELTIME*10);
         matAINF = (matUINF - tmatUINF)./valDELTIME;
     end
     
@@ -155,7 +141,7 @@ for valTIMESTEP = 1:valMAXTIME
         [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matPLEX, matDVECT, matROTANG, vecHUB, matSPANDIR] = fcnMOVEROTOR(valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP, vecHUB, matSPANDIR);
     else
         [matVLST, matCENTER, matNEWWAKE] = fcnMOVEWING(matUINF_OR, valDELTIME, matVLST, matCENTER, matELST, vecTE);
-    end    
+    end
     
     % Generating new wake elements
     if any(vecTE)
@@ -198,17 +184,10 @@ for valTIMESTEP = 1:valMAXTIME
     end
     
     %% Calculating Forces
-%         fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
     [vecDVELIFT, vecDVEDRAG, vecDVESIDE, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA] = fcnDVEFORCES(valTIMESTEP, strWAKE_TYPE, matVLST, matELST, matROTANG, ...
         matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
         matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA);
-    
-%     hold on
-%     quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVELIFT_DIR(:,1), matDVELIFT_DIR(:,2), matDVELIFT_DIR(:,3), 'b');
-%     quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVEDRAG_DIR(:,1), matDVEDRAG_DIR(:,2), matDVEDRAG_DIR(:,3), 'r');
-%     quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matDVESIDE_DIR(:,1), matDVESIDE_DIR(:,2), matDVESIDE_DIR(:,3), 'm');
-%     hold off
-    
+
     if strcmpi(strATYPE{1}, 'WING')
         [CL(valTIMESTEP), CDi(valTIMESTEP), CY(valTIMESTEP), e(valTIMESTEP)] = fcnWFORCES(valTIMESTEP, vecDVELIFT, vecDVEDRAG, vecDVESIDE, valDENSITY, valAREA, valSPAN);
     else

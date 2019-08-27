@@ -1,7 +1,7 @@
 function [valNELE, matVLST, matELST, matDVE, matCENTER, matPLEX, vecDVEAREA, ...
     matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, ...
-    matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR] = fcnDUPBLADE(valBLADES, valNELE, matVLST, matELST, matDVE, ...
-    matCENTER, matPLEX, vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR)
+    matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR, matHINGELOC, matHINGEDIR] = fcnDUPBLADE(valBLADES, valNELE, matVLST, matELST, matDVE, ...
+    matCENTER, matPLEX, vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, vecDVESYM, matDVECT, matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR, matHINGELOC, matHINGEDIR)
 
 theta = (2*pi)/valBLADES;
 valNELE = valNELE*valBLADES;
@@ -26,6 +26,15 @@ for j = 2:valBLADES
     matEIDX = [matEIDX; matEIDX(1:dves,:) + (edges*(j-1))];
     vecDVESURFACE = [vecDVESURFACE; vecDVESURFACE(1:dves) + (j-1)];
     vecDVEFLIP = [vecDVEFLIP; vecDVEFLIP(1:dves)];
+    
+    if ~isempty(matHINGELOC)
+        for jj = 1:3
+            tmp(:,:,jj) = matHINGEDIR(1,:,jj)*dcmROTORSTEP;
+            tmp2(:,:,jj) = matHINGELOC(1,:,jj)*dcmROTORSTEP;
+        end
+        matHINGEDIR = cat(1, matHINGEDIR, tmp);
+        matHINGELOC = cat(1, matHINGELOC, tmp2);
+    end
     
     if ~isempty(vecDVESYM)
         vecDVESYM = [vecDVESYM; vecDVESYM(1:dves,:)];

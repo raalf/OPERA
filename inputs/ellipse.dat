@@ -20,6 +20,8 @@ Density:			valDENSITY = 1
 Reference Area:		valAREA = 4.27033
 Reference Span:		valSPAN = 5.49779
 
+Gust Mode:			valGUSTMODE = 0
+
 GEOMETRY
 
 No. of panels:	valPANELS =	14

@@ -9,6 +9,10 @@ for ij = 1:size(ANGS,1)
     
     str = sprintf('Stuff/Columbia/Steady_Sweep_%d.mat', ij);
     
+    figure(1);
+    clf(1);
+    set(gcf, 'Position', get(0, 'Screensize'));
+    
     OPERA_MAIN
     
     close all

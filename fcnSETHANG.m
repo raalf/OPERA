@@ -1,5 +1,5 @@
-function [matHINGELOC, matHINGEDIR, matVLST, matCENTER, matPLEX, matDVECT, matROTANG] ...
-    = fcnSETHANG(matHINGEANG, matHINGELOC, matHINGEDIR, matVLST, matDVE, vecDVESURFACE, valBLADES, vecDVEFLIP)
+function [matHINGELOC, matHINGEDIR, matVLST, matCENTER, matPLEX, matDVECT, matROTANG, matSPANDIR] ...
+    = fcnSETHANG(matHINGEANG, matHINGELOC, matHINGEDIR, matVLST, matDVE, vecDVESURFACE, valBLADES, vecDVEFLIP, matSPANDIR)
 
 for j = 1:valBLADES
     
@@ -8,6 +8,7 @@ for j = 1:valBLADES
     tmpR = fcnROTMAX(matHINGEDIR(j,:,1), -matHINGEANG(j,1));
     matHINGEDIR(j,:,2) = matHINGEDIR(j,:,2)*tmpR;
     matHINGEDIR(j,:,3) = matHINGEDIR(j,:,3)*tmpR;
+    matSPANDIR(vecDVESURFACE == j,:) = matSPANDIR(vecDVESURFACE == j,:)*tmpR;
     
     matHINGELOC(j,:,2) = (matHINGELOC(j,:,2) - matHINGELOC(j,:,1))*tmpR + matHINGELOC(j,:,1);
     matHINGELOC(j,:,3) = (matHINGELOC(j,:,3) - matHINGELOC(j,:,1))*tmpR + matHINGELOC(j,:,1);   
@@ -17,11 +18,16 @@ for j = 1:valBLADES
     % PITCH
     tmpR = fcnROTMAX(matHINGEDIR(j,:,2), -matHINGEANG(j,2));
     matHINGEDIR(j,:,3) = matHINGEDIR(j,:,3)*tmpR;
+    matSPANDIR(vecDVESURFACE == j,:) = matSPANDIR(vecDVESURFACE == j,:)*tmpR;
+    
     matHINGELOC(j,:,3) = (matHINGELOC(j,:,3) - matHINGELOC(j,:,2))*tmpR + matHINGELOC(j,:,2);   
     
     matVLST(matDVE(vecDVESURFACE == j,:),:) = (matVLST(matDVE(vecDVESURFACE == j,:),:) - matHINGELOC(j,:,2))*tmpR + matHINGELOC(j,:,2);    
     
-    % HUNT   
+    % HUNT  
+    tmpR = fcnROTMAX(matHINGEDIR(j,:,3), -matHINGEANG(j,3));
+    matSPANDIR(vecDVESURFACE == j,:) = matSPANDIR(vecDVESURFACE == j,:)*tmpR;
+    
     matVLST(matDVE(vecDVESURFACE == j,:),:) = (matVLST(matDVE(vecDVESURFACE == j,:),:) - matHINGELOC(j,:,3))*tmpR + matHINGELOC(j,:,3);        
     
 end
@@ -32,7 +38,6 @@ DNORM = cross(matVLST(matDVE(:,2),:) - matVLST(matDVE(:,3),:), matVLST(matDVE(:,
 DNORM = DNORM./sqrt(sum(DNORM.^2,2));
 DNORM(vecDVEFLIP,:) = DNORM(vecDVEFLIP,:).*-1;
 [matPLEX, matDVECT, matROTANG] = fcnTRITOLEX(P, DNORM, matCENTER);
-
 
 % hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl');
 % hold on

@@ -10,7 +10,7 @@ Steady or Unsteady:	strA3TYPE = STEADY
 Chordwise Spacing:	strSPACING = NORMAL
 
 Maximum Timesteps: 		valMAXTIME = 250
-Timestep Size: 			valDELTIME = 0.005
+Timestep Size: 			valDELTIME = 0.008
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
 Angles of Attack: 		seqALPHA = 90
@@ -30,7 +30,7 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 8. 
+Number of spanwise elements:	vecN 		= 7. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
@@ -41,7 +41,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 -0.302638	7.772400	0.000000	0.812800	-2.31500	VR_7
 
 Panel #:2. 
-Number of spanwise elements:	vecN 		= 3. 
+Number of spanwise elements:	vecN 		= 2. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES

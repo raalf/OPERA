@@ -1,6 +1,6 @@
 function [vecDVELIFT, vecDVEDRAG, vecDVESIDE, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA] = fcnDVEFORCES(valTIMESTEP, strWAKE_TYPE, matVLST, matELST, matROTANG, ...
-                        matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
-                        matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA)
+    matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
+    matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, vecWVMU)
 lim = 1e10;
 
 %% Initializing
@@ -56,7 +56,7 @@ for i = 1:size(vecTEDVE,1)
     uvw = fcnGLOBSTAR(uvw_te(:,:,i), repmat(matROTANG(vecTEDVE(i),:), length(locations), 1));
     u(i,:) = polyfit(tau(:,1,i), uvw(:,1), 2);
     v(i,:) = polyfit(tau(:,1,i), uvw(:,2), 2);
-    w(i,:) = polyfit(tau(:,1,i), uvw(:,3), 2);    
+    w(i,:) = polyfit(tau(:,1,i), uvw(:,3), 2);
 end
 
 A_1 = matCOEFF(vecTEDVE,1); A_2 = matCOEFF(vecTEDVE,2); B_1 = matCOEFF(vecTEDVE,3);
@@ -74,20 +74,60 @@ liftfree(vecTEDVE,1) = dot(F, matDVELIFT_DIR(vecTEDVE,:), 2);
 sidefree(vecTEDVE,1) = dot(F, matDVESIDE_DIR(vecTEDVE,:), 2);
 
 %% Induced Forces
-% Induced velocities at wake leading edge DVEs (wind is 3 x 3 x num_dve) 
-fpg_og = reshape(locations,1,1,[]).*matWVLST(matWELST(vecWLE,1),:) + (1 - reshape(locations,1,1,[])).*matWVLST(matWELST(vecWLE,2),:);
-fpg_og = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';
+% Induced velocities at wake leading edge DVEs (wind is 3 x 3 x num_dve)
+
+wind = nan(size(locations,1), 3, size(vecWLEDVE,1));
+fpg_og = nan(size(locations,1), 3, size(vecWLEDVE,1));
 
 boundind = false(valWNELE,1);
-% boundind(vecWLEDVE) = true;
-wind = fcnSDVEVEL(fpg_og, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, boundind, 1e-8);
+boundind(vecWLEDVE) = true;
 
+locations = linspace(0.45, 0.55, 3)';
+% Need to adjust wake LE elements to straight, one by one
+for i = 1:valWSIZE
+    tmpWVLST = matWVLST;
+    
+    tmp_verts(1) = matWDVE(vecWLEDVE(i),2);
+    tmp_verts(2) = matWDVE(vecWLEDVE(i),3);
+    
+    tmp_mp = mean(matWVLST(tmp_verts,:),1);
+    tmp_spandir = matSPANDIR(vecTEDVE(i),:);
+    
+    vec_one = matWVLST(tmp_verts(1),:) - tmp_mp;
+    vec_two = matWVLST(tmp_verts(2),:) - tmp_mp;
+    
+    vert_one = ((dot(vec_one, tmp_spandir, 2)).*tmp_spandir) + tmp_mp;
+    vert_two = ((dot(vec_two, tmp_spandir, 2)).*tmp_spandir) + tmp_mp;
+    
+    % Making tmp variables
+    tmpWVLST(tmp_verts(1),:) = vert_one;
+    tmpWVLST(tmp_verts(2),:) = vert_two;
+    
+    tmpWCENTER = (tmpWVLST(matWDVE(:,1),:) + tmpWVLST(matWDVE(:,2),:) + tmpWVLST(matWDVE(:,3),:))./3;
+    
+    % matWPLEX, matWDVECT, matWROTANG
+    P = permute(reshape(tmpWVLST(matWDVE(:,:)',:)', 3, 3, []), [2 1 3]);
+    DNORM = cross(tmpWVLST(matWDVE(:,2),:) - tmpWVLST(matWDVE(:,3),:), tmpWVLST(matWDVE(:,1),:) - tmpWVLST(matWDVE(:,3),:), 2);
+    DNORM = DNORM./sqrt(sum(DNORM.^2,2));
+    DNORM(vecWDVEFLIP,:) = DNORM(vecWDVEFLIP,:).*-1;
+    [tmpWPLEX, ~, tmpWROTANG] = fcnTRITOLEX(P, DNORM, tmpWCENTER);
+    tmpWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, tmpWVLST, tmpWCENTER, tmpWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
+    
+    fpg_og(:,:,i) = locations.*vert_one + (1 - locations).*vert_two;
+    wind(:,:,i) = fcnSDVEVEL(fpg_og(:,:,i), valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESYM, boundind, 1e-6);
+
+end
+
+% fpg_og2 = reshape(locations,1,1,[]).*matWVLST(matWELST(vecWLE,1),:) + (1 - reshape(locations,1,1,[])).*matWVLST(matWELST(vecWLE,2),:);
+% fpg_og2 = reshape(permute(fpg_og2, [2 1 3]), size(fpg_og2, 2), [])';
+% wind2 = fcnSDVEVEL(fpg_og2, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, boundind, 1e-6);
+% wind2 = permute(reshape(wind2', 3, [], 3), [3 1 2]);
+
+% fpg2 = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';
+% wind2 = reshape(permute(wind, [2 1 3]), size(wind, 2), [])';
 % hold on
-% quiver3(fpg_og(:,1), fpg_og(:,2), fpg_og(:,3), wind(:,1), wind(:,2), wind(:,3));
+% quiver3(fpg2(:,1), fpg2(:,2), fpg2(:,3), wind2(:,1), wind2(:,2), wind2(:,3))
 % hold off
-% view([78 20])
-
-wind = permute(reshape(wind', 3, [], 3), [3 1 2]);
 
 % Velocity along the TE
 u = []; v = []; w = [];
@@ -95,7 +135,7 @@ for i = 1:size(vecTEDVE,1)
     uvw = fcnGLOBSTAR(wind(:,:,i), repmat(matROTANG(vecTEDVE(i),:), length(locations), 1));
     u(i,:) = polyfit(tau(:,1,i), uvw(:,1), 2);
     v(i,:) = polyfit(tau(:,1,i), uvw(:,2), 2);
-    w(i,:) = polyfit(tau(:,1,i), uvw(:,3), 2);   
+    w(i,:) = polyfit(tau(:,1,i), uvw(:,3), 2);
 end
 
 % Induced lift and side force (Wind x spanwise_direction)
@@ -123,7 +163,7 @@ if strcmpi(strWAKE_TYPE, 'UNSTEADY')
     
     
     
-
+    
 end
 
 

@@ -1,4 +1,4 @@
-clear
+% clear
 
 %profile('off')
 %profile('-memory','on');
@@ -16,11 +16,11 @@ disp('+---------------+  \______/ |__/      |________/|__/  |__/|__/  |__/');
 disp('====================================================================');
 
 %% Preamble
-strFILE = 'inputs/ellipse.dat';
+% strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/goland_wing.dat'
 % strFILE = 'inputs/kussner.dat'
 % strFILE = 'inputs/box_wing.dat'
-% strFILE = 'inputs/TMotor.dat'
+strFILE = 'inputs/TMotor.dat'
 % strFILE = 'inputs/TMotor_nocamber.dat'
 % strFILE = 'inputs/Leishman_Rotor.dat'
 % strFILE = 'inputs/Caradonna_Rotor.dat'
@@ -35,9 +35,11 @@ strFILE = 'inputs/ellipse.dat';
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
-flagRELAX = 0
+flagRELAX = 1
 flagGIF = 1;
-flagHVRMOD = false;
+flagHVRMOD = true;
+
+valJ = J(jj)
 
 % % Hinge
 % strHTYPE = 'FPL';
@@ -173,7 +175,7 @@ for valTIMESTEP = 1:valMAXTIME
             
             % Relaxing Wake
             if flagRELAX == 1 && valTIMESTEP > valPRESTEPS
-                matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
+%                 matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
                 
                 [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG, matWVGRID] = ...
                     fcnRELAX7(flagHVRMOD, valDELTIME, valTIMESTEP, valRPM, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...

@@ -40,7 +40,7 @@ vecUINF = fcnUINFWING(valALPHA, 0);
 
 % matCOEFF = [0 0 0   -0.3236    0.0000   -0.1021];
 % matCOEFF = -[10 0 -20 1 0 1];
-matCOEFF = -[0 0 0 0 0 1];
+matCOEFF = -[1 1 1 1 1 1];
 
 %% Plot
 
@@ -77,14 +77,14 @@ z = [-0.5 -0.25 0.25 0.5];
 % % z = 0
 
 granularity = 0.01;
-x = matCENTER(1);
-y = matCENTER(2);
+% x = matCENTER(1);
+% y = matCENTER(2);
 % x = 0;
 % y = 0.5;
 % x = 0.25;
 % y = 0.25;
-% x = 1;
-% y = 2;
+x = 1;
+y = 2;
 z = [-1:granularity:1];
 
 [X,Y,Z] = meshgrid(x,y,z);
@@ -95,7 +95,7 @@ fpg = unique([reshape(X,[],1) reshape(Y,[],1) reshape(Z,[],1)],'rows');
 % fpg = [x 0 z];
 % fpg = [1 4.75 0; 1 4.5 0]
 [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, [], 0);
-[q_ind2] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, [], 0.01);
+[q_ind2] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCONTROL, vecDVESYM, [], 0.001);
 
 %%
 % figure(2);

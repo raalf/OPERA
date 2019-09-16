@@ -30,8 +30,8 @@ end
 
 maxRot = 2;
 startVel = 6;
-if flagHVRMOD && (valTIMESTEP*valDELTIME <= (maxRot/(valRPM/60)))
-    Vel = -startVel/maxRot*((valTIMESTEP*valDELTIME).*(valRPM/60))+startVel;
+if flagHVRMOD && ((valTIMESTEP - valPRESTEPS)*valDELTIME <= (maxRot/(valRPM/60)))
+    Vel = -startVel/maxRot*(((valTIMESTEP - valPRESTEPS)*valDELTIME).*(valRPM/60))+startVel;
     tmp2(:,3) = tmp2(:,3) - Vel;
 end
 

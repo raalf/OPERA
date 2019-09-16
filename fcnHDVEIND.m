@@ -1,6 +1,6 @@
 function [infl_loc] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI, ztol)
 
-chunk_sz = 4e6;
+chunk_sz = 4e5;
 num_pts = length(dvenum);
 
 

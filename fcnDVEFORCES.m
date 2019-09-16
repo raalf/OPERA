@@ -76,13 +76,14 @@ sidefree(vecTEDVE,1) = dot(F, matDVESIDE_DIR(vecTEDVE,:), 2);
 %% Induced Forces
 % Induced velocities at wake leading edge DVEs (wind is 3 x 3 x num_dve)
 
+locations = linspace(0.2, 0.8, 3)';
+
 wind = nan(size(locations,1), 3, size(vecWLEDVE,1));
 fpg_og = nan(size(locations,1), 3, size(vecWLEDVE,1));
 
 boundind = false(valWNELE,1);
 boundind(vecWLEDVE) = true;
 
-locations = linspace(0.45, 0.55, 3)';
 % Need to adjust wake LE elements to straight, one by one
 for i = 1:valWSIZE
     tmpWVLST = matWVLST;
@@ -114,20 +115,20 @@ for i = 1:valWSIZE
     tmpWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, tmpWVLST, tmpWCENTER, tmpWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
     
     fpg_og(:,:,i) = locations.*vert_one + (1 - locations).*vert_two;
-    wind(:,:,i) = fcnSDVEVEL(fpg_og(:,:,i), valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESYM, boundind, 1e-6);
+    wind(:,:,i) = fcnSDVEVEL(fpg_og(:,:,i), valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESYM, boundind, 1e-8);
 
 end
 
-% fpg_og2 = reshape(locations,1,1,[]).*matWVLST(matWELST(vecWLE,1),:) + (1 - reshape(locations,1,1,[])).*matWVLST(matWELST(vecWLE,2),:);
-% fpg_og2 = reshape(permute(fpg_og2, [2 1 3]), size(fpg_og2, 2), [])';
-% wind2 = fcnSDVEVEL(fpg_og2, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, boundind, 1e-6);
-% wind2 = permute(reshape(wind2', 3, [], 3), [3 1 2]);
 
 % fpg2 = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';
 % wind2 = reshape(permute(wind, [2 1 3]), size(wind, 2), [])';
 % hold on
 % quiver3(fpg2(:,1), fpg2(:,2), fpg2(:,3), wind2(:,1), wind2(:,2), wind2(:,3))
 % hold off
+
+%
+% TAU?????? need to change?
+%
 
 % Velocity along the TE
 u = []; v = []; w = [];

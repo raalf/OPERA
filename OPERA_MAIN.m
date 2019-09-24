@@ -17,8 +17,8 @@ disp('====================================================================');
 
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
-strFILE = 'inputs/goland_wing.dat'
-% strFILE = 'inputs/kussner.dat'
+% strFILE = 'inputs/goland_wing.dat'
+strFILE = 'inputs/kussner.dat'
 % strFILE = 'inputs/box_wing.dat'
 % strFILE = 'inputs/TMotor.dat'
 % strFILE = 'inputs/TMotor_coarse.dat'
@@ -38,6 +38,7 @@ strFILE = 'inputs/goland_wing.dat'
 
 flagGIF = 0;
 flagHVRMOD = false;
+valUINF = 1;
 
 % flagRELAX = 0
 % valJ = J(jj)
@@ -85,8 +86,8 @@ if strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER')
     matUINF = cross(repmat([0,0,-vecROTORRADPS],length(matCENTER(:,1)),1),matCENTER) - translation;
     matVUINF = cross(repmat([0,0,-vecROTORRADPS],length(matVLST(:,1)),1),matVLST) - translation;
 else
-    matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1);
-    matVUINF = repmat(fcnUINFWING(valALPHA, 0), size(matVLST,1), 1);
+    matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1).*valUINF;
+    matVUINF = repmat(fcnUINFWING(valALPHA, 0), size(matVLST,1), 1).*valUINF;
     matUINF_OR = matUINF;
     matAINF = matUINF.*0;
 end
@@ -146,7 +147,7 @@ for valTIMESTEP = 1:valMAXTIME
     
     if ~isempty(valGUSTSTART) && valGUSTSTART >= 0 && valTIMESTEP > valPRESTEPS
         tmatUINF = matUINF;
-        [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, valGUSTMODE, valDELTIME, 1, valGUSTSTART, matCENTER, gust_vel_old, valPRESTEPS*valDELTIME*10);
+        [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, valGUSTMODE, valDELTIME, valUINF, valGUSTSTART, matCENTER, gust_vel_old, valPRESTEPS*valDELTIME*10);
         matAINF = (matUINF - tmatUINF)./valDELTIME;
     end
     
@@ -220,17 +221,40 @@ end
 dgammadt(i+1,:) = dgammadt(i,:);
 
 tmpLIFTFREE = matLIFTFREE + dgammadt;
-CL2 = sum(tmpLIFTFREE,2)./(0.5.*valDENSITY.*valAREA);
+CL2 = sum(tmpLIFTFREE,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
 valAR = (valSPAN.^2)./valAREA;
 CL2D = CL2.*((valAR + 2)/valAR);
 
-hFig24 = figure(24);
-clf(24);
-load('Stuff/Gust Response/Gust_CL_Time.mat')
-plot(smooth(Gust_CL_Time(:,1)), smooth(Gust_CL_Time(:,2))-Gust_CL_Time(1,2), '-k');
-hold on
-plot(0.05+(valDELTIME.*[0:valMAXTIME-1])./10, CL2, '--b');
+
+hFig23 = figure(23);
+clf(23);
+load('Stuff/Gust Response/Kussner.mat')
+plot(Kussner(:,1).*0.5, smooth(Kussner(:,2)), '-k', 'LineWidth', 1.5);
 box on
 axis tight
 grid minor
-%profile viewer
+
+hold on
+plot(valDELTIME.*[0:valMAXTIME-1], CL2D, '-b', 'LineWidth', 1.5);
+hold off
+
+xlabel('Distance Travelled by Gust (m)');
+ylabel('C_l')
+
+
+% hFig24 = figure(24);
+% clf(24);
+% load('Stuff/Gust Response/ZAERO.mat')
+% plot(smooth(ZAERO(:,1)), smooth(ZAERO(:,2)), '-k');
+% hold on
+% 
+% load('Stuff/Gust Response/UVLM.mat')
+% plot(smooth(UVLM(:,1)), smooth(UVLM(:,2)), '-.k');
+% 
+% plot(0.135+((valDELTIME.*([0:valMAXTIME-1]))), CL2, '--b');
+% box on
+% axis tight
+% grid minor
+% %profile viewer
+% 
+% GOLAND_X = 0.135+((valDELTIME.*([0:valMAXTIME-1])));

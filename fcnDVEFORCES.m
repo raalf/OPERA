@@ -1,18 +1,12 @@
-function [vecDVELIFT, vecDVEDRAG, vecDVESIDE, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA] = fcnDVEFORCES(valTIMESTEP, strWAKE_TYPE, matVLST, matELST, matROTANG, ...
+function [vecDVELIFT, vecDVEDRAG, vecDVESIDE, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA, matINTCIRC, matLIFTFREE, matSIDEFREE] = fcnDVEFORCES(valTIMESTEP, strWAKE_TYPE, matVLST, matELST, matROTANG, ...
     matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
-    matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, vecWVMU)
+    matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, vecWVMU, matINTCIRC, matLIFTFREE, matSIDEFREE)
 lim = 1e10;
 
 %% Initializing
 matDVEDRAG_DIR = matUINF./sqrt(sum(matUINF.^2,2));
 matDVELIFT_DIR = cross(matDVEDRAG_DIR, matSPANDIR, 2);
 matDVESIDE_DIR = cross(matDVELIFT_DIR, matDVEDRAG_DIR, 2);
-
-liftfree = nan(valNELE,1);
-sidefree = nan(valNELE,1);
-liftind = nan(valNELE,1);
-sideind = nan(valNELE,1);
-dragind = nan(valNELE,1);
 
 %% To element local
 xi_1 = permute(matPLEX(1,1,vecTEDVE),[3 2 1]);
@@ -70,8 +64,13 @@ w_out = fcnKJW(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, 
 F = fcnSTARGLOB([u_out v_out w_out], matROTANG(vecTEDVE,:));
 
 % Splitting special force into lift and side forces
-liftfree(vecTEDVE,1) = dot(F, matDVELIFT_DIR(vecTEDVE,:), 2);
-sidefree(vecTEDVE,1) = dot(F, matDVESIDE_DIR(vecTEDVE,:), 2);
+liftfree = dot(F, matDVELIFT_DIR(vecTEDVE,:), 2)';
+sidefree = dot(F, matDVESIDE_DIR(vecTEDVE,:), 2)';
+
+matLIFTFREE(valTIMESTEP,:) = liftfree;
+matSIDEFREE(valTIMESTEP,:) = sidefree;
+
+matINTCIRC(valTIMESTEP,:) = fcnINTCIRC(xi_1, xi_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3);
 
 %% Induced Forces
 % Induced velocities at wake leading edge DVEs (wind is 3 x 3 x num_dve)
@@ -115,7 +114,7 @@ for i = 1:valWSIZE
     tmpWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, tmpWVLST, tmpWCENTER, tmpWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
     
     fpg_og(:,:,i) = locations.*vert_one + (1 - locations).*vert_two;
-    wind(:,:,i) = fcnSDVEVEL(fpg_og(:,:,i), valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESYM, boundind, 1e-8);
+    wind(:,:,i) = fcnSDVEVEL(fpg_og(:,:,i), valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESYM, boundind, 1e-6);
 
 end
 
@@ -150,9 +149,9 @@ tmp = matVLST(matELST(vecTE,2),:) - matVLST(matELST(vecTE,1),:);
 tmp = abs(sqrt(sum(tmp.^2,2))./(xi_3 - xi_1));
 
 % Splitting special force into lift and side forces
-liftind(vecTEDVE,1) = dot(F./tmp, matDVELIFT_DIR(vecTEDVE,:), 2);
-sideind(vecTEDVE,1) = dot(F./tmp, matDVESIDE_DIR(vecTEDVE,:), 2);
-dragind(vecTEDVE,1) = dot(F./tmp, matDVEDRAG_DIR(vecTEDVE,:), 2);
+liftind = dot(F./tmp, matDVELIFT_DIR(vecTEDVE,:), 2)';
+sideind = dot(F./tmp, matDVESIDE_DIR(vecTEDVE,:), 2)';
+dragind = dot(F./tmp, matDVEDRAG_DIR(vecTEDVE,:), 2)';
 
 
 
@@ -167,10 +166,14 @@ if strcmpi(strWAKE_TYPE, 'UNSTEADY')
     
 end
 
-
 vecDVELIFT = liftfree + liftind;
 vecDVESIDE = sidefree + sideind;
 vecDVEDRAG = dragind;
+
+% vecDVELIFT = liftfree;
+% vecDVESIDE = sidefree;
+% vecDVEDRAG = dragind.*0;
+
 
 % Symmetry
 vecDVELIFT(vecDVESYM) = vecDVELIFT(vecDVESYM)*2;

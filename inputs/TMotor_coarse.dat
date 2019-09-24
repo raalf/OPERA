@@ -5,21 +5,21 @@ ANALYSIS PARAMETERS
 
 Analysis Type:	 	strATYPE = ROTOR
 Lifting Surface:	strA2TYPE = THIN
-Steady or Unsteady:	strA3TYPE = STEADY
+Steady or Unsteady:	strA3TYPE = UNSTEADY
 
 Chordwise Spacing:	strSPACING = NORMAL
 
-Maximum Timesteps: 		valMAXTIME = 250
+Maximum Timesteps: 		valMAXTIME = 300
 Timestep Size: 			valDELTIME = 0.0005
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
-Angles of Attack: 		seqALPHA = 90
+Angles of Attack: 		seqALPHA = 15
 Angles of Sideslip: 	seqBETA = 0
 Density:				valDENSITY = 1.225
 
 Reference Diameter:		valDIAM = 0.4572
 Reference RPM:			valRPM = 3000
-Advance Ratio:			valJ = 0.1404
+Advance Ratio:			valJ = 0.1702
 Number of Blades:		valBLADES = 2
 
 GEOMETRY
@@ -40,7 +40,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 -0.011244	0.034290	0.000000	0.025314	16.570000	TM_S1_18
 -0.014232	0.057150	0.000000	0.038645	23.737200	TM_S3_18
 
-Panel #:2. 
+Panel #:3. 
 Number of spanwise elements:	vecN 		= 1. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
@@ -51,7 +51,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 -0.014232	0.057150	0.000000	0.038645	23.737200	TM_S3_18
 -0.015550	0.080010	0.000000	0.044301	20.047600	TM_S5_18
 
-Panel #:3. 
+Panel #:4. 
 Number of spanwise elements:	vecN 		= 1. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
@@ -62,7 +62,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 -0.015550	0.080010	0.000000	0.044301	20.047600	TM_S5_18
 -0.015650	0.102870	0.000000	0.043009	16.673400	TM_S7_18
 
-Panel #:4. 
+Panel #:5. 
 Number of spanwise elements:	vecN 		= 1. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
@@ -73,7 +73,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 -0.015650	0.102870	0.000000	0.043009	16.673400	TM_S7_18
 -0.014999	0.125730	0.000000	0.040027	13.911800	TM_S9_18
 
-Panel #:5. 
+Panel #:6. 
 Number of spanwise elements:	vecN 		= 1. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
@@ -84,7 +84,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 -0.014999	0.125730	0.000000	0.040027	13.911800	TM_S9_18
 -0.013695	0.148590	0.000000	0.036457	12.326000	TM_S11_18
 
-Panel #:6. 
+Panel #:7. 
 Number of spanwise elements:	vecN 		= 1. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
@@ -95,7 +95,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 -0.013695	0.148590	0.000000	0.036457	12.326000	TM_S11_18
 -0.012640	0.171450	0.000000	0.032684	12.100000	TM_S13_18
 
-Panel #:7. 
+Panel #:8. 
 Number of spanwise elements:	vecN 		= 1. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
@@ -106,7 +106,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 -0.012640	0.171450	0.000000	0.032684	12.100000	TM_S13_18
 -0.011068	0.194310	0.000000	0.027804	10.004000	TM_S15_18
 
-Panel #:8. 
+Panel #:9. 
 Number of spanwise elements:	vecN 		= 1. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
@@ -117,7 +117,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 -0.011068	0.194310	0.000000	0.027804	10.004000	TM_S15_18
 -0.009946	0.205740	0.000000	0.024821	8.140000	TM_S16_18
 
-Panel #:9. 
+Panel #:10. 
 Number of spanwise elements:	vecN 		= 1. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO
@@ -128,7 +128,7 @@ xleft		yleft		zleft		chord		epsilon	 	airfoil
 -0.009946	0.205740	0.000000	0.024821	8.140000	TM_S16_18
 -0.007915	0.217170	0.000000	0.021075	7.517000	TM_S17_18
 
-Panel #:10. 
+Panel #:11. 
 Number of spanwise elements:	vecN 		= 1. 
 Number of chordwise elements: 	vecM 		= 5.
 Symmetry about YZ Plane:		strSYM 		= NO

@@ -1,4 +1,4 @@
-function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matPLEX, matDVECT, matROTANG, vecHUB, matSPANDIR] = fcnMOVEROTOR(valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP, vecHUB, matSPANDIR)
+function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matPLEX, matDVECT, matROTANG, vecHUB, matSPANDIR] = fcnMOVEROTOR(atype, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP, vecHUB, matSPANDIR)
 
 % Old trailing edge vertices
 old_te = matVLST(matELST(vecTE,:),:);
@@ -8,8 +8,12 @@ vecROTORRADPS = valRPM.*pi./30;
 vecROTORDEL = vecROTORRADPS.*valDELTIME;
 dcmROTORSTEP = angle2dcm(vecROTORDEL,0,0,'ZXY');
 
-translation = valJ.*(valRPM./60).*valDIAM.*fcnUINFWING(valALPHA, 0);
-
+if strcmpi(atype, 'ROTOR')
+    translation = valJ.*(valRPM.*(pi/30)).*(valDIAM/2).*fcnUINFWING(valALPHA, 0);
+elseif strcmpi(atype, 'PROPELLER')
+    translation = valJ.*(valRPM/60).*(valDIAM).*fcnUINFWING(valALPHA, 0);
+end
+    
 tmpVLST = matVLST - vecHUB;
 tmpVLST = tmpVLST*dcmROTORSTEP;
 

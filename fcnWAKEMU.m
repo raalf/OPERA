@@ -30,9 +30,9 @@ vecWVMU(matWELST(vecWLE,1)) = res1(:,1);
 vecWVMU(matWELST(vecWLE,2)) = res1(:,2);
 vecWEMU(vecWLE) = res1(:,3);
 
-vecWVMU(matWELST(vecWOTE,1)) = 0;
-vecWVMU(matWELST(vecWOTE,2)) = 0;
-vecWEMU(vecWOTE) = 0;
+% vecWVMU(matWELST(vecWOTE,1)) = 0;
+% vecWVMU(matWELST(vecWOTE,2)) = 0;
+% vecWEMU(vecWOTE) = 0;
 
 if (size(matWVGRID,1)) <= 2 || strcmpi(strATYPE{3},'STEADY')
    vecWVMU(matWVGRID(2:end,:)) = repmat(vecWVMU(matWVGRID(1,:))', size(matWVGRID,1) - 1, 1); 

@@ -9,7 +9,7 @@ fpg = (matWVLST(move(1:end-1,:),:) + matWVLST(move(2:end,:),:))./2;
 %% Getting velocities at wake vertices
 tmp2 = zeros(size(matWVLST));
 tmp1 = zeros(size(matWELST,1),3);
-tmp1(matWE2GRID(1:(end - valPRESTEPS),:),:) = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 1e-3) + fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 1e-3);
+tmp1(matWE2GRID(1:(end - valPRESTEPS),:),:) = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 2e-3) + fcnSDVEVEL(fpg, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 2e-3);
 
 if size(move,1) > 2
     tmp2(move(2:end-1,:),:) = (tmp1(matWE2GRID(1:end-1-valPRESTEPS,:),:) + tmp1(matWE2GRID(2:end-valPRESTEPS,:),:))./2;
@@ -21,7 +21,7 @@ tmp2(presteps,:) = tmp2(repmat(move(end,:), size(presteps,1), 1),:);
 f = matWVGRID(1:end - 2,:);
 a = matWVGRID(3:end,:);
 if size(matWVGRID,1) > 2
-    tmp2(matWVGRID(2:end-1,:),:) = (tmp2(f,:) + 2.*tmp2(matWVGRID(2:end-1,:),:) + tmp2(a,:))./4;
+    tmp2(matWVGRID(2:end-1,:),:) = (tmp2(f,:) + 1.*tmp2(matWVGRID(2:end-1,:),:) + tmp2(a,:))./3;
 end
 
 % oldest_edge = matWEIDX((1:valWSIZE) + valWSIZE,3); % Trailing edge of oldest wake row

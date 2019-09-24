@@ -9,7 +9,7 @@ Steady or Unsteady:	strA3TYPE = UNSTEADY
 
 Chordwise Spacing:	strSPACING = NORMAL
 
-Maximum Timesteps: 		valMAXTIME = 200
+Maximum Timesteps: 		valMAXTIME = 50
 Timestep Size: 			valDELTIME = 0.5
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
@@ -18,7 +18,7 @@ Angles of Sideslip: 	seqBETA = 0
 
 Density:			valDENSITY = 1.225
 Reference Area:		valAREA = 22.2967
-Reference Span:		valSPAN = 6.096
+Reference Span:		valSPAN = 12.1920
 
 Gust Mode:			valGUSTMODE = 2
 Gust Amplitude:		valGUSTAMP = 0.001

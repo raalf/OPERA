@@ -3,15 +3,13 @@ clear
 
 % cd ./../../
 
-% J = [0 0.03501408748 0.07002817496 0.1050422624 0.1400563499 0.1750704374];
+J = [0 0.0539 0.0783 0.1181 0.1404];
 
-J = 0.09
-
-CT_sweep = nan(250, length(J));
+CT_sweep = nan(120, length(J));
 for jj = 1:length(J)
     OPERA_MAIN
     close all
-    filename = ['Stuff/TMotor Study/TMotor_Relaxed_J', num2str(J(jj)), '.mat'];
+    filename = ['Stuff/TMotor Study/Alpha 90 Results/TMotor_Relaxed_J', num2str(J(jj)), '.mat'];
     save(filename);
     CT_sweep(:,jj) = CT;
     clearvars -except J jj CT_sweep

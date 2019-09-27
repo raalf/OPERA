@@ -9,7 +9,7 @@ Steady or Unsteady:	strA3TYPE = UNSTEADY
 
 Chordwise Spacing:	strSPACING = NORMAL
 
-Maximum Timesteps: 		valMAXTIME = 40
+Maximum Timesteps: 		valMAXTIME = 15
 Timestep Size: 			valDELTIME = 0.25
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
@@ -34,7 +34,7 @@ Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
 Number of spanwise elements:	vecN 		= 30. 
-Number of chordwise elements: 	vecM 		= 5.
+Number of chordwise elements: 	vecM 		= 4.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES

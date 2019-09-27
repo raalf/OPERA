@@ -1,12 +1,16 @@
-function [vecDVELIFT, vecDVEDRAG, vecDVESIDE, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA, matINTCIRC, matLIFTFREE, matSIDEFREE] = fcnDVEFORCES(valTIMESTEP, strWAKE_TYPE, matVLST, matELST, matROTANG, ...
+function [vecDVELIFT, vecDVEDRAG, vecDVESIDE, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR, vecDGAMMA_DT, vecDGAMMA_DETA, matINTCIRC, matLIFTFREE, matSIDEFREE, matLIFTIND, matSIDEIND, matDRAGIND] = fcnDVEFORCES(valTIMESTEP, strWAKE_TYPE, matVLST, matELST, matROTANG, ...
     matUINF, matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
-    matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, vecWVMU, matINTCIRC, matLIFTFREE, matSIDEFREE)
+    matVUINF, matWVLST, vecWLE, vecWLEDVE, matWELST, valAREA, valSPAN, vecDVESYM, vecWDVESYM, vecDGAMMA_DT, vecDGAMMA_DETA, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, vecWVMU, matINTCIRC, matLIFTFREE, matSIDEFREE, matLIFTIND, matSIDEIND, matDRAGIND, matDVEDRAG_DIR, matDVELIFT_DIR, matDVESIDE_DIR)
 lim = 1e10;
 
 %% Initializing
-matDVEDRAG_DIR = matUINF./sqrt(sum(matUINF.^2,2));
-matDVELIFT_DIR = cross(matDVEDRAG_DIR, matSPANDIR, 2);
-matDVESIDE_DIR = cross(matDVELIFT_DIR, matDVEDRAG_DIR, 2);
+matDVEDRAG_DIR(:,:,valTIMESTEP) = matUINF(vecTEDVE,:)./sqrt(sum(matUINF(vecTEDVE,:).^2,2));
+
+matDVELIFT_DIR(:,:,valTIMESTEP) = cross(matDVEDRAG_DIR(:,:,valTIMESTEP), matSPANDIR(vecTEDVE,:), 2);
+matDVELIFT_DIR(:,:,valTIMESTEP) = matDVELIFT_DIR(:,:,valTIMESTEP)./sqrt(sum(matDVELIFT_DIR(:,:,valTIMESTEP).^2,2));
+
+matDVESIDE_DIR(:,:,valTIMESTEP) = cross(matDVELIFT_DIR(:,:,valTIMESTEP), matDVEDRAG_DIR(:,:,valTIMESTEP), 2);
+matDVESIDE_DIR(:,:,valTIMESTEP) = matDVESIDE_DIR(:,:,valTIMESTEP)./sqrt(sum(matDVESIDE_DIR(:,:,valTIMESTEP).^2,2));
 
 %% To element local
 xi_1 = permute(matPLEX(1,1,vecTEDVE),[3 2 1]);
@@ -64,8 +68,8 @@ w_out = fcnKJW(xi_1, xi_3, eta_1, eta_3, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3, 
 F = fcnSTARGLOB([u_out v_out w_out], matROTANG(vecTEDVE,:));
 
 % Splitting special force into lift and side forces
-liftfree = dot(F, matDVELIFT_DIR(vecTEDVE,:), 2)';
-sidefree = dot(F, matDVESIDE_DIR(vecTEDVE,:), 2)';
+liftfree = dot(F, matDVELIFT_DIR(:,:,valTIMESTEP), 2)';
+sidefree = dot(F, matDVESIDE_DIR(:,:,valTIMESTEP), 2)';
 
 matLIFTFREE(valTIMESTEP,:) = liftfree;
 matSIDEFREE(valTIMESTEP,:) = sidefree;
@@ -117,17 +121,11 @@ for i = 1:valWSIZE
     wind(:,:,i) = fcnSDVEVEL(fpg_og(:,:,i), valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESYM, boundind, 1e-6);
 
 end
-
-
 % fpg2 = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';
 % wind2 = reshape(permute(wind, [2 1 3]), size(wind, 2), [])';
 % hold on
 % quiver3(fpg2(:,1), fpg2(:,2), fpg2(:,3), wind2(:,1), wind2(:,2), wind2(:,3))
 % hold off
-
-%
-% TAU?????? need to change?
-%
 
 % Velocity along the TE
 u = []; v = []; w = [];
@@ -149,31 +147,19 @@ tmp = matVLST(matELST(vecTE,2),:) - matVLST(matELST(vecTE,1),:);
 tmp = abs(sqrt(sum(tmp.^2,2))./(xi_3 - xi_1));
 
 % Splitting special force into lift and side forces
-liftind = dot(F./tmp, matDVELIFT_DIR(vecTEDVE,:), 2)';
-sideind = dot(F./tmp, matDVESIDE_DIR(vecTEDVE,:), 2)';
-dragind = dot(F./tmp, matDVEDRAG_DIR(vecTEDVE,:), 2)';
+liftind = dot(F./tmp, matDVELIFT_DIR(:,:,valTIMESTEP), 2)';
+sideind = dot(F./tmp, matDVESIDE_DIR(:,:,valTIMESTEP), 2)';
+dragind = dot(F./tmp, matDVEDRAG_DIR(:,:,valTIMESTEP), 2)';
 
-
+matLIFTIND(valTIMESTEP,:) = liftind;
+matSIDEIND(valTIMESTEP,:) = sideind;
+matDRAGIND(valTIMESTEP,:) = dragind;
 
 %% Combining forces
-% Apparent mass
-
-if strcmpi(strWAKE_TYPE, 'UNSTEADY')
-    
-    
-    
-    
-    
-end
 
 vecDVELIFT = liftfree + liftind;
 vecDVESIDE = sidefree + sideind;
 vecDVEDRAG = dragind;
-
-% vecDVELIFT = liftfree;
-% vecDVESIDE = sidefree;
-% vecDVEDRAG = dragind.*0;
-
 
 % Symmetry
 vecDVELIFT(vecDVESYM) = vecDVELIFT(vecDVESYM)*2;

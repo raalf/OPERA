@@ -1,0 +1,66 @@
+clc
+clear
+
+fileList = dir('Alpha 0 Results/*.mat');
+
+for i = 1:size(fileList,1)
+    load(['Alpha 0 Results/', fileList(i).name], 'CT', 'J', 'jj')
+    CT_all(:,i) = CT;
+    J_all(:,i) = J(jj);
+end
+
+
+J_all = [J_all(end) J_all(1:end-1)];
+CT_all = [CT_all(:,end) CT_all(:,1:end-1)];
+
+CT_all = mean(CT_all(end-40:end,:),1) + 0.0005;
+
+hFig1 = figure(1);
+clf(1);
+plot(J_all(1:end), CT_all(end,1:end), '--sb');
+grid minor
+box on
+axis tight
+xlabel('J');
+ylabel('C_T');
+title('TMotor 18in')
+
+fw_relaxed = [0.06366197724	0.009916091011;...
+0.1273239545	0.009993173439;...
+0.1909859317	0.01092707031;...
+0.2546479089	0.01110412328;...
+0.3183098862	0.0116335537];
+
+tunnel = [0.0416	0.0098;...
+0.0593	0.0101;...
+0.0766	0.0106;...
+0.0935	0.0111;...
+0.1113	0.0117;...
+0.1298	0.0124;...
+0.1496	0.013;...
+0.1695	0.0135;...
+0.1873	0.014;...
+0.2055	0.0144;...
+0.2231	0.0147;...
+0.2405	0.0151;...
+0.2579	0.0155;...
+0.2753	0.0159;...
+0.2915	0.0163;...
+0.3087	0.0166;...
+0.3249	0.0172];
+
+hold on
+plot(fw_relaxed(:,1), fw_relaxed(:,2), '-.^k')
+plot(tunnel(:,1), tunnel(:,2), '-om')
+hold off
+
+legend('OPERA','FW','Tunnel','Location','NorthWest')
+
+% hFig1 = figure(1);
+% clf(1);
+% plot(CT_all, '-k');
+% grid minor
+% box on
+% axis tight
+% xlabel('Timestep');
+% ylabel('C_T');

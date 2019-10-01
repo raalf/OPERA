@@ -1,6 +1,8 @@
 clc
 clear
 
+ds = 2
+
 %% Getting tunnel data
 A = dlmread('Alpha_15_550.txt', '', 9, 0);
 A(A(:,4) > 360,:) = [];
@@ -35,7 +37,7 @@ clf(99);
 
 [vecPOS_TUNNEL_OG, idx] = sort(vecPOS_TUNNEL_OG, 'ascend');
 CT_tunnel = CT_tunnel(idx);
-plot(vecPOS_TUNNEL_OG, smooth(CT_tunnel), 'sk')
+scatter(downsample(vecPOS_TUNNEL_OG, ds), downsample(CT_tunnel, ds), 10, 'sk')
 grid minor
 box on
 axis tight
@@ -72,7 +74,7 @@ error_tunnel = (1/4)./(vecDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRP
 [vecPOS_TUNNEL_OG, idx] = sort(vecPOS_TUNNEL_OG, 'ascend');
 CT_tunnel = CT_tunnel(idx);
 hold on
-plot(vecPOS_TUNNEL_OG, smooth(CT_tunnel), 'dr')
+scatter(downsample(vecPOS_TUNNEL_OG, ds), downsample(CT_tunnel, ds), 10, 'dr')
 hold off
 
 %% Getting tunnel data
@@ -107,7 +109,7 @@ error_tunnel = (1/4)./(vecDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRP
 [vecPOS_TUNNEL_OG, idx] = sort(vecPOS_TUNNEL_OG, 'ascend');
 CT_tunnel = CT_tunnel(idx);
 hold on
-plot(vecPOS_TUNNEL_OG, smooth(CT_tunnel), 'ob')
+scatter(downsample(vecPOS_TUNNEL_OG, ds), downsample(CT_tunnel, ds), 10, 'ob')
 hold off
 
-legend('Alpha 15','Alpha 5','Alpha 0','Location','SouthWest')
+legend('Alpha 15','Alpha 5','Alpha 0','Location','NorthWest')

@@ -18,15 +18,16 @@ disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/goland_wing.dat'
-% strFILE = 'inputs/kussner.dat'
+strFILE = 'inputs/kussner.dat'
 % strFILE = 'inputs/box_wing.dat'
 % strFILE = 'inputs/TMotor.dat'
-strFILE = 'inputs/TMotor_coarse.dat'
+% strFILE = 'inputs/TMotor_coarse.dat'
 % strFILE = 'inputs/TMotor_nocamber.dat'
 % strFILE = 'inputs/Leishman_Rotor.dat'
 % strFILE = 'inputs/Caradonna_Rotor.dat'
 % strFILE = 'Stuff/Columbia/Columbia_234_Rotor.dat'
 % strFILE = 'inputs/test.dat'
+% strFILE = 'inputs/MAE_11x7.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, ...
@@ -36,7 +37,7 @@ strFILE = 'inputs/TMotor_coarse.dat'
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
-flagGIF = 1;
+flagGIF = 0;
 flagHVRMOD = false;
 valUINF = 1;
 
@@ -101,7 +102,7 @@ if flagGIF == 1
     valGIFNUM = size(dir('GIF'),1) - 1;
 end
 
-% hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [], 'opengl');
+hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [], 'opengl');
 %% D-Matrix Creation
 matKINCON_DVE = [1:valNELE]';
 
@@ -215,18 +216,31 @@ for valTIMESTEP = 1:valMAXTIME
     
 end
 
-% dgammadt = zeros(1,size(matLIFTFREE,2));
-% for i = 2:size(matLIFTFREE,1)-2
-%     dgammadt(i,:) = -(matINTCIRC(i+2,:) - 4.*matINTCIRC(i+1,:) + 3.*matINTCIRC(i,:))./(2.*valDELTIME);
-% end
-% dgammadt(i+1,:) = (matINTCIRC(i+1,:) - matINTCIRC(i,:))./valDELTIME;
-% dgammadt(i+2,:) = dgammadt(i+1,:);
-
-matDGAMMADT = zeros(1,size(matLIFTFREE,2));
-for i = 2:size(matLIFTFREE,1)-1
-    matDGAMMADT(i,:) = (matINTCIRC(i+1,:) - matINTCIRC(i,:))./valDELTIME;
+len = size(matLIFTFREE,1);
+for i = 1:len
+    if i <= 2
+        matDGAMMADT(i,:) = (-matINTCIRC(i+2,:) + 4.*matINTCIRC(i+1,:) - 3.*matINTCIRC(i,:))./(2.*valDELTIME);
+    elseif i >= 3 && i <= len-2
+        matDGAMMADT(i,:) = ((-matINTCIRC(i+2,:) + 8.*matINTCIRC(i+1,:) - 8.*matINTCIRC(i-1,:) + matINTCIRC(i-2,:))./(12.*valDELTIME));
+    elseif i == len - 1
+        matDGAMMADT(i,:) = ((matINTCIRC(i+1,:) - matINTCIRC(i,:))./valDELTIME);
+    elseif i == len
+        matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME);
+    end
 end
-matDGAMMADT(i+1,:) = matDGAMMADT(i,:);
+
+% len = size(matLIFTFREE,1);
+% lambda = 0.5;
+% matDGAMMADT(1,:) = matINTCIRC(1,:).*0;
+% for i = 3:len
+%     if i <= len-2
+%         matDGAMMADT(i,:) = ((-matINTCIRC(i+2,:) + 8.*matINTCIRC(i+1,:) - 8.*matINTCIRC(i-1,:) + matINTCIRC(i-2,:))./(12.*valDELTIME));
+%     elseif i == len - 1
+%         matDGAMMADT(i,:) = ((matINTCIRC(i+1,:) - matINTCIRC(i-1,:))./(2.*valDELTIME));
+%     elseif i == len
+%         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME);
+%     end
+% end
 
 tmpLIFTFREE = matLIFTFREE + matDGAMMADT;
 tmpDVELIFT = tmpLIFTFREE + matLIFTIND;
@@ -245,40 +259,41 @@ for i = 1:size(matLIFTFREE,1)
     
 end
 
-save('coarse_fixed_2.mat');
-
-figure(20);
-plot(CT, '-k')
-hold on
-plot(CT_U, '--b');
-hold off
-grid minor
-box on
-axis tight
-
-
-% tmpLIFTFREE = matLIFTFREE + dgammadt;
-% CL2 = sum(tmpLIFTFREE,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
-% CLdg = sum(dgammadt,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
-%
-% valAR = (valSPAN.^2)./valAREA;
-% CL2D = CL2.*((valAR + 2)/valAR);
-%
-% hFig23 = figure(23);
-% clf(23);
-% load('Stuff/Gust Response/Kussner.mat')
-% plot(Kussner(:,1).*0.5, smooth(Kussner(:,2)), '-k', 'LineWidth', 1.5);
+% save('coarse_fixed_2.mat');
+% figure(20);
+% plot(CT, '-k')
+% hold on
+% plot(CT_U, '--b');
+% hold off
+% grid minor
 % box on
 % axis tight
-% grid minor
-%
-% hold on
-% plot(valDELTIME.*[0:valMAXTIME-1], CL2D, '-b', 'LineWidth', 1.5);
-% plot(valDELTIME.*[0:valMAXTIME-1], CLdg, '--r', 'LineWidth', 1.5);
-% hold off
-%
-% xlabel('Distance Travelled by Gust (m)');
-% ylabel('C_l')
+
+
+CL2 = sum(tmpLIFTFREE,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
+CLdg = sum(matDGAMMADT,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
+CLc = sum(matINTCIRC,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2))
+valAR = (valSPAN.^2)./valAREA;
+CL2D = CL2.*((valAR + 2)/valAR);
+
+hFig23 = figure(23);
+clf(23);
+load('Stuff/Gust Response/Kussner.mat')
+plot(Kussner(:,1).*0.5 + (valGUSTSTART+1).*valDELTIME, smooth(Kussner(:,2)), '-k', 'LineWidth', 1.5);
+box on
+axis tight
+grid minor
+
+hold on
+plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CL2D(valGUSTSTART+1:end), '-b', 'LineWidth', 1.5);
+plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLdg(valGUSTSTART+1:end), '--r', 'LineWidth', 1.5);
+plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLc(valGUSTSTART+1:end), '-.k', 'LineWidth', 1.5);
+hold off
+
+xlabel('Distance Travelled by Wing (m)');
+ylabel('C_l')
+
+legend('Kussner Function','C_L','dGammadt','Integrated Circulation','Location','SouthEast')
 
 
 % hFig24 = figure(24);

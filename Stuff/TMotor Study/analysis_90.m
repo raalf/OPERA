@@ -9,7 +9,6 @@ for i = 1:size(fileList,1)
     J_all(:,i) = J(jj);
 end
 
-
 J_all = [J_all(end) J_all(1:end-1)];
 CT_all = [CT_all(:,end) CT_all(:,1:end-1)];
 
@@ -17,13 +16,8 @@ CT_all = mean(CT_all(end-10:end,:),1) + 0.0005;
 
 hFig1 = figure(1);
 clf(1);
-plot(J_all(1:end), CT_all(end,1:end), '-.sk');
-grid minor
-box on
-axis tight
-xlabel('J');
-ylabel('C_T');
-title('TMotor 18in, Alpha 90')
+
+% title('TMotor 18in, Alpha 90')
 
 fw_fixed = [0.03183098862	0.005658531172;...
 0.04774648293	0.006003732884;...
@@ -58,13 +52,19 @@ tunnel = [0.0519	0.0078;...
 0.1368	0.0007];
 
 hold on
-plot(fw_fixed(:,1), fw_fixed(:,2), '--^b')
-plot(fw_relaxed(:,1), fw_relaxed(:,2), '--sm')
-plot(tunnel(:,1), tunnel(:,2), '-or')
+% plot(fw_fixed(:,1), fw_fixed(:,2), '--^b')
+% plot(fw_relaxed(:,1), fw_relaxed(:,2), '--sm')
+plot(tunnel(:,1), tunnel(:,2), '--^r')
+
+plot(J_all(2:end), CT_all(end,2:end), '-.sk');
+grid minor
+box on
+axis tight
+xlabel('Rotor Advance Ratio, \mu');
+ylabel('Rotor Thrust Coefficient');
 hold off
-
-legend('OPERA (Relaxed)','VAPTOR (Fixed)', 'VAPTOR (Relaxed)', 'Tunnel','Location','SouthWest')
-
+legend('RU Test Data (3000 RPM)', 'DDE Method (Relaxed Wake)', 'Location','SouthWest','LineWidth',1)
+fcnFIG2LATEX(hFig1, 'TMotor_ct.pdf', [8 5])
 % hFig1 = figure(1);
 % clf(1);
 % plot(CT_all, '-k');

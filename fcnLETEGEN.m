@@ -1,4 +1,4 @@
-function [vecLE, vecLEDVE, vecTE, vecTEDVE, vecSYM, vecSYMDVE, matELST] = fcnLETEGEN(strATYPE, matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS, vecSYM_old)
+function [vecLE, vecLEDVE, vecTE, vecTEDVE, vecSYM, vecSYMDVE, matELST, matDVEGRID] = fcnLETEGEN(strATYPE, matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS, vecSYM_old, matEIDX, vecM)
 
 vecLE = [];
 vecTE = [];
@@ -33,7 +33,10 @@ if any(vecSYM_old)
     vecSYMDVE = nonzeros(sort(matEATT(vecSYM,:),2,'descend'));
 end
 
-
+matDVEGRID(1,:) = vecLEDVE;
+for i = 2:vecM*2
+    [~,matDVEGRID(i,:)] = ismember(matEIDX(matDVEGRID(i-1,:), 3), matEIDX(:,2));
+end
 
 end
 

@@ -29,7 +29,7 @@ CT_tunnel = A(:,7)./(vecDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.
 error_tunnel = (1/4)./(vecDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
 
 %% Getting OPERA data
-load('Alpha 15 Results/relaxed_coarse.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR')
+load('Alpha 15 Results/relaxed_fine.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR')
 CT_relaxed = CT_U(~isnan(CT_U));
 CT_relaxed_s = CT(~isnan(CT));
 
@@ -45,7 +45,7 @@ WH = [8 4.5];
 
 tmp56 = [vecPOS_TUNNEL_OG CT_tunnel];
 
-start = 23;
+start = 60;
 tmp56(:,2) = [CT_tunnel(vecPOS_TUNNEL_OG > start); CT_tunnel(vecPOS_TUNNEL_OG <= start)];
 tmp56(:,1) = [vecPOS_TUNNEL(vecPOS_TUNNEL_OG > start)+start; vecPOS_TUNNEL(vecPOS_TUNNEL_OG <= start)+start];
 tmp56(:,1) = rem(tmp56(:,1),360);
@@ -61,27 +61,28 @@ hold on
 plot(tmp56(:,1), tmp56(:,2),'-r','linewidth',LW)
 tmp = vecPOS./360;
 
-start = 3.0;
+start = 1.0;
 idx = tmp >= start & tmp < start+1;
-idx2 = tmp >= start+1 & tmp <= start+2;
+% idx2 = tmp >= start+1 & tmp <= start+2;
+idx2 = idx;
 tmp2 = find(idx);
 offset = -vecPOS(tmp2(1));
 plot(vecPOS(idx) + offset, (CT_relaxed(idx) + CT_relaxed(idx2))./2, '--b','linewidth',LW);
 
 %%
-hfig5 = figure(5)
-clf(5)
-
-plot(CT_relaxed, '-k');
-hold on
-plot(CT_relaxed_s, '--b');
-hold off
-grid minor
-box on
-axis tight
-
-CT_relaxed = CT_U(~isnan(CT_U));
-CT_relaxed_s = CT(~isnan(CT));
+% hfig5 = figure(5)
+% clf(5)
+% 
+% plot(CT_relaxed, '-k');
+% hold on
+% plot(CT_relaxed_s, '--b');
+% hold off
+% grid minor
+% box on
+% axis tight
+% 
+% CT_relaxed = CT_U(~isnan(CT_U));
+% CT_relaxed_s = CT(~isnan(CT));
 
 
 %%

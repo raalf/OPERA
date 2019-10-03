@@ -1,5 +1,5 @@
 function [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA, matSPANDIR] = fcnTRIANG(POINTS, vecDVEFLIP)
+            matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA, matSPANDIR, vecDVECHORD] = fcnTRIANG(POINTS, vecDVEFLIP)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -140,6 +140,20 @@ vecDVEAREA = 0.5.*sqrt(sum(cross(matVLST(matDVE(:,2),:) - matVLST(matDVE(:,1),:)
 matSPANDIR = repmat([0 1 0],valNELE,1);
 matSPANDIR = matSPANDIR - (dot(matSPANDIR, matDVECT(:,:,3),2)).*matDVECT(:,:,3);
 matSPANDIR = matSPANDIR./(sqrt(sum(matSPANDIR.^2,2)));
+
+%% Chord
+xi_1 = permute(matPLEX(1,1,:),[3 2 1]);
+xi_2 = permute(matPLEX(2,1,:),[3 2 1]);
+xi_3 = permute(matPLEX(3,1,:),[3 2 1]);
+
+eta_1 = permute(matPLEX(1,2,:),[3 2 1]);
+eta_2 = permute(matPLEX(2,2,:),[3 2 1]);
+eta_3 = permute(matPLEX(3,2,:),[3 2 1]);
+
+D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
+D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
+
+vecDVECHORD = abs(D_LE - D_TE);
 
 end
 

@@ -10,8 +10,8 @@ Steady or Unsteady:	strA3TYPE = STEADY
 Chordwise Spacing:	strSPACING = NORMAL
 
 Maximum Timesteps: 		valMAXTIME = 200
-Timestep Size: 			valDELTIME = 0.001
-Relaxed or Fixed Wake: 	strRELAX = FIX
+Timestep Size: 			valDELTIME = 0.0005
+Relaxed or Fixed Wake: 	strRELAX = RELAXED
 
 Angles of Attack: 		seqALPHA = 90
 Angles of Sideslip: 	seqBETA = 0
@@ -19,7 +19,7 @@ Density:				valDENSITY = 1.225
 
 Reference Diameter:		valDIAM = 0.4572
 Reference RPM:			valRPM = 3000
-Advance Ratio:			valJ = 0.05
+Advance Ratio:			valJ = 0.1
 Number of Blades:		valBLADES = 2
 
 GEOMETRY

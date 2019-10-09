@@ -37,7 +37,7 @@ strFILE = 'inputs/TMotor_coarse.dat'
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
-flagGIF = 0;
+flagGIF = 1;
 flagHVRMOD = false;
 valUINF = 1;
 
@@ -67,7 +67,7 @@ if valBLADES > 1
 end
 
 % Generating leading and trailing edge information
-[vecLE, vecLEDVE, vecTE, vecTEDVE, vecSYM, vecSYMDVE, matELST, matDVEGRID] = fcnLETEGEN(strATYPE, matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS, vecSYM, matEIDX, vecM); 
+[vecLE, vecLEDVE, vecTE, vecTEDVE, vecSYM, vecSYMDVE, matELST, matDVEGRID] = fcnLETEGEN(strATYPE, matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS, vecSYM, matEIDX, vecM);
 
 if ~isempty(strHTYPE)
     % Setting blade angles for propellers
@@ -180,11 +180,13 @@ for valTIMESTEP = 1:valMAXTIME
             
             % Relaxing Wake
             if flagRELAX == 1
-                %                 matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
                 [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG, matWVGRID] = ...
                     fcnRELAX7(flagHVRMOD, valDELTIME, valTIMESTEP, valRPM, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
                     matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWE2GRID);
                 
+%                 [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG, matWVGRID] = ...
+%                     fcnRELAX8(flagHVRMOD, valDELTIME, valTIMESTEP, valRPM, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
+%                     matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWE2GRID);
                 % Update all wake coefficients
                 matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
             end
@@ -282,7 +284,7 @@ axis tight
 % CLc = sum(matINTCIRC,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2))
 % valAR = (valSPAN.^2)./valAREA;
 % CL2D = CL2.*((valAR + 2)/valAR);
-% 
+%
 % hFig23 = figure(23);
 % clf(23);
 % load('Stuff/Gust Response/Kussner.mat')
@@ -290,16 +292,16 @@ axis tight
 % box on
 % axis tight
 % grid minor
-% 
+%
 % hold on
 % plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CL2D(valGUSTSTART+1:end), '-b', 'LineWidth', 1);
 % % plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLdg(valGUSTSTART+1:end), '--r', 'LineWidth', 1.5);
 % % plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLc(valGUSTSTART+1:end), '-.k', 'LineWidth', 1.5);
 % hold off
-% 
+%
 % xlabel('Distance Travelled by Wing (m)');
 % ylabel('C_l')
-% 
+%
 % legend('Kussner Function','C_L','dGammadt','Integrated Circulation','Location','SouthEast')
 
 
@@ -308,14 +310,14 @@ axis tight
 % load('Stuff/Gust Response/ZAERO.mat')
 % plot(smooth(ZAERO(:,1)), smooth(ZAERO(:,2)), '-k');
 % hold on
-% 
+%
 % load('Stuff/Gust Response/UVLM.mat')
 % plot(smooth(UVLM(:,1)), smooth(UVLM(:,2)), '-.k');
-% 
+%
 % plot(0.135+((valDELTIME.*([0:valMAXTIME-1]))), CL2, '--b');
 % box on
 % axis tight
 % grid minor
 % %profile viewer
-% 
+%
 % GOLAND_X = 0.135+((valDELTIME.*([0:valMAXTIME-1])));

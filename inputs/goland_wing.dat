@@ -9,8 +9,8 @@ Steady or Unsteady:	strA3TYPE = UNSTEADY
 
 Chordwise Spacing:	strSPACING = NORMAL
 
-Maximum Timesteps: 		valMAXTIME = 50
-Timestep Size: 			valDELTIME = 0.05
+Maximum Timesteps: 		valMAXTIME = 100
+Timestep Size: 			valDELTIME = 0.025
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
 Angles of Attack: 		seqALPHA = 0
@@ -21,7 +21,7 @@ Reference Area:		valAREA = 22.2967
 Reference Span:		valSPAN = 12.1920
 
 Gust Mode:			valGUSTMODE = 2
-Gust Amplitude:		valGUSTAMP = 0.0105
+Gust Amplitude:		valGUSTAMP = 0.010
 Gust Length:		valGUSTL = 7.3152
 Gust Start:			valGUSTSTART = 0
 
@@ -33,8 +33,8 @@ Defines leading edge of wing, all measured in metres:
 Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
-Number of spanwise elements:	vecN 		= 7. 
-Number of chordwise elements: 	vecM 		= 6.
+Number of spanwise elements:	vecN 		= 10. 
+Number of chordwise elements: 	vecM 		= 7.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES

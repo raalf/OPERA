@@ -1,8 +1,7 @@
 clc
 clear
 
-fileList = dir('Alpha 90 Results/*.mat');
-
+fileList = dir('Alpha 90 Results/TMotor_Relaxed_*.mat');
 for i = 1:size(fileList,1)
     load(['Alpha 90 Results/', fileList(i).name], 'CT', 'J', 'jj')
     CT_all(:,i) = CT;
@@ -56,15 +55,14 @@ hold on
 % plot(fw_relaxed(:,1), fw_relaxed(:,2), '--sm')
 plot(tunnel(:,1), tunnel(:,2), '--^r')
 
-plot(J_all(2:end), CT_all(end,2:end), '-.sk');
+plot(J_all(2:end), CT_all(end,2:end), '-.sb');
 grid minor
 box on
 axis tight
 xlabel('Rotor Advance Ratio, \mu');
 ylabel('Rotor Thrust Coefficient');
 hold off
-legend('RU Test Data (3000 RPM)', 'DDE Method (Relaxed Wake)', 'Location','SouthWest','LineWidth',1)
-fcnFIG2LATEX(hFig1, 'TMotor_ct.pdf', [8 5])
+
 % hFig1 = figure(1);
 % clf(1);
 % plot(CT_all, '-k');
@@ -73,3 +71,19 @@ fcnFIG2LATEX(hFig1, 'TMotor_ct.pdf', [8 5])
 % axis tight
 % xlabel('Timestep');
 % ylabel('C_T');
+
+CT_all = [];
+J_all = [];
+fileList = dir('Alpha 90 Results/TMotor_Fixed_*.mat');
+for i = 1:size(fileList,1)
+    load(['Alpha 90 Results/', fileList(i).name], 'CT', 'valJ')
+    CT_all(:,i) = CT(end);
+    J_all(:,i) = valJ;
+end
+
+hold on
+plot(J_all, CT_all, '--sk');
+hold off
+
+legend('RU Test Data (3000 RPM)', 'DDE Method (Relaxed Wake)', 'Location','SouthWest','LineWidth',1)
+fcnFIG2LATEX(hFig1, 'TMotor_ct.pdf', [8 5])

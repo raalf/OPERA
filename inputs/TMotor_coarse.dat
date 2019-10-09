@@ -5,21 +5,21 @@ ANALYSIS PARAMETERS
 
 Analysis Type:	 	strATYPE = ROTOR
 Lifting Surface:	strA2TYPE = THIN
-Steady or Unsteady:	strA3TYPE = UNSTEADY
+Steady or Unsteady:	strA3TYPE = STEADY
 
 Chordwise Spacing:	strSPACING = NORMAL
 
-Maximum Timesteps: 		valMAXTIME = 400
-Timestep Size: 			valDELTIME = 0.00025
-Relaxed or Fixed Wake: 	strRELAX = RELAXED
+Maximum Timesteps: 		valMAXTIME = 200
+Timestep Size: 			valDELTIME = 0.001
+Relaxed or Fixed Wake: 	strRELAX = FIX
 
-Angles of Attack: 		seqALPHA = 15
+Angles of Attack: 		seqALPHA = 90
 Angles of Sideslip: 	seqBETA = 0
 Density:				valDENSITY = 1.225
 
 Reference Diameter:		valDIAM = 0.4572
 Reference RPM:			valRPM = 3000
-Advance Ratio:			valJ = 0.1702
+Advance Ratio:			valJ = 0.05
 Number of Blades:		valBLADES = 2
 
 GEOMETRY

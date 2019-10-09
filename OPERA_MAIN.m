@@ -229,25 +229,25 @@ end
 %     end
 % end
 
-% len = size(matLIFTFREE,1);
-% lambda = 0.5;
-% matDGAMMADT(1,:) = matINTCIRC(1,:).*0;
-% for i = 3:len
-%     if i <= len-2
-%         matDGAMMADT(i,:) = ((-matINTCIRC(i+2,:) + 8.*matINTCIRC(i+1,:) - 8.*matINTCIRC(i-1,:) + matINTCIRC(i-2,:))./(12.*valDELTIME));
-%     elseif i == len - 1
-%         matDGAMMADT(i,:) = ((matINTCIRC(i+1,:) - matINTCIRC(i-1,:))./(2.*valDELTIME));
-%     elseif i == len
-%         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME);
-%     end
-% end
-
 len = size(matLIFTFREE,1);
 lambda = 0.5;
 matDGAMMADT(1,:) = matINTCIRC(1,:).*0;
-for i = 2:len
-    matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME).*lambda + (1 - lambda).*matDGAMMADT(i-1,:);
+for i = 3:len
+    if i <= len-2
+        matDGAMMADT(i,:) = ((-matINTCIRC(i+2,:) + 8.*matINTCIRC(i+1,:) - 8.*matINTCIRC(i-1,:) + matINTCIRC(i-2,:))./(12.*valDELTIME));
+    elseif i == len - 1
+        matDGAMMADT(i,:) = ((matINTCIRC(i+1,:) - matINTCIRC(i-1,:))./(2.*valDELTIME));
+    elseif i == len
+        matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME);
+    end
 end
+
+% len = size(matLIFTFREE,1);
+% lambda = 0.5;
+% matDGAMMADT(1,:) = matINTCIRC(1,:).*0;
+% for i = 2:len
+%     matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME).*lambda + (1 - lambda).*matDGAMMADT(i-1,:);
+% end
 
 tmpLIFTFREE = matLIFTFREE + matDGAMMADT;
 tmpDVELIFT = tmpLIFTFREE + matLIFTIND;
@@ -277,7 +277,6 @@ grid minor
 box on
 axis tight
 
-
 % CL2 = sum(tmpLIFTFREE,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
 % CLdg = sum(matDGAMMADT,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
 % CLc = sum(matINTCIRC,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2))
@@ -287,15 +286,15 @@ axis tight
 % hFig23 = figure(23);
 % clf(23);
 % load('Stuff/Gust Response/Kussner.mat')
-% plot(Kussner(:,1).*0.5 + (valGUSTSTART+1).*valDELTIME, smooth(Kussner(:,2)), '-k', 'LineWidth', 1.5);
+% plot(Kussner(:,1).*0.5 + (valGUSTSTART+1).*valDELTIME, smooth(Kussner(:,2)), '-k', 'LineWidth', 1);
 % box on
 % axis tight
 % grid minor
 % 
 % hold on
-% plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CL2D(valGUSTSTART+1:end), '-b', 'LineWidth', 1.5);
-% plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLdg(valGUSTSTART+1:end), '--r', 'LineWidth', 1.5);
-% plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLc(valGUSTSTART+1:end), '-.k', 'LineWidth', 1.5);
+% plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CL2D(valGUSTSTART+1:end), '-b', 'LineWidth', 1);
+% % plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLdg(valGUSTSTART+1:end), '--r', 'LineWidth', 1.5);
+% % plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLc(valGUSTSTART+1:end), '-.k', 'LineWidth', 1.5);
 % hold off
 % 
 % xlabel('Distance Travelled by Wing (m)');
@@ -309,14 +308,14 @@ axis tight
 % load('Stuff/Gust Response/ZAERO.mat')
 % plot(smooth(ZAERO(:,1)), smooth(ZAERO(:,2)), '-k');
 % hold on
-%
+% 
 % load('Stuff/Gust Response/UVLM.mat')
 % plot(smooth(UVLM(:,1)), smooth(UVLM(:,2)), '-.k');
-%
+% 
 % plot(0.135+((valDELTIME.*([0:valMAXTIME-1]))), CL2, '--b');
 % box on
 % axis tight
 % grid minor
 % %profile viewer
-%
+% 
 % GOLAND_X = 0.135+((valDELTIME.*([0:valMAXTIME-1])));

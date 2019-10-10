@@ -67,16 +67,6 @@ L1 = dot(nu_d, fpl(:,1:2) - epts(:,:,1:3,1), 2);
 L2 = dot(nu_d, fpl(:,1:2) - epts(:,:,1:3,2), 2);
 a = dot(nu_n, mean(epts,4) - fpl(:,1:2), 2);
 
-% tmp = nan(len,1,3);
-% idx = sign(L1) ~= sign(L2);
-% tmp(idx) = a(idx);
-% idx = (sign(L1) == sign(L2)) & ~idx;
-% tmp(idx) = max([abs(a(idx)) min([abs(L1(idx)) abs(L2(idx))],[],2)], [], 2);
-% if any(isnan(tmp),'all')
-%     disp('Issue in determining d_H');
-% end
-% d_H = min(abs(tmp),[],3);
-
 g = sqrt(a.^2 + hs);
 c1 = g.^2 + abs_h.*sqrt(L1.^2 + g.^2);
 c2 = g.^2 + abs_h.*sqrt(L2.^2 + g.^2);

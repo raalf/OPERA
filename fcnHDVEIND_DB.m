@@ -71,6 +71,9 @@ g = sqrt(a.^2 + hs);
 c1 = g.^2 + abs_h.*sqrt(L1.^2 + g.^2);
 c2 = g.^2 + abs_h.*sqrt(L2.^2 + g.^2);
 
+nu_xi = nu_n(:,1,:);
+nu_eta = nu_n(:,2,:);
+
 %% E
 % MXK = 5, MXQ = 5, MXFK = 16 + 5 - 2 = 19;
 
@@ -151,8 +154,6 @@ idx = [g > 1e-3, g <= 1e-3];
 % idx = [g > 1e-5, g <= 1e-5];
 % idx = [g > 1e-8, g <= 1e-8];
 % 2.)
-nu_xi = nu_n(:,1,:);
-nu_eta = nu_n(:,2,:);
 
 F113 = zeros(size(F111));
 F115 = F113;

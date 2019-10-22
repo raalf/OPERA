@@ -19,15 +19,12 @@ disp('====================================================================');
 % strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/goland_wing.dat'
 % strFILE = 'inputs/kussner.dat'
-% strFILE = 'inputs/box_wing.dat'
 % strFILE = 'inputs/TMotor.dat'
 strFILE = 'inputs/TMotor_coarse.dat'
+% strFILE = 'inputs/TMotor_coarse2.dat'
 % strFILE = 'inputs/TMotor_nocamber.dat'
 % strFILE = 'inputs/Leishman_Rotor.dat'
 % strFILE = 'inputs/Caradonna_Rotor.dat'
-% strFILE = 'Stuff/Columbia/Columbia_234_Rotor.dat'
-% strFILE = 'inputs/test.dat'
-% strFILE = 'inputs/MAE_11x7.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, ...
@@ -37,25 +34,9 @@ strFILE = 'inputs/TMotor_coarse.dat'
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
-flagGIF = 0;
+flagGIF = 1;
 flagHVRMOD = false;
 valUINF = 1;
-
-% flagRELAX = 0
-% valJ = J(jj)
-
-% % Hinge
-% strHTYPE = 'FPL';
-% matHINGELOC = cat(3, [0 0.2032 0], [0 0.2032 0], [0 0.7493 0]);
-% matHINGEDIR = cat(3, [1 0 0], [0 1 0], [0 0 1]);
-% matHINGEANG = repmat([FLAP PITCH 0], 3, 1);
-
-% % Hinge
-% strHTYPE = 'FPL';
-% matHINGELOC = cat(3, [0 0 0], [0 0 0], [0 0 0]);
-% matHINGEDIR = cat(3, [1 0 0], [0 1 0], [0 0 1]);
-% % matHINGEANG = repmat([0 -2.0 0], 3, 1);
-% matHINGEANG = repmat([0 0 0], 3, 1);
 
 %% Preliminary Geometry Stuff
 % Duplicating blades for rotors

@@ -5,7 +5,7 @@ function [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, seqALP
 
 valDIAM = nan;
 valRPM = nan;
-valCOLL = nan;
+valCOLL = 0;
 valJ = nan;
 valBLADES = nan;
 
@@ -128,6 +128,13 @@ if (strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER'))
         ch = fscanf(fp,'%c',1);
     end
     valBLADES = fscanf(fp,'%lf');
+    
+    % Advance ratio
+    ch = fscanf(fp,'%c',1);
+    while(ch~='=');
+        ch = fscanf(fp,'%c',1);
+    end
+    valCOLL = fscanf(fp,'%lf');
 else
     % Reading reference area
     ch = fscanf(fp,'%c',1);
@@ -285,6 +292,9 @@ for i = 1:valPANELS
 end
 
 fclose(fp);
+
+% Adding collective pitch
+matGEOM(:,end,:) = matGEOM(:,end,:) + valCOLL;
 
 [matPOINTS, matTEPOINTS, matLEPOINTS, vecULS, vecDVESYM, vecDVESURFACE, vecDVEFLIP] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE, vecWING);
 

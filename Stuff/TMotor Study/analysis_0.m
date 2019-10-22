@@ -1,35 +1,22 @@
 clc
 clear
 
-fileList = dir('Alpha 0 Results/*.mat');
+valRPM = 3000;
 
+offset = 0;
+CT_all = [];
+J_all = [];
+fileList = dir('Alpha 0 Results/TMotor_Relaxed_*.mat');
 for i = 1:size(fileList,1)
-    load(['Alpha 0 Results/', fileList(i).name], 'CT', 'J', 'jj')
-    CT_all(:,i) = CT;
-    J_all(:,i) = J(jj);
+    load(['Alpha 0 Results/', fileList(i).name], 'CT', 'valJ', 'valDELTIME')
+    num_azm = 1/((valRPM/60).*valDELTIME);
+    CT = CT(~isnan(CT));
+    CT_all(:,i) = mean(CT(end-(num_azm*2):end));
+    J_all(:,i) = valJ;
 end
 
-
-J_all = [J_all(end) J_all(1:end-1)];
-CT_all = [CT_all(:,end) CT_all(:,1:end-1)];
-
-CT_all = mean(CT_all(end-40:end,:),1) + 0.0005;
-
-hFig1 = figure(1);
-clf(1);
-plot(J_all(1:end), CT_all(end,1:end), '--sb');
-grid minor
-box on
-axis tight
-xlabel('J');
-ylabel('C_T');
-title('TMotor 18in')
-
-fw_relaxed = [0.06366197724	0.009916091011;...
-0.1273239545	0.009993173439;...
-0.1909859317	0.01092707031;...
-0.2546479089	0.01110412328;...
-0.3183098862	0.0116335537];
+hFig2 = figure(2);
+clf(2);
 
 tunnel = [0.0416	0.0098;...
 0.0593	0.0101;...
@@ -50,17 +37,31 @@ tunnel = [0.0416	0.0098;...
 0.3249	0.0172];
 
 hold on
-plot(fw_relaxed(:,1), fw_relaxed(:,2), '-.^k')
-plot(tunnel(:,1), tunnel(:,2), '-om')
+plot(tunnel(:,1), tunnel(:,2), '--^r')
+
+plot(J_all, CT_all + offset, '-.sb');
+grid minor
+box on
+axis tight
+xlabel('Rotor Advance Ratio, \mu');
+ylabel('Rotor Thrust Coefficient');
 hold off
 
-legend('OPERA','FW','Tunnel','Location','NorthWest')
+CT_all = [];
+J_all = [];
+fileList = dir('Alpha 0 Results/TMotor_Fixed_*.mat');
+for i = 1:size(fileList,1)
+    load(['Alpha 0 Results/', fileList(i).name], 'CT', 'valJ', valDELTIME)
+    num_azm = 1/((valRPM/60).*valDELTIME);
+    CT = CT(~isnan(CT));
+    CT_all(:,i) = mean(CT(end-(num_azm*2):end));
+    J_all(:,i) = valJ;
+end
 
-% hFig1 = figure(1);
-% clf(1);
-% plot(CT_all, '-k');
-% grid minor
-% box on
-% axis tight
-% xlabel('Timestep');
-% ylabel('C_T');
+hold on
+plot(J_all, CT_all + offset, '--sk');
+hold off
+
+legend('RU Test Data (3000 RPM)', 'DDE Method (Relaxed Wake)', 'Location','NorthWest','LineWidth',1)
+fcnFIG2LATEX(hFig2, 'TMotor_ct_0.pdf', [8 5])
+

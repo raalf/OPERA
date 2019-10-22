@@ -1,7 +1,7 @@
 clc
 clear
 
-ds = 2
+ds = 20
 
 %% Getting tunnel data
 A = dlmread('Alpha_15_550.txt', '', 9, 0);
@@ -37,7 +37,7 @@ clf(99);
 
 [vecPOS_TUNNEL_OG, idx] = sort(vecPOS_TUNNEL_OG, 'ascend');
 CT_tunnel = CT_tunnel(idx);
-scatter(downsample(vecPOS_TUNNEL_OG, ds), downsample(CT_tunnel, ds), 10, 'sk')
+plot(downsample(vecPOS_TUNNEL_OG, ds), downsample(CT_tunnel, ds), '--r')
 grid minor
 box on
 axis tight
@@ -74,7 +74,7 @@ error_tunnel = (1/4)./(vecDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRP
 [vecPOS_TUNNEL_OG, idx] = sort(vecPOS_TUNNEL_OG, 'ascend');
 CT_tunnel = CT_tunnel(idx);
 hold on
-scatter(downsample(vecPOS_TUNNEL_OG, ds), downsample(CT_tunnel, ds), 10, 'dr')
+plot(downsample(vecPOS_TUNNEL_OG, ds), downsample(CT_tunnel, ds), '-.m')
 hold off
 
 %% Getting tunnel data
@@ -109,7 +109,12 @@ error_tunnel = (1/4)./(vecDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRP
 [vecPOS_TUNNEL_OG, idx] = sort(vecPOS_TUNNEL_OG, 'ascend');
 CT_tunnel = CT_tunnel(idx);
 hold on
-scatter(downsample(vecPOS_TUNNEL_OG, ds), downsample(CT_tunnel, ds), 10, 'ob')
+plot(downsample(vecPOS_TUNNEL_OG, ds), downsample(CT_tunnel, ds), '-b')
 hold off
 
-legend('Alpha 15','Alpha 5','Alpha 0','Location','NorthWest')
+legend(['\alpha_{tpp} = 15', char(176)], ['\alpha_{tpp} = 5', char(176)], ['\alpha_{tpp} = 0', char(176)],'Location','NorthEast')
+
+xlabel('Azimuth Location, Degrees')
+ylabel('Thrust Coefficient') 
+
+fcnFIG2LATEX(hFig99, 'TMotor_tunnel_transient.pdf', [8 5])

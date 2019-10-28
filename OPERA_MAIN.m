@@ -35,6 +35,7 @@ strFILE = 'inputs/TMotor_coarse.dat'
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
 flagGIF = 1;
+% flagHVRMOD = true;
 flagHVRMOD = false;
 valUINF = 1;
 

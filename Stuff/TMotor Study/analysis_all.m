@@ -69,8 +69,23 @@ for i = 1:size(fileList,1)
     load(['Alpha 90 Results/', fileList(i).name], 'CT', 'valJ', 'valDELTIME')
     num_azm = 1/((valRPM/60).*valDELTIME);
     CT = CT(~isnan(CT));
-    CT_90(:,i) = mean(CT(end-(num_azm*2):end));
+    CT_90(:,i) = mean(CT(end-(num_azm):end));
     J_90(:,i) = valJ;
+end
+
+%%
+valRPM = 3000;
+
+offset = 0;
+CT_15 = [];
+J_15 = [];
+fileList = dir('Alpha 15 Results/TMotor_Relaxed_*.mat');
+for i = 1:size(fileList,1)
+    load(['Alpha 15 Results/', fileList(i).name], 'CT', 'valJ', 'valDELTIME')
+    num_azm = 1/((valRPM/60).*valDELTIME);
+    CT = CT(~isnan(CT));
+    CT_15(:,i) = mean(CT(end-(num_azm):end));
+    J_15(:,i) = valJ;
 end
 
 
@@ -85,23 +100,25 @@ for i = 1:size(fileList,1)
     load(['Alpha 0 Results/', fileList(i).name], 'CT', 'valJ', 'valDELTIME')
     num_azm = 1/((valRPM/60).*valDELTIME);
     CT = CT(~isnan(CT));
-    CT_0(:,i) = mean(CT(end-(num_azm*2):end));
+    CT_0(:,i) = mean(CT(end-(num_azm):end));
     J_0(:,i) = valJ;
 end
 
 
 %%
 
-hold on
-plot(tunnel_90(:,1), tunnel_90(:,2), ['-', legend_entry{1}])
-plot(J_90, CT_90, ['-o', legend_entry{1}])
-plot(tunnel_15(:,1), tunnel_15(:,2), ['--', legend_entry{2}])
+% offset = 0.8e-3
 
+hold on
+plot(tunnel_90(:,1), tunnel_90(:,2), [':', legend_entry{1}])
+plot(tunnel_15(:,1), tunnel_15(:,2), ['--', legend_entry{2}])
 plot(tunnel_0(:,1), tunnel_0(:,2), ['-.', legend_entry{4}])
-plot(J_0, CT_0, ['-s', legend_entry{4}])
+plot(J_90, CT_90 + offset, ['-o', legend_entry{1}])
+plot(J_15, CT_15 + offset, ['-^', legend_entry{2}])
+plot(J_0, CT_0 + offset, ['-s', legend_entry{4}])
 hold off
 
-legend(['\alpha_{tpp} = 90', char(176)], ['\alpha_{tpp} = 15', char(176)], ['\alpha_{tpp} = 0', char(176)],'Location','NorthWest')
+legend(['Experimental (\alpha_{tpp} = 90', char(176), ')'], ['Experimental (\alpha_{tpp} = 15', char(176), ')'], ['Experimental (\alpha_{tpp} = 0', char(176), ')'], ['DDE Method (\alpha_{tpp} = 90', char(176), ')'], ['DDE Method (\alpha_{tpp} = 15', char(176), ')'], ['DDE Method (\alpha_{tpp} = 0', char(176), ')'],'Location','SouthEast')
 
 
 box on

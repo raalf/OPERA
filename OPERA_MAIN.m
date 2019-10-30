@@ -266,7 +266,7 @@ axis tight
 % CLc = sum(matINTCIRC,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2))
 % valAR = (valSPAN.^2)./valAREA;
 % CL2D = CL2.*((valAR + 2)/valAR);
-%
+% 
 % hFig23 = figure(23);
 % clf(23);
 % load('Stuff/Gust Response/Kussner.mat')
@@ -274,32 +274,32 @@ axis tight
 % box on
 % axis tight
 % grid minor
-%
+% 
 % hold on
 % plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CL2D(valGUSTSTART+1:end), '-b', 'LineWidth', 1);
 % % plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLdg(valGUSTSTART+1:end), '--r', 'LineWidth', 1.5);
 % % plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLc(valGUSTSTART+1:end), '-.k', 'LineWidth', 1.5);
 % hold off
-%
+% 
 % xlabel('Distance Travelled by Wing (m)');
 % ylabel('C_l')
-%
+% 
 % legend('Kussner Function','C_L','dGammadt','Integrated Circulation','Location','SouthEast')
-
-
-% hFig24 = figure(24);
-% clf(24);
-% load('Stuff/Gust Response/ZAERO.mat')
-% plot(smooth(ZAERO(:,1)), smooth(ZAERO(:,2)), '-k');
-% hold on
-%
-% load('Stuff/Gust Response/UVLM.mat')
-% plot(smooth(UVLM(:,1)), smooth(UVLM(:,2)), '-.k');
-%
-% plot(0.135+((valDELTIME.*([0:valMAXTIME-1]))), CL2, '--b');
-% box on
-% axis tight
-% grid minor
-% %profile viewer
-%
-% GOLAND_X = 0.135+((valDELTIME.*([0:valMAXTIME-1])));
+% 
+% 
+% % hFig24 = figure(24);
+% % clf(24);
+% % load('Stuff/Gust Response/ZAERO.mat')
+% % plot(smooth(ZAERO(:,1)), smooth(ZAERO(:,2)), '-k');
+% % hold on
+% %
+% % load('Stuff/Gust Response/UVLM.mat')
+% % plot(smooth(UVLM(:,1)), smooth(UVLM(:,2)), '-.k');
+% %
+% % plot(0.135+((valDELTIME.*([0:valMAXTIME-1]))), CL2, '--b');
+% % box on
+% % axis tight
+% % grid minor
+% % %profile viewer
+% %
+% % GOLAND_X = 0.135+((valDELTIME.*([0:valMAXTIME-1])));

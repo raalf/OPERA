@@ -2,7 +2,7 @@ clc
 clear
 % close all
 
-A = dlmread('Alpha_0_550.txt', '', 9, 0);
+A = dlmread('Alpha_0_900.txt', '', 9, 0);
 A(A(:,4) > 360,:) = [];
 LW = 1;
 %% Getting tunnel data
@@ -28,8 +28,31 @@ vecDENSITY = (3386.39*29.23)./(287.058.*((A(:,2)-32).*(5/9) + 273.15));
 CT_tunnel = A(:,7)./(vecDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
 error_tunnel = (1/4)./(vecDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
 
+
+hFig10 = figure(10);
+clf(10);
+edge = vecPOS_TUNNEL_OG(2:end) < vecPOS_TUNNEL_OG(1:end-1);
+tmp = A(edge,1);
+tmp2 = (1./smooth(diff(tmp))).*60;
+tmp2(tmp2 > 2e+4) = [];
+plot(tmp2)
+
+% 
+% rpm = (deg2rad(diff(vecPOS_TUNNEL))./diff(A(:,1)))./0.104719755;
+% idx = abs(diff(A(:,1))) > (A(2,1) - A(1,1));
+% rpm(idx) = [];
+% tmp = vecPOS_TUNNEL_OG(~idx);
+% scatter(tmp(1:end-1),rpm(1:end-1))
+% % plot(A(radps < 2000,1),radps)
+
+grid minor
+box on
+axis tight
+ylabel('RPM')
+
+
 %% Getting OPERA data
-load('Alpha 0 Results/TMotor_Relaxed_J0.15.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR')
+load('Alpha 0 Results/TMotor_Relaxed_J0.3.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR')
 CT_relaxed = CT_U(~isnan(CT_U));
 CT_relaxed_s = CT(~isnan(CT));
 
@@ -45,7 +68,7 @@ WH = [8 4.5];
 
 tmp56 = [vecPOS_TUNNEL_OG CT_tunnel];
 
-start = 340;
+start = 0;
 tmp56(:,2) = [CT_tunnel(vecPOS_TUNNEL_OG > start); CT_tunnel(vecPOS_TUNNEL_OG <= start)];
 tmp56(:,1) = [vecPOS_TUNNEL(vecPOS_TUNNEL_OG > start)+start; vecPOS_TUNNEL(vecPOS_TUNNEL_OG <= start)+start];
 tmp56(:,1) = rem(tmp56(:,1),360);
@@ -57,14 +80,16 @@ scatter(tmp56(:,1), tmp56(:,2), 5, 'sk')
 
 %%
 figure(2);
-tmp56 = smoothdata(tmp56, 'movmean',50);
+tmp56 = smoothdata(tmp56, 'movmean',500);
 hold on
 plot(tmp56(:,1), tmp56(:,2),'-r','linewidth',LW)
-tmp = vecPOS./360;
+tmp = ((vecPOS + 90)./360);
+tmp = (vecPOS./360)
 
-start = 2.0;
+start = 2;
 idx = tmp >= start & tmp < start+1;
 idx2 = tmp >= start+1 & tmp < start+2;
+% idx2 = tmp >= start & tmp < start+1;
 tmp2 = find(idx);
 offset = -vecPOS(tmp2(1));
 plot(vecPOS(idx) + offset, (CT_relaxed(idx) + CT_relaxed(idx2))./2, '--b','linewidth',LW);
@@ -72,35 +97,35 @@ grid minor
 box on
 axis tight
 
-legend('RU Test Data','Moving Average of Test Data','DDE Method (relaxed wake)','Location','South','FontSize',8)
+legend('RU Test Data','Moving Average of Test Data','DDE Method (relaxed wake)','Location','NorthWest','FontSize',8)
 xlabel('Position (Degrees)');
 ylabel('C_T');
-WH = [4.5*2 5];
+% WH = [4.5*2 5];
 % fcnFIG2LATEX(hFig2, 'tmotor_time.pdf', WH)
 
 
 %%
-hFig20 = figure(20);
-clf(20);
-
-WH = [4.5 5];
-idx3 = vecDVESURFACE(vecTEDVE);
-tmp5 = vecPOS(idx) + offset;
-plot(tmp5, (sum(tmpDVETHRUST(idx,idx3==1),2) + sum(tmpDVETHRUST(idx2,idx3==1),2))./2, '-.r','linewidth',LW)
-hold on
-plot(tmp5, (sum(tmpDVETHRUST(idx,idx3==2),2) + sum(tmpDVETHRUST(idx2,idx3==2),2))./2, '--b','linewidth',LW)
-plot(tmp5, (sum(tmpDVETHRUST(idx,:),2) + sum(tmpDVETHRUST(idx2,:),2))./2, '-k','linewidth',LW)
-hold off
-axis tight
-grid minor
-box on
-
-xlabel('Position (Degrees)');
-ylabel('Thrust (N)');
-legend('Blade 1','Blade 2', 'Combined','Location','NorthWest','FontSize',10)
-
-xtf = xlim;
-ytf = ylim;
+% hFig20 = figure(20);
+% clf(20);
+% 
+% WH = [4.5 5];
+% idx3 = vecDVESURFACE(vecTEDVE);
+% tmp5 = vecPOS(idx) + offset;
+% plot(tmp5, (sum(tmpDVETHRUST(idx,idx3==1),2) + sum(tmpDVETHRUST(idx2,idx3==1),2))./2, '-.r','linewidth',LW)
+% hold on
+% plot(tmp5, (sum(tmpDVETHRUST(idx,idx3==2),2) + sum(tmpDVETHRUST(idx2,idx3==2),2))./2, '--b','linewidth',LW)
+% plot(tmp5, (sum(tmpDVETHRUST(idx,:),2) + sum(tmpDVETHRUST(idx2,:),2))./2, '-k','linewidth',LW)
+% hold off
+% axis tight
+% grid minor
+% box on
+% 
+% xlabel('Position (Degrees)');
+% ylabel('Thrust (N)');
+% legend('Blade 1','Blade 2', 'Combined','Location','NorthWest','FontSize',10)
+% 
+% xtf = xlim;
+% ytf = ylim;
 
 %%
 

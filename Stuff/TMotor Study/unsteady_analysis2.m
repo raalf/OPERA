@@ -1,12 +1,16 @@
 clc
 clear
 
-% load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-29\29-Oct-2019 21.36.19_Scorpion_KDE_T-Motor 18in_RPM5000_Alpha30_11.955.mat')
-load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-30\Scorpion_T-Motor-18in_30_11.6562.mat')
+load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.41.35_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_21.5736.mat')
+% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.51.46_Scorpion_ASI_T-Motor 18in_RPM2000_Alpha30_13.7907.mat', 'vecPOS_TUNNEL_OG', 'CT_tunnel')
+% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.58.37_Scorpion_ASI_T-Motor 18in_RPM2500_Alpha30_17.4052.mat')
+% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 13.05.31_Scorpion_ASI_T-Motor 18in_RPM3500_Alpha0_24.8912.mat')
+% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 13.10.00_Scorpion_ASI_T-Motor 18in_RPM1000_Alpha0_6.6206.mat')
+
 close all
 
 %% Getting OPERA data
-load('Alpha 30 Results/TMotor_Relaxed_J0.1623.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR')
+load('Alpha 0 Results/TMotor_Relaxed_J0.3.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
 CT_relaxed = CT_U(~isnan(CT_U));
 CT_relaxed_s = CT(~isnan(CT));
 
@@ -17,7 +21,7 @@ vecPOS = [tmp_offset:(length(CT_relaxed)-1 + tmp_offset)]'.*deg_per_ts;
 %% Plotting
 hFig2 = figure(2);
 clf(2);
-CT_tunnel = CT_tunnel./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
+% CT_tunnel = CT_tunnel./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
 scatter(vecPOS_TUNNEL_OG, CT_tunnel, 20, 'sk');
 
 %%
@@ -26,6 +30,7 @@ tmp = ((vecPOS + 90)./360);
 start = 2;
 idx = tmp >= start & tmp < start+1;
 idx2 = tmp >= start+1 & tmp < start+2;
+% idx2 = idx;
 tmp2 = find(idx);
 offset = -vecPOS(tmp2(1));
 hold on
@@ -35,7 +40,7 @@ grid minor
 box on
 axis tight
 
-legend('RU Test Data','Moving Average of Test Data','DDE Method (relaxed wake)','Location','SouthWest','FontSize',8)
+% legend('RU Test Data','Moving Average of Test Data','DDE Method (relaxed wake)','Location','SouthWest','FontSize',8)
 xlabel('Position (Degrees)');
 ylabel('C_T');
 % WH = [4.5*2 5];

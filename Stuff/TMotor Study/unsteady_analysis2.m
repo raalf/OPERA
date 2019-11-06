@@ -1,16 +1,12 @@
 clc
 clear
 
-load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.41.35_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_21.5736.mat')
-% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.51.46_Scorpion_ASI_T-Motor 18in_RPM2000_Alpha30_13.7907.mat', 'vecPOS_TUNNEL_OG', 'CT_tunnel')
-% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.58.37_Scorpion_ASI_T-Motor 18in_RPM2500_Alpha30_17.4052.mat')
-% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 13.05.31_Scorpion_ASI_T-Motor 18in_RPM3500_Alpha0_24.8912.mat')
-% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 13.10.00_Scorpion_ASI_T-Motor 18in_RPM1000_Alpha0_6.6206.mat')
-
+% load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.41.35_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_21.5736.mat')
+load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.26.42_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_6.8925.mat')
 close all
 
 %% Getting OPERA data
-load('Alpha 0 Results/TMotor_Relaxed_J0.3.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
+load('Alpha 0 Results/TMotor_Relaxed_J0.1.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
 CT_relaxed = CT_U(~isnan(CT_U));
 CT_relaxed_s = CT(~isnan(CT));
 
@@ -22,7 +18,7 @@ vecPOS = [tmp_offset:(length(CT_relaxed)-1 + tmp_offset)]'.*deg_per_ts;
 hFig2 = figure(2);
 clf(2);
 % CT_tunnel = CT_tunnel./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
-scatter(vecPOS_TUNNEL_OG, CT_tunnel, 20, 'sk');
+% scatter(vecPOS_TUNNEL_OG, CT_tunnel, 20, 'sk');
 
 %%
 

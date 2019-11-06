@@ -2,11 +2,24 @@ clc
 clear
 
 % load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.41.35_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_21.5736.mat')
-load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.26.42_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_6.8925.mat')
+% load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.26.42_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_6.8925.mat')
+
+
+% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.41.35_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_21.5736.mat')
+% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-11-06\06-Nov-2019 12.27.55_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha0_6.8205.mat')
+% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-11-06\06-Nov-2019 12.31.14_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha0_8.7636.mat')
+% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-11-06\06-Nov-2019 12.34.15_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha0_9.667.mat')
+
+% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-11-06\06-Nov-2019 12.56.34_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha15_9.8342.mat')
+% load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-11-06\06-Nov-2019 13.00.27_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha15_8.4808.mat')
+load('C:\opera\Stuff\TMotor Study\Tunnel Testing\2019-11-06\06-Nov-2019 13.05.20_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha15_7.0137.mat')
+
+
+
 close all
 
 %% Getting OPERA data
-load('Alpha 0 Results/TMotor_Relaxed_J0.1.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
+load('Alpha 15 Results/TMotor_Relaxed_J0.1.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
 CT_relaxed = CT_U(~isnan(CT_U));
 CT_relaxed_s = CT(~isnan(CT));
 
@@ -18,7 +31,7 @@ vecPOS = [tmp_offset:(length(CT_relaxed)-1 + tmp_offset)]'.*deg_per_ts;
 hFig2 = figure(2);
 clf(2);
 % CT_tunnel = CT_tunnel./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
-% scatter(vecPOS_TUNNEL_OG, CT_tunnel, 20, 'sk');
+scatter(vecPOS_TUNNEL_OG, CT_tunnel, 20, 'sk');
 
 %%
 

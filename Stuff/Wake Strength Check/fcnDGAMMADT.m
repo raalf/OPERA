@@ -10,6 +10,19 @@ for i = 1:len
         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME);
     end
 end
+
+% len = size(matLIFTFREE,1);
+% matDGAMMADT(1,:) = matINTCIRC(1,:).*0;
+% for i = 3:len
+%     if i <= len-2
+%         matDGAMMADT(i,:) = ((-matINTCIRC(i+2,:) + 8.*matINTCIRC(i+1,:) - 8.*matINTCIRC(i-1,:) + matINTCIRC(i-2,:))./(12.*valDELTIME));
+%     elseif i == len - 1
+%         matDGAMMADT(i,:) = ((matINTCIRC(i+1,:) - matINTCIRC(i-1,:))./(2.*valDELTIME));
+%     elseif i == len
+%         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME);
+%     end
+% end
+
 matDGAMMADT(1,:) = matDGAMMADT(1,:).*0;
 
 tmpLIFTFREE = matLIFTFREE + matDGAMMADT;

@@ -18,9 +18,9 @@ disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/goland_wing.dat'
-% strFILE = 'inputs/kussner.dat'
+strFILE = 'inputs/kussner.dat'
 % strFILE = 'inputs/TMotor.dat'
-strFILE = 'inputs/TMotor_coarse.dat'
+% strFILE = 'inputs/TMotor_coarse.dat'
 % strFILE = 'inputs/TMotor_coarse2.dat'
 % strFILE = 'inputs/TMotor_nocamber.dat'
 % strFILE = 'inputs/Leishman_Rotor.dat'
@@ -212,62 +212,8 @@ for valTIMESTEP = 1:valMAXTIME
     
 end
 
-% hold on
-% scatter3(matWVLST(:,1), matWVLST(:,2), vecWVMU, 'ok')
-% fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, [], matWROTANG, [], 30)
-% hold off
-
-% len = size(matLIFTFREE,1);
-% for i = 1:len
-%     if i <= 2
-%         matDGAMMADT(i,:) = (-matINTCIRC(i+2,:) + 4.*matINTCIRC(i+1,:) - 3.*matINTCIRC(i,:))./(2.*valDELTIME);
-%     elseif i >= 3 && i <= len-2
-%         matDGAMMADT(i,:) = ((-matINTCIRC(i+2,:) + 8.*matINTCIRC(i+1,:) - 8.*matINTCIRC(i-1,:) + matINTCIRC(i-2,:))./(12.*valDELTIME));
-%     elseif i == len - 1
-%         matDGAMMADT(i,:) = ((matINTCIRC(i+1,:) - matINTCIRC(i,:))./valDELTIME);
-%     elseif i == len
-%         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME);
-%     end
-% end
-
-len = size(matLIFTFREE,1);
-lambda = 0.5;
-matDGAMMADT(1,:) = matINTCIRC(1,:).*0;
-for i = 3:len
-    if i <= len-2
-        matDGAMMADT(i,:) = ((-matINTCIRC(i+2,:) + 8.*matINTCIRC(i+1,:) - 8.*matINTCIRC(i-1,:) + matINTCIRC(i-2,:))./(12.*valDELTIME));
-    elseif i == len - 1
-        matDGAMMADT(i,:) = ((matINTCIRC(i+1,:) - matINTCIRC(i-1,:))./(2.*valDELTIME));
-    elseif i == len
-        matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME);
-    end
-end
-
-% len = size(matLIFTFREE,1);
-% lambda = 0.5;
-% matDGAMMADT(1,:) = matINTCIRC(1,:).*0;
-% for i = 2:len
-%     matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME).*lambda + (1 - lambda).*matDGAMMADT(i-1,:);
-% end
-
-tmpLIFTFREE = matLIFTFREE + matDGAMMADT;
-tmpDVELIFT = tmpLIFTFREE + matLIFTIND;
-tmpDVEDRAG = matDRAGIND;
-tmpDVESIDE = matSIDEFREE + matSIDEIND;
-
-for i = 1:size(matLIFTFREE,1)
-    tmpDVETHRUST(i,:) = dot(matDVELIFT_DIR(:,:,i).*tmpDVELIFT(i,:)', repmat([0 0 1], length(tmpDVELIFT(i,:)), 1), 2) ...
-        + dot(matDVEDRAG_DIR(:,:,i).*tmpDVEDRAG(i,:)', repmat([0 0 1], length(tmpDVEDRAG(i,:)), 1), 2) ...
-        + dot(matDVESIDE_DIR(:,:,i).*tmpDVESIDE(i,:)', repmat([0 0 1], length(tmpDVESIDE(i,:)), 1), 2);
-    
-    if strcmpi(strATYPE, 'PROPELLER')
-        CT_U(i,1) = nansum(tmpDVETHRUST(i,:))./(valDENSITY.*((valRPM/60).^2).*(valDIAM.^4));
-    else
-        CT_U(i,1) = nansum(tmpDVETHRUST(i,:))./(valDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
-    end
-    
-end
-save('coarse_fixed_2.mat');
+% Adding in apparent mass
+[CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR);
 
 figure(20);
 plot(CT, '-k')
@@ -278,45 +224,4 @@ grid minor
 box on
 axis tight
 
-% CL2 = sum(tmpLIFTFREE,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
-% CLdg = sum(matDGAMMADT,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
-% CLc = sum(matINTCIRC,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
-% CLOG = sum(matLIFTFREE,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
-% valAR = (valSPAN.^2)./valAREA;
-% CL2D = CL2.*((valAR + 2)/valAR);
-% CLOG2D = CLOG.*((valAR + 2)/valAR);
-% 
-% hFig23 = figure(23);
-% clf(23);
-% load('Stuff/Gust Response/Kussner.mat')
-% plot(s, c_l, '-k');
-% box on
-% axis tight
-% grid minor
-% 
-% hold on
-% s_t = ([1:valMAXTIME-1] - valGUSTSTART).*valDELTIME.*2;
-% plot(s_t, CL2D(2:end), '-xb', 'LineWidth', 1);
-% plot(s_t, CLOG2D(2:end), '--sm', 'LineWidth', 1);
-% % plot(valDELTIME.*[valGUSTSTART+1:valMAXTIME], CLc(valGUSTSTART+1:end), '-.k', 'LineWidth', 1.5);
-% hold off
-% xlabel('Distance Travelled by Wing (m)');
-% ylabel('C_l')
-% legend('Kussner Function','C_L','Quasi-Steady II','Location','SouthEast')
 
-% % hFig24 = figure(24);
-% % clf(24);
-% % load('Stuff/Gust Response/ZAERO.mat')
-% % plot(smooth(ZAERO(:,1)), smooth(ZAERO(:,2)), '-k');
-% % hold on
-% %
-% % load('Stuff/Gust Response/UVLM.mat')
-% % plot(smooth(UVLM(:,1)), smooth(UVLM(:,2)), '-.k');
-% %
-% % plot(0.135+((valDELTIME.*([0:valMAXTIME-1]))), CL2, '--b');
-% % box on
-% % axis tight
-% % grid minor
-% % %profile viewer
-% %
-% % GOLAND_X = 0.135+((valDELTIME.*([0:valMAXTIME-1])));

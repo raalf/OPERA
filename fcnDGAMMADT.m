@@ -1,4 +1,4 @@
-function [CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR)
+function [CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR)
 
 len = size(matLIFTFREE,1);
 for i = 1:len
@@ -10,6 +10,20 @@ for i = 1:len
         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME);
     end
 end
+
+% len = size(matLIFTFREE,1);
+% matDGAMMADT(1,:) = matINTCIRC(1,:).*0;
+% for i = 3:len
+%     if i <= len-2
+%         matDGAMMADT(i,:) = ((-matINTCIRC(i+2,:) + 8.*matINTCIRC(i+1,:) - 8.*matINTCIRC(i-1,:) + matINTCIRC(i-2,:))./(12.*valDELTIME));
+%     elseif i == len - 1
+%         matDGAMMADT(i,:) = ((matINTCIRC(i+1,:) - matINTCIRC(i-1,:))./(2.*valDELTIME));
+%     elseif i == len
+%         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-1,:))./valDELTIME);
+%     end
+% end
+
+matDGAMMADT(1,:) = matDGAMMADT(1,:).*0;
 
 tmpLIFTFREE = matLIFTFREE + matDGAMMADT;
 tmpDVELIFT = tmpLIFTFREE + matLIFTIND;

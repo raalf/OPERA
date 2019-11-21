@@ -51,7 +51,7 @@ valAR = (valSPAN.^2)./valAREA;
 CL_U2D = CL_U.*((valAR + 2)/valAR);
 plot(s_t, CL_U2D, '-.rd', 'LineWidth', 1);
 
-load('m5_dt0.05_wfix2.mat');
+load('m5_dt0.2_wfix2.mat');
 [~, CL_U, ~] = fcnDGAMMADT(valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR);
 s_t = [1:valMAXTIME].*valDELTIME;
 valAR = (valSPAN.^2)./valAREA;

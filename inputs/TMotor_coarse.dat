@@ -19,7 +19,7 @@ Density:				valDENSITY = 1.225
 
 Reference Diameter:		valDIAM = 0.4572
 Reference RPM:			valRPM = 3000
-Advance Ratio:			valJ = 0.1346
+Advance Ratio:			valJ = 0.3
 Number of Blades:		valBLADES = 2
 Collective pitch:		valCOLL = 0
 

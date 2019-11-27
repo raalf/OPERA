@@ -17,14 +17,8 @@ disp('====================================================================');
 
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
-% strFILE = 'inputs/goland_wing.dat'
-strFILE = 'inputs/kussner.dat'
-% strFILE = 'inputs/TMotor.dat'
-% strFILE = 'inputs/TMotor_coarse.dat'
-% strFILE = 'inputs/TMotor_coarse2.dat'
-% strFILE = 'inputs/TMotor_nocamber.dat'
-% strFILE = 'inputs/Leishman_Rotor.dat'
-% strFILE = 'inputs/Caradonna_Rotor.dat'
+% strFILE = 'inputs/kussner.dat'
+strFILE = 'inputs/TMotor_coarse.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, ...
@@ -34,7 +28,7 @@ strFILE = 'inputs/kussner.dat'
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
-flagGIF = 1;
+flagGIF = 0;
 % flagHVRMOD = true;
 flagHVRMOD = false;
 valUINF = 1;
@@ -167,7 +161,7 @@ for valTIMESTEP = 1:valMAXTIME
                 [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE);
                 matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
                 int_circ2 = fcnINTCIRC2(matPLEX, matCOEFF, matDVEGRID);
-                delt = (int_circ2 - int_circ1)./int_circ1;
+                delt = abs((int_circ2 - int_circ1)./int_circ1);
                 count = count + 1;
             end
             vecTSITER(valTIMESTEP) = count;
@@ -213,15 +207,15 @@ for valTIMESTEP = 1:valMAXTIME
 end
 
 % Adding in apparent mass
-[CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR);
+[CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(1, valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR);
 
-figure(20);
-plot(CT, '-k')
-hold on
-plot(CT_U, '--b');
-hold off
-grid minor
-box on
-axis tight
+% figure(20);
+% plot(CT, '-k')
+% hold on
+% plot(CT_U, '--b');
+% hold off
+% grid minor
+% box on
+% axis tight
 
 

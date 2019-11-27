@@ -1,14 +1,15 @@
 clc
 clear
 
-% load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.41.35_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_21.5736.mat') % 0.3004
-load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-11-06\06-Nov-2019 12.34.15_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha0_9.667.mat') % 0.1346
+load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.41.35_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_21.5736.mat') % 0.3004
+% load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-11-06\06-Nov-2019 12.34.15_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha0_9.667.mat') % 0.1346
 
 close all
 
 %% Getting OPERA data
-% load('Alpha 0 Results/TMotor_Relaxed_J0.3.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
-load('Alpha 0 Results/TMotor_Relaxed_J0.1346.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
+load('Alpha 0 Results/TMotor_Relaxed_J0.3_0.0005.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
+
+% load('Alpha 0 Results/TMotor_Relaxed_J0.1346.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
 
 CT_relaxed = CT_U(~isnan(CT_U));
 % CT_relaxed = CT(~isnan(CT));
@@ -78,25 +79,25 @@ title('\mu = 0.3, \alpha = 0, RPM = 3000, \DeltaT = 0.0005')
 % fcnFIG2LATEX(hFig2, 'tmotor_time_2.pdf', WH)
 
 %%
-hFig20 = figure(20);
-clf(20);
-
-WH = [4.5 5];
-idx3 = vecDVESURFACE(vecTEDVE);
-tmp5 = vecPOS_R(idx) + offset;
-plot(tmp5, (sum(tmpDVETHRUST(idx,idx3==1),2) + sum(tmpDVETHRUST(idx2,idx3==1),2))./2, '-.r')
-hold on
-plot(tmp5, (sum(tmpDVETHRUST(idx,idx3==2),2) + sum(tmpDVETHRUST(idx2,idx3==2),2))./2, '--b')
-plot(tmp5, (sum(tmpDVETHRUST(idx,:),2) + sum(tmpDVETHRUST(idx2,:),2))./2, '-k')
-hold off
-axis tight
-grid minor
-box on
-
-xlabel('Position (Degrees)');
-ylabel('Thrust (N)');
-legend('Blade 1','Blade 2', 'Combined','Location','NorthWest','FontSize',10)
-
-WH = [4.5*2 5];
-fcnFIG2LATEX(hFig20, 'blade_thrust_relaxed1.pdf', WH)
+% hFig20 = figure(20);
+% clf(20);
+% 
+% WH = [4.5 5];
+% idx3 = vecDVESURFACE(vecTEDVE);
+% tmp5 = vecPOS_R(idx) + offset;
+% plot(tmp5, (sum(tmpDVETHRUST(idx,idx3==1),2) + sum(tmpDVETHRUST(idx2,idx3==1),2))./2, '-.r')
+% hold on
+% plot(tmp5, (sum(tmpDVETHRUST(idx,idx3==2),2) + sum(tmpDVETHRUST(idx2,idx3==2),2))./2, '--b')
+% plot(tmp5, (sum(tmpDVETHRUST(idx,:),2) + sum(tmpDVETHRUST(idx2,:),2))./2, '-k')
+% hold off
+% axis tight
+% grid minor
+% box on
+% 
+% xlabel('Position (Degrees)');
+% ylabel('Thrust (N)');
+% legend('Blade 1','Blade 2', 'Combined','Location','NorthWest','FontSize',10)
+% 
+% WH = [4.5*2 5];
+% fcnFIG2LATEX(hFig20, 'blade_thrust_relaxed1.pdf', WH)
 

@@ -11,7 +11,7 @@ scatter3(matWCENTER(:,1), matWCENTER(:,2), matWCOEFF(:,6), 'ok')
 % fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, [], matWROTANG, [], 30)
 hold off
 
-load('m5_dt0.5_wfix2.mat', 'matWVLST', 'vecWVMU', 'matWDVE', 'valWNELE', 'matWVLST', 'matWELST', 'matWDVECT', 'matWCENTER', 'matWPLEX', 'matWCOEFF', 'matWROTANG', 'tmp_wind', 'valDELTIME', 'valMAXTIME');
+load('m5_dt0.05_wfix2.mat', 'matWVLST', 'vecWVMU', 'matWDVE', 'valWNELE', 'matWVLST', 'matWELST', 'matWDVECT', 'matWCENTER', 'matWPLEX', 'matWCOEFF', 'matWROTANG', 'tmp_wind', 'valDELTIME', 'valMAXTIME');
 hold on
 tmp_wind2 = [valDELTIME.*[1:valMAXTIME]' tmp_wind(:,3)];
 scatter3(matWVLST(:,1), matWVLST(:,2), vecWVMU, 'sb')
@@ -19,7 +19,7 @@ scatter3(matWCENTER(:,1), matWCENTER(:,2), matWCOEFF(:,6), 'sb')
 % fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, [], matWROTANG, [], 30)
 hold off
 
-load('m5_dt0.25_wfix2.mat', 'matWVLST', 'vecWVMU', 'matWDVE', 'valWNELE', 'matWVLST', 'matWELST', 'matWDVECT', 'matWCENTER', 'matWPLEX', 'matWCOEFF', 'matWROTANG', 'tmp_wind', 'valDELTIME', 'valMAXTIME');
+load('m15_dt1_wfix2.mat', 'matWVLST', 'vecWVMU', 'matWDVE', 'valWNELE', 'matWVLST', 'matWELST', 'matWDVECT', 'matWCENTER', 'matWPLEX', 'matWCOEFF', 'matWROTANG', 'tmp_wind', 'valDELTIME', 'valMAXTIME');
 hold on
 tmp_wind3 = [valDELTIME.*[1:valMAXTIME]' tmp_wind(:,3)];
 scatter3(matWVLST(:,1), matWVLST(:,2), vecWVMU, 'rd')
@@ -27,7 +27,7 @@ scatter3(matWCENTER(:,1), matWCENTER(:,2), matWCOEFF(:,6), 'rd')
 % fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, [], matWROTANG, [], 30)
 hold off
 
-load('m5_dt0.05_wfix2.mat', 'matWVLST', 'vecWVMU', 'matWDVE', 'valWNELE', 'matWVLST', 'matWELST', 'matWDVECT', 'matWCENTER', 'matWPLEX', 'matWCOEFF', 'matWROTANG', 'tmp_wind', 'valDELTIME', 'valMAXTIME');
+load('m15_dt0.05_wfix2.mat', 'matWVLST', 'vecWVMU', 'matWDVE', 'valWNELE', 'matWVLST', 'matWELST', 'matWDVECT', 'matWCENTER', 'matWPLEX', 'matWCOEFF', 'matWROTANG', 'tmp_wind', 'valDELTIME', 'valMAXTIME');
 hold on
 tmp_wind4 = [valDELTIME.*[1:valMAXTIME]' tmp_wind(:,3)];
 scatter3(matWVLST(:,1), matWVLST(:,2), vecWVMU, '*m')

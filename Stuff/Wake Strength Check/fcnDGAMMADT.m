@@ -1,6 +1,6 @@
 function [CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(skip, valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR)
 
-% matDGAMMADT = nan(size(matLIFTFREE));
+% matDGAMMADT = zeros(size(matLIFTFREE));
 % len = size(matLIFTFREE,1);
 % for i = 1:skip:len
 %     if i <= len-(2*skip)
@@ -11,22 +11,63 @@ function [CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(skip, valDELTIME, strATYPE, mat
 %         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-skip,:))./(valDELTIME.*skip));
 %     end
 % end
+% matDGAMMADT(1,:) = matDGAMMADT(1,:).*0;
+
+if size(matINTCIRC,1) > 10
+for i = 1:size(matINTCIRC,2)
+    
+    matINTCIRC(:,i) = smooth(matINTCIRC(:,i),'rloess');
+    
+end
+end
 
 matDGAMMADT = nan(size(matLIFTFREE));
 len = size(matLIFTFREE,1);
 for i = 1:skip:len
-    if i <= skip
+    if i <= len-(2*skip)
         matDGAMMADT(i,:) = (-matINTCIRC(i+(2*skip),:) + 4.*matINTCIRC(i+skip,:) - 3.*matINTCIRC(i,:))./(2.*valDELTIME.*skip);
-    elseif i > skip && i <= len-(2*skip)
-        matDGAMMADT(i,:) = (-matINTCIRC(i+(2*skip),:) + 6.*matINTCIRC(i+skip,:) - 3.*matINTCIRC(i,:) - 2.*matINTCIRC(i-skip,:))./(6.*valDELTIME.*skip);
     elseif i > len-(2*skip) && i <= len - skip
         matDGAMMADT(i,:) = ((matINTCIRC(i+skip,:) - matINTCIRC(i,:))./(valDELTIME.*skip));
     else
         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-skip,:))./(valDELTIME.*skip));
     end
 end
+matDGAMMADT(1,:) = zeros(size(matDGAMMADT(1,:)));
 
-matDGAMMADT(1,:) = matDGAMMADT(1,:).*0;
+% matDGAMMADT = zeros(size(matLIFTFREE));
+% len = size(matLIFTFREE,1);
+% for i = 1:skip:len
+%     if i <= skip
+%         matDGAMMADT(i,:) = (-matINTCIRC(i+(2*skip),:) + 4.*matINTCIRC(i+skip,:) - 3.*matINTCIRC(i,:))./(2.*valDELTIME.*skip);
+%     elseif i > skip && i <= len-(2*skip)
+%         matDGAMMADT(i,:) = (-matINTCIRC(i+(2*skip),:) + 6.*matINTCIRC(i+skip,:) - 3.*matINTCIRC(i,:) - 2.*matINTCIRC(i-skip,:))./(6.*valDELTIME.*skip);
+%     elseif i > len-(2*skip) && i <= len - skip
+%         matDGAMMADT(i,:) = ((matINTCIRC(i+skip,:) - matINTCIRC(i,:))./(valDELTIME.*skip));
+%     else
+%         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-skip,:))./(valDELTIME.*skip));
+%     end
+% end
+
+% X = [1:size(matINTCIRC, 1)]'.*valDELTIME;
+% Y = matINTCIRC(:,8);
+
+% matDGAMMADT = nan(size(matLIFTFREE));
+% for i = 1:size(matDGAMMADT, 2)
+%     X = [1:size(matDGAMMADT, 1)]'.*valDELTIME;
+%     [xData, yData] = prepareCurveData( X, matINTCIRC(:,i) );
+%     
+%     % Set up fittype and options.
+%     ft = fittype( 'smoothingspline' );
+%     opts = fitoptions( 'Method', 'SmoothingSpline' );
+%     opts.SmoothingParam = 0.9999;
+%     
+%     % Fit model to data.
+%     [fitresult, gof] = fit( xData, yData, ft, opts );
+%     
+%     matDGAMMADT(:,i) = differentiate(fitresult, X);
+%     
+% end
+% matDGAMMADT(1,:) = zeros(size(matDGAMMADT(1,:)));
 
 tmpLIFTFREE = matLIFTFREE + matDGAMMADT;
 tmpDVELIFT = tmpLIFTFREE + matLIFTIND;

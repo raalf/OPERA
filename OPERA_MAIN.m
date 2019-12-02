@@ -1,7 +1,8 @@
 clear
 
-%profile('off')
-%profile('-memory','on');
+% profile('off')
+% profile clear
+% profile('-memory','on');
 
 %% Header
 disp('====================================================================');
@@ -118,6 +119,7 @@ end
 
 %% Timestep to solution
 for valTIMESTEP = 1:valMAXTIME
+    tic
     if strcmpi(strATYPE{1}, 'WING') && valTIMESTEP == valPRESTEPS + 1
         valDELTIME = valDELTIME/10;
         strWAKE_TYPE = strATYPE{3};
@@ -134,7 +136,7 @@ for valTIMESTEP = 1:valMAXTIME
         [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, valGUSTMODE, valDELTIME, valUINF, valGUSTSTART, matCENTER, gust_vel_old, valPRESTEPS*valDELTIME*10);
         matAINF = (matUINF - tmatUINF)./valDELTIME;
     end
- 
+     
     % Generating new wake elements
     if any(vecTE)
         [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWCOEFF, matWROTANG, vecWLE, vecWTE, ...
@@ -203,11 +205,13 @@ for valTIMESTEP = 1:valMAXTIME
             end
         end
     end
-    
+    vecTSTIME(valTIMESTEP) = toc;
 end
 
 % Adding in apparent mass
 [CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(1, valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR);
+
+save(['tmotor_run_',num2str(now),'.mat']);
 
 % figure(20);
 % plot(CT, '-k')
@@ -219,3 +223,4 @@ end
 % axis tight
 
 
+% profile report

@@ -7,8 +7,7 @@ load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-10-31\31-Oct-2019 12.4
 close all
 
 %% Getting OPERA data
-load('Alpha 0 Results/TMotor_Relaxed_J0.3_0.0005.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
-
+load('Alpha 0 Results/TMotor_Relaxed_J0.3_0.0005.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM')
 % load('Alpha 0 Results/TMotor_Relaxed_J0.1346.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
 
 CT_relaxed = CT_U(~isnan(CT_U));
@@ -17,17 +16,6 @@ CT_relaxed = CT_U(~isnan(CT_U));
 deg_per_ts = valRPM.*(pi/30).*(180/pi).*valDELTIME;
 tmp_offset = 0;
 vecPOS_R = [tmp_offset:(length(CT_relaxed)-1 + tmp_offset)]'.*deg_per_ts;
-
-% %% Getting OPERA data
-% % load('Alpha 0 Results/TMotor_Fixed_J0.3.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
-% load('Alpha 0 Results/TMotor_Fixed_J0.1346.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'tmpDVETHRUST', 'matSPANDIR', 'valRPM')
-% 
-% CT_fixed = CT_U(~isnan(CT_U));
-% CT_fixed_s = CT(~isnan(CT));
-% 
-% deg_per_ts = valRPM.*(pi/30).*(180/pi).*valDELTIME;
-% tmp_offset = 0;
-% vecPOS_F = [tmp_offset:(length(CT_relaxed)-1 + tmp_offset)]'.*deg_per_ts;
 
 %% Plotting
 hFig2 = figure(2);
@@ -77,6 +65,37 @@ ylabel('Thrust Coefficient');
 title('\mu = 0.3, \alpha = 0, RPM = 3000, \DeltaT = 0.0005')
 % WH = [4.5*2 5];
 % fcnFIG2LATEX(hFig2, 'tmotor_time_2.pdf', WH)
+
+%% FFT
+
+% OPERA
+start = 41;
+t_op = [start:valMAXTIME].*valDELTIME;
+x_op = CT_U(start:end);
+n = length(x_op);
+y_op = fft(detrend(x_op));
+f_op = (1/valDELTIME).*(0:length(y_op)-1)/length(y_op);
+p_op = abs(y_op)/n;
+
+% Tunnel
+CT_tunnel = lbf_N.*FT(:,3);
+CT_tunnel = CT_tunnel./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
+
+rate = 10000; % 10k Hz
+n = length(CT_tunnel);
+y_t = fft(detrend(CT_tunnel), n);
+f_t = rate.*(0:length(y_t)-1)/(length(y_t));
+p_t = abs(y_t)/n;
+
+hFig68 = figure(68);
+clf(68);
+hold on
+plot(f_t, p_t)
+% yyaxis right
+scatter(f_op, p_op);
+hold off
+
+% xlim([0 225])
 
 %%
 % hFig20 = figure(20);

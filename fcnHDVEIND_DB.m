@@ -1,7 +1,11 @@
-function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI, ztol)
+function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI, ztol, GPU)
 warning('on')
 
-fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:));
+if nargin < 9 || GPU == false
+    GPU = false;
+end
+
+fpl = fcnGLOBSTAR(fpg - matCONTROL(dvenum,:), matROTANG(dvenum,:), GPU);
 len = size(fpl,1);
 
 x_m = fpl(:,1);
@@ -50,7 +54,12 @@ k = zeros(size(h,1),1,3);
 
 %%
 % Call, xi-eta, edge (1, 2, or 3), point (1 or 2)
-epts = nan(len,2,3,2);
+if GPU == true
+    epts = nan(len,2,3,2,'gpuArray');
+else
+    epts = nan(len,2,3,2);
+end
+
 epts(:,:,1,1:2) = cat(4, [xi_1 eta_1], [xi_2 eta_2]);
 epts(:,:,2,1:2) = cat(4, [xi_2 eta_2], [xi_3 eta_3]);
 epts(:,:,3,1:2) = cat(4, [xi_3 eta_3], [xi_1 eta_1]);
@@ -137,7 +146,11 @@ E111 = (1./rho2) - (1./rho1);
 % MXK = 5, MXQ = 5, MXFK = 16 + 5 - 2 = 19;
 % PAGE 130
 % 1.)
+if GPU == true
+F111 = zeros(size(a),'gpuArray');    
+else
 F111 = zeros(size(a));
+end
 
 idx = L1 >= 0 & L2 >= 0;
 F111(idx) = log((rho2(idx) + L2(idx))./(rho1(idx) + L1(idx)));
@@ -154,8 +167,9 @@ idx = [g > 1e-3, g <= 1e-3];
 % idx = [g > 1e-5, g <= 1e-5];
 % idx = [g > 1e-8, g <= 1e-8];
 % 2.)
+idx1 = g > 1e-3;
 
-F113 = zeros(size(F111));
+F113 = F111.*0;
 F115 = F113;
 F117 = F113;
 F119 = F113;
@@ -165,27 +179,28 @@ F1115 = F113;
 F1117 = F113;
 F1119 = F113;
 
-F113(idx(:,1,:)) = (1./(g(idx(:,1,:)).^2)).*(-nu_eta(idx(:,1,:)).*E211(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E121(idx(:,1,:)));
+g_term = (1./(g(idx(:,1,:)).^2));
+F113(idx(:,1,:)) = g_term.*(-nu_eta(idx(:,1,:)).*E211(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E121(idx(:,1,:)));
 K = 5;
-F115(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F113(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E213(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E123(idx(:,1,:)));
+F115(idx(:,1,:)) = (g_term.*(1./(K - 2))).*((K - 3).*F113(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E213(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E123(idx(:,1,:)));
 K = 7;
-F117(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F115(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E215(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E125(idx(:,1,:)));
+F117(idx(:,1,:)) = (g_term.*(1./(K - 2))).*((K - 3).*F115(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E215(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E125(idx(:,1,:)));
 K = 9;
-F119(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F117(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E217(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E127(idx(:,1,:)));
+F119(idx(:,1,:)) = (g_term.*(1./(K - 2))).*((K - 3).*F117(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E217(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E127(idx(:,1,:)));
 K = 11;
-F1111(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F119(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E219(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E129(idx(:,1,:)));
+F1111(idx(:,1,:)) = (g_term.*(1./(K - 2))).*((K - 3).*F119(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E219(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E129(idx(:,1,:)));
 K = 13;
-F1113(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F1111(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2111(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1211(idx(:,1,:)));
+F1113(idx(:,1,:)) = (g_term.*(1./(K - 2))).*((K - 3).*F1111(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2111(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1211(idx(:,1,:)));
 K = 15;
-F1115(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F1113(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2113(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1213(idx(:,1,:)));
+F1115(idx(:,1,:)) = (g_term.*(1./(K - 2))).*((K - 3).*F1113(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2113(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1213(idx(:,1,:)));
 K = 17;
-F1117(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F1115(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2115(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1215(idx(:,1,:)));
+F1117(idx(:,1,:)) = (g_term.*(1./(K - 2))).*((K - 3).*F1115(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2115(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1215(idx(:,1,:)));
 K = 19;
-F1119(idx(:,1,:)) = (1./((g(idx(:,1,:)).^2).*(K - 2))).*((K - 3).*F1117(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2117(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1217(idx(:,1,:)));
+F1119(idx(:,1,:)) = (g_term.*(1./(K - 2))).*((K - 3).*F1117(idx(:,1,:)) - nu_eta(idx(:,1,:)).*E2117(idx(:,1,:)) + nu_xi(idx(:,1,:)).*E1217(idx(:,1,:)));
 
 % PAGE 132
 % NFK = 16, MXFK = 19
-F1135 = zeros(size(F111));
+F1135 = F111.*0;
 F1133 = F1135;
 F1131 = F1135;
 F1129 = F1135;
@@ -232,8 +247,8 @@ F113(idx(:,2,:)) = (1./(K - 3)).*((g(idx(:,2,:)).^2).*(K - 2).*F115(idx(:,2,:)) 
 % a)
 % (i)
 idx = abs(nu_eta) <= abs(nu_xi);
-F121 = zeros(size(F111));
-F211 = zeros(size(F111));
+F121 = F111.*0;
+F211 = F111.*0;
 
 F121(idx) = (a(idx).*nu_eta(idx).*F111(idx) + nu_xi(idx).*E11n1(idx));
 
@@ -274,7 +289,7 @@ H115(idx(:,1),1) = (1./(3.*hs(idx(:,1)))).*(H113(idx(:,1)) + sum(a(idx(:,1),:,:)
 
 % PAGE 126
 % 1.)
-H1121 = zeros(size(H111));
+H1121 = H111.*0;
 
 % 2.)
 K = 21;
@@ -348,7 +363,11 @@ J31 = [reshape(3.*h.*H415,1,1,[]); reshape(3.*h.*H325,1,1,[]); reshape(H313 - 3.
 x = reshape(x_m,1,1,[]);
 y = reshape(y_m,1,1,[]);
 
-infl_loc = nan(3,6,length(dvenum));
+if GPU == true
+    infl_loc = nan(3,6,length(dvenum),'gpuArray');
+else
+    infl_loc = nan(3,6,length(dvenum));
+end
 infl_loc(:,1,:) = 0.5.*(y.^2).*J11 + y.*J12 + 0.5.*J13;
 infl_loc(:,2,:) = J11.*y + J12;
 infl_loc(:,3,:) = 0.5.*(x.^2).*J11 + x.*J21 + 0.5.*J31;
@@ -359,11 +378,13 @@ infl_loc(:,6,:) = J11;
 infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
 
 if any(vecBI)
-    infl_BI = fcnBOUNDIND(dvenum(vecBI), dvetype(vecBI), fpg(vecBI,:), matPLEX, matROTANG, matCONTROL, vecBI(vecBI), 0);
+    infl_BI = fcnBOUNDIND(dvenum(vecBI), dvetype(vecBI), fpg(vecBI,:), matPLEX, matROTANG, matCONTROL, vecBI(vecBI), 0, GPU);
     infl_loc(:,:,vecBI) = infl_loc(:,:,vecBI) + infl_BI;
 end
 
-
+% tmp_mem = memory;
+% gb = tmp_mem.MemUsedMATLAB/1e9;
+% dlmwrite('mem.dat', [length(dvenum) gb], '-append');
 
 end
 

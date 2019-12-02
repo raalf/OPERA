@@ -21,6 +21,6 @@ B_2 = matCOEFF(:,4); C_2 = matCOEFF(:,5); C_3 = matCOEFF(:,6);
 tmp = fcnINTCIRC(xi_1, xi_3, C, D_LE, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3);
 tmp(~idx_flp) = -tmp(~idx_flp);
 
-int_circ = sum(sum(tmp(matDVEGRID),1), 'all');
+int_circ = sum(sum(tmp(matDVEGRID),1));
 
 end

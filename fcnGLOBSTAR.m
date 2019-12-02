@@ -1,4 +1,4 @@
-function [xsi] = fcnGLOBSTAR(points, rotation_angles)
+function [xsi] = fcnGLOBSTAR(points, rotation_angles, GPU)
 % Transforms a point from global to local reference frame
 % Input in RADIANS
 
@@ -17,7 +17,12 @@ seps = sin(rotation_angles(:,2));
 cpsi = cos(rotation_angles(:,3));
 spsi = sin(rotation_angles(:,3));
 
-xsi = zeros(len,3);
+if nargin < 3 || GPU == false
+    xsi = zeros(len,3);
+else
+    xsi = zeros(len,3,'gpuArray');
+end
+
 xsi(:,1) = points(:,1).*(cpsi.*ceps) + points(:,2).*(cpsi.*seps.*snu+spsi.*cnu) + points(:,3).*(-cpsi.*seps.*cnu+spsi.*snu);
 xsi(:,2) = points(:,1).*(-spsi.*ceps) + points(:,2).*(-spsi.*seps.*snu+cpsi.*cnu) + points(:,3).*(spsi.*seps.*cnu+cpsi.*snu);
 xsi(:,3) = points(:,1).*(seps) + points(:,2).*(-ceps.*snu) + points(:,3).*(ceps.*cnu);

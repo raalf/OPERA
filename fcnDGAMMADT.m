@@ -14,11 +14,11 @@ function [CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(skip, valDELTIME, strATYPE, mat
 % matDGAMMADT(1,:) = matDGAMMADT(1,:).*0;
 
 if size(matINTCIRC,1) > 10
-for i = 1:size(matINTCIRC,2)
-    
-    matINTCIRC(:,i) = smooth(matINTCIRC(:,i),'rloess');
-    
-end
+    for i = 1:size(matINTCIRC,2)
+        
+        matINTCIRC(:,i) = smooth(matINTCIRC(:,i),'rloess');
+        
+    end
 end
 
 matDGAMMADT = nan(size(matLIFTFREE));
@@ -55,17 +55,17 @@ matDGAMMADT(1,:) = zeros(size(matDGAMMADT(1,:)));
 % for i = 1:size(matDGAMMADT, 2)
 %     X = [1:size(matDGAMMADT, 1)]'.*valDELTIME;
 %     [xData, yData] = prepareCurveData( X, matINTCIRC(:,i) );
-%     
+%
 %     % Set up fittype and options.
 %     ft = fittype( 'smoothingspline' );
 %     opts = fitoptions( 'Method', 'SmoothingSpline' );
 %     opts.SmoothingParam = 0.9999;
-%     
+%
 %     % Fit model to data.
 %     [fitresult, gof] = fit( xData, yData, ft, opts );
-%     
+%
 %     matDGAMMADT(:,i) = differentiate(fitresult, X);
-%     
+%
 % end
 % matDGAMMADT(1,:) = zeros(size(matDGAMMADT(1,:)));
 

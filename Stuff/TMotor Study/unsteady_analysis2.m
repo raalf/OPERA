@@ -66,45 +66,6 @@ ylabel('Thrust Coefficient');
 WH = [4.5*2 5];
 fcnFIG2LATEX(hFig2, 'tmotor_time_2.pdf', WH)
 
-%% FFT
-
-% OPERA
-start = 41;
-t_op = [start:valMAXTIME].*valDELTIME;
-x_op = CT_U(start:end);
-n = length(x_op);
-y_op = fft(detrend(x_op));
-f_op = (1/valDELTIME).*(0:length(y_op)-1)/length(y_op);
-p_op = abs(y_op)/n;
-
-% Tunnel
-CT_tunnel = lbf_N.*FT(:,3);
-CT_tunnel = CT_tunnel./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
-
-rate = 10000; % 10k Hz
-n = length(CT_tunnel);
-y_t = fft(detrend(CT_tunnel), n);
-f_t = rate.*(0:length(y_t)-1)/(length(y_t));
-p_t = abs(y_t)/n;
-
-hFig68 = figure(68);
-clf(68);
-hold on
-plot(f_t, p_t)
-% yyaxis right
-scatter(f_op, p_op);
-hold off
-
-xlim([0 1000])
-xlabel('Hz')
-ylabel('Signal Power');
-
-grid minor
-box on
-% axis tight
-
-legend('RU Test Data', 'DDE Method')
-
 %%
 % hFig20 = figure(20);
 % clf(20);
@@ -144,10 +105,10 @@ legend('RU Test Data', 'DDE Method')
 hFig20 = figure(20);
 clf(20);
 
-load('Alpha 0 Results/TMotor_Relaxed_J0.3_0.0005.mat', 'matDVELIFT_DIR', 'matDVEDRAG_DIR','matDVESIDE_DIR','matLIFTFREE','matLIFTIND','matSIDEFREE','matSIDEIND','matDRAGIND','valDIAM','valRPM','valDENSITY', 'valUINF', 'valAREA', 'matINTCIRC', 'strATYPE');
+load('Alpha 0 Results/TMotor_Relaxed_J0.3_0.0005.mat', 'matDVELIFT_DIR', 'matDVEDRAG_DIR','matDVESIDE_DIR','matLIFTFREE','matLIFTIND','matSIDEFREE','matSIDEIND','matDRAGIND','valDIAM','valRPM','valDENSITY', 'valUINF', 'valAREA', 'matINTCIRC', 'strATYPE', 'matSPANDIR_ALL', 'matUINF_ALL', 'vecTE', 'vecTEDVE');
 
 cd ../../
-[CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(1, valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR);
+[CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(1, valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR, matSPANDIR_ALL, matUINF_ALL, vecTE, vecTEDVE);
 cd("Stuff/TMotor Study/")
 
 subplot(3,1,2)

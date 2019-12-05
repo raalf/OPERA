@@ -18,8 +18,8 @@ disp('====================================================================');
 
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
-strFILE = 'inputs/kussner.dat'
-% strFILE = 'inputs/TMotor_coarse.dat'
+% strFILE = 'inputs/kussner.dat'
+strFILE = 'inputs/TMotor_coarse.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, ...
@@ -225,16 +225,16 @@ end
 % Adding in apparent mass
 [CT_U, CL_U, matDGAMMADT, matDVENC] = fcnDGAMMADT(1, valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR, matSPANDIR_ALL, matUINF_ALL, vecTE, vecTEDVE);
 
-% save(['tmotor_run_',num2str(now),'.mat']);
+save(['tmotor_run_',num2str(now),'.mat']);
 
-% figure(20);
-% plot(CT, '-k')
-% hold on
-% plot(CT_U, '--b');
-% hold off
-% grid minor
-% box on
-% axis tight
+figure(20);
+plot(CT, '-k')
+hold on
+plot(CT_U, '--b');
+hold off
+grid minor
+box on
+axis tight
 
 
 % profile report

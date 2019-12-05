@@ -18,8 +18,8 @@ disp('====================================================================');
 
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
-% strFILE = 'inputs/kussner.dat'
-strFILE = 'inputs/TMotor_coarse.dat'
+strFILE = 'inputs/kussner.dat'
+% strFILE = 'inputs/TMotor_coarse.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, ...
@@ -147,9 +147,7 @@ for valTIMESTEP = 1:valMAXTIME
             matWDVE, matWEIDX, vecWLEDVE, matWEATT, vecDVESURFACE, vecWDVESURFACE);
         
         if valTIMESTEP > valPRESTEPS
-            
-            tmp_wind(valTIMESTEP,:) = mean(fcnSDVEVEL(matCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 1e-4), 1);
-            
+                        
             count = 0;
             delt = 1;
             while ~isnan(delt) && delt >= 0.005
@@ -167,6 +165,9 @@ for valTIMESTEP = 1:valMAXTIME
                 count = count + 1;
             end
             vecTSITER(valTIMESTEP) = count;
+            
+            tmp_wind(valTIMESTEP,:) = mean(fcnSDVEVEL(matCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 1e-4), 1);
+
                         
             % Relaxing Wake
             if flagRELAX == 1
@@ -203,6 +204,9 @@ for valTIMESTEP = 1:valMAXTIME
             else
                 [CT(valTIMESTEP), vecDVETHRUST] = fcnPFORCES(strATYPE{1}, valTIMESTEP, vecDVELIFT, vecDVEDRAG, vecDVESIDE, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR, valDENSITY, valDIAM, valRPM, vecTSITER);
             end
+            
+            matSPANDIR_ALL(:,:,valTIMESTEP) = matSPANDIR;
+            matUINF_ALL(:,:,valTIMESTEP) = matUINF;
         end
     end
     vecTSTIME(valTIMESTEP) = toc;
@@ -214,14 +218,14 @@ for valTIMESTEP = 1:valMAXTIME
 %     view([0 0]);
 %     ylim([-0.5 0.5]);
 
-    save('tmp.mat');
+%     save('tmp.mat');
     
 end
 
 % Adding in apparent mass
-[CT_U, CL_U, matDGAMMADT] = fcnDGAMMADT(1, valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR);
+[CT_U, CL_U, matDGAMMADT, matDVENC] = fcnDGAMMADT(1, valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR, matSPANDIR_ALL, matUINF_ALL, vecTE, vecTEDVE);
 
-save(['tmotor_run_',num2str(now),'.mat']);
+% save(['tmotor_run_',num2str(now),'.mat']);
 
 % figure(20);
 % plot(CT, '-k')

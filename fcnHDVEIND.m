@@ -3,7 +3,7 @@ function [infl_loc] = fcnHDVEIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCO
 chunk_sz = 1e7;
 num_pts = length(dvenum);
 
-GPU = FALSE;
+GPU = false;
 
 infl_loc = zeros(3,6,size(dvenum,1));
 for i = 1:chunk_sz:num_pts

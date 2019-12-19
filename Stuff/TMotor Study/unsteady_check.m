@@ -4,7 +4,7 @@ clear
 ds = 80
 
 %% Getting tunnel data
-load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-11-06\06-Nov-2019 12.56.34_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha15_9.8342.mat')
+load('G:\GIT\opera\Stuff\TMotor Study\Tunnel Testing\2019-11-06\06-Nov-2019 13.02.45_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha15_8.0104.mat') % Alpha 15, 0.1115
 close all
 
 hFig98 = figure(98);
@@ -41,7 +41,7 @@ hold on
 errorbar(binAng, binAvg, binMin - binAvg, binMax - binAvg, '-.bo');
 hold off
 
-legend('\mu = 0.1346', '\mu = 0.3004','Location','NorthWest')
+legend('\alpha_{tpp} = 15, \mu = 0.1115', '\alpha_{tpp} = 0, \mu = 0.3004','Location','NorthWest')
 
 xlabel('Azimuth Location, Degrees')
 ylabel('Thrust Coefficient') 

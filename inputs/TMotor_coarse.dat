@@ -13,13 +13,13 @@ Maximum Timesteps: 		valMAXTIME = 160
 Timestep Size: 			valDELTIME = 0.0005
 Relaxed or Fixed Wake: 	strRELAX = RELAXED
 
-Angles of Attack: 		seqALPHA = 0
+Angles of Attack: 		seqALPHA = 15
 Angles of Sideslip: 	seqBETA = 0
 Density:				valDENSITY = 1.225
 
 Reference Diameter:		valDIAM = 0.4572
 Reference RPM:			valRPM = 3000
-Advance Ratio:			valJ = 0.3
+Advance Ratio:			valJ = 0.1115
 Number of Blades:		valBLADES = 2
 Collective pitch:		valCOLL = 0
 

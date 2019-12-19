@@ -34,25 +34,34 @@ hold on
 load('QS2\m2_dt1.mat', 'CL', 'valDELTIME', 'valMAXTIME', 'valSPAN', 'valAREA');
 AR = (valSPAN.^2)./valAREA;
 CLOG2D = CL.*((AR + 2)/AR);
+CL_QS2{:,1} = CLOG2D;
 s_t = [1:valMAXTIME].*valDELTIME.*2;
+s_QS2{:,1} = s_t;
 plot(s_t((1/valDELTIME):end) - 2, CLOG2D((1/valDELTIME):end), 'ok');
 M(1) = 2;
+dt(1) = valDELTIME;
 ratio(1) = valDELTIME/(1/M(1));
 
 load('QS2\m5_dt1.mat', 'CL', 'valDELTIME', 'valMAXTIME', 'valSPAN', 'valAREA');
 AR = (valSPAN.^2)./valAREA;
 CLOG2D = CL.*((AR + 2)/AR);
+CL_QS2{:,2} = CLOG2D;
 s_t = [1:valMAXTIME].*valDELTIME.*2;
+s_QS2{:,2} = s_t;
 plot(s_t((1/valDELTIME):end) - 2, CLOG2D((1/valDELTIME):end), 'b^');
 M(2) = 5;
+dt(2) = valDELTIME;
 ratio(2) = valDELTIME/(1/M(2));
 
 load('QS2\m8_dt1.mat', 'CL', 'valDELTIME', 'valMAXTIME', 'valSPAN', 'valAREA');
 AR = (valSPAN.^2)./valAREA;
 CLOG2D = CL.*((AR + 2)/AR);
+CL_QS2{:,3} = CLOG2D;
 s_t = [1:valMAXTIME].*valDELTIME.*2;
+s_QS2{:,3} = s_t;
 plot(s_t((1/valDELTIME):end) - 2, CLOG2D((1/valDELTIME):end), 'rs');
 M(3) = 8;
+dt(3) = valDELTIME;
 ratio(3) = valDELTIME/(1/M(3));
 hold off
 
@@ -80,25 +89,34 @@ hold on
 load('QS2\m2_dt0.1.mat', 'CL', 'valDELTIME', 'valMAXTIME', 'valSPAN', 'valAREA');
 AR = (valSPAN.^2)./valAREA;
 CLOG2D = CL.*((AR + 2)/AR);
+CL_QS2{:,4} = CLOG2D;
 s_t = [1:valMAXTIME].*valDELTIME.*2;
+s_QS2{:,4} = s_t;
 plot(s_t((1/valDELTIME):end) - 2, CLOG2D((1/valDELTIME):end), 'ok');
 M(4) = 2;
+dt(4) = valDELTIME;
 ratio(4) = valDELTIME/(1/M(4));
 
 load('QS2\m5_dt0.1.mat', 'CL', 'valDELTIME', 'valMAXTIME', 'valSPAN', 'valAREA');
 AR = (valSPAN.^2)./valAREA;
 CLOG2D = CL.*((AR + 2)/AR);
+CL_QS2{:,5} = CLOG2D;
 s_t = [1:valMAXTIME].*valDELTIME.*2;
+s_QS2{:,5} = s_t;
 plot(s_t((1/valDELTIME):end) - 2, CLOG2D((1/valDELTIME):end), 'b^');
 M(5) = 5;
+dt(5) = valDELTIME;
 ratio(5) = valDELTIME/(1/M(5));
 
 load('QS2\m8_dt0.1.mat', 'CL', 'valDELTIME', 'valMAXTIME', 'valSPAN', 'valAREA');
 AR = (valSPAN.^2)./valAREA;
 CLOG2D = CL.*((AR + 2)/AR);
+CL_QS2{:,6} = CLOG2D;
 s_t = [1:valMAXTIME].*valDELTIME.*2;
+s_QS2{:,6} = s_t;
 plot(s_t((1/valDELTIME):end) - 2, CLOG2D((1/valDELTIME):end), 'rs');
 M(6) = 8;
+dt(6) = valDELTIME;
 ratio(6) = valDELTIME/(1/M(6));
 
 hold off

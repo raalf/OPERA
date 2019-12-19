@@ -1,6 +1,8 @@
 clc
 clear
 
+WH = [4.5 5];
+
 %%
 % % Kussner function, numerical integration
 % C_k = @(k)(besselh(1,2,k))./((besselh(1,2,k)) + 1i.*(besselh(0,2,k)));
@@ -23,7 +25,7 @@ load('Kussner.mat')
 
 hFig25 = figure(25);
 clf(25);
-subplot(1,2,1);
+% subplot(1,2,1);
 plot(((s(1:40))), c_l(1:40), '-k');
 box on
 axis tight
@@ -83,21 +85,33 @@ ratio(8) = (valDELTIME*skip)/(1/M(8));
 
 hold off
 
-xlabel('Distanced Travelled in Semi-Chords');
+xlabel('Distanced Travelled by Gust in Semi-Chords');
 ylabel('Lift Coefficient');
 
+% legend('Kussner Function', ...
+%     ['M = ', num2str(M(1)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(1))], ...
+%     ['M = ', num2str(M(2)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(2))], ...
+%     ['M = ', num2str(M(3)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(3))], ...
+%     ['M = ', num2str(M(8)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(8))], 'Location','SouthEast')
+% xl = xlim;
+% yl = ylim;
+% 
+% title('Coarse Timesteps (\Delta_T = 1)');
+
 legend('Kussner Function', ...
-    ['M = ', num2str(M(1)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(1))], ...
-    ['M = ', num2str(M(2)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(2))], ...
-    ['M = ', num2str(M(3)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(3))], ...
-    ['M = ', num2str(M(8)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(8))], 'Location','SouthEast')
+    ['DDE Method (M = ', num2str(M(1)), ')'], ...
+    ['DDE Method (M = ', num2str(M(2)), ')'], ...
+    ['DDE Method (M = ', num2str(M(3)), ')'], ...
+    ['DDE Method (M = ', num2str(M(8)), ')'], 'Location','SouthEast')
 xl = xlim;
 yl = ylim;
 
-title('Coarse Timesteps (\Delta_T = 1)');
+fcnFIG2LATEX(hFig25, 'kussner_coarse.pdf', WH)
 
 %%
-subplot(1,2,2);
+hFig26 = figure(26);
+clf(26);
+% subplot(1,2,2);
 plot(((s(1:40))), c_l(1:40), '-k');
 box on
 axis tight
@@ -157,45 +171,35 @@ M(7) = 10;
 ratio(7) = (valDELTIME*skip)/(1/M(7));
 
 hold off
-xlabel('Distanced Travelled in Semi-Chords');
+xlabel('Distanced Travelled by Gust in Semi-Chords');
 ylabel('Lift Coefficient');
 
-legend('Kussner Function', ...
-    ['M = ', num2str(M(4)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(4))], ...
-    ['M = ', num2str(M(5)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(5))], ...
-    ['M = ', num2str(M(6)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(6))], ...
-    ['M = ', num2str(M(7)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(7))], 'Location','SouthEast')
+% legend('Kussner Function', ...
+%     ['M = ', num2str(M(4)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(4))], ...
+%     ['M = ', num2str(M(5)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(5))], ...
+%     ['M = ', num2str(M(6)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(6))], ...
+%     ['M = ', num2str(M(7)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(7))], 'Location','SouthEast')
+% title('Fine Timesteps (\Delta_T = 0.1)');
+% sgtitle('Fully Unsteady Kussner Response')
 
 xlim(xl);
 ylim(yl);
 
-title('Fine Timesteps (\Delta_T = 0.1)');
+legend('Kussner Function', ...
+    ['DDE Method (M = ', num2str(M(4)), ')'], ...
+    ['DDE Method (M = ', num2str(M(5)), ')'], ...
+    ['DDE Method (M = ', num2str(M(6)), ')'], ...
+    ['DDE Method (M = ', num2str(M(7)), ')'], 'Location','SouthEast')
 
-sgtitle('Fully Unsteady Kussner Response')
+fcnFIG2LATEX(hFig26, 'kussner_fine.pdf', WH)
 
-%%
-
-% hFig27 = figure(27);
-% clf(27);
-% 
-% load('QS2\m2_dt0.1.mat');
-% s_t = [1:valMAXTIME].*valDELTIME.*2;
-% idx = ceil(1/valDELTIME):length(s_t);
-% plot(s_t(idx) - 2, sum(matINTCIRC(idx,:),2), '--ok')
-% 
-% box on
-% axis tight
-% grid minor
-% 
-% xlabel('Distanced Travelled in Semi-Chords');
-% ylabel('Integrated Circulation on Surface');
 
 %%
 
 hFig70 = figure(70);
 clf(70);
 
-subplot(1,2,2)
+% subplot(1,2,2)
 plot(m2_err(:,1), m2_err(:,2).*100, '-ok');
 hold on
 plot(m5_err(:,1), m5_err(:,2).*100, '-.b^');
@@ -205,19 +209,29 @@ hold off
 grid minor
 box on
 axis tight
-xlabel('Distanced Travelled in Semi-Chords');
+xlabel('Distanced Travelled by Gust in Semi-Chords');
 ylabel('Percent Error in Kussner Response');
 
-legend(['M = ', num2str(M(4)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(4))], ...
-    ['M = ', num2str(M(5)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(5))], ...
-    ['M = ', num2str(M(6)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(6))], ...
-    ['M = ', num2str(M(7)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(7))], 'Location','NorthEast')
+% legend(['M = ', num2str(M(4)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(4))], ...
+%     ['M = ', num2str(M(5)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(5))], ...
+%     ['M = ', num2str(M(6)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(6))], ...
+%     ['M = ', num2str(M(7)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(7))], 'Location','NorthEast')
+% title('Fine Timesteps (\Delta_T = 0.1)');
+
 xlim(xl)
 y2 = ylim;
 
-title('Fine Timesteps (\Delta_T = 0.1)');
+legend(['DDE Method (M = ', num2str(M(4)), ')'], ...
+    ['DDE Method (M = ', num2str(M(5)), ')'], ...
+    ['DDE Method (M = ', num2str(M(6)), ')'], ...
+    ['DDE Method (M = ', num2str(M(7)), ')'], 'Location','NorthEast')
 
-subplot(1,2,1)
+fcnFIG2LATEX(hFig70, 'kussner_error_fine.pdf', WH)
+
+
+hFig77 = figure(77);
+clf(77);
+% subplot(1,2,1)
 plot(m2c_err(:,1), m2c_err(:,2).*100, '-ok');
 hold on
 plot(m5c_err(:,1), m5c_err(:,2).*100, '-.b^');
@@ -227,16 +241,23 @@ hold off
 grid minor
 box on
 axis tight
-xlabel('Distanced Travelled in Semi-Chords');
+xlabel('Distanced Travelled by Gust in Semi-Chords');
 ylabel('Percent Error in Kussner Response');
 
-legend(['M = ', num2str(M(4)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(4))], ...
-    ['M = ', num2str(M(5)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(5))], ...
-    ['M = ', num2str(M(6)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(6))], ...
-    ['M = ', num2str(M(7)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(7))], 'Location','NorthEast')
+% legend(['M = ', num2str(M(4)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(4))], ...
+%     ['M = ', num2str(M(5)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(5))], ...
+%     ['M = ', num2str(M(6)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(6))], ...
+%     ['M = ', num2str(M(7)), ', \Deltax_w/\Deltax_c = ', num2str(ratio(7))], 'Location','NorthEast')
+% title('Coarse Timesteps (\Delta_T = 1)');
+% sgtitle('Error in the Fully Unsteady Kussner Response')
 xlim(xl)
 ylim(y2)
 
-title('Coarse Timesteps (\Delta_T = 1)');
+legend(['DDE Method (M = ', num2str(M(4)), ')'], ...
+    ['DDE Method (M = ', num2str(M(5)), ')'], ...
+    ['DDE Method (M = ', num2str(M(6)), ')'], ...
+    ['DDE Method (M = ', num2str(M(7)), ')'], 'Location','NorthEast')
 
-sgtitle('Error in the Fully Unsteady Kussner Response')
+fcnFIG2LATEX(hFig77, 'kussner_error_coarse.pdf', WH)
+
+

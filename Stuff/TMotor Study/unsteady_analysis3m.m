@@ -1,17 +1,17 @@
 clc
 clear
 
-load('Tunnel Testing\2019-10-31\31-Oct-2019 12.41.35_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_21.5736.mat') % Alpha 0, 0.3004
-% load('Tunnel Testing\2019-11-06\06-Nov-2019 13.02.45_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha15_8.0104.mat') % Alpha 15, 0.1115
+% load('Tunnel Testing\2019-10-31\31-Oct-2019 12.41.35_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha30_21.5736.mat') % Alpha 0, 0.3004
+load('Tunnel Testing\2019-11-06\06-Nov-2019 13.02.45_Scorpion_ASI_T-Motor 18in_RPM3000_Alpha15_8.0104.mat') % Alpha 15, 0.1115
 
 CT_tunnel_raw = lbf_N.*FT(:,3);
 CT_tunnel_raw = CT_tunnel_raw./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
 
-close all
+% close all
 
 %% Getting OPERA data
-load('Alpha 0 Results/TMotor_Relaxed_J0.3_0.0005.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
-% load('Alpha 15 Results/TMotor_Relaxed_J0.1115_0.0005.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+% load('Alpha 0 Results/TMotor_Relaxed_J0.3_0.0005.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+load('Alpha 15 Results/TMotor_Relaxed_J0.1115_0.0005.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
 
 CT_relaxed = CT_U(~isnan(CT_U));
 % CT_relaxed = CT(~isnan(CT));
@@ -37,13 +37,15 @@ end
 plot(binAng, binAvg, ':sk');
 
 %---------------------------------------------
-% Fp = 1/(dataRate/2);
-% Fst = 250/(dataRate/2);
-% d = fdesign.lowpass('N,Fp,Fst',3,Fp,Fst);
-% Hd = design(d);
-% CT_tunnel2 = filtfilt(Hd.Numerator,1,detrend(CT_tunnel_raw)) + mean(CT_tunnel_raw);
 
-CT_tunnel2 = lowpass(CT_tunnel_raw, 300, dataRate, 'Steepness', 0.999, 'StopbandAttenuation', 10);
+Fp = 1/dataRate;
+Fst = 3000/dataRate;
+d = fdesign.lowpass('N,Fp,Fst',3,Fp,Fst);
+Hd = design(d);
+CT_tunnel2 = filtfilt(Hd.Numerator,1,detrend(CT_tunnel_raw)) + mean(CT_tunnel_raw);
+
+% CT_tunnel2 = lowpass(CT_tunnel_raw, 300, dataRate, 'Steepness', 0.999, 'StopbandAttenuation', 10);
+% CT_tunnel2 = lowpass(CT_tunnel_raw, 300, dataRate)
 [~,idx3] = sort(Angle,'ascend');
 CT_tunnel2 = CT_tunnel2(idx3);
 
@@ -63,7 +65,8 @@ hold off
 %%
 
 tmp = ((vecPOS_R + 90)./360);
-start = 2;
+% start = 2;
+start = 1.9;
 idx = tmp >= start & tmp < start+1;
 idx2 = tmp >= start+1 & tmp < start+2;
 % idx2 = idx;
@@ -88,12 +91,14 @@ axis tight
 % hold off
 
 % legend('Experimental Data','DDE Method','Location','South','FontSize',8)
-legend('Experimental Data','Experimental Data (40 - 250 Hz)','DDE Method','Location','SouthWest')
+legend('Experimental Data','Experimental Data (0 - 500 Hz)','DDE Method','Location','SouthWest')
 xlabel('Azimuth Location (Degrees)');
 ylabel('Thrust Coefficient');
 % title('\mu = 0.3, \alpha = 0, RPM = 3000, \DeltaT = 0.0005')
 WH = [4.5 5];
 % fcnFIG2LATEX(hFig2, 'tmotor_time_15.pdf', WH)
+
+% title('Alpha 15, J = 0.115')
 
 %%
 % hFig20 = figure(20);

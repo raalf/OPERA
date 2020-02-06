@@ -12,9 +12,9 @@ r_R = linspace(0.2, 1, 20)';
 vecHUB = [0 0 0];
 vecROTORRADPS = valRPM.*2.*pi./60;
 
+valJ = reshape(valJ, 1, 1, []);
 vecUINF = [cosd(valALPHA)*cosd(0) sind(0) sind(valALPHA)*cosd(0)];
-translation(:,:,1) = valJ(1).*(valRPM.*(pi/30)).*(valDIAM/2).*vecUINF;
-translation(:,:,2) = valJ(2).*(valRPM.*(pi/30)).*(valDIAM/2).*vecUINF;
+translation = valJ.*(valRPM.*(pi/30)).*(valDIAM/2).*vecUINF;
 
 load('chord.mat')
 c = interp1(chord(:,1), chord(:,2), r_R).*(valDIAM/2);
@@ -29,40 +29,55 @@ for i = 1:length(azs)
     locs = locs_og*dcmROTORSTEP;
     forward = fordir*dcmROTORSTEP;
 
-    uinf(:,:,1) = cross(repmat([0, 0, -vecROTORRADPS], length(r_R),1), locs) - translation(:,:,1);
-    uinf(:,:,2) = cross(repmat([0, 0, -vecROTORRADPS], length(r_R),1), locs) - translation(:,:,2);
+    uinf = cross(repmat([0, 0, -vecROTORRADPS], length(r_R),1), locs) - translation;
+
     tmp = dot(uinf, repmat(forward, size(uinf,1), 1, 2), 2);
     reversal = ones(size(uinf,1),1,2);
     reversal(tmp > 0) = -1;
 
-    z(:,i,1) = sqrt(sum(uinf(:,:,1).^2,2)).*reversal(:,:,1);
-    z(:,i,2) = sqrt(sum(uinf(:,:,2).^2,2)).*reversal(:,:,2);
+    z(:,i,:) = sqrt(sum(uinf.^2,2)).*reversal;
     x(:,i) = locs(:,1);
     y(:,i) = locs(:,2);
 end
 
-amplitude(:,:,1) = valJ(1)./(r_R.*(valDIAM/2));
-amplitude(:,:,2) = valJ(2)./(r_R.*(valDIAM/2));
-amplitude = repmat(amplitude, 1, length(azs), 1);
-% amplitude = 100.*abs((z - repmat(mean(z,1), size(z,1), 1, 1))./repmat(mean(z,1), size(z,1), 1, 1));
+% hFig2 = figure(2);
+% clf(2);
+% 
+% z2 = mean(z,1);
+% z3 = z2(:,azs < 180,:) + z2(:,azs >= 180,:);
+% azs2 = azs(azs < 180);
+% scatter(azs2, z3(:,:,1), 'ok');
+% hold on
+% scatter(azs2, z3(:,:,2), '^b');
+% hold off
+% grid minor
+% box on
+% axis tight
+
 
 hFig1 = figure(1);
 clf(1);
-subplot(1,2,1)
-contourf(x,y,amplitude(:,:,1));
+h1 = subplot(1,2,1);
+contourf(x,y,z(:,:,1));
 title(['\mu = ', num2str(valJ(1))])
 axis equal
 colormap(jet)
 colorbar;
+c1 = caxis;
 axis off
 
-subplot(1,2,2)
-contourf(x,y,amplitude(:,:,2));
+h2 = subplot(1,2,2);
+contourf(x,y,z(:,:,2));
 title(['\mu = ', num2str(valJ(2))])
 axis equal
 colormap(jet)
 colorbar;
+c2 = caxis;
 axis off
+lims = [min([c1 c2]) max([c1 c2])];
+caxis(lims);
+set(hFig1, 'currentaxes', h1);
+caxis(lims);
 
 sgtitle(['Percent V/V_{mean} vs. Azimuth Location (\alpha = 0, \DeltaT = ', num2str(valDELTIME), ', RPM = ', num2str(valRPM), ', VINF RIGHT TO LEFT, CCW)'])
 

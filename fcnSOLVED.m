@@ -10,7 +10,7 @@ function [matCOEFF] = fcnSOLVED(matD, vecR, valNELE)
 %   matCOEFF - NELE x 5 x 1 matrix of (A1, A2, B1, B2, C3) coefficients for each HDVE  
 
 % matCOEFF = matD\vecR;
-matCOEFF = lsqminnorm(matD, vecR);
+matCOEFF = lsqminnorm(matD, vecR, 1e-10, 'warn');
 matCOEFF = full(reshape(matCOEFF,6,valNELE,1)');
 
 

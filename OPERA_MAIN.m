@@ -30,7 +30,6 @@ strFILE = 'inputs/TMotor_coarse.dat'
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
 flagGIF = 0;
-% flagHVRMOD = true;
 flagHVRMOD = false;
 valUINF = 1;
 
@@ -100,11 +99,13 @@ matDVEDRAG_DIR = []; matDVELIFT_DIR = []; matDVESIDE_DIR = []; vecTSITER = [];
 
 % Building wing resultant
 vecR = fcnRWING(valDLEN, 0, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matCENTER, matKINCON_DVE, matDVECT, []);
+boolKINCON = false(size(matD,1),1);
+boolKINCON(end-(valNELE-1):end) = true;
 
 % Solving for wing coefficients
 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
-[vecVMU, vecEMU] = fcnVEMU(matVLST, matVATT, matCENTER, matROTANG, matCOEFF, matELST, matEATT, vecTE);
-matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
+% [vecVMU, vecEMU] = fcnVEMU(matVLST, matVATT, matCENTER, matROTANG, matCOEFF, matELST, matEATT, vecTE);
+% matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
 matCOEFF_HSTRY(:,:,1) = matCOEFF;
 vecDGAMMA_DETA = matCOEFF(:,2);
 
@@ -136,7 +137,7 @@ for valTIMESTEP = 1:valMAXTIME
         [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, valGUSTMODE, valDELTIME, valUINF, valGUSTSTART, matCENTER, gust_vel_old, valPRESTEPS*valDELTIME*10);
         matAINF = (matUINF - tmatUINF)./valDELTIME;
     end
-     
+    
     % Generating new wake elements
     if any(vecTE)
         [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWCOEFF, matWROTANG, vecWLE, vecWTE, ...
@@ -147,39 +148,39 @@ for valTIMESTEP = 1:valMAXTIME
             matWDVE, matWEIDX, vecWLEDVE, matWEATT, vecDVESURFACE, vecWDVESURFACE);
         
         if valTIMESTEP > valPRESTEPS
-                        
-            count = 0;
-            delt = 1;
-            while ~isnan(delt) && delt >= 0.005
-                int_circ1 = fcnINTCIRC2(matPLEX, matCOEFF, matDVEGRID);
-                vecR = fcnRWING(valDLEN, valTIMESTEP, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matCENTER, matKINCON_DVE, matDVECT, vecWDVESYM);
-                matCOEFF = fcnSOLVED(matD, vecR, valNELE);
-                [vecVMU, vecEMU] = fcnVEMU(matVLST, matVATT, matCENTER, matROTANG, matCOEFF, matELST, matEATT, vecTE);
-                matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
-
-                % Update wake coefficients
-                [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE);
-                matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
-                int_circ2 = fcnINTCIRC2(matPLEX, matCOEFF, matDVEGRID);
-                delt = abs((int_circ2 - int_circ1)./int_circ1);
-                count = count + 1;
-            end
-            vecTSITER(valTIMESTEP) = count;
             
-            tmp_wind(valTIMESTEP,:) = mean(fcnSDVEVEL(matCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 1e-4), 1);
-
-                        
+            %             count = 0;
+            %             delt = 1;
+            %             while ~isnan(delt) && delt >= 0.005
+            %                 vecR = fcnRWING(valDLEN, valTIMESTEP, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matCENTER, matKINCON_DVE, matDVECT, vecWDVESYM);
+            %                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
+            % %                 [vecVMU, vecEMU] = fcnVEMU(matVLST, matVATT, matCENTER, matROTANG, matCOEFF, matELST, matEATT, vecTE);
+            % %                 matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
+            %
+            %                 % Update wake coefficients
+            % %                 [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE);
+            % %                 matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
+            %
+            %                 tmpR = matD*reshape(matCOEFF',[],1);
+            %                 delt_kincon = mean(abs((vecR(boolKINCON) - tmpR(boolKINCON))./vecR(boolKINCON)));
+            %                 delt_og = mean(tmpR(~boolKINCON));
+            %                 count = count + 1;
+            %             end
+            vecTSITER(valTIMESTEP) = 1;
+            
+            vecR = fcnRWING(valDLEN, valTIMESTEP, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matCENTER, matKINCON_DVE, matDVECT, vecWDVESYM);
+            matCOEFF = fcnSOLVED(matD, vecR, valNELE);
+            
             % Relaxing Wake
             if flagRELAX == 1
+                %                 tmpCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
+                %                 tmpWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
                 [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG, matWVGRID] = ...
                     fcnRELAX7(flagHVRMOD, valDELTIME, valTIMESTEP, valRPM, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
                     matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWE2GRID);
                 
-%                 [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG, matWVGRID] = ...
-%                     fcnRELAX8(flagHVRMOD, valDELTIME, valTIMESTEP, valRPM, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
-%                     matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWE2GRID);
                 % Update all wake coefficients
-                matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
+                %                 matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
             end
             
             % Updating coefficient convergence history
@@ -210,15 +211,13 @@ for valTIMESTEP = 1:valMAXTIME
         end
     end
     vecTSTIME(valTIMESTEP) = toc;
-    
-%     hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
-%     hFig1 = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID, vecWDVESURFACE);
-%     fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'r', 5);
-%     fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, [], matWROTANG, 'b', 5);
-%     view([0 0]);
-%     ylim([-0.5 0.5]);
 
-%     save('tmp.mat');
+    %         hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+    %         hFig1 = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID, vecWDVESURFACE);
+    %         fcnPLOTCIRC(hFig1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, 'r', 5);
+    %         fcnPLOTCIRC(hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, matWPLEX, matWCOEFF, [], matWROTANG, 'b', 5);
+    %         view([0 0]);
+    %         ylim([-0.5 0.5]);
     
 end
 
@@ -227,14 +226,14 @@ end
 
 save(['tmotor_run_',num2str(now),'.mat']);
 
-figure(20);
-plot(CT, '-k')
-hold on
-plot(CT_U, '--b');
-hold off
-grid minor
-box on
-axis tight
+% figure(20);
+% plot(CT, '-k')
+% hold on
+% plot(CT_U, '--b');
+% hold off
+% grid minor
+% box on
+% axis tight
 
 
 % profile report

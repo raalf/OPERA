@@ -9,8 +9,8 @@ Steady or Unsteady:	strA3TYPE = UNSTEADY
 
 Chordwise Spacing:	strSPACING = NORMAL
 
-Maximum Timesteps: 		valMAXTIME = 50
-Timestep Size: 			valDELTIME = 0.1
+Maximum Timesteps: 		valMAXTIME = 5
+Timestep Size: 			valDELTIME = 1
 Relaxed or Fixed Wake: 	strRELAX = FIXED
 
 Angles of Attack: 		seqALPHA = 0
@@ -22,8 +22,8 @@ Reference Span:		valSPAN = 40
 
 Gust Mode:			valGUSTMODE = 3
 Gust Amplitude:		valGUSTAMP = 0.055
-Gust Length:		valGUSTL = 50
-Gust Start:			valGUSTSTART = 10	
+Gust Length:		valGUSTL = 100
+Gust Start:			valGUSTSTART = 1	
 
 GEOMETRY
 
@@ -34,11 +34,11 @@ Keep vecM the same for all panels on a wing.
 
 Panel #:1. 
 Number of spanwise elements:	vecN 		= 15. 
-Number of chordwise elements: 	vecM 		= 2.
+Number of chordwise elements: 	vecM 		= 10.
 Symmetry about YZ Plane:		strSYM 		= NO
 Trailing edge:					strTE 		= YES
 Leading edge:					strLE       = YES
-Spanwise Element Spacing:		strPSPACE	= COSINE
+Spanwise Element Spacing:		strPSPACE	= NORMAL
 xleft		yleft		zleft		chord		epsilon	 	airfoil
 0.000000	-20.0000	0.000000	1.000000	0.000000	NACA 0015
 0.000000	20.00000	0.000000	1.000000	0.000000	NACA 0015

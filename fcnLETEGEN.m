@@ -1,4 +1,4 @@
-function [vecLE, vecLEDVE, vecTE, vecTEDVE, vecSYM, vecSYMDVE, matELST, matDVEGRID] = fcnLETEGEN(strATYPE, matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS, vecSYM_old, matEIDX, vecM)
+function [vecLE, vecLEDVE, vecTE, vecTEDVE, vecSYM, vecSYMDVE, matELST, matDVEGRID, vecCHORD, vecSPAN] = fcnLETEGEN(strATYPE, matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS, vecSYM_old, matEIDX, vecM)
 
 vecLE = [];
 vecTE = [];
@@ -37,6 +37,13 @@ matDVEGRID(1,:) = vecLEDVE;
 for i = 2:vecM*2
     [~,matDVEGRID(i,:)] = ismember(matEIDX(matDVEGRID(i-1,:), 3), matEIDX(:,2));
 end
+
+le_pt = (matVLST(matELST(vecLE,1),:) + matVLST(matELST(vecLE,2),:))./2;
+te_pt = (matVLST(matELST(vecTE,1),:) + matVLST(matELST(vecTE,2),:))./2;
+
+vecCHORD = sqrt(sum((te_pt - le_pt).^2,2));
+
+vecSPAN = sqrt(sum([matVLST(matELST(vecLE,1),:) - matVLST(matELST(vecLE,2),:)].^2,2));
 
 end
 

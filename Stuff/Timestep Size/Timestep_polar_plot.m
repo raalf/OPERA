@@ -3,8 +3,8 @@ clear
 
 valDIAM = 0.4572;
 valRPM = 3000;
-valJ = 0.3;
-valALPHA = 0;
+valJ = 0.2113;
+valALPHA = 15;
 valDELTIME = [0.00025 0.0005 0.001 0.0015];
 
 r_R = linspace(0.2, 1, 20)';

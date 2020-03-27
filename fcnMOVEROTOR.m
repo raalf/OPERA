@@ -1,4 +1,4 @@
-function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matPLEX, matDVECT, matROTANG, vecHUB, matSPANDIR] = fcnMOVEROTOR(atype, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP, vecHUB, matSPANDIR)
+function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matPLEX, matDVECT, matROTANG, vecHUB, matSPANDIR, matKINCON_P] = fcnMOVEROTOR(atype, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP, vecHUB, matSPANDIR, matKINCON_P)
 
 % Old trailing edge vertices
 old_te = matVLST(matELST(vecTE,:),:);
@@ -15,7 +15,10 @@ elseif strcmpi(atype, 'PROPELLER')
 end
     
 tmpVLST = matVLST - vecHUB;
+tmpKINCON_P = matKINCON_P - vecHUB;
+
 tmpVLST = tmpVLST*dcmROTORSTEP;
+tmpKINCON_P = tmpKINCON_P*dcmROTORSTEP;
 
 matSPANDIR = matSPANDIR*dcmROTORSTEP;
 
@@ -24,6 +27,7 @@ matVUINF = cross(repmat([0,0,-vecROTORRADPS],length(matVLST(:,1)),1),matVLST - v
 
 vecHUB = vecHUB + translation.*valDELTIME;
 matVLST = tmpVLST + vecHUB;
+matKINCON_P = tmpKINCON_P + vecHUB;
 
 %% Updating geometry
 % matWCENTER

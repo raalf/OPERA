@@ -1,11 +1,11 @@
 clc
 clear
 
-% cd ./../../
+cd ./../../
 
-J = [0 0.0539 0.0783 0.1181 0.1404];
+J = linspace(0.05, 0.1405, 4);
 
-CT_sweep = nan(120, length(J));
+CT_sweep = nan(160, length(J));
 for jj = 1:length(J)
     OPERA_MAIN
     close all

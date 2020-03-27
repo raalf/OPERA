@@ -20,11 +20,11 @@ for ii = 1:length(inp)
     elliptical_wing_o_matic(inp(ii), tmpvecM, tmpvalALPHA, tmpstrSPACING, 'NORMAL', tmpvalDELTIME, tmpvalMAXTIME, tmpAR, xtcr, []);
     OPERA_MAIN
     axis off
-        fcnFIG2LATEX(hFig1, 'w1', [10 6])
+    fcnFIG2LATEX(hFig1, 'w1', [10 6])
 
     clearvars -except ax ii hFig2 tmpCL_N time tmpCDi_N tmpCL_M tmpCDi_M tmpE_N inp tmpvecN tmpvecM tmpstrSPACING tmpvalALPHA tmpAR tmpvalMAXTIME tmpvalDELTIME xtcr
 end
-% 
+
 % % % M 
 % % inp = 1:2:12; 
 % % % inp = 1:2:4;

@@ -1,154 +1,205 @@
 clc
 clear
 
-alphas = [90 30 15 0];
-legend_entry = {'k','r','m','b'};
+%% 0
 
-tunnel_90 = [0.0539	0.0078; ...
-0.0598	0.0075; ...
-0.0654	0.0069; ...
-0.0709	0.0066; ...
-0.0783	0.006; ...
-0.084	0.0054; ...
-0.0911	0.005; ...
-0.0979	0.0044; ...
-0.1044	0.0039; ...
-0.111	0.0032; ...
-0.1181	0.0027; ...
-0.1244	0.0021; ...
-0.1317	0.0015; ...
-0.1404	0.0007];
+%% 0.1080
+load('Tunnel Testing\2020-02-11\11-Feb-2020 17.28.46_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_7.7559.mat', ... % Alpha 0, 0.1080
+    'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
+CT_tunnel_raw = lbf_N.*FT(:,3);
+CT_tunnel_raw = CT_tunnel_raw./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
 
-tunnel_15 = [0.05	0.0096; ...
-0.0683	0.0097; ...
-0.0831	0.0098; ...
-0.0992	0.0099; ...
-0.1151	0.01; ...
-0.1337	0.0101; ...
-0.1523	0.01; ...
-0.1702	0.01; ...
-0.1877	0.0098; ...
-0.2064	0.0098; ...
-0.2238	0.0098; ...
-0.2403	0.0098; ...
-0.258	0.0097; ...
-0.275	0.0096; ...
-0.2917	0.0094; ...
-0.3087	0.0093; ...
-0.3261	0.0091];
+binAng = linspace(0, 360, 30);
+for i = 1:length(binAng)
+    rng = 0.25;
+    idx = vecPOS_TUNNEL_OG >= binAng(i) - rng & vecPOS_TUNNEL_OG <= binAng(i) + rng;
+    
+    binAvg(i) = mean(CT_tunnel_raw(idx));
+    binMax(i) = max(CT_tunnel_raw(idx));
+    binMin(i) = min(CT_tunnel_raw(idx));
+end
+CT(:,1) = binAng';
+CT(:,2) = binAvg';
 
-tunnel_0 = [0.0416	0.0098; ...
-0.0593	0.0101; ...
-0.0766	0.0106; ...
-0.0935	0.0111; ...
-0.1113	0.0117; ...
-0.1298	0.0124; ...
-0.1496	0.013; ...
-0.1695	0.0135; ...
-0.1873	0.014; ...
-0.2055	0.0144; ...
-0.2231	0.0147; ...
-0.2405	0.0151; ...
-0.2579	0.0155; ...
-0.2753	0.0159; ...
-0.2915	0.0163; ...
-0.3087	0.0166; ...
-0.3249	0.0172];
+Fp = 1/dataRate;
+Fst = 2000/dataRate;
+d = fdesign.lowpass('N,Fp,Fst',3,Fp,Fst);
+Hd = design(d);
+CT_tunnel2 = filtfilt(Hd.Numerator,1,detrend(CT_tunnel_raw)) + mean(CT_tunnel_raw);
+
+binAng = linspace(0, 360, 30);
+binAvg = [];
+binMax = [];
+binMin = [];
+for i = 1:length(binAng)
+    rng = 0.25;
+    idx = vecPOS_TUNNEL_OG >= binAng(i) - rng & vecPOS_TUNNEL_OG <= binAng(i) + rng;
+    binAvg(i) = mean(CT_tunnel2(idx));
+    binMax(i) = max(CT_tunnel2(idx));
+    binMin(i) = min(CT_tunnel2(idx));
+end
+CTF(:,1) = binAng';
+CTF(:,2) = binAvg';
+
+%% 0.1441
+load('Tunnel Testing\2020-02-11\11-Feb-2020 17.24.34_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_10.3457.mat', ... % Alpha 0, 0.1441
+    'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
+CT_tunnel_raw = lbf_N.*FT(:,3);
+CT_tunnel_raw = CT_tunnel_raw./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
+
+binAng = linspace(0, 360, 30);
+for i = 1:length(binAng)
+    rng = 0.25;
+    idx = vecPOS_TUNNEL_OG >= binAng(i) - rng & vecPOS_TUNNEL_OG <= binAng(i) + rng;
+    
+    binAvg(i) = mean(CT_tunnel_raw(idx));
+    binMax(i) = max(CT_tunnel_raw(idx));
+    binMin(i) = min(CT_tunnel_raw(idx));
+end
+CT(:,3) = binAvg';
+
+Fp = 1/dataRate;
+Fst = 2000/dataRate;
+d = fdesign.lowpass('N,Fp,Fst',3,Fp,Fst);
+Hd = design(d);
+CT_tunnel2 = filtfilt(Hd.Numerator,1,detrend(CT_tunnel_raw)) + mean(CT_tunnel_raw);
+
+binAng = linspace(0, 360, 30);
+binAvg = [];
+binMax = [];
+binMin = [];
+for i = 1:length(binAng)
+    rng = 0.25;
+    idx = vecPOS_TUNNEL_OG >= binAng(i) - rng & vecPOS_TUNNEL_OG <= binAng(i) + rng;
+    binAvg(i) = mean(CT_tunnel2(idx));
+    binMax(i) = max(CT_tunnel2(idx));
+    binMin(i) = min(CT_tunnel2(idx));
+end
+CTF(:,3) = binAvg';
+
+%% 0.2043
+load('Tunnel Testing\2020-02-11\11-Feb-2020 17.18.43_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_14.6752.mat', ... % Alpha 0, 0.2043
+    'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
+CT_tunnel_raw = lbf_N.*FT(:,3);
+CT_tunnel_raw = CT_tunnel_raw./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
+
+binAng = linspace(0, 360, 30);
+for i = 1:length(binAng)
+    rng = 0.25;
+    idx = vecPOS_TUNNEL_OG >= binAng(i) - rng & vecPOS_TUNNEL_OG <= binAng(i) + rng;
+    
+    binAvg(i) = mean(CT_tunnel_raw(idx));
+    binMax(i) = max(CT_tunnel_raw(idx));
+    binMin(i) = min(CT_tunnel_raw(idx));
+end
+CT(:,4) = binAvg';
+
+Fp = 1/dataRate;
+Fst = 2000/dataRate;
+d = fdesign.lowpass('N,Fp,Fst',3,Fp,Fst);
+Hd = design(d);
+CT_tunnel2 = filtfilt(Hd.Numerator,1,detrend(CT_tunnel_raw)) + mean(CT_tunnel_raw);
+
+binAng = linspace(0, 360, 30);
+binAvg = [];
+binMax = [];
+binMin = [];
+for i = 1:length(binAng)
+    rng = 0.25;
+    idx = vecPOS_TUNNEL_OG >= binAng(i) - rng & vecPOS_TUNNEL_OG <= binAng(i) + rng;
+    binAvg(i) = mean(CT_tunnel2(idx));
+    binMax(i) = max(CT_tunnel2(idx));
+    binMin(i) = min(CT_tunnel2(idx));
+end
+CTF(:,4) = binAvg';
+
+%% 0.2889
+load('Tunnel Testing\2020-01-30\30-Jan-2020 16.15.50_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_20.7492.mat', ... % Alpha 0, 0.2889
+    'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
+CT_tunnel_raw = lbf_N.*FT(:,3);
+CT_tunnel_raw = CT_tunnel_raw./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
+
+binAng = linspace(0, 360, 30);
+for i = 1:length(binAng)
+    rng = 0.25;
+    idx = vecPOS_TUNNEL_OG >= binAng(i) - rng & vecPOS_TUNNEL_OG <= binAng(i) + rng;
+    
+    binAvg(i) = mean(CT_tunnel_raw(idx));
+    binMax(i) = max(CT_tunnel_raw(idx));
+    binMin(i) = min(CT_tunnel_raw(idx));
+end
+CT(:,5) = binAvg';
+
+Fp = 1/dataRate;
+Fst = 2000/dataRate;
+d = fdesign.lowpass('N,Fp,Fst',3,Fp,Fst);
+Hd = design(d);
+CT_tunnel2 = filtfilt(Hd.Numerator,1,detrend(CT_tunnel_raw)) + mean(CT_tunnel_raw);
+
+binAng = linspace(0, 360, 30);
+binAvg = [];
+binMax = [];
+binMin = [];
+for i = 1:length(binAng)
+    rng = 0.25;
+    idx = vecPOS_TUNNEL_OG >= binAng(i) - rng & vecPOS_TUNNEL_OG <= binAng(i) + rng;
+    binAvg(i) = mean(CT_tunnel2(idx));
+    binMax(i) = max(CT_tunnel2(idx));
+    binMin(i) = min(CT_tunnel2(idx));
+end
+CTF(:,5) = binAvg';
 
 %%
-valRPM = 3000;
 
-offset = -1e-3;
-CT_90 = [];
-J_90 = [];
-fileList = dir('Alpha 90 Results/TMotor_Relaxed_*.mat');
-for i = 1:size(fileList,1)
-    load(['Alpha 90 Results/', fileList(i).name], 'CT', 'valJ', 'valDELTIME')
-    num_azm = 1/((valRPM/60).*valDELTIME);
-    CT = CT(~isnan(CT));
-%     CT_90(:,i) = mean(CT(end-(num_azm):end));
-    CT_90(:,i) = CT(end)+offset;
-    J_90(:,i) = valJ;
-end
+% yl = [-0.01 0.035];
+% xl = [0 360];
 
-%%
-valRPM = 3000;
-
-offset = 0;
-CT_15 = [];
-J_15 = [];
-fileList = dir('Alpha 15 Results/TMotor_Relaxed_*.mat');
-for i = 1:size(fileList,1)
-    load(['Alpha 15 Results/', fileList(i).name], 'CT', 'valJ', 'valDELTIME')
-    num_azm = 1/((valRPM/60).*valDELTIME);
-    CT = CT(~isnan(CT));
-    CT_15(:,i) = mean(CT(end-(num_azm):end));
-    J_15(:,i) = valJ;
-end
-
-
-%%
-valRPM = 3000;
-
-offset = 0;
-CT_0 = [];
-J_0 = [];
-fileList = dir('Alpha 0 Results/TMotor_Relaxed_*.mat');
-for i = 1:size(fileList,1)
-    load(['Alpha 0 Results/', fileList(i).name], 'CT', 'valJ', 'valDELTIME')
-    num_azm = 1/((valRPM/60).*valDELTIME);
-    CT = CT(~isnan(CT));
-    CT_0(:,i) = mean(CT(end-(num_azm):end));
-    J_0(:,i) = valJ;
-end
-
-
-%% Without OPERA
-hFig10 = figure(10);
-clf(10);
+hFig5 = figure(5);
+clf(5);
 
 hold on
-plot(tunnel_90(:,1), tunnel_90(:,2), '-ok')
-plot(tunnel_15(:,1), tunnel_15(:,2), '--^r')
-plot(tunnel_0(:,1), tunnel_0(:,2), '-.sb')
-
-box on
-axis tight
-grid minor
-xlabel('Rotor Advance Ratio, \mu')
-ylabel('Thrust Coefficient')
-legend(['Experimental (\alpha_{tpp} = 90', char(176), ')'], ['Experimental (\alpha_{tpp} = 15', char(176), ')'], ['Experimental (\alpha_{tpp} = 0', char(176), ')'],'Location','SouthEast')
-
-fcnFIG2LATEX(hFig10, 'TMotor_tunnel_overview.pdf', [8 5])
-
-%% With OPERA
-
-hFig11 = figure(11);
-clf(11);
-
-hold on
-plot(tunnel_90(:,1), tunnel_90(:,2), '-k')
-plot(tunnel_15(:,1), tunnel_15(:,2), '--r')
-plot(tunnel_0(:,1), tunnel_0(:,2), '-.b')
-
-scatter(J_90, CT_90 + offset, ['o', legend_entry{1}])
-scatter(J_15, CT_15 + offset, ['^', legend_entry{2}])
-scatter(J_0, CT_0 + offset, ['s', legend_entry{4}])
+plot(CT(:,1), CT(:,2), '-k'); 
+plot(CT(:,1), CT(:,3), '-.r'); 
+plot(CT(:,1), CT(:,4), '--m'); 
+plot(CT(:,1), CT(:,5), ':b'); 
 hold off
 
 box on
-axis tight
 grid minor
-xlabel('Rotor Advance Ratio, \mu')
-ylabel('Thrust Coefficient')
-legend(['Experimental (\alpha_{tpp} = 90', char(176), ')'], ['Experimental (\alpha_{tpp} = 15', char(176), ')'], ['Experimental (\alpha_{tpp} = 0', char(176), ')'], ['DDE Method (\alpha_{tpp} = 90', char(176), ')'], ['DDE Method (\alpha_{tpp} = 15', char(176), ')'], ['DDE Method (\alpha_{tpp} = 0', char(176), ')'],'Location','SouthEast')
+axis tight
+legend('\mu_{\infty} = 0.1080','\mu_{\infty} = 0.1441','\mu_{\infty} = 0.2043','\mu_{\infty} = 0.2889','Location','North')
 
+xlabel('Angle (Degrees)');
+ylabel('Thrust Coefficient');
+% 
+% xlim(xl);
+% ylim(yl);
 
-fcnFIG2LATEX(hFig11, 'OPERA_overview.pdf', [8 5])
+WH = [4.5 5];
+fcnFIG2LATEX(hFig5, 'tmotor_time_02.pdf', WH)
 
+%%
+hFig6 = figure(6);
+clf(6);
 
+hold on
+plot(CTF(:,1), CTF(:,2), '-k'); 
+plot(CTF(:,1), CTF(:,3), '-.r'); 
+plot(CTF(:,1), CTF(:,4), '--m'); 
+plot(CTF(:,1), CTF(:,5), ':b'); 
+hold off
 
+box on
+grid minor
+axis tight
+legend('\mu_{\infty} = 0.1080','\mu_{\infty} = 0.1441','\mu_{\infty} = 0.2043','\mu_{\infty} = 0.2889','Location','North')
 
+xlabel('Angle (Degrees)');
+ylabel('Thrust Coefficient');
 
+% xlim(xl);
+% ylim(yl);
 
+WH = [4.5 5];
+fcnFIG2LATEX(hFig6, 'tmotor_time_02F.pdf', WH)
 

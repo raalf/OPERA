@@ -1,8 +1,7 @@
 clc
 clear
 
-alphas = [90 30 15 0];
-legend_entry = {'ok','^r','sm','db'};
+alphas = [90 15 0];
 
 hFig10 = figure(10);
 clf(10);
@@ -59,12 +58,12 @@ tunnel_0 = [0.0416	0.0098; ...
 0.3249	0.0172];
 
 hold on
-plot(tunnel_90(:,1), tunnel_90(:,2), ['--', legend_entry{1}])
-plot(tunnel_15(:,1), tunnel_15(:,2), ['--', legend_entry{2}])
-plot(tunnel_0(:,1), tunnel_0(:,2), ['--', legend_entry{4}])
+plot(tunnel_90(:,1), tunnel_90(:,2), '-k')
+plot(tunnel_15(:,1), tunnel_15(:,2), '--r')
+plot(tunnel_0(:,1), tunnel_0(:,2), '-.b')
 hold off
 
-legend(['\alpha_{tpp} = 90', char(176)], ['\alpha_{tpp} = 15', char(176)], ['\alpha_{tpp} = 0', char(176)],'Location','NorthWest')
+legend('\alpha_{tpp} = 90', '\alpha_{tpp} = 15', '\alpha_{tpp} = 0', 'Location','NorthWest')
 
 
 box on

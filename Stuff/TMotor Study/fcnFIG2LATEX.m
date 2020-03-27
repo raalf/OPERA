@@ -72,15 +72,18 @@ end
 % assemble full file path
 fullfilepath = strcat(PATH,FILENAME);
 
-set(hFig,'Units','Inches');
-set(hFig,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',WH)
+
 
 
 set(hFig,'Renderer','painters'); % ensure vector output
-print(hFig,fullfilepath,'-dpdf','-r0','-fillpage');
+set(hFig,'Units','Inches');
+set(hFig,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',WH)
 
-% set(hFig,'Renderer','opengl'); % ensure vector output
-% print(hFig,fullfilepath,'-dpdf','-r500','-fillpage');
+% '-fillpage' will ignore the aspect ratio of the axis
+print(hFig,fullfilepath,'-dpdf','-r0','-fillpage');
+% print(hFig,fullfilepath,'-dpdf','-r500','-fillpage'); % for openGL
+
+
 
 
 end

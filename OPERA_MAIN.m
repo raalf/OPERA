@@ -1,6 +1,5 @@
 clear
 
-% profile('off')
 % profile clear
 % profile('-memory','on');
 
@@ -19,7 +18,8 @@ disp('====================================================================');
 %% Preamble
 % strFILE = 'inputs/ellipse.dat';
 % strFILE = 'inputs/kussner.dat'
-strFILE = 'inputs/TMotor_coarse2.dat'
+% strFILE = 'inputs/TMotor_coarse2.dat'
+strFILE = 'inputs/TMotor_coarse.dat'
 
 [matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, ...
@@ -28,8 +28,6 @@ strFILE = 'inputs/TMotor_coarse2.dat'
 
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
-
-% valJ = J(jj)
 
 flagGIF = 1;
 flagHVRMOD = false;
@@ -52,6 +50,12 @@ if ~isempty(strHTYPE)
     [matHINGELOC, matHINGEDIR, matVLST, matCENTER, matPLEX, matDVECT, matROTANG, matSPANDIR] = fcnSETHANG(matHINGEANG, matHINGELOC, matHINGEDIR, matVLST, matDVE, vecDVESURFACE, valBLADES, vecDVEFLIP, matSPANDIR);
 end
 
+% Kinematic condition locations
+tmp = find(vecDVEAREA > .5e-4);
+matKINCON_DVE = [1:valNELE repmat(tmp',1,3)]';
+dist = 0.8;
+matKINCON_P = [matCENTER; dist.*(matVLST(matDVE(tmp,1),:) - matCENTER(tmp,:)) + matCENTER(tmp,:); dist.*(matVLST(matDVE(tmp,2),:) - matCENTER(tmp,:)) + matCENTER(tmp,:); dist.*(matVLST(matDVE(tmp,3),:) - matCENTER(tmp,:)) + matCENTER(tmp,:)];
+
 % Calculating matUINF for rotor or wing
 if strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER')
     vecHUB = [0 0 0];
@@ -64,11 +68,11 @@ if strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER')
     end
     matUINF = cross(repmat([0,0,-vecROTORRADPS],length(matCENTER(:,1)),1),matCENTER) - translation;
     matVUINF = cross(repmat([0,0,-vecROTORRADPS],length(matVLST(:,1)),1),matVLST) - translation;
+    matUINF_KK = cross(repmat([0,0,-vecROTORRADPS],length(matKINCON_P(:,1)),1),matKINCON_P) - translation;
 else
     matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1).*valUINF;
     matVUINF = repmat(fcnUINFWING(valALPHA, 0), size(matVLST,1), 1).*valUINF;
-    matUINF_OR = matUINF;
-    matAINF = matUINF.*0;
+    matUINF_KK = repmat(fcnUINFWING(valALPHA, 0), size(matKINCON_P,1), 1).*valUINF;
 end
 
 % Creating GIF file
@@ -81,12 +85,11 @@ if flagGIF == 1
 end
 
 % hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [], 'opengl');
+% hold on
+% scatter3(matKINCON_P(:,1), matKINCON_P(:,2), matKINCON_P(:,3),'xk')
+% hold off
 
 %% D-Matrix Creation
-matKINCON_DVE = repmat([1:valNELE]',4,1);
-matKINCON_P = [matCENTER; 0.8.*(matVLST(matDVE(:,1),:) - matCENTER) + matCENTER; 0.8.*(matVLST(matDVE(:,2),:) - matCENTER) + matCENTER; 0.8.*(matVLST(matDVE(:,3),:) - matCENTER) + matCENTER];
-
-% Points where flow tan-gency is enforced
 matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, matROTANG, matSPANDIR, matKINCON_P, matKINCON_DVE, vecSYM, vecSYMDVE, vecDVESYM);
 valDLEN = length(matD);
 
@@ -96,14 +99,14 @@ matWELST = []; matWDVE = []; valWNELE = []; matWEATT = []; matWEIDX = []; matWPL
 matWALIGN = []; matWCENTER = []; matWAKEGEOM = []; matWCOEFF = []; matWVLST = []; matWROTANG = [];
 matWPLANE = []; vecWVMU = []; vecWEMU = []; matWVGRID = []; matWEGRID = []; vecWDVEFLIP = logical([]); vecWLEDVE = []; vecWTEDVE = [];
 vecWDVECIRC = []; CL = nan(valMAXTIME,1); CDi = nan(valMAXTIME,1); CT = nan(valMAXTIME,1);
-e = nan(valMAXTIME,1); gust_vel_old = matCENTER.*0; vecWDVESYM = logical([]); vecWSYMDVE = []; vecWSYM = []; valWSIZE = length(vecTE); vecWDVESURFACE = [];
+e = nan(valMAXTIME,1); gust_vel_old = matKINCON_P.*0; vecWDVESYM = logical([]); vecWSYMDVE = []; vecWSYM = []; valWSIZE = length(vecTE); vecWDVESURFACE = [];
 vecDGAMMA_DT = zeros(size(vecDVESURFACE)); valPRESTEPS = 0; strWAKE_TYPE = strATYPE{3}; matINTCIRC = nan(1, length(vecTEDVE));
 matLIFTFREE = []; matSIDEFREE = []; matLIFTIND = []; matSIDEIND = []; matDRAGIND = [];
 matDVEDRAG_DIR = []; matDVELIFT_DIR = []; matDVESIDE_DIR = []; vecTSITER = nan(valMAXTIME,1); matDGAMMADT = []; matDVENC = []; vecDGAMMA_DETA = [];
 vecRSQUARED = nan(valMAXTIME,2);
 
 % Building wing resultant
-vecR = fcnRWING(valDLEN, 0, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, []);
+vecR = fcnRWING(valDLEN, 0, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, []);
 boolKINCON = false(size(matD,1),1);
 boolKINCON(end-(valNELE*4-1):end) = true;
 
@@ -121,6 +124,7 @@ elseif (strcmpi(strATYPE{1}, 'PROPELLER') && valJ == 0) || (strcmpi(strATYPE{1},
 end
 
 %% Timestep to solution
+valPRESTEPS = valMAXTIME
 for valTIMESTEP = 1:valMAXTIME
     tic
     if strcmpi(strATYPE{1}, 'WING') && valTIMESTEP == valPRESTEPS + 1
@@ -129,15 +133,13 @@ for valTIMESTEP = 1:valMAXTIME
     end
     
     if (strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER'))
-        [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matPLEX, matDVECT, matROTANG, vecHUB, matSPANDIR, matKINCON_P] = fcnMOVEROTOR(strATYPE{1}, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP, vecHUB, matSPANDIR, matKINCON_P);
+        [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matUINF_KK, matPLEX, matDVECT, matROTANG, vecHUB, matSPANDIR, matKINCON_P] = fcnMOVEROTOR(strATYPE{1}, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP, vecHUB, matSPANDIR, matKINCON_P);
     else
-        [matVLST, matCENTER, matNEWWAKE, matKINCON_P] = fcnMOVEWING(matUINF_OR, valDELTIME, matVLST, matCENTER, matELST, vecTE, matKINCON_P);
+        [matVLST, matCENTER, matNEWWAKE, matKINCON_P] = fcnMOVEWING(matUINF, valDELTIME, matVLST, matCENTER, matELST, vecTE, matKINCON_P);
     end
     
-    if ~isempty(valGUSTSTART) && valGUSTSTART >= 0 && valTIMESTEP > valPRESTEPS
-        tmatUINF = matUINF;
-        [matUINF, gust_vel_old] = fcnGUSTWING(matUINF, valGUSTAMP, valGUSTL, valGUSTMODE, valDELTIME, valUINF, valGUSTSTART, matCENTER, gust_vel_old, valPRESTEPS*valDELTIME*10);
-        matAINF = (matUINF - tmatUINF)./valDELTIME;
+    if ~isempty(valGUSTSTART) && valGUSTSTART >= 0 && valTIMESTEP > valPRESTEPS && strcmpi(strATYPE{1}, 'WING')
+        [matUINF_KK, gust_vel_old] = fcnGUSTWING(matUINF_KK, valGUSTAMP, valGUSTL, valGUSTMODE, valDELTIME, valUINF, valGUSTSTART, matKINCON_P, gust_vel_old, valPRESTEPS*valDELTIME*10);
     end
     
     % Generating new wake elements
@@ -156,10 +158,12 @@ for valTIMESTEP = 1:valMAXTIME
             delt_old = 5;
             while ~isnan(delt) && delt >= 0.001
                 int_circ1 = fcnINTCIRC2(matPLEX, matCOEFF, matDVEGRID);
-
-                [vecR, wind] = fcnRWING(valDLEN, valTIMESTEP, matUINF, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, vecWDVESYM);
+                
+                [vecR, wind] = fcnRWING(valDLEN, valTIMESTEP, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, vecWDVESYM);
                 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
-
+                [vecVMU, vecEMU] = fcnVEMU(matVLST, matVATT, matCENTER, matROTANG, matCOEFF, matELST, matEATT, vecTE);
+                matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
+                
                 % Update wake coefficients
                 [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE);
                 matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
@@ -173,11 +177,25 @@ for valTIMESTEP = 1:valMAXTIME
                     disp(['          Diverged. Error: ', num2str(delt), ' Count = ', num2str(count)]);
                     break;
                 end
+                %                 disp(['       ',num2str(count),': ', num2str(delt)])
                 
                 delt_old = delt;
-            end    
+            end
             vecTSITER(valTIMESTEP) = count;
             [vecRSQUARED(valTIMESTEP,1), vecRSQUARED(valTIMESTEP,2)] = fcnRSQUARED(matD, vecR, matCOEFF, boolKINCON, matVLST, matVATT, matCENTER, matROTANG, matELST, matEATT);
+            
+            
+            %             hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [], 'opengl');
+            %             tmp = matUINF_KK + fcnSDVEVEL(matKINCON_P, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 0) + fcnSDVEVEL(matKINCON_P, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 1e-4);
+            %             hold on
+            %             quiver3(matKINCON_P(:,1), matKINCON_P(:,2), matKINCON_P(:,3), matUINF_KK(:,1), matUINF_KK(:,2), matUINF_KK(:,3),'m')
+            %             quiver3(matKINCON_P(:,1), matKINCON_P(:,2), matKINCON_P(:,3), tmp(:,1), tmp(:,2), tmp(:,3),'b')
+            %             hold off
+            %             axis tight
+            %             view([45 45])
+            %             ylim([-2 2])
+            %             zlim([-1 1])
+            
             
             % Relaxing Wake
             if flagRELAX == 1
@@ -216,6 +234,15 @@ for valTIMESTEP = 1:valMAXTIME
         end
     end
     vecTSTIME(valTIMESTEP) = toc;
+    
+    deg_per_ts = valRPM.*(pi/30).*(180/pi).*valDELTIME;
+    pos = valTIMESTEP.*deg_per_ts + 90;
+    pos = mod(pos,360);
+
+    hFig1 = fcnGIF(valTIMESTEP, valNELE, matDVE, matVLST, matCENTER, matELST, matDVECT, matPLEX, matCOEFF, matUINF, matROTANG, ...
+        valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, vecWDVESURFACE, valWSIZE, 0, matWVGRID, valGIFNUM, pos);
+
+    
 end
 
 %%
@@ -236,7 +263,6 @@ axis tight
 
 % profile report
 
-
 % load('Kussner.mat')
 % hFig25 = figure(25);
 % clf(25);
@@ -245,11 +271,12 @@ axis tight
 % axis tight
 % grid minor
 % hold on
-% 
+%
 % c = 1
 % s_t = ([1:skip:valMAXTIME].*valDELTIME.*2)/c;
 % valAR = (valSPAN.^2)./valAREA;
 % CLOG2D = CL_U.*((valAR + 2)/valAR);
-% plot(s_t - 1/(c/2), CLOG2D, 'rs');
+% plot(s_t - (valGUSTSTART*valDELTIME)/(c/2), CL(1:skip:end).*((valAR + 2)/valAR), '-.md')
+% plot(s_t - (valGUSTSTART*valDELTIME)/(c/2), CLOG2D, 'rs');
 % hold off
 % xlim([0 8])

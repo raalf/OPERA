@@ -2,8 +2,11 @@ clc
 clear
 
 %% Tunnel
-load('Tunnel Testing\2020-01-30\30-Jan-2020 16.15.50_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_20.7492.mat', ... % Alpha 0, 0.2889
-'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
+% load('Tunnel Testing\2020-01-30\30-Jan-2020 16.15.50_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_20.7492.mat', ... % Alpha 0, 0.2889
+% 'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
+
+load('Tunnel Testing\2020-02-11\11-Feb-2020 17.06.36_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha15_15.175.mat', ... % Alpha 15, 0.2113
+    'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
 
 fs = dataRate; % sampling rate
 
@@ -51,8 +54,8 @@ fcnFIG2LATEX(hFig5, 'correct.pdf', WH)
 
 %%
 % Alpha 15
-load('G:\GIT\opera\Stuff\TMotor Study\Alpha 15 Results\New\TMotor_Fixed_J0.2113_0.00025_newint.mat')
-CT_U = CT;
+load('G:\GIT\opera\Stuff\TMotor Study\Alpha 15 Results\New\TMotor_Fixed_J0.2113_0.00025.mat')
+% CT_U = CT;
 % load('G:\GIT\opera\Stuff\TMotor Study\Alpha 15 Results\New\TMotor_Relaxed_J0.2113_0.00025.mat')
 
 deg_per_ts = valRPM.*(pi/30).*(180/pi).*valDELTIME;
@@ -60,8 +63,8 @@ vecPOS_R = [0:(length(CT_U) - 1)]'.*deg_per_ts;
 vecPOS = mod(vecPOS_R,360);
 
 npts = 80;
-cutoff = 1;
-n = ceil((4*60)*((valRPM/60)./(3 - cutoff))); % 4 minutes?
+cutoff = 3;
+n = ceil((4*60)*((valRPM/60)./(4 - cutoff))); % 4 minutes?
 CT_ext = repmat(CT_U((cutoff*npts + 1):end),n,1);
 
 % hFig2 = figure(2)

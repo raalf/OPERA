@@ -1,4 +1,4 @@
-function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matPLEX, matDVECT, matROTANG, vecHUB, matSPANDIR, matKINCON_P] = fcnMOVEROTOR(atype, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP, vecHUB, matSPANDIR, matKINCON_P)
+function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matUINF_KK, matPLEX, matDVECT, matROTANG, vecHUB, matSPANDIR, matKINCON_P] = fcnMOVEROTOR(atype, valRPM, valJ, valDIAM, valALPHA, valDELTIME, matVLST, matELST, vecTE, matDVE, matCENTER, vecDVEFLIP, vecHUB, matSPANDIR, matKINCON_P)
 
 % Old trailing edge vertices
 old_te = matVLST(matELST(vecTE,:),:);
@@ -19,11 +19,7 @@ tmpKINCON_P = matKINCON_P - vecHUB;
 
 tmpVLST = tmpVLST*dcmROTORSTEP;
 tmpKINCON_P = tmpKINCON_P*dcmROTORSTEP;
-
 matSPANDIR = matSPANDIR*dcmROTORSTEP;
-
-matUINF = cross(repmat([0,0,-vecROTORRADPS],length(matCENTER(:,1)),1),matCENTER - vecHUB) - translation;
-matVUINF = cross(repmat([0,0,-vecROTORRADPS],length(matVLST(:,1)),1),matVLST - vecHUB) - translation;
 
 vecHUB = vecHUB + translation.*valDELTIME;
 matVLST = tmpVLST + vecHUB;
@@ -47,6 +43,11 @@ new_te = matVLST(matELST(vecTE,:),:);
 matNEWWAKE(:,:,2) = [new_te(1:end/2,:); new_te((end/2)+1:end,:)];
 matNEWWAKE(:,:,3) = [new_te((end/2)+1:end,:); old_te(1:end/2,:)];
 matNEWWAKE(:,:,1) = [old_te(1:end/2,:); old_te((end/2)+1:end,:)];
+
+%% New speeds
+matUINF = cross(repmat([0,0,-vecROTORRADPS],length(matCENTER(:,1)),1),matCENTER - vecHUB) - translation;
+matUINF_KK = cross(repmat([0,0,-vecROTORRADPS],length(matKINCON_P(:,1)),1),matKINCON_P - vecHUB) - translation;
+matVUINF = cross(repmat([0,0,-vecROTORRADPS],length(matVLST(:,1)),1),matVLST - vecHUB) - translation;
 
 end
 

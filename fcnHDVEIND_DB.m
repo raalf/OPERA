@@ -163,11 +163,8 @@ idx = (L1 < 0 & L2 >= 0) | (L1 >= 0 & L2 < 0);
 F111(idx) = log(((rho1(idx) - L1(idx)).*(rho2(idx) + L2(idx)) + k(idx))./(g(idx).^2 + k(idx)));
 
 % idx = [g > del_h.*d_H, g <= del_h.*d_H];
-idx = [g > 1e-3, g <= 1e-3];
-% idx = [g > 1e-5, g <= 1e-5];
-% idx = [g > 1e-8, g <= 1e-8];
-% 2.)
-idx1 = g > 1e-3;
+% idx = [g > 1e-5, g <= 1e-5]; % <----------------------- OG
+idx = [g > ztol, g <= ztol];
 
 F113 = F111.*0;
 F115 = F113;
@@ -282,7 +279,7 @@ H111 = -abs_h.*sum(atan2(a.*(L2.*c1 - L1.*c2), c1.*c2 + (a.^2).*L1.*L2),3) + sum
 % PAGE 125
 % 2.)
 % idx = [abs_h > del_h.*d_H, abs_h <= del_h.*d_H]; 
-idx = [abs_h > 1e-5, abs_h <= 1e-5]; 
+idx = [abs_h > 1e-5, abs_h <= 1e-5]; % <----------------------- OG
 
 H113(idx(:,1),1) = (1./hs(idx(:,1))).*(-1.*H111(idx(:,1)) + sum(a(idx(:,1),:,:).*F111(idx(:,1),:,:), 3));
 H115(idx(:,1),1) = (1./(3.*hs(idx(:,1)))).*(H113(idx(:,1)) + sum(a(idx(:,1),:,:).*F113(idx(:,1),:,:), 3));

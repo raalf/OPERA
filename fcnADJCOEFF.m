@@ -1,4 +1,4 @@
-function [matCOEFF] = fcnWADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE)
+function [matCOEFF] = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE)
 
 enum = permute(matEIDX, [2 3 1]);
 tmpR = [vecVMU(permute(matDVE, [2 3 1])); vecEMU(enum)];

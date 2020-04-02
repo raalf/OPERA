@@ -1,8 +1,18 @@
 function [CT_U, CL_U, matDGAMMADT, matDVENC] = fcnDGAMMADT(skip, valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, ...
-    valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR, matSPANDIR_ALL, matUINF_ALL, vecTE, vecTEDVE, c)
+    valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR, matSPANDIR_ALL, matUINF_ALL, vecTE, vecTEDVE)
 
-% matDGAMMADT = zeros(size(matLIFTFREE));
-% len = size(matLIFTFREE,1);
+matDGAMMADT = nan(size(matLIFTFREE));
+len = size(matLIFTFREE,1);
+
+%%
+for i = 1:skip:len
+    if i <= len - skip
+        matDGAMMADT(i,:) = ((matINTCIRC(i+skip,:) - matINTCIRC(i,:))./(valDELTIME.*skip));
+    else
+        matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-skip,:))./(valDELTIME.*skip));
+    end
+end
+
 % for i = 1:skip:len
 %     if i <= len-(2*skip)
 %         matDGAMMADT(i,:) = (-matINTCIRC(i+(2*skip),:) + 4.*matINTCIRC(i+skip,:) - 3.*matINTCIRC(i,:))./(2.*valDELTIME.*skip);
@@ -12,30 +22,13 @@ function [CT_U, CL_U, matDGAMMADT, matDVENC] = fcnDGAMMADT(skip, valDELTIME, str
 %         matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-skip,:))./(valDELTIME.*skip));
 %     end
 % end
-% matDGAMMADT(1,:) = matDGAMMADT(1,:).*0;
 
-if size(matINTCIRC,1) > 10
-    for i = 1:size(matINTCIRC,2)
-        matINTCIRC(:,i) = smooth(matINTCIRC(:,i),'rloess');
-    end
-end
+% for i = 2:skip:len
+%     matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-skip,:))./(valDELTIME.*skip));
+% end
 
-matDGAMMADT = nan(size(matLIFTFREE));
-len = size(matLIFTFREE,1);
-for i = 1:skip:len
-    if i <= len-(2*skip)
-        matDGAMMADT(i,:) = (-matINTCIRC(i+(2*skip),:) + 4.*matINTCIRC(i+skip,:) - 3.*matINTCIRC(i,:))./(2.*valDELTIME.*skip);
-    elseif i > len-(2*skip) && i <= len - skip
-        matDGAMMADT(i,:) = ((matINTCIRC(i+skip,:) - matINTCIRC(i,:))./(valDELTIME.*skip));
-    else
-        matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-skip,:))./(valDELTIME.*skip));
-    end
-end
+%% Adding noncirculatory component to the freestream forces
 matDGAMMADT(1,:) = zeros(size(matDGAMMADT(1,:)));
-
-% matDGAMMADT = matDGAMMADT.*c
-
-% Adding noncirculatory component to the freestream forces
 matDVENC = permute(matDGAMMADT, [2 3 1]).*cross(matUINF_ALL(vecTEDVE,:,:)./(sqrt(sum(matUINF_ALL(vecTEDVE,:,:).^2,2))), matSPANDIR_ALL(vecTEDVE,:,:), 2);
 tmpDVELIFT = matLIFTFREE + matLIFTIND + permute(dot(matDVENC, matDVELIFT_DIR, 2), [3 1 2]);
 tmpDVEDRAG = matDRAGIND;

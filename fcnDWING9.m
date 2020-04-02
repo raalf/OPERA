@@ -20,11 +20,11 @@ circ = [fcnDCIRC(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); .
 
 %% Vorticity along edge between elements
 % Unit vector in local ref frame (a for HDVE1, b for HDVE2) from local vertex to local vertex on the edge that forms the border between the two
-vort = [fcnDVORTEDGE(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
-        fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
-        fcnDVORTEDGE(repmat(vnum_b,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
+% vort = [fcnDVORTEDGE(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
+%         fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER); ...
+%         fcnDVORTEDGE(repmat(vnum_b,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
 % vort = [];
-% vort = [fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
+vort = [fcnDVORTEDGE(repmat(vnum_mid,1,1,2), dvenum, valNELE, matROTANG, matCENTER)];
 
 %% Circulation equations at wing tip (and LE?)
 % For lifting surface analysis
@@ -32,7 +32,6 @@ vort = [fcnDVORTEDGE(repmat(vnum_a,1,1,2), dvenum, valNELE, matROTANG, matCENTER
 % These are found by looking at the free edges that are NOT symmetry or trailing edge
 % Evaluated at the mid-point of each edge which is used by only 1 HDVE (and not at the trailing edge)
 circ_tip = [];
-vort_tip = [];
 vort_te = [];
 vort_sym = [];
 
@@ -94,7 +93,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(matKINCON_P,valNELE,1);
 
-[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 1e-4);
+[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 0);
 
 normals = repmat(matDVECT(matKINCON_DVE,:,3),valNELE,1); % Repeated so we can dot all at once
 
@@ -108,7 +107,7 @@ king_kong = zeros(len, valNELE*6);
 king_kong(rows,:) = reshape(permute(reshape(temp60',6,[],valNELE),[2 1 3]),[],6*valNELE,1);
 
 %% Piecing together D-matrix
-D = [circ; vort; vort_tip; vort_te; vort_sym; circ_tip; king_kong];
+D = [circ; vort; vort_te; vort_sym; circ_tip; king_kong];
 
 end
 

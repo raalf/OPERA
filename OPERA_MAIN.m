@@ -29,7 +29,7 @@ strFILE = 'inputs/TMotor_coarse.dat'
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
-flagGIF = 1;
+flagGIF = 0;
 flagHVRMOD = false;
 valUINF = 1;
 
@@ -84,11 +84,6 @@ if flagGIF == 1
     valGIFNUM = size(dir('GIF'),1) - 1;
 end
 
-% hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [], 'opengl');
-% hold on
-% scatter3(matKINCON_P(:,1), matKINCON_P(:,2), matKINCON_P(:,3),'xk')
-% hold off
-
 %% D-Matrix Creation
 matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELST, matVLST, matCENTER, matDVE, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, matROTANG, matSPANDIR, matKINCON_P, matKINCON_DVE, vecSYM, vecSYMDVE, vecDVESYM);
 valDLEN = length(matD);
@@ -124,7 +119,6 @@ elseif (strcmpi(strATYPE{1}, 'PROPELLER') && valJ == 0) || (strcmpi(strATYPE{1},
 end
 
 %% Timestep to solution
-valPRESTEPS = valMAXTIME
 for valTIMESTEP = 1:valMAXTIME
     tic
     if strcmpi(strATYPE{1}, 'WING') && valTIMESTEP == valPRESTEPS + 1
@@ -178,24 +172,10 @@ for valTIMESTEP = 1:valMAXTIME
                     break;
                 end
                 %                 disp(['       ',num2str(count),': ', num2str(delt)])
-                
                 delt_old = delt;
             end
             vecTSITER(valTIMESTEP) = count;
-            [vecRSQUARED(valTIMESTEP,1), vecRSQUARED(valTIMESTEP,2)] = fcnRSQUARED(matD, vecR, matCOEFF, boolKINCON, matVLST, matVATT, matCENTER, matROTANG, matELST, matEATT);
-            
-            
-            %             hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], matUINF, matROTANG, [], 'opengl');
-            %             tmp = matUINF_KK + fcnSDVEVEL(matKINCON_P, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 0) + fcnSDVEVEL(matKINCON_P, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 1e-4);
-            %             hold on
-            %             quiver3(matKINCON_P(:,1), matKINCON_P(:,2), matKINCON_P(:,3), matUINF_KK(:,1), matUINF_KK(:,2), matUINF_KK(:,3),'m')
-            %             quiver3(matKINCON_P(:,1), matKINCON_P(:,2), matKINCON_P(:,3), tmp(:,1), tmp(:,2), tmp(:,3),'b')
-            %             hold off
-            %             axis tight
-            %             view([45 45])
-            %             ylim([-2 2])
-            %             zlim([-1 1])
-            
+            [vecRSQUARED(valTIMESTEP,1), vecRSQUARED(valTIMESTEP,2)] = fcnRSQUARED(matD, vecR, matCOEFF, boolKINCON, matVLST, matVATT, matCENTER, matROTANG, matELST, matEATT);           
             
             % Relaxing Wake
             if flagRELAX == 1
@@ -235,12 +215,12 @@ for valTIMESTEP = 1:valMAXTIME
     end
     vecTSTIME(valTIMESTEP) = toc;
     
-    deg_per_ts = valRPM.*(pi/30).*(180/pi).*valDELTIME;
-    pos = valTIMESTEP.*deg_per_ts + 90;
-    pos = mod(pos,360);
-
-    hFig1 = fcnGIF(valTIMESTEP, valNELE, matDVE, matVLST, matCENTER, matELST, matDVECT, matPLEX, matCOEFF, matUINF, matROTANG, ...
-        valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, vecWDVESURFACE, valWSIZE, 0, matWVGRID, valGIFNUM, pos);
+%     deg_per_ts = valRPM.*(pi/30).*(180/pi).*valDELTIME;
+%     pos = valTIMESTEP.*deg_per_ts + 90;
+%     pos = mod(pos,360);
+% 
+%     hFig1 = fcnGIF(valTIMESTEP, valNELE, matDVE, matVLST, matCENTER, matELST, matDVECT, matPLEX, matCOEFF, matUINF, matROTANG, ...
+%         valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, vecWDVESURFACE, valWSIZE, 0, matWVGRID, valGIFNUM, pos);
 
     
 end

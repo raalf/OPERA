@@ -11,7 +11,7 @@ Chordwise Spacing:	strSPACING = NORMAL
 
 Maximum Timesteps: 		valMAXTIME = 320
 Timestep Size: 			valDELTIME = 0.00025
-Relaxed or Fixed Wake: 	strRELAX = FIXED
+Relaxed or Fixed Wake: 	strRELAX = RELAXED
 
 Angles of Attack: 		seqALPHA = 0
 Angles of Sideslip: 	seqBETA = 0

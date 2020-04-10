@@ -31,10 +31,11 @@ te_eta = E.*x_m + D_TE;
 xi_left = min([xi_1, xi_3],[],2);
 xi_right = max([xi_1, xi_3],[],2);
 
-margin = 1e-5;
-idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin & abs(fpl(:,3)) < ztol;
+margin = 1e-4;
+% idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin & abs(fpl(:,3)) < ztol;
+idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin;
 
-margin = 1e-5;
+margin = 1e-4;
 idx_flp = xi_3 < xi_1; % Flipping influence of elements that need a good flippin
 if any(abs(xi_2 - xi_3) < margin & abs(xi_1 - xi_2) > margin)
     disp('Issue in element orientation in HDVEIND.');
@@ -42,15 +43,12 @@ end
 
 %%
 h = fpl(:,3);
-% h(idx_on_element) = sign(h(idx_on_element)).*sqrt(fpl(idx_on_element,3).^2 + ztol.^2);
-h(idx_on_element) = ztol;
-% h(idx_on_element & abs(h) <= ztol) = ztol;
 abs_h = abs(h);
+h(abs_h < ztol & idx_on_element) = ztol;
 hs = h.^2;
 
-k = zeros(size(h,1),1,3);
-% k(idx_on_element,:,:) = ztol;
-% k = repmat(ztol, size(h,1), 1, 3);
+del_h = 0.01;
+del_not = 1e-8;
 
 %%
 % Call, xi-eta, edge (1, 2, or 3), point (1 or 2)
@@ -77,11 +75,50 @@ L2 = dot(nu_d, fpl(:,1:2) - epts(:,:,1:3,2), 2);
 a = dot(nu_n, mean(epts,4) - fpl(:,1:2), 2);
 
 g = sqrt(a.^2 + hs);
+
 c1 = g.^2 + abs_h.*sqrt(L1.^2 + g.^2);
 c2 = g.^2 + abs_h.*sqrt(L2.^2 + g.^2);
 
 nu_xi = nu_n(:,1,:);
 nu_eta = nu_n(:,2,:);
+
+% d_H
+% Minimum distance of (x_m, y_m) to perimeter of the element
+tmp11 = [xi_1 xi_2 xi_3];
+tmp12 = [xi_2 xi_3 xi_1];
+tmp21 = [eta_1 eta_2 eta_3];
+tmp22 = [eta_2 eta_3 eta_1];
+
+tmpA = x_m - tmp11;
+tmpB = y_m - tmp21;
+tmpC = tmp12 - tmp11;
+tmpD = tmp22 - tmp21;
+
+tmp_dot = tmpA.*tmpC + tmpB.*tmpD;
+len_sq = tmpC.^2 + tmpD.^2;
+param = tmp_dot./len_sq;
+
+tmp_xx = param.*0;
+tmp_yy = tmp_xx;
+
+tmp_xx(param < 0) = tmp11(param < 0);
+tmp_yy(param < 0) = tmp21(param < 0);
+
+tmp_xx(param > 1) = tmp12(param > 1);
+tmp_yy(param > 1) = tmp22(param > 1);
+
+tmp_xx(param >= 0 & param <= 1) = tmp11(param >= 0 & param <= 1) + param(param >= 0 & param <= 1).*tmpC(param >= 0 & param <= 1);
+tmp_yy(param >= 0 & param <= 1) = tmp21(param >= 0 & param <= 1) + param(param >= 0 & param <= 1).*tmpD(param >= 0 & param <= 1);
+
+dx = x_m - tmp_xx;
+dy = y_m - tmp_yy;
+
+tmp_H = sqrt(dx.^2 + dy.^2);
+d_H = min(tmp_H, [], 2);
+
+signh = h.*0;
+signh(h > del_not.*d_H) = 1;
+signh(h < -del_not.*d_H) = -1;
 
 %% E
 % MXK = 5, MXQ = 5, MXFK = 16 + 5 - 2 = 19;
@@ -96,9 +133,9 @@ x1 = rho1.^-2;
 A2 = (epts(:,1,:,2) - x_m)./rho2;
 A1 = (epts(:,1,:,1) - x_m)./rho1;
 
-E211 = A2 - A1; 
-E213 = A2.*x2 - A1.*x1; 
-E215 = (x2 + x1).*E213 - (x1.*x2.*E211); 
+E211 = A2 - A1;
+E213 = A2.*x2 - A1.*x1;
+E215 = (x2 + x1).*E213 - (x1.*x2.*E211);
 E217 = (x2 + x1).*E215 - (x1.*x2.*E213);
 E219 = (x2 + x1).*E217 - (x1.*x2.*E215);
 E2111 = (x2 + x1).*E219 - (x1.*x2.*E217);
@@ -118,9 +155,9 @@ E2133 = (x2 + x1).*E2131 - (x1.*x2.*E2129);
 A2 = (epts(:,2,:,2) - y_m)./rho2;
 A1 = (epts(:,2,:,1) - y_m)./rho1;
 
-E121 = A2 - A1; 
-E123 = A2.*x2 - A1.*x1; 
-E125 = (x2 + x1).*E123 - (x1.*x2.*E121); 
+E121 = A2 - A1;
+E123 = A2.*x2 - A1.*x1;
+E125 = (x2 + x1).*E123 - (x1.*x2.*E121);
 E127 = (x2 + x1).*E125 - (x1.*x2.*E123);
 E129 = (x2 + x1).*E127 - (x1.*x2.*E125);
 E1211 = (x2 + x1).*E129 - (x1.*x2.*E127);
@@ -147,9 +184,9 @@ E111 = (1./rho2) - (1./rho1);
 % PAGE 130
 % 1.)
 if GPU == true
-F111 = zeros(size(a),'gpuArray');    
+    F111 = zeros(size(a),'gpuArray');
 else
-F111 = zeros(size(a));
+    F111 = zeros(size(a));
 end
 
 idx = L1 >= 0 & L2 >= 0;
@@ -160,11 +197,11 @@ F111(idx) = log((rho1(idx) - L1(idx))./(rho2(idx) - L2(idx)));
 
 % idx = L1 < 0 & L2 >= 0;
 idx = (L1 < 0 & L2 >= 0) | (L1 >= 0 & L2 < 0);
-F111(idx) = log(((rho1(idx) - L1(idx)).*(rho2(idx) + L2(idx)) + k(idx))./(g(idx).^2 + k(idx)));
+F111(idx) = log(((rho1(idx) - L1(idx)).*(rho2(idx) + L2(idx)))./(g(idx).^2));
 
-% idx = [g > del_h.*d_H, g <= del_h.*d_H];
-% idx = [g > 1e-5, g <= 1e-5]; % <----------------------- OG
-idx = [g > ztol, g <= ztol];
+F111(isinf(F111)) = sign(F111(isinf(F111))).*40;
+
+idx = [g > del_h.*d_H, g <= del_h.*d_H];
 
 F113 = F111.*0;
 F115 = F113;
@@ -278,19 +315,19 @@ H111 = -abs_h.*sum(atan2(a.*(L2.*c1 - L1.*c2), c1.*c2 + (a.^2).*L1.*L2),3) + sum
 
 % PAGE 125
 % 2.)
-% idx = [abs_h > del_h.*d_H, abs_h <= del_h.*d_H]; 
-idx = [abs_h > 1e-5, abs_h <= 1e-5]; % <----------------------- OG
+idx = [abs_h > del_h.*d_H, abs_h <= del_h.*d_H];
+% idx = [abs_h > 1e-5, abs_h <= 1e-5]; % <----------------------- OG
 
 H113(idx(:,1),1) = (1./hs(idx(:,1))).*(-1.*H111(idx(:,1)) + sum(a(idx(:,1),:,:).*F111(idx(:,1),:,:), 3));
 H115(idx(:,1),1) = (1./(3.*hs(idx(:,1)))).*(H113(idx(:,1)) + sum(a(idx(:,1),:,:).*F113(idx(:,1),:,:), 3));
 
 % PAGE 126
 % 1.)
-H1121 = H111.*0;
+H1121 = zeros(size(H111), 'gpuArray');
 
 % 2.)
 K = 21;
-H1119(idx(:,2),1) = (1./(K - 4)).*(hs(idx(:,2)).*(K - 2).*H1121(idx(:,2)) - sum(a(idx(:,2),:,:).*F1119(idx(:,2),:,:), 3)); 
+H1119(idx(:,2),1) = (1./(K - 4)).*(hs(idx(:,2)).*(K - 2).*H1121(idx(:,2)) - sum(a(idx(:,2),:,:).*F1119(idx(:,2),:,:), 3));
 K = 19;
 H1117(idx(:,2),1) = (1./(K - 4)).*(hs(idx(:,2)).*(K - 2).*H1119(idx(:,2)) - sum(a(idx(:,2),:,:).*F1117(idx(:,2),:,:), 3));
 K = 17;
@@ -310,12 +347,11 @@ H113(idx(:,2),1) = (1./(K - 4)).*(hs(idx(:,2)).*(K - 2).*H115(idx(:,2)) - sum(a(
 K = 3;
 H111(idx(:,2),1) = (1./(K - 4)).*(hs(idx(:,2)).*(K - 2).*H113(idx(:,2)) - sum(a(idx(:,2),:,:).*F111(idx(:,2),:,:), 3));
 
-% PAGE 127
-% idx = idx(:,2) & idx_on_element & abs(h) < (1e-8)*d_H;
-% idx = []
-% H111(idx) = H111(idx) - eps(1,1,1,h(idx));
-% H113(idx) = H113(idx) - eps(1,1,3,h(idx));
-% H115(idx) = H115(idx) - eps(1,1,5,h(idx));
+% % PAGE 127
+% idx = idx(:,2) & idx_on_element;
+% H111(idx) = H111(idx) + eps(1,1,1,h(idx));
+% H113(idx) = H113(idx) + eps(1,1,3,h(idx));
+% H115(idx) = H115(idx) + eps(1,1,5,h(idx));
 
 % PAGE 126
 % 6.)
@@ -382,6 +418,21 @@ end
 % tmp_mem = memory;
 % gb = tmp_mem.MemUsedMATLAB/1e9;
 % dlmwrite('mem.dat', [length(dvenum) gb], '-append');
+
+end
+
+function out = eps(M,N,K,h)
+
+nu = 0;
+
+if rem(M,2) ~= 0 && rem(N,2) ~= 0
+    tmp1 = prod([1 1:2:(M - 2)]);
+    tmp2 = prod([1 1:2:(N - 2)]);
+    tmp3 = prod(K - (2:2:(M + N)));
+    nu = (tmp1*tmp2)/tmp3;
+end
+
+out = (2*pi*nu).*(abs(h).^(M + N - K));
 
 end
 

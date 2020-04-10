@@ -32,7 +32,6 @@ strFILE = 'inputs/TMotor_coarse.dat'
 % valALPHA = 15
 % valJ = 0.2113
 
-
 flagGIF = 0;
 flagHVRMOD = false;
 valUINF = 1;
@@ -105,13 +104,15 @@ matDVEDRAG_DIR = []; matDVELIFT_DIR = []; matDVESIDE_DIR = []; vecTSITER = nan(v
 vecRSQUARED = nan(valMAXTIME,2);
 
 % Building wing resultant
-vecR = fcnRWING(valDLEN, 0, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, []);
+vecR = fcnRWING(strATYPE, valDLEN, 0, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, []);
 boolKINCON = false(size(matD,1),1);
 boolKINCON(end-(valNELE*4-1):end) = true;
 
 % Solving for wing coefficients
 matCOEFF = fcnSOLVED(matD, vecR, valNELE);
+[vecVMU, vecEMU] = fcnVEMU(matVLST, matVATT, matCENTER, matROTANG, matCOEFF, matELST, matEATT, vecTE);
 matCOEFF_HSTRY(:,:,1) = matCOEFF;
+
 
 % Setting prestep conditions
 if strcmpi(strATYPE{1}, 'WING')
@@ -157,7 +158,7 @@ for valTIMESTEP = 1:valMAXTIME
                 matDVECT, vecWDVESYM, matD, vecR, valNELE, matVLST, matVATT, matCENTER, matROTANG, ...
                 matDVE, matELST, matEIDX, strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, ...
                 vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, vecWOTE, matWDVE, matWEIDX, ...
-                matEATT, boolKINCON, vecTE);
+                matEATT, boolKINCON, vecTE, vecVMU, vecEMU);
 
 
             % Relaxing Wake
@@ -166,13 +167,15 @@ for valTIMESTEP = 1:valMAXTIME
                     fcnRELAX7(flagHVRMOD, valDELTIME, valTIMESTEP, valRPM, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
                     matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWE2GRID);
                 
+                matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
+
                 [vecR, matCOEFF, vecVMU, vecEMU, matWCOEFF, vecWVMU, vecWEMU, vecTSITER, vecRSQUARED] = ...
                     fcnTSITER(matPLEX, matCOEFF, matDVEGRID, valDLEN, valTIMESTEP, matUINF_KK, valWNELE, ...
                     matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, ...
                     matDVECT, vecWDVESYM, matD, vecR, valNELE, matVLST, matVATT, matCENTER, matROTANG, ...
                     matDVE, matELST, matEIDX, strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, ...
                     vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, vecWOTE, matWDVE, matWEIDX, ...
-                    matEATT, boolKINCON, vecTE);
+                    matEATT, boolKINCON, vecTE, vecVMU, vecEMU);
             end
             
             % Updating coefficient convergence history

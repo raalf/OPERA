@@ -47,7 +47,8 @@ clear
 clc 
 clear
 
-load('Alpha 15 Results/New/TMotor_Fixed_J0.2113_0.00025_m5.mat');
+% load('Alpha 15 Results/New/TMotor_Fixed_J0.2113_0.00025_m5.mat');
+load('Alpha 0 Results/New/TMotor_Relaxed_J0.3_0.00025.mat');
 
 cd ./../../
 
@@ -57,9 +58,9 @@ view([90 15]);
 
 cd('G:\GIT\opera\Stuff\TMotor Study')
 
-xlim([0.75 1.4]);
-ylim([-0.3 0.3]);
-zlim([0.15 0.35]);
+% xlim([0.75 1.4]);
+% ylim([-0.3 0.3]);
+% zlim([0.15 0.35]);
 
 xlabel('X-Direction (m)');
 ylabel('Y-Direction (m)');

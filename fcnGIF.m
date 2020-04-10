@@ -3,8 +3,8 @@ function [hFig1] = fcnGIF(valTIMESTEP, valNELE, matDVE, matVLST, matCENTER, matE
 
 hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
 hFig1 = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID, vecWDVESURFACE);
-view([0 90]);
-title(['Azimuth location: ', num2str(pos)]);
+view([-17 29]);
+% title(['Azimuth location: ', num2str(pos)]);
 
 frame = getframe(hFig1);
 im = frame2im(frame);

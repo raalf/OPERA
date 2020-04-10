@@ -1,14 +1,11 @@
 clc
 clear
 
-load('Tunnel Testing\2020-01-30\30-Jan-2020 16.15.50_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_20.7492.mat', ... % Alpha 0, 0.2889
-    'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
-load('Alpha 0 Results/New/TMotor_Fixed_J0.3_0.0005.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
-% load('Alpha 0 Results/TMotor_Relaxed_J0.3_0.0005_440.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
-
-% load('Tunnel Testing\2020-02-11\11-Feb-2020 17.06.36_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha15_15.175.mat', ... % Alpha 15, 0.2113
+% load('Tunnel Testing\2020-01-30\30-Jan-2020 16.15.50_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_20.7492.mat', ... % Alpha 0, 0.2889
 %     'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
-% load('Alpha 15 Results/New/TMotor_Fixed_J0.2113_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+
+load('Tunnel Testing\2020-02-11\11-Feb-2020 17.06.36_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha15_15.175.mat', ... % Alpha 15, 0.2113
+    'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
 
 %% Tunnel
 CT_tunnel_raw = lbf_N.*FT(:,3);
@@ -41,6 +38,10 @@ plot(binAng, binAvg, '-.^m');
 hold off
 
 %% DDE Relaxed
+% load('Alpha 0 Results/New/TMotor_Fixed_J0.3_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+load('Alpha 15 Results/New/TMotor_Fixed_J0.2113_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+% load('Alpha 0 Results/New/TMotor_Relaxed_J0.3_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+
 deg_per_ts = valRPM.*(pi/30).*(180/pi).*valDELTIME;
 tmp_offset = 0;
 vecPOS_R = [tmp_offset:(length(CT_U)-1 + tmp_offset)]'.*deg_per_ts + 90;
@@ -50,7 +51,7 @@ binAng = linspace(0, 351, 40);
 binAvg = [];
 binMax = [];
 binMin = [];
-CT_U(1:80) = nan;
+CT_U(1:240) = nan;
 for i = 1:length(binAng)
     rng = 1;
     idx = vecPOS >= binAng(i) - rng & vecPOS <= binAng(i) + rng;
@@ -69,7 +70,13 @@ plot(binAng, binAvg, '--b');
 hold off
 
 %% DDE Relaxed
-CT_U = CT;
+% load('Alpha 0 Results/New/TMotor_Relaxed_J0.3_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+% load('Alpha 15 Results/New/TMotor_Relaxed_J0.2113_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+% load('Alpha 0 Results/New/TMotor_Relaxed_J0.3_0.0005.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+load('Alpha 15 Results/New/TMotor_Relaxed_J0.2113.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+
+
+% CT_U = CT;
 deg_per_ts = valRPM.*(pi/30).*(180/pi).*valDELTIME;
 tmp_offset = 0;
 vecPOS_R = [tmp_offset:(length(CT_U)-1 + tmp_offset)]'.*deg_per_ts + 90;
@@ -79,7 +86,7 @@ binAng = linspace(0, 351, 40);
 binAvg = [];
 binMax = [];
 binMin = [];
-CT_U(1:80) = nan;
+CT_U(1:120) = nan;
 for i = 1:length(binAng)
     rng = 1;
     idx = vecPOS >= binAng(i) - rng & vecPOS <= binAng(i) + rng;
@@ -106,7 +113,7 @@ xlim([0 360]);
 % ylim([0.0070 0.024])
 
 
-legend('Experimental Data (0-4x BR)','DDE Method (Fully Unsteady)','DDE Method (QS2)','Location','North')
+legend('Experimental Data (0-4x BR)','DDE Method (Fixed)','DDE Method (Relaxed)','Location','North')
 legend('boxoff')
 xlabel('Azimuth Location, Degrees');
 ylabel('Thrust Coefficient');

@@ -1,8 +1,11 @@
-function [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG] = ...
-                fcnRELAX6(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
-                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, matWVGRID, vecWDVEFLIP, valPRESTEPS)
+function [matWELST, matWVLST, matWDVE, valWNELE, matWPLEX, matWDVECT, matWCENTER, matWROTANG] = ...
+    fcnRELAX6(flagHVRMOD, valDELTIME, valTIMESTEP, valRPM, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
+    matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, vecWSYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWE2GRID)
  
-% % Finding induced velocities at all wake vertices
+presteps = matWVGRID((end - valPRESTEPS+1):end,:);
+move = matWVGRID(1:(end - valPRESTEPS),:);
+
+%% Finding induced velocities at all wake control points
 q_ind = fcnSDVEVEL(matWCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 0) + fcnSDVEVEL(matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 0);
 
 tmp2 = zeros(size(matWVLST));
@@ -14,16 +17,20 @@ for i = 1:valWNELE
 end
 tmp2 = tmp2./amt;
 
-% hold on
-% quiver3(matWVLST(:,1), matWVLST(:,2), matWVLST(:,3), tmp2(:,1), tmp2(:,2), tmp2(:,3));
-% hold off
+tmp2(presteps,:) = tmp2(repmat(move(end,:), size(presteps,1), 1),:);
 
-tmp2(matWELST(vecWLE,:),:) = tmp2(matWELST(vecWLE,:),:).*0; % Trailing edge of wing
-tmp2(matWVGRID((end - valPRESTEPS):end,:),:) = tmp2(repmat(matWVGRID(end-1,:),valPRESTEPS+1,1),:);
+maxRot = 2;
+startVel = 6;
+if flagHVRMOD && ((valTIMESTEP - valPRESTEPS)*valDELTIME <= (maxRot/(valRPM/60)))
+    Vel = -startVel/maxRot*(((valTIMESTEP - valPRESTEPS)*valDELTIME).*(valRPM/60))+startVel;
+    tmp2(:,3) = tmp2(:,3) - Vel;
+end
 
-% % tmp2(matWELST(vecWTE,:),:) = tmp2(matWELST(vecWTE,:),:).*0; % Trailing edge of LE wake element row
-% oldest_edge = matWEIDX((1:valWSIZE) + valWSIZE,3); % Trailing edge of oldest wake row
-% tmp2(matWELST(oldest_edge,:),:) = tmp2(matWELST(oldest_edge,:),:).*0;
+dont_move = unique(matWELST(vecWLE,:));
+tmp2(dont_move,:) = tmp2(dont_move,:).*0;
+
+%% Moving
+% Moving vertices
 matWVLST = matWVLST + tmp2.*valDELTIME;
 
 %% Recreating wake point matrix, and regenerating wake HDVE parameters

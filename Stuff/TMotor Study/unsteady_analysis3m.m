@@ -73,7 +73,7 @@ hold off
 % load('Alpha 0 Results/New/TMotor_Relaxed_J0.3_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
 % load('Alpha 15 Results/New/TMotor_Relaxed_J0.2113_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
 % load('Alpha 0 Results/New/TMotor_Relaxed_J0.3_0.0005.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
-load('Alpha 15 Results/New/TMotor_Relaxed_J0.2113.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+load('Alpha 15 Results/New/TMotor_Relaxed_J0.2113_2.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
 
 
 % CT_U = CT;
@@ -86,7 +86,7 @@ binAng = linspace(0, 351, 40);
 binAvg = [];
 binMax = [];
 binMin = [];
-CT_U(1:120) = nan;
+CT_U(1:40) = nan;
 for i = 1:length(binAng)
     rng = 1;
     idx = vecPOS >= binAng(i) - rng & vecPOS <= binAng(i) + rng;

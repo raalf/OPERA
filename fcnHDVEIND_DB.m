@@ -116,10 +116,6 @@ dy = y_m - tmp_yy;
 tmp_H = sqrt(dx.^2 + dy.^2);
 d_H = min(tmp_H, [], 2);
 
-signh = h.*0;
-signh(h > del_not.*d_H) = 1;
-signh(h < -del_not.*d_H) = -1;
-
 %% E
 % MXK = 5, MXQ = 5, MXFK = 16 + 5 - 2 = 19;
 
@@ -201,8 +197,8 @@ F111(idx) = log(((rho1(idx) - L1(idx)).*(rho2(idx) + L2(idx)))./(g(idx).^2));
 
 F111(isinf(F111)) = sign(F111(isinf(F111))).*40;
 
-% idx = [g > del_h.*d_H, g <= del_h.*d_H];
-idx = [g > 1e-5, g <= 1e-5]; % <----------------------- OG
+idx = [g > del_h.*d_H, g <= del_h.*d_H];
+% idx = [g > 1e-4, g <= 1e-4]; % <----------------------- OG
 
 
 F113 = F111.*0;
@@ -317,8 +313,9 @@ H111 = -abs_h.*sum(atan2(a.*(L2.*c1 - L1.*c2), c1.*c2 + (a.^2).*L1.*L2),3) + sum
 
 % PAGE 125
 % 2.)
-% idx = [abs_h > del_h.*d_H, abs_h <= del_h.*d_H];
-idx = [abs_h > 1e-5, abs_h <= 1e-5]; % <----------------------- OG
+idx = [abs_h > del_h.*d_H, abs_h <= del_h.*d_H];
+% idx = [abs_h > 1e-5, abs_h <= 1e-5]; % <----------------------- OG
+% idx = [abs_h > ztol, abs_h <= ztol]; % <----------------------- OG
 
 H113(idx(:,1),1) = (1./hs(idx(:,1))).*(-1.*H111(idx(:,1)) + sum(a(idx(:,1),:,:).*F111(idx(:,1),:,:), 3));
 H115(idx(:,1),1) = (1./(3.*hs(idx(:,1)))).*(H113(idx(:,1)) + sum(a(idx(:,1),:,:).*F113(idx(:,1),:,:), 3));

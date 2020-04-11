@@ -5,7 +5,7 @@ function [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, 
 presteps = matWVGRID((end - valPRESTEPS+1):end,:);
 
 %% Finding induced velocities at all wake vertices
-q_ind = fcnSDVEVEL(matWCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 1e-3) + fcnSDVEVEL(matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 1e-3);
+q_ind = fcnSDVEVEL(matWCENTER, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 0) + fcnSDVEVEL(matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 0);
 
 qx = scatteredInterpolant(matWCENTER(:,1), matWCENTER(:,2), matWCENTER(:,3), q_ind(:,1), 'natural', 'nearest');
 qy = scatteredInterpolant(matWCENTER(:,1), matWCENTER(:,2), matWCENTER(:,3), q_ind(:,2), 'natural', 'nearest');

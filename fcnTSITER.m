@@ -7,13 +7,15 @@ function [vecR, matCOEFF, vecVMU, vecEMU, matWCOEFF, vecWVMU, vecWEMU, vecTSITER
     matEATT, boolKINCON, vecTE, vecVMU, vecEMU)
 
 
+ztol = 0;
+
 count = 0;
 delt = 1;
 sigma = 1; % relaxation
 
 idx = 1:(valWNELE - valWSIZE*2);
 if valTIMESTEP > 1
-    w_ind_ow = fcnSDVEVEL(matKINCON_P, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], [], 1e-3);
+    w_ind_ow = fcnSDVEVEL(matKINCON_P, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], [], ztol);
 end
 
 while ~isnan(delt) && delt >= 0.001
@@ -21,7 +23,7 @@ while ~isnan(delt) && delt >= 0.001
     r2_1 = [vecVMU; vecEMU];
  
     idx = ((valWNELE - valWSIZE*2) + 1):valWNELE;
-    w_ind_in = fcnSDVEVEL(matKINCON_P, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], [], 1e-3);
+    w_ind_in = fcnSDVEVEL(matKINCON_P, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], [], ztol);
     if valTIMESTEP > 1
         w_ind_in = w_ind_in + w_ind_ow; 
     end

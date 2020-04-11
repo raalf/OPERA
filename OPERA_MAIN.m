@@ -34,7 +34,7 @@ valJ = 0.2113
 valMAXTIME = 160
 valDELTIME = 0.00025
 
-flagGIF = 0 ;
+flagGIF = 1;
 flagHVRMOD = false;
 valUINF = 1;
 

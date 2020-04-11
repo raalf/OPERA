@@ -29,8 +29,8 @@ strFILE = 'inputs/TMotor_coarse.dat'
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
-valALPHA = 15
-valJ = 0.2113
+valALPHA = 0
+valJ = 0.3
 valMAXTIME = 160
 valDELTIME = 0.00025
 

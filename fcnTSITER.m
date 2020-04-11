@@ -11,6 +11,7 @@ ztol = 0;
 
 count = 0;
 delt = 1;
+delt_old = 5;
 sigma = 1; % relaxation
 
 idx = 1:(valWNELE - valWSIZE*2);
@@ -40,17 +41,15 @@ while ~isnan(delt) && delt >= 0.001
     matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
     
     r2_2 = [vecVMU; vecEMU];
-    
-%     delt = max(abs(r2_2 - r2_1)./r2_1);
     delt = max(abs(r2_2 - r2_1));
 
     count = count + 1;
-    
-%     if count > 100
-%         disp(['          Diverged. Error: ', num2str(delt), ' Count = ', num2str(count)]);
-%         break;
-%     end
     disp(['       ',num2str(count),': ', num2str(delt)])
+    
+    if delt > delt_old
+        break;
+    end
+    delt_old = delt;
 end
 vecTSITER(valTIMESTEP) = count;
 [vecRSQUARED(valTIMESTEP,1), vecRSQUARED(valTIMESTEP,2)] = fcnRSQUARED(matD, vecR, matCOEFF, boolKINCON, matVLST, matVATT, matCENTER, matROTANG, matELST, matEATT);

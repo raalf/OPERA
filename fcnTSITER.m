@@ -4,7 +4,7 @@ function [vecR, matCOEFF, vecVMU, vecEMU, matWCOEFF, vecWVMU, vecWEMU, vecTSITER
     matDVECT, vecWDVESYM, matD, vecR, valNELE, matVLST, matVATT, matCENTER, matROTANG, ...
     matDVE, matELST, matEIDX, strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, ...
     vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, vecWOTE, matWDVE, matWEIDX, ...
-    matEATT, boolKINCON, vecTE, vecVMU, vecEMU)
+    matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valAZPERREV)
 
 
 ztol = 0;
@@ -19,7 +19,7 @@ if valTIMESTEP > 1
     w_ind_ow = fcnSDVEVEL(matKINCON_P, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], [], ztol);
 end
 
-while ~isnan(delt) && delt >= 0.001
+while ~isnan(delt) && delt >= 0.0001
     
     r2_1 = [vecVMU; vecEMU];
  
@@ -37,7 +37,7 @@ while ~isnan(delt) && delt >= 0.001
     matCOEFF = fcnADJCOEFF(vecVMU, vecEMU, matVLST, matCENTER, matROTANG, matDVE, matCOEFF, matELST, matEIDX, valNELE);
     
     % Update wake coefficients
-    [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE);
+    [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE, valAZPERREV, valTIMESTEP);
     matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
     
     r2_2 = [vecVMU; vecEMU];

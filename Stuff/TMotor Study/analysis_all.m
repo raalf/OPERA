@@ -22,7 +22,7 @@ CT(:,1) = binAng';
 CT(:,2) = binAvg';
 
 Fp = 1/dataRate;
-Fst = 2000/dataRate;
+Fst = 413/dataRate;
 d = fdesign.lowpass('N,Fp,Fst',3,Fp,Fst);
 Hd = design(d);
 CT_tunnel2 = filtfilt(Hd.Numerator,1,detrend(CT_tunnel_raw)) + mean(CT_tunnel_raw);
@@ -59,7 +59,7 @@ end
 CT(:,3) = binAvg';
 
 Fp = 1/dataRate;
-Fst = 2000/dataRate;
+Fst = 413/dataRate;
 d = fdesign.lowpass('N,Fp,Fst',3,Fp,Fst);
 Hd = design(d);
 CT_tunnel2 = filtfilt(Hd.Numerator,1,detrend(CT_tunnel_raw)) + mean(CT_tunnel_raw);
@@ -95,7 +95,7 @@ end
 CT(:,4) = binAvg';
 
 Fp = 1/dataRate;
-Fst = 2000/dataRate;
+Fst = 413/dataRate;
 d = fdesign.lowpass('N,Fp,Fst',3,Fp,Fst);
 Hd = design(d);
 CT_tunnel2 = filtfilt(Hd.Numerator,1,detrend(CT_tunnel_raw)) + mean(CT_tunnel_raw);
@@ -131,7 +131,7 @@ end
 CT(:,5) = binAvg';
 
 Fp = 1/dataRate;
-Fst = 2000/dataRate;
+Fst = 413/dataRate;
 d = fdesign.lowpass('N,Fp,Fst',3,Fp,Fst);
 Hd = design(d);
 CT_tunnel2 = filtfilt(Hd.Numerator,1,detrend(CT_tunnel_raw)) + mean(CT_tunnel_raw);

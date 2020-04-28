@@ -1,9 +1,9 @@
 function [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWCOEFF, matWROTANG, vecWLE, vecWTE, ...
     vecWLEDVE, vecWTEDVE, vecWDVECIRC, vecWSYM, vecWSYMDVE, vecWDVESYM, matWVGRID, vecWOTE, ...
-    vecWOTEDVE, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, vecWDVEFLIP, vecWDVESURFACE] = fcnCREATEWAKE2(valTIMESTEP, strATYPE, matNEWWAKE, matCOEFF, valWSIZE, ...
+    vecWOTEDVE, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, vecWDVEFLIP, vecWDVESURFACE, matWDVEGRID] = fcnCREATEWAKE2(valTIMESTEP, strATYPE, matNEWWAKE, matCOEFF, valWSIZE, ...
     vecTEDVE, matCENTER, matROTANG, matWCOEFF, matWPLEX, vecWDVECIRC, vecWSYMDVE, vecSYMDVE, vecWDVESYM, vecDVESYM, ...
     vecWSYM, matWVGRID, matWVLST, matWELST, matWEGRID, vecWVMU, vecWEMU, vecWDVEFLIP, matWCENTER, matWROTANG, matWDVECT, ...
-    matWDVE, matWEIDX, vecWLEDVE, matWEATT, vecDVESURFACE, vecWDVESURFACE)
+    matWDVE, matWEIDX, vecWLEDVE, matWEATT, vecDVESURFACE, vecWDVESURFACE, valAZPERREV, matWDVEGRID)
 
 valWNELE = valTIMESTEP*valWSIZE*2;
 WDVEFLIP = [false(size(matNEWWAKE,1)./2, 1); true(size(matNEWWAKE,1)./2, 1)];
@@ -69,6 +69,7 @@ else
     matWEATT = WEATT;
 end
 
+matWDVEGRID = [[1:valWSIZE, (valWSIZE+1):valWSIZE*2] + valWSIZE.*2.*(valTIMESTEP-1); matWDVEGRID];
 matWCENTER = cat(1, matWCENTER, WCENTER);
 matWROTANG = cat(1, matWROTANG, WROTANG);
 matWDVECT = cat(1, matWDVECT, WDVECT);
@@ -144,7 +145,7 @@ matWE2GRID = reshape(idx, valTIMESTEP, size(matWVGRID,2));
 
 
 %% Coefficients
-[vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE);
+[vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE, valAZPERREV, valTIMESTEP);
 matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
 
 

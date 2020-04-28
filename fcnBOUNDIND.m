@@ -1,6 +1,6 @@
 function [infl_loc] = fcnBOUNDIND(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI, ztol, GPU)
 warning('on')
-tol = 1e-10;
+% tol = 1e-10;
 
 if nargin < 9 || GPU == false
     GPU = false;

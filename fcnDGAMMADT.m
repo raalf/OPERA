@@ -1,17 +1,17 @@
-function [CT_U, CL_U, matDGAMMADT, matDVENC] = fcnDGAMMADT(skip, valDELTIME, strATYPE, matINTCIRC, valDENSITY, valRPM, ...
-    valDIAM, valAREA, valUINF, matLIFTFREE, matLIFTIND, matDRAGIND, matSIDEFREE, matSIDEIND, matDVELIFT_DIR, matDVEDRAG_DIR, matDVESIDE_DIR, matSPANDIR_ALL, matUINF_ALL, vecTE, vecTEDVE)
+function [CT_U, CL_U, matDGAMMADT, matF_NC] = fcnDGAMMADT(skip, valNELE, strATYPE, valDELTIME, matSPANDIR_ALL, matUINF_ALL, matF_FS, matF_IF, matF_ID, matINTCIRC, vecLIFT_DIR, vecSIDE_DIR, vecDRAG_DIR, valDENSITY, valAREA, valSPAN, valDIAM, valRPM)
 
-matDGAMMADT = nan(size(matLIFTFREE));
-len = size(matLIFTFREE,1);
+matDGAMMADT = nan(size(matINTCIRC));
+len = size(matINTCIRC,2);
 
 %%
 for i = 1:skip:len
     if i <= len - skip
-        matDGAMMADT(i,:) = ((matINTCIRC(i+skip,:) - matINTCIRC(i,:))./(valDELTIME.*skip));
+        matDGAMMADT(:,i) = ((matINTCIRC(:,i+skip) - matINTCIRC(:,i))./(valDELTIME.*skip));
     else
-        matDGAMMADT(i,:) = ((matINTCIRC(i,:) - matINTCIRC(i-skip,:))./(valDELTIME.*skip));
+        matDGAMMADT(:,i) = ((matINTCIRC(:,i) - matINTCIRC(:,i-skip))./(valDELTIME.*skip));
     end
 end
+matDGAMMADT(:,1) = matDGAMMADT(:,1).*0;
 
 % for i = 1:skip:len
 %     if i <= len-(2*skip)
@@ -28,27 +28,27 @@ end
 % end
 
 %% Adding noncirculatory component to the freestream forces
-matDGAMMADT(1,:) = zeros(size(matDGAMMADT(1,:)));
-matDVENC = permute(matDGAMMADT, [2 3 1]).*cross(matUINF_ALL(vecTEDVE,:,:)./(sqrt(sum(matUINF_ALL(vecTEDVE,:,:).^2,2))), matSPANDIR_ALL(vecTEDVE,:,:), 2);
-tmpDVELIFT = matLIFTFREE + matLIFTIND + permute(dot(matDVENC, matDVELIFT_DIR, 2), [3 1 2]);
-tmpDVEDRAG = matDRAGIND;
-tmpDVESIDE = matSIDEFREE + matSIDEIND + permute(dot(matDVENC, matDVESIDE_DIR, 2), [3 1 2]);
 
-for i = 1:skip:size(matLIFTFREE,1)
-    tmpDVETHRUST(i,:) = dot(matDVELIFT_DIR(:,:,i).*tmpDVELIFT(i,:)', repmat([0 0 1], length(tmpDVELIFT(i,:)), 1), 2) ...
-        + dot(matDVEDRAG_DIR(:,:,i).*tmpDVEDRAG(i,:)', repmat([0 0 1], length(tmpDVEDRAG(i,:)), 1), 2) ...
-        + dot(matDVESIDE_DIR(:,:,i).*tmpDVESIDE(i,:)', repmat([0 0 1], length(tmpDVESIDE(i,:)), 1), 2);
+matF_NC = permute(matDGAMMADT, [1 3 2]).*cross(matUINF_ALL./(sqrt(sum(matUINF_ALL.^2,2))), matSPANDIR_ALL, 2);
+
+if strcmpi(strATYPE{1}, 'WING')
+    CLf = nansum(dot(matF_FS + matF_NC, repmat(vecLIFT_DIR, valNELE, 1, len), 2))./(0.5.*valDENSITY.*valAREA);
+    CLi = nansum(dot(matF_IF, repmat(vecLIFT_DIR, valNELE, 1, len), 2))./(0.5.*valDENSITY.*valAREA);
+    CL_U = CLf(:) + CLi(:);
+    CT_U = [];
+else
+    vecDVETHRUST = nansum(dot(matF_FS, repmat([0 0 1], valNELE, 1, len), 2) ...
+        + dot(matF_NC, repmat([0 0 1], valNELE, 1, len), 2) ...
+        + dot(matF_IF, repmat([0 0 1], valNELE, 1, len), 2) ...
+        + dot(matF_ID, repmat([0 0 1], valNELE, 1, len), 2), 1);
     
     if strcmpi(strATYPE, 'PROPELLER')
-        CT_U(i,1) = nansum(tmpDVETHRUST(i,:))./(valDENSITY.*((valRPM/60).^2).*(valDIAM.^4));
+        CT_U = vecDVETHRUST(:)./(valDENSITY.*((valRPM/60).^2).*(valDIAM.^4));
     else
-        CT_U(i,1) = nansum(tmpDVETHRUST(i,:))./(valDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
+        CT_U = vecDVETHRUST(:)./(valDENSITY.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
     end
-    
+    CL_U = [];
 end
-
-CL_U = sum(tmpDVELIFT,2)./(0.5.*valDENSITY.*valAREA.*(valUINF^2));
-CL_U = CL_U(~isnan(CL_U));
 
 end
 

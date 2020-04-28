@@ -11,7 +11,7 @@ valMAXTIME = 100;
 valDELTIME = 1;
 
 vecM = 3;
-vecN = 7;
+vecN = 4;
 
 xtcr = 0; % 1 is straight TE, 0 is straight LE
 

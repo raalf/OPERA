@@ -1,15 +1,34 @@
 clc
 clear
 
+% load('Tunnel Testing\2020-02-11\11-Feb-2020 17.28.46_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_7.7559.mat', ... % Alpha 0, 0.1080
+%     'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
+
+% load('Tunnel Testing\2020-02-11\11-Feb-2020 17.24.34_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_10.3457.mat', ... % Alpha 0, 0.1441
+%     'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
+
 load('Tunnel Testing\2020-01-30\30-Jan-2020 16.15.50_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha0_20.7492.mat', ... % Alpha 0, 0.2889
     'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
+
+
+
+% load('Tunnel Testing\2020-02-11\11-Feb-2020 16.41.03_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha15_6.0928.mat', ... % Alpha 15, 0.0848
+%     'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
+
+% load('Tunnel Testing\2020-01-30\30-Jan-2020 16.40.19_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha15_7.9674.mat', ... % Alpha 15, 0.1109
+%     'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
 
 % load('Tunnel Testing\2020-02-11\11-Feb-2020 17.06.36_Scorpion_KDE_T-Motor 18in_RPM3000_Alpha15_15.175.mat', ... % Alpha 15, 0.2113
 %     'Angle', 'lbf_N', 'FT', 'rho', 'valDIAM', 'valRPM', 'vecPOS_TUNNEL_OG', 'dataRate');
 
+
+
 %% Tunnel
 CT_tunnel_raw = lbf_N.*FT(:,3);
 CT_tunnel_raw = CT_tunnel_raw./(rho.*(pi.*((valDIAM/2).^2)).*(((valDIAM/2).*(valRPM.*(pi/30))).^2));
+
+trim = 1:10000;
+CT_tunnel_raw = CT_tunnel_raw(trim);
 
 Fp = 1/dataRate;
 Fst = 413/(dataRate/2);
@@ -24,7 +43,7 @@ binMax = [];
 binMin = [];
 for i = 1:length(binAng)
     rng = 0.25;
-    idx = vecPOS_TUNNEL_OG >= binAng(i) - rng & vecPOS_TUNNEL_OG <= binAng(i) + rng;
+    idx = vecPOS_TUNNEL_OG(trim) >= binAng(i) - rng & vecPOS_TUNNEL_OG(trim) <= binAng(i) + rng;
     binAvg(i) = mean(CT_tunnel2(idx));
     binMax(i) = max(CT_tunnel2(idx));
     binMin(i) = min(CT_tunnel2(idx));
@@ -38,10 +57,16 @@ plot(binAng, binAvg, '-.^m');
 hold off
 
 %% DDE Relaxed
-% load('Alpha 15 Results/New/TMotor_Fixed_J0.2113_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
-% load('Alpha 15 Results/New/TMotor_Fixed_J0.2113_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
-load('Alpha 0 Results/New/TMotor_Fixed_J0.3_0.00025.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
-% load('Alpha 0 Results/New/TMotor_Relaxed_J0.3_0.001.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+% load('Alpha 0 Results/TMotor_Fixed_J0.108.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+% load('Alpha 0 Results/TMotor_Fixed_J0.1441.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+load('Alpha 0 Results/TMotor_Relaxed_J0.2889.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+
+% load('Alpha 15 Results/TMotor_Fixed_J0.1109.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+
+
+% load('Alpha 15 Results/TMotor_Relaxed_J0.0848.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+% load('Alpha 15 Results/TMotor_Relaxed_J0.1109.mat', 'CT_U', 'CT', 'valDELTIME', 'matDVE', 'matVLST', 'vecHUB', 'vecDVESURFACE', 'matDGAMMADT', 'matINTCIRC', 'vecTEDVE', 'valMAXTIME', 'matSPANDIR', 'valRPM', 'vecDVETHRUST')
+
 
 CT_U = CT
 

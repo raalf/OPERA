@@ -1,4 +1,4 @@
-function [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG] = ...
+function [matWELST, matWVLST, matWPLEX, matWDVECT, matWCENTER, matWROTANG] = ...
     fcnRELAX8(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
     matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWDVEGRID)
 
@@ -23,9 +23,9 @@ for i = 1:sz:valTIMESTEP
         qz(matWVLST(matWVGRID(idx_rows,:),1), matWVLST(matWVGRID(idx_rows,:),2), matWVLST(matWVGRID(idx_rows,:),3))];
 end
 
-tmp2(matWVGRID, 1) = smoothdata(tmp2(matWVGRID, 1), 1);
-tmp2(matWVGRID, 2) = smoothdata(tmp2(matWVGRID, 2), 1);
-tmp2(matWVGRID, 3) = smoothdata(tmp2(matWVGRID, 3), 1);
+% tmp2(matWVGRID, 1) = smoothdata(tmp2(matWVGRID, 1), 1);
+% tmp2(matWVGRID, 2) = smoothdata(tmp2(matWVGRID, 2), 1);
+% tmp2(matWVGRID, 3) = smoothdata(tmp2(matWVGRID, 3), 1);
 
 tmp2(matWELST(vecWLE,:),:) = tmp2(matWELST(vecWLE,:),:).*0; % Trailing edge of wing
 

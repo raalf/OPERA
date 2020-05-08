@@ -1,4 +1,4 @@
-clear
+% clear
 
 % profile clear
 % profile('-memory','on');
@@ -29,15 +29,21 @@ strFILE = 'inputs/TMotor_coarse.dat'
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD]...
     = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
-valALPHA = 0
-valJ = 0.3
-valMAXTIME = 160
-valDELTIME = 0.0005
-flagRELAX = 1
+% valALPHA = 15
+% valJ = 0.2889
+valALPHA = SEQ_ALPHA(jjj)
+valJ = SEQ_JJ(jjj)
 
-valSTARTFORCES = 80
+flagRELAX = 1;
+flagWALL = false;
+
+valMAXTIME = 320;
+valDELTIME = 0.00025;
+
+valSTARTFORCES = 0;
 
 flagGIF = 0;
+
 flagHVRMOD = false;
 valUINF = 1;
 
@@ -87,6 +93,17 @@ if strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER')
     vecLIFT_DIR = [];
     vecSIDE_DIR = [];
     vecDRAG_DIR = [];
+    
+    if flagWALL == true
+        valWOFF = 0.45; % wall offset, meters from the hub to the wall (in the X-Z plane)
+        vecWOFF = [sind(valALPHA) 0 -cosd(valALPHA)];
+        vecWNORM = [-sind(valALPHA) 0 cosd(valALPHA)];
+    else
+        valWOFF = nan;
+        vecWOFF = [nan nan nan];
+        vecWNORM = [nan nan nan];
+    end
+    
 else
     matUINF = repmat(fcnUINFWING(valALPHA, 0), valNELE, 1).*valUINF;
     matVUINF = repmat(fcnUINFWING(valALPHA, 0), size(matVLST,1), 1).*valUINF;
@@ -114,6 +131,8 @@ matD = fcnDWING9(strATYPE, matEATT, matPLEX, valNELE, matELST, matVLST, matCENTE
 valDLEN = length(matD);
 
 %% Preparing to timestep
+valZTOL = 1e-4; % Used to offset field points from surface sheets when necessary
+
 % Initializing
 matWELST = []; matWDVE = []; valWNELE = []; matWEATT = []; matWEIDX = []; matWPLEX = []; matWDVECT = [];
 matWALIGN = []; matWCENTER = []; matWAKEGEOM = []; matWCOEFF = []; matWVLST = []; matWROTANG = [];
@@ -126,7 +145,7 @@ matDVEDRAG_DIR = []; matDVELIFT_DIR = []; matDVESIDE_DIR = []; vecTSITER = nan(v
 vecRSQUARED = nan(valMAXTIME,2); matWDVEGRID = [];
 
 % Building wing resultant
-vecR = fcnRWING(strATYPE, valDLEN, 0, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, []);
+vecR = fcnRWING(strATYPE, valZTOL, valDLEN, 0, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, vecWDVESYM, matWDVECT, []);
 boolKINCON = false(size(matD,1),1);
 boolKINCON(end-(valNELE*4-1):end) = true;
 
@@ -179,13 +198,17 @@ for valTIMESTEP = 1:valMAXTIME
                 matDVECT, vecWDVESYM, matD, vecR, valNELE, matVLST, matVATT, matCENTER, matROTANG, ...
                 matDVE, matELST, matEIDX, strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, ...
                 vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, vecWOTE, matWDVE, matWEIDX, ...
-                matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valAZPERREV);
+                matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valAZPERREV, matWDVECT, valZTOL, vecRSQUARED);
             
             % Relaxing Wake
             if flagRELAX == 1
-                [matWELST, matWVLST, matWDVE, valWNELE, matWEIDX, matWPLEX, matWDVECT, matWCENTER, matWROTANG] = ...
-                    fcnRELAX8(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
-                    matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWDVEGRID);
+%                 hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, matCOEFF, matUINF, matROTANG, [], 'opengl');
+%                 hFig1 = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID, vecWDVESURFACE);
+%                 view([-17 29]);
+                [matWELST, matWVLST, matWPLEX, matWDVECT, matWCENTER, matWROTANG] = ...
+                    fcnRELAX9(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
+                    matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, matWVGRID, vecWDVEFLIP, ...
+                    valPRESTEPS, matWDVEGRID, valWOFF, vecWOFF, vecWNORM, vecHUB, matVLST, matDVE, vecDVEFLIP);
                 
                 matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
                 
@@ -195,7 +218,7 @@ for valTIMESTEP = 1:valMAXTIME
                     matDVECT, vecWDVESYM, matD, vecR, valNELE, matVLST, matVATT, matCENTER, matROTANG, ...
                     matDVE, matELST, matEIDX, strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, ...
                     vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, vecWOTE, matWDVE, matWEIDX, ...
-                    matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valAZPERREV);
+                    matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valAZPERREV, matWDVECT, valZTOL, vecRSQUARED);
             end
             
             % Updating coefficient convergence history
@@ -213,7 +236,7 @@ for valTIMESTEP = 1:valMAXTIME
                     fcnDVEFORCES2(valTIMESTEP, matVLST, matELST, matROTANG, ...
                     matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
                     matWVLST, vecWLEDVE, matWELST, vecDVESYM, vecWDVESYM, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, ...
-                    vecWVMU, matCENTER, matKINCON_P, matKINCON_DVE, matUINF_KK, vecWLE, matWDVECT);
+                    vecWVMU, matCENTER, matKINCON_P, matKINCON_DVE, matUINF_KK, vecWLE, matWDVECT, matDVECT, valZTOL);
             else
                 matF_FS(:,:,valTIMESTEP) = nan(valNELE,3);
                 matF_IF(:,:,valTIMESTEP) = nan(valNELE,3);
@@ -254,14 +277,14 @@ skip = 1;
 
 save(['tmotor_run_',num2str(now),'.mat']);
 
-figure(20);
-plot(CT, '-k')
-hold on
-plot(CT_U, '--b');
-hold off
-grid minor
-box on
-axis tight
+% figure(20);
+% plot(CT, '-k')
+% hold on
+% plot(CT_U, '--b');
+% hold off
+% grid minor
+% box on
+% axis tight
 
 % profile report
 

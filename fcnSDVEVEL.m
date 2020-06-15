@@ -14,12 +14,12 @@ else
 end
 [q_ind] = fcnINDVEL(dvenum, dvetype, fpg, matCOEFF, matPLEX, matROTANG, matCENTER, [], tmp, ztol);
 
-if any(vecDVESYM)
-    idx = vecDVESYM(dvenum);
-    q_sym = fcnINDVEL(dvenum(idx), dvetype(idx), [fpg(idx,1) -fpg(idx,2) fpg(idx,3)], matCOEFF, matPLEX, matROTANG, matCENTER, [], vecBOUNDIND(idx), ztol);
-    q_sym = q_sym.*[1 -1 1];
-    q_ind(idx,:) = q_ind(idx,:) + q_sym;
-end
+% if any(vecDVESYM)
+%     idx = vecDVESYM(dvenum);
+%     q_sym = fcnINDVEL(dvenum(idx), dvetype(idx), [fpg(idx,1) -fpg(idx,2) fpg(idx,3)], matCOEFF, matPLEX, matROTANG, matCENTER, [], vecBOUNDIND(idx), ztol);
+%     q_sym = q_sym.*[1 -1 1];
+%     q_ind(idx,:) = q_ind(idx,:) + q_sym;
+% end
 
 q_ind = reshape(sum(permute(reshape(q_ind',3,[],valNELE),[3 1 2]),1),3,[],1)';
 

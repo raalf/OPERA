@@ -1,7 +1,16 @@
 function [matF_FS, matF_IF, matF_ID, matINTCIRC] = fcnDVEFORCES2(valTIMESTEP, matVLST, matELST, matROTANG, ...
     matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
     matWVLST, vecWLEDVE, matWELST, vecDVESYM, vecWDVESYM, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, ...
-    vecWVMU, matCENTER, matKINCON_P, matKINCON_DVE, matUINF_KK, vecWLE, matWDVECT, matDVECT, valZTOL)
+    vecWVMU, matCENTER, matKINCON_P, matKINCON_DVE, matUINF_KK, vecWLE, matWDVECT, matDVECT, valZTOL, vecWOFF, matWOFF, matWNORM, vecHUB, matDVE, vecDVEFLIP)
+
+% Preparing mirror images if we are accounting for wall effects
+if any(~isnan(vecWOFF))
+    for k = 1:length(vecWOFF)
+        [tmpMROTANG(:,:,k), tmpMCENTER(:,:,k), tmpMWROTANG(:,:,k), tmpMWCENTER(:,:,k)] = ...
+            fcnMIRROR(matVLST, matDVE, vecDVEFLIP, matWVLST, matWDVE, vecWDVEFLIP, ...
+            vecHUB, vecWOFF(k), matWOFF(k,:), matWNORM(k,:));
+    end
+end
 
 %% Common params
 xi_1 = permute(matPLEX(1,1,:),[3 2 1]);
@@ -36,6 +45,17 @@ matF_FS = fcnDVEFORCE(idx_flp, valNELE, valDENSITY, matUINF_KK, matKINCON_DVE, m
 tmp_w = fcnSDVEVEL(matKINCON_P, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 0) + ...
     (fcnSDVEVEL(matKINCON_P + matDVECT(matKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 0) + ...
     fcnSDVEVEL(matKINCON_P - matDVECT(matKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 0))./2;
+
+if any(~isnan(vecWOFF))
+    w_ind_mirror = zeros(size(tmp_w));
+    for k = 1:length(vecWOFF)
+        w_ind_mirror = w_ind_mirror + ...
+            fcnSDVEVEL(matKINCON_P, valNELE, matCOEFF, matPLEX, tmpMROTANG(:,:,k), tmpMCENTER(:,:,k), [], [], 0) + ...
+            fcnSDVEVEL(matKINCON_P, valWNELE, matWCOEFF, matWPLEX, tmpMWROTANG(:,:,k), tmpMWCENTER(:,:,k), [], [], 0);
+    end
+    tmp_w = tmp_w + w_ind_mirror;
+end
+
 matF_IF = fcnDVEFORCE(idx_flp, valNELE, valDENSITY, tmp_w, matKINCON_DVE, matKINCON_P, matCENTER, matROTANG, A_1, A_2, B_1, B_2, C_2, xi_1, xi_3, C, D_LE, E, D_TE);
 
 %% Induced Drag
@@ -84,6 +104,17 @@ for i = 1:valWSIZE
     fpg_us(:,:,i) = locations.*vert_one + (1 - locations).*vert_two;
     wind(:,:,i) = (fcnSDVEVEL(fpg_us(:,:,i) + tmpWDVECT(vecWLEDVE(i),:,3).*valZTOL, valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESYM, boundind, 0) + ...
         fcnSDVEVEL(fpg_us(:,:,i) - tmpWDVECT(vecWLEDVE(i),:,3).*valZTOL, valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESYM, boundind, 0))./2;
+    
+    if any(~isnan(vecWOFF))
+        w_ind_mirror = zeros(size(wind(:,:,i)));
+        for k = 1:length(vecWOFF)
+            w_ind_mirror = w_ind_mirror + ...
+                fcnSDVEVEL(fpg_og(:,:,i), valNELE, matCOEFF, matPLEX, tmpMROTANG(:,:,k), tmpMCENTER(:,:,k), [], [], 0) + ...
+                fcnSDVEVEL(fpg_og(:,:,i), valWNELE, matWCOEFF, matWPLEX, tmpMWROTANG(:,:,k), tmpMWCENTER(:,:,k), [], [], 0);
+        end
+        wind(:,:,i) = wind(:,:,i) + w_ind_mirror;  
+    end
+    
 end
 
 % fpg2 = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';
@@ -122,126 +153,126 @@ matINTCIRC = tmp;
 end
 
 function [v_xa, v_xb, v_xc, v_ea, v_eb, v_ec, v_za, v_zb, v_zc] = fcnVMAP(valNELE, u, matKINCON_DVE, matKINCON_P, matCENTER, matROTANG)
-    % points and their velocities
-    kk_loc = fcnGLOBSTAR(matKINCON_P - matCENTER(matKINCON_DVE,:), matROTANG(matKINCON_DVE,:));
-    uinf_loc = fcnGLOBSTAR(u, matROTANG(matKINCON_DVE,:));
+% points and their velocities
+kk_loc = fcnGLOBSTAR(matKINCON_P - matCENTER(matKINCON_DVE,:), matROTANG(matKINCON_DVE,:));
+uinf_loc = fcnGLOBSTAR(u, matROTANG(matKINCON_DVE,:));
 
-    v_xa = nan(valNELE,1); v_xb = nan(valNELE,1); v_xc = nan(valNELE,1);
-    v_ea = nan(valNELE,1); v_eb = nan(valNELE,1); v_ec = nan(valNELE,1);
-    v_za = nan(valNELE,1); v_zb = nan(valNELE,1); v_zc = nan(valNELE,1);
-    for i = 1:valNELE
-        idx = matKINCON_DVE == i;
-
-        pts = kk_loc(idx,:);
-        pts(:,3) = 1;
-        vs = uinf_loc(idx,:);
-
-        vmap_fs = pts \ vs;
-
-        v_xa(i,1) = vmap_fs(1,1);
-        v_xb(i,1) = vmap_fs(2,1);
-        v_xc(i,1) = vmap_fs(3,1);
-        v_ea(i,1) = vmap_fs(1,2);
-        v_eb(i,1) = vmap_fs(2,2);
-        v_ec(i,1) = vmap_fs(3,2);
-        v_za(i,1) = vmap_fs(1,3);
-        v_zb(i,1) = vmap_fs(2,3);
-        v_zc(i,1) = vmap_fs(3,3);
-    end
+v_xa = nan(valNELE,1); v_xb = nan(valNELE,1); v_xc = nan(valNELE,1);
+v_ea = nan(valNELE,1); v_eb = nan(valNELE,1); v_ec = nan(valNELE,1);
+v_za = nan(valNELE,1); v_zb = nan(valNELE,1); v_zc = nan(valNELE,1);
+for i = 1:valNELE
+    idx = matKINCON_DVE == i;
+    
+    pts = kk_loc(idx,:);
+    pts(:,3) = 1;
+    vs = uinf_loc(idx,:);
+    
+    vmap_fs = pts \ vs;
+    
+    v_xa(i,1) = vmap_fs(1,1);
+    v_xb(i,1) = vmap_fs(2,1);
+    v_xc(i,1) = vmap_fs(3,1);
+    v_ea(i,1) = vmap_fs(1,2);
+    v_eb(i,1) = vmap_fs(2,2);
+    v_ec(i,1) = vmap_fs(3,2);
+    v_za(i,1) = vmap_fs(1,3);
+    v_zb(i,1) = vmap_fs(2,3);
+    v_zc(i,1) = vmap_fs(3,3);
+end
 end
 
 function f_out = fcnDVEFORCE(idx_flp, valNELE, valDENSITY, u, matKINCON_DVE, matKINCON_P, matCENTER, matROTANG, A_1, A_2, B_1, B_2, C_2, xi_1, xi_3, C, D_LE, E, D_TE)
-    [v_xa, v_xb, v_xc, v_ea, v_eb, v_ec, v_za, v_zb, v_zc] = fcnVMAP(valNELE, u, matKINCON_DVE, matKINCON_P, matCENTER, matROTANG);
+[v_xa, v_xb, v_xc, v_ea, v_eb, v_ec, v_za, v_zb, v_zc] = fcnVMAP(valNELE, u, matKINCON_DVE, matKINCON_P, matCENTER, matROTANG);
 
-    t1 = (valDENSITY .* v_zb);
-    t2 = (C .^ 2);
-    t4 = (E .^ 2);
-    t10 = valDENSITY .* B_1;
-    t12 = valDENSITY .* C_2;
-    t14 = v_zb .* t10 + v_za .* t12;
-    t15 = -t2 + t4;
-    t18 = valDENSITY .* v_za;
-    t19 = -C + E;
-    t23 = xi_1 .^ 2;
-    t24 = t23 .^ 2;
-    t25 = xi_3 .^ 2;
-    t26 = t25 .^ 2;
-    t37 = valDENSITY .* B_2;
-    t40 = v_zc .* t12 + v_zb .* t37;
-    t46 = -2 .* C .* D_LE + 2 .* D_TE .* E;
-    t51 = -v_zc .* t10 - v_za .* t37;
-    t53 = -D_LE + D_TE;
-    t62 = D_LE .^ 2;
-    t64 = D_TE .^ 2;
-    t73 = -t62 + t64;
-    t76 = valDENSITY .* v_zc;
-    t88 = (xi_3 - xi_1);
-    fx = (-t24 + t26) .* (((-t2 .* C + t4 .* E) .* C_2 .* t1) ./ 0.3e1 + t15 .* t14 ./ 0.2e1 + t19 .* B_1 .* t18) ./ ...
-        0.4e1 + (-t23 .* xi_1 + t25 .* xi_3) .* (((-3 .* D_LE .* t2 + 3 .* t4 .* D_TE) .* C_2 .* t1) ./ 0.3e1 + t15 .* ...
-        t40 ./ 0.2e1 + t46 .* t14 ./ 0.2e1 - t19 .* t51 + t53 .* B_1 .* t18) ./ 0.3e1 + (-t23 + t25) .* (((-3 .* t62 .* C + ...
-        3 .* E .* t64) .* C_2 .* t1) ./ 0.3e1 + t46 .* t40 ./ 0.2e1 + t73 .* t14 ./ 0.2e1 + t19 .* B_2 .* t76 - t53 .* t51) ...
-        ./ 0.2e1 + (t88 .* (-t62 .* D_LE + t64 .* D_TE) .* C_2 .* t1) ./ 0.3e1 + t88 .* t73 .* t40 ./ 0.2e1 + t88 .* t53 .* B_2 .* t76;
+t1 = (valDENSITY .* v_zb);
+t2 = (C .^ 2);
+t4 = (E .^ 2);
+t10 = valDENSITY .* B_1;
+t12 = valDENSITY .* C_2;
+t14 = v_zb .* t10 + v_za .* t12;
+t15 = -t2 + t4;
+t18 = valDENSITY .* v_za;
+t19 = -C + E;
+t23 = xi_1 .^ 2;
+t24 = t23 .^ 2;
+t25 = xi_3 .^ 2;
+t26 = t25 .^ 2;
+t37 = valDENSITY .* B_2;
+t40 = v_zc .* t12 + v_zb .* t37;
+t46 = -2 .* C .* D_LE + 2 .* D_TE .* E;
+t51 = -v_zc .* t10 - v_za .* t37;
+t53 = -D_LE + D_TE;
+t62 = D_LE .^ 2;
+t64 = D_TE .^ 2;
+t73 = -t62 + t64;
+t76 = valDENSITY .* v_zc;
+t88 = (xi_3 - xi_1);
+fx = (-t24 + t26) .* (((-t2 .* C + t4 .* E) .* C_2 .* t1) ./ 0.3e1 + t15 .* t14 ./ 0.2e1 + t19 .* B_1 .* t18) ./ ...
+    0.4e1 + (-t23 .* xi_1 + t25 .* xi_3) .* (((-3 .* D_LE .* t2 + 3 .* t4 .* D_TE) .* C_2 .* t1) ./ 0.3e1 + t15 .* ...
+    t40 ./ 0.2e1 + t46 .* t14 ./ 0.2e1 - t19 .* t51 + t53 .* B_1 .* t18) ./ 0.3e1 + (-t23 + t25) .* (((-3 .* t62 .* C + ...
+    3 .* E .* t64) .* C_2 .* t1) ./ 0.3e1 + t46 .* t40 ./ 0.2e1 + t73 .* t14 ./ 0.2e1 + t19 .* B_2 .* t76 - t53 .* t51) ...
+    ./ 0.2e1 + (t88 .* (-t62 .* D_LE + t64 .* D_TE) .* C_2 .* t1) ./ 0.3e1 + t88 .* t73 .* t40 ./ 0.2e1 + t88 .* t53 .* B_2 .* t76;
 
-    t1 = (valDENSITY .* v_zb);
-    t2 = (C .^ 2);
-    t4 = (E .^ 2);
-    t10 = valDENSITY .* A_1;
-    t12 = valDENSITY .* C_2;
-    t14 = v_za .* t10 + v_zb .* t12;
-    t15 = -t2 + t4;
-    t18 = valDENSITY .* v_za;
-    t19 = -C + E;
-    t23 = xi_1 .^ 2;
-    t24 = t23 .^ 2;
-    t25 = xi_3 .^ 2;
-    t26 = t25 .^ 2;
-    t38 = valDENSITY .* A_2;
-    t40 = v_zc .* t10 + v_zb .* t38;
-    t46 = -2 .* C .* D_LE + 2 .* D_TE .* E;
-    t51 = v_zc .* t12 + v_za .* t38;
-    t53 = -D_LE + D_TE;
-    t62 = D_LE .^ 2;
-    t64 = D_TE .^ 2;
-    t73 = -t62 + t64;
-    t76 = valDENSITY .* v_zc;
-    t88 = (xi_3 - xi_1);
-    fe = (-t24 + t26) .* (((-t2 .* C + t4 .* E) .* A_1 .* t1) ./ 0.3e1 + t15 .* t14 ./ 0.2e1 + t19 .* C_2 .* t18) ./ 0.4e1 + ...
-        (-t23 .* xi_1 + t25 .* xi_3) .* (((-3 .* D_LE .* t2 + 3 .* t4 .* D_TE) .* A_1 .* t1) ./ 0.3e1 + t15 .* t40 ./ 0.2e1 + t46 .* ...
-        t14 ./ 0.2e1 + t19 .* t51 + t53 .* C_2 .* t18) ./ 0.3e1 + (-t23 + t25) .* (((-3 .* t62 .* C + 3 .* E .* t64) .* A_1 .* t1) ./ ...
-        0.3e1 + t46 .* t40 ./ 0.2e1 + t73 .* t14 ./ 0.2e1 + t19 .* A_2 .* t76 + t53 .* t51) ./ 0.2e1 + (t88 .* (-t62 .* D_LE + t64 .*...
-        D_TE) .* A_1 .* t1) ./ 0.3e1 + t88 .* t73 .* t40 ./ 0.2e1 + t88 .* t53 .* A_2 .* t76;
+t1 = (valDENSITY .* v_zb);
+t2 = (C .^ 2);
+t4 = (E .^ 2);
+t10 = valDENSITY .* A_1;
+t12 = valDENSITY .* C_2;
+t14 = v_za .* t10 + v_zb .* t12;
+t15 = -t2 + t4;
+t18 = valDENSITY .* v_za;
+t19 = -C + E;
+t23 = xi_1 .^ 2;
+t24 = t23 .^ 2;
+t25 = xi_3 .^ 2;
+t26 = t25 .^ 2;
+t38 = valDENSITY .* A_2;
+t40 = v_zc .* t10 + v_zb .* t38;
+t46 = -2 .* C .* D_LE + 2 .* D_TE .* E;
+t51 = v_zc .* t12 + v_za .* t38;
+t53 = -D_LE + D_TE;
+t62 = D_LE .^ 2;
+t64 = D_TE .^ 2;
+t73 = -t62 + t64;
+t76 = valDENSITY .* v_zc;
+t88 = (xi_3 - xi_1);
+fe = (-t24 + t26) .* (((-t2 .* C + t4 .* E) .* A_1 .* t1) ./ 0.3e1 + t15 .* t14 ./ 0.2e1 + t19 .* C_2 .* t18) ./ 0.4e1 + ...
+    (-t23 .* xi_1 + t25 .* xi_3) .* (((-3 .* D_LE .* t2 + 3 .* t4 .* D_TE) .* A_1 .* t1) ./ 0.3e1 + t15 .* t40 ./ 0.2e1 + t46 .* ...
+    t14 ./ 0.2e1 + t19 .* t51 + t53 .* C_2 .* t18) ./ 0.3e1 + (-t23 + t25) .* (((-3 .* t62 .* C + 3 .* E .* t64) .* A_1 .* t1) ./ ...
+    0.3e1 + t46 .* t40 ./ 0.2e1 + t73 .* t14 ./ 0.2e1 + t19 .* A_2 .* t76 + t53 .* t51) ./ 0.2e1 + (t88 .* (-t62 .* D_LE + t64 .*...
+    D_TE) .* A_1 .* t1) ./ 0.3e1 + t88 .* t73 .* t40 ./ 0.2e1 + t88 .* t53 .* A_2 .* t76;
 
-    t1 = valDENSITY .* v_eb;
-    t3 = valDENSITY .* v_xb;
-    t5 = (-A_1 .* t1 - C_2 .* t3);
-    t6 = (C .^ 2);
-    t8 = (E .^ 2);
-    t13 = valDENSITY .* v_ea;
-    t17 = valDENSITY .* v_xa;
-    t19 = -A_1 .* t13 - B_1 .* t3 - C_2 .* t1 - C_2 .* t17;
-    t20 = -t6 + t8;
-    t23 = -C + E;
-    t29 = xi_1 .^ 2;
-    t30 = t29 .^ 2;
-    t31 = xi_3 .^ 2;
-    t32 = t31 .^ 2;
-    t42 = valDENSITY .* v_ec;
-    t46 = valDENSITY .* v_xc;
-    t48 = -A_1 .* t42 - A_2 .* t1 - B_2 .* t3 - C_2 .* t46;
-    t54 = -2 .* D_LE .* C + 2 .* D_TE .* E;
-    t59 = -B_1 .* t46 - B_2 .* t17;
-    t61 = -D_LE + D_TE;
-    t66 = A_2 .* t13 + C_2 .* t42;
-    t76 = D_LE .^ 2;
-    t78 = D_TE .^ 2;
-    t86 = -t76 + t78;
-    t103 = (xi_3 - xi_1);
-    fz = (-t30 + t32) .* (((-t6 .* C + t8 .* E) .* t5) ./ 0.3e1 + t20 .* t19 ./ 0.2e1 - t23 .* B_1 .* t17 - t23 .* C_2 .* t13) ./ 0.4e1 + (-t29 .* xi_1 + t31 .* xi_3) .* ...
-        (((-3 .* t6 .* D_LE + 3 .* t8 .* D_TE) .* t5) ./ 0.3e1 + t20 .* t48 ./ 0.2e1 + t54 .* t19 ./ 0.2e1 + t23 .* t59 - t61 .* B_1 .* t17 - t23 .* t66 - t61 .* C_2 .* t13) ./ ...
-        0.3e1 + (-t29 + t31) .* (((-3 .* C .* t76 + 3 .* E .* t78) .* t5) ./ 0.3e1 + t54 .* t48 ./ 0.2e1 + t86 .* t19 ./ 0.2e1 - t23 .* B_2 .* t46 + t61 .* t59 - t23 .* A_2 .* ...
-        t42 - t61 .* t66) ./ 0.2e1 + (t103 .* (-t76 .* D_LE + t78 .* D_TE) .* t5) ./ 0.3e1 + t103 .* t86 .* t48 ./ 0.2e1 - t103 .* t61 .* B_2 .* t46 - t103 .* t61 .* A_2 .* t42;
+t1 = valDENSITY .* v_eb;
+t3 = valDENSITY .* v_xb;
+t5 = (-A_1 .* t1 - C_2 .* t3);
+t6 = (C .^ 2);
+t8 = (E .^ 2);
+t13 = valDENSITY .* v_ea;
+t17 = valDENSITY .* v_xa;
+t19 = -A_1 .* t13 - B_1 .* t3 - C_2 .* t1 - C_2 .* t17;
+t20 = -t6 + t8;
+t23 = -C + E;
+t29 = xi_1 .^ 2;
+t30 = t29 .^ 2;
+t31 = xi_3 .^ 2;
+t32 = t31 .^ 2;
+t42 = valDENSITY .* v_ec;
+t46 = valDENSITY .* v_xc;
+t48 = -A_1 .* t42 - A_2 .* t1 - B_2 .* t3 - C_2 .* t46;
+t54 = -2 .* D_LE .* C + 2 .* D_TE .* E;
+t59 = -B_1 .* t46 - B_2 .* t17;
+t61 = -D_LE + D_TE;
+t66 = A_2 .* t13 + C_2 .* t42;
+t76 = D_LE .^ 2;
+t78 = D_TE .^ 2;
+t86 = -t76 + t78;
+t103 = (xi_3 - xi_1);
+fz = (-t30 + t32) .* (((-t6 .* C + t8 .* E) .* t5) ./ 0.3e1 + t20 .* t19 ./ 0.2e1 - t23 .* B_1 .* t17 - t23 .* C_2 .* t13) ./ 0.4e1 + (-t29 .* xi_1 + t31 .* xi_3) .* ...
+    (((-3 .* t6 .* D_LE + 3 .* t8 .* D_TE) .* t5) ./ 0.3e1 + t20 .* t48 ./ 0.2e1 + t54 .* t19 ./ 0.2e1 + t23 .* t59 - t61 .* B_1 .* t17 - t23 .* t66 - t61 .* C_2 .* t13) ./ ...
+    0.3e1 + (-t29 + t31) .* (((-3 .* C .* t76 + 3 .* E .* t78) .* t5) ./ 0.3e1 + t54 .* t48 ./ 0.2e1 + t86 .* t19 ./ 0.2e1 - t23 .* B_2 .* t46 + t61 .* t59 - t23 .* A_2 .* ...
+    t42 - t61 .* t66) ./ 0.2e1 + (t103 .* (-t76 .* D_LE + t78 .* D_TE) .* t5) ./ 0.3e1 + t103 .* t86 .* t48 ./ 0.2e1 - t103 .* t61 .* B_2 .* t46 - t103 .* t61 .* A_2 .* t42;
 
-    f_out = [fx fe fz];
+f_out = [fx fe fz];
 f_out(idx_flp,:) = f_out(idx_flp,:).*-1;
 
 f_out = fcnSTARGLOB(f_out, matROTANG);

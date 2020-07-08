@@ -19,46 +19,46 @@ vecWVMU(matWELST(vecWLE,1)) = res1(:,1);
 vecWVMU(matWELST(vecWLE,2)) = res1(:,2);
 vecWEMU(vecWLE) = res1(:,3);
 
-% vecWVMU(matWELST(vecWOTE,1)) = 0;
-% vecWVMU(matWELST(vecWOTE,2)) = 0;
-% vecWEMU(vecWOTE) = 0;
+vecWVMU(matWELST(vecWOTE,1)) = 0;
+vecWVMU(matWELST(vecWOTE,2)) = 0;
+vecWEMU(vecWOTE) = 0;
 
 if (size(matWVGRID,1)) <= 2 || strcmpi(strATYPE{3},'STEADY')
     vecWVMU(matWVGRID(2:end,:)) = repmat(vecWVMU(matWVGRID(1,:))', size(matWVGRID,1) - 1, 1);
     vecWEMU(matWEGRID(2:end,:)) = repmat(vecWEMU(matWEGRID(1,:))', size(matWEGRID,1) - 1, 1);
     vecWEMU(matWE2GRID) = repmat(vecWVMU(matWVGRID(1,:))', size(matWE2GRID,1), 1);
 else
-    if valTIMESTEP > valAZPERREV
-        % Applying wake vertex strengths over the last revolution to all
-        % revolutions
-        if mod(valTIMESTEP, valAZPERREV) == 0
-            tmp = vecWVMU(matWVGRID(1,:))'; % Treated different if only 1 row (cause it comes out as a row vector, not a column vector)
-        else
-            tmp = vecWVMU(matWVGRID(1:mod(valTIMESTEP, valAZPERREV) + 1,:));
-        end
-        % Updating wake strengths by taking the last revolution, applying
-        % to all revolution, and adding remainders all the way to the
-        % oldest row
-        vecWVMU(matWVGRID) = [repmat(vecWVMU(matWVGRID(1:valAZPERREV,:)), floor(valTIMESTEP/valAZPERREV), 1); tmp];
-        
-        % Updating edges
-        vecWEMU(matWE2GRID) = (vecWVMU(matWVGRID(1:end-1,:)) + vecWVMU(matWVGRID(2:end,:)))./2;
-        % Adding in 2nd edge from LE
-        vecWEMU(matWEGRID(2,:)) = (vecWEMU(matWEGRID(1,:)) + vecWEMU(matWEGRID(3,:)))./2;
-
-        % Updating edges all the way back to the oldest row of wake
-        % elements
-        if mod(valTIMESTEP, valAZPERREV) == 0
-            tmp2 = vecWEMU(matWEGRID(1,:))';
-        else
-            tmp2 = vecWEMU(matWEGRID(1:mod(valTIMESTEP, valAZPERREV)*2 + 1,:));
-        end
-            vecWEMU(matWEGRID) = [repmat(vecWEMU(matWEGRID(1:(valAZPERREV*2),:)), floor(valTIMESTEP/valAZPERREV), 1); tmp2];
-        
-    else
+%     if valTIMESTEP > valAZPERREV
+%         % Applying wake vertex strengths over the last revolution to all
+%         % revolutions
+%         if mod(valTIMESTEP, valAZPERREV) == 0
+%             tmp = vecWVMU(matWVGRID(1,:))'; % Treated different if only 1 row (cause it comes out as a row vector, not a column vector)
+%         else
+%             tmp = vecWVMU(matWVGRID(1:mod(valTIMESTEP, valAZPERREV) + 1,:));
+%         end
+%         % Updating wake strengths by taking the last revolution, applying
+%         % to all revolution, and adding remainders all the way to the
+%         % oldest row
+%         vecWVMU(matWVGRID) = [repmat(vecWVMU(matWVGRID(1:valAZPERREV,:)), floor(valTIMESTEP/valAZPERREV), 1); tmp];
+%         
+%         % Updating edges
+%         vecWEMU(matWE2GRID) = (vecWVMU(matWVGRID(1:end-1,:)) + vecWVMU(matWVGRID(2:end,:)))./2;
+%         % Adding in 2nd edge from LE
+%         vecWEMU(matWEGRID(2,:)) = (vecWEMU(matWEGRID(1,:)) + vecWEMU(matWEGRID(3,:)))./2;
+% 
+%         % Updating edges all the way back to the oldest row of wake
+%         % elements
+%         if mod(valTIMESTEP, valAZPERREV) == 0
+%             tmp2 = vecWEMU(matWEGRID(1,:))';
+%         else
+%             tmp2 = vecWEMU(matWEGRID(1:mod(valTIMESTEP, valAZPERREV)*2 + 1,:));
+%         end
+%             vecWEMU(matWEGRID) = [repmat(vecWEMU(matWEGRID(1:(valAZPERREV*2),:)), floor(valTIMESTEP/valAZPERREV), 1); tmp2];
+%         
+%     else
         vecWEMU(matWE2GRID(1,:)) = (vecWVMU(matWVGRID(1,:)) + vecWVMU(matWVGRID(2,:)))./2;
         vecWEMU(matWEGRID(2,:)) = (vecWEMU(matWEGRID(1,:)) + vecWEMU(matWEGRID(3,:)))./2;
-    end
+%     end
 end
 
 end

@@ -31,11 +31,11 @@ te_eta = E.*x_m + D_TE;
 xi_left = min([xi_1, xi_3],[],2);
 xi_right = max([xi_1, xi_3],[],2);
 
-margin = 1e-4;
+margin = 1e-5;
 % idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin & abs(fpl(:,3)) < ztol;
 idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_left - margin & x_m <= xi_right + margin;
 
-margin = 1e-4;
+% margin = 1e-4;
 idx_flp = xi_3 < xi_1; % Flipping influence of elements that need a good flippin
 if any(abs(xi_2 - xi_3) < margin & abs(xi_1 - xi_2) > margin)
     disp('Issue in element orientation in HDVEIND.');
@@ -195,10 +195,10 @@ F111(idx) = log((rho1(idx) - L1(idx))./(rho2(idx) - L2(idx)));
 idx = (L1 < 0 & L2 >= 0) | (L1 >= 0 & L2 < 0);
 F111(idx) = log(((rho1(idx) - L1(idx)).*(rho2(idx) + L2(idx)))./(g(idx).^2));
 
-F111(isinf(F111)) = sign(F111(isinf(F111))).*40;
+% F111(isinf(F111)) = sign(F111(isinf(F111))).*40;
 
 idx = [g > del_h.*d_H, g <= del_h.*d_H];
-% idx = [g > 1e-4, g <= 1e-4]; % <----------------------- OG
+% idx = [g > 1e-5, g <= 1e-5]; % <----------------------- OG
 
 
 F113 = F111.*0;
@@ -315,7 +315,6 @@ H111 = -abs_h.*sum(atan2(a.*(L2.*c1 - L1.*c2), c1.*c2 + (a.^2).*L1.*L2),3) + sum
 % 2.)
 idx = [abs_h > del_h.*d_H, abs_h <= del_h.*d_H];
 % idx = [abs_h > 1e-5, abs_h <= 1e-5]; % <----------------------- OG
-% idx = [abs_h > ztol, abs_h <= ztol]; % <----------------------- OG
 
 H113(idx(:,1),1) = (1./hs(idx(:,1))).*(-1.*H111(idx(:,1)) + sum(a(idx(:,1),:,:).*F111(idx(:,1),:,:), 3));
 H115(idx(:,1),1) = (1./(3.*hs(idx(:,1)))).*(H113(idx(:,1)) + sum(a(idx(:,1),:,:).*F113(idx(:,1),:,:), 3));

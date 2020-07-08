@@ -35,7 +35,7 @@ if ~isempty(airfoil)
     v_dir = v_dir./max(v_dir);
     
     tmp_us = fcnLINSPLINE(airfoil(i,1).coord(1:airfoil(i,1).le_idx,1), airfoil(i,1).coord(1:airfoil(i,1).le_idx,2));
-    tmp_ls = fcnLINSPLINE(airfoil(i,1).coord(airfoil(i,1).le_idx:end,1), airfoil(i,1).coord(airfoil(i,1).le_idx:end,2));
+    tmp_ls = fcnLINSPLINE(airfoil(i,1).coord(airfoil(i,1).le_idx+1:end,1), airfoil(i,1).coord(airfoil(i,1).le_idx+1:end,2));
     
     tmp_cmbr = ((tmp_us(v_dir) + tmp_ls(v_dir))./2).*chord;
     chordX(2:end,1) = chordX(2:end,1) + tmp_cmbr.*v_norm(:,1);
@@ -57,7 +57,7 @@ if ~isempty(airfoil)
     v_dir = v_dir./max(v_dir);
     
     tmp_us = fcnLINSPLINE(airfoil(i,2).coord(1:airfoil(i,2).le_idx,1), airfoil(i,2).coord(1:airfoil(i,2).le_idx,2));
-    tmp_ls = fcnLINSPLINE(airfoil(i,2).coord(airfoil(i,2).le_idx:end,1), airfoil(i,2).coord(airfoil(i,2).le_idx:end,2));
+    tmp_ls = fcnLINSPLINE(airfoil(i,2).coord(airfoil(i,2).le_idx+1:end,1), airfoil(i,2).coord(airfoil(i,2).le_idx+1:end,2));
     
     tmp_cmbr = ((tmp_us(v_dir) + tmp_ls(v_dir))./2).*chord;
     chordX(2:end,2) = chordX(2:end,2) + tmp_cmbr.*v_norm(:,1);

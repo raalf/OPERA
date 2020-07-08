@@ -1,16 +1,7 @@
 function [matWELST, matWVLST, matWPLEX, matWDVECT, matWCENTER, matWROTANG] = ...
-    fcnRELAX9(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
-    matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, matWVGRID, vecWDVEFLIP, ...
-    valPRESTEPS, matWDVEGRID, vecWOFF, matWOFF, matWNORM, vecHUB, matVLST, matDVE, vecDVEFLIP, valZTOL, matWDVECT)
-
-% Preparing mirror images if we are accounting for wall effects
-if any(~isnan(vecWOFF))
-    for k = 1:length(vecWOFF)
-        [tmpROTANG(:,:,k), tmpCENTER(:,:,k), tmpWROTANG(:,:,k), tmpWCENTER(:,:,k)] = ...
-            fcnMIRROR(matVLST, matDVE, vecDVEFLIP, matWVLST, matWDVE, vecWDVEFLIP, ...
-            vecHUB, vecWOFF(k), matWOFF(k,:), matWNORM(k,:));
-    end
-end
+    fcnRELAX9(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, ... 
+    matWDVE, matWVLST, matWPLEX, matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, vecWTE, matWELST, ...
+    vecDVESYM, vecWDVESYM, matWVGRID, vecWDVEFLIP, matWDVEGRID)
 
 %% Finding induced velocities at all wake vertices
 sz = 10;
@@ -28,18 +19,7 @@ for i = 1:sz:valTIMESTEP
 %         fcnSDVEVEL(matWCENTER(matWDVEGRID(idx_rows,:),:) - matWDVECT(matWDVEGRID(idx_rows,:),:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 0))./2;
  
     q_ind(matWDVEGRID(idx_rows,:),:) = fcnSDVEVEL(matWCENTER(matWDVEGRID(idx_rows,:),:), valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 0) + ...
-        fcnSDVEVEL(matWCENTER(matWDVEGRID(idx_rows,:),:), valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 0);
-    
-    if any(~isnan(vecWOFF))
-        q_ind_mirror = zeros(size(q_ind));
-        for k = 1:length(vecWOFF)
-            q_ind_mirror(matWDVEGRID(idx_rows,:),:) = q_ind_mirror(matWDVEGRID(idx_rows,:),:) + ...
-                fcnSDVEVEL(matWCENTER(matWDVEGRID(idx_rows,:),:), valNELE, matCOEFF, matPLEX, tmpROTANG(:,:,k), tmpCENTER(:,:,k), [], [], 0) + ...
-                fcnSDVEVEL(matWCENTER(matWDVEGRID(idx_rows,:),:), valWNELE, matWCOEFF, matWPLEX, tmpWROTANG(:,:,k), tmpWCENTER(:,:,k), [], [], 0);
-        end
-        q_ind = q_ind + q_ind_mirror;
-    end
-    
+        fcnSDVEVEL(matWCENTER(matWDVEGRID(idx_rows,:),:), valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 0);    
 end
 
 hold on

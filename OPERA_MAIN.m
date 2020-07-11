@@ -20,13 +20,13 @@ disp('====================================================================');
 % strFILE = 'inputs/APC_12x5_coarse.dat';
 strFILE = 'inputs/TMotor_coarse2.dat'
 
-[matPOINTS, strATYPE, vecSYM, flagRELAX, valMAXTIME, valDELTIME, valALPHA, ...
+[matPOINTS, strATYPE, vecSYM, flgRELAX, valMAXTIME, valDELTIME, valALPHA, ...
     valBETA, matTEPOINTS, matLEPOINTS, vecULS, valAREA, valSPAN, valDENSITY, vecDVESYM, valDIAM, ...
     valCOLL, valRPM, valJ, vecDVESURFACE, vecDVEFLIP, valBLADES, valGUSTAMP, valGUSTL, valGUSTMODE, valGUSTSTART, ...
     strHTYPE, matHINGELOC, matHINGEDIR, matHINGEANG, vecM] = fcnOPREAD(strFILE);
 
-[TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD]...
-    = fcnTRIANG(matPOINTS, vecDVEFLIP);
+[TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, ...
+    matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD] = fcnTRIANG(matPOINTS, vecDVEFLIP);
 
 valALPHA = 0
 valJ = 0.25
@@ -38,10 +38,10 @@ valMAXTIME = 160;
 valDELTIME = 0.5e-3;
 valPRESTEPS = 40;
 
-flagRELAX = 1;
+flgRELAX = true;
 valSTARTFORCES = 0;
-flagGIF = 0;
-flagHVRMOD = false;
+flgGIF = false;
+flgHVRMOD = false;
 valUINF = 1;
 
 %% Preliminary Geometry Stuff
@@ -106,7 +106,7 @@ else
 end
 
 % Creating GIF file
-if flagGIF == 1
+if flgGIF == true
     if exist('GIF','dir') ~= 7
         mkdir('GIF');
     end
@@ -148,7 +148,7 @@ if strcmpi(strATYPE{1}, 'WING')
     valDELTIME = valDELTIME*10;
     strWAKE_TYPE = 'STEADY';
 elseif (strcmpi(strATYPE{1}, 'PROPELLER') && valJ == 0) || (strcmpi(strATYPE{1}, 'ROTOR') && valJ == 0)
-    flagHVRMOD = true;
+    flgHVRMOD = true;
 end
 
 if ~exist('valPRESTEPS', 'var')
@@ -184,7 +184,6 @@ for valTIMESTEP = 1:valMAXTIME
             vecWSYM, matWVGRID, matWVLST, matWELST, matWEGRID, vecWVMU, vecWEMU, vecWDVEFLIP, matWCENTER, matWROTANG, matWDVECT, ...
             matWDVE, matWEIDX, vecWLEDVE, matWEATT, vecDVESURFACE, vecWDVESURFACE, valAZPERREV, matWDVEGRID);
         
-        
         [vecR, matCOEFF, vecVMU, vecEMU, matWCOEFF, vecWVMU, vecWEMU, vecTSITER, vecRSQUARED] = ...
             fcnTSITER(matCOEFF, valDLEN, valTIMESTEP, matUINF_KK, valWNELE, ...
             matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, ...
@@ -194,7 +193,7 @@ for valTIMESTEP = 1:valMAXTIME
             matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valAZPERREV, valZTOL, vecRSQUARED);
         
         % Relaxing Wake
-        if (flagRELAX == 1 && strcmpi(strATYPE{1}, 'WING')) && valTIMESTEP > 2 || (flagRELAX == 1 && valTIMESTEP > valPRESTEPS && (strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER')))
+        if (flgRELAX == true && strcmpi(strATYPE{1}, 'WING')) && valTIMESTEP > 2 || (flgRELAX == true && valTIMESTEP > valPRESTEPS && (strcmpi(strATYPE{1}, 'ROTOR') || strcmpi(strATYPE{1}, 'PROPELLER')))
             [matWELST, matWVLST, matWPLEX, matWDVECT, matWCENTER, matWROTANG] = ...
                 fcnRELAX8(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, valWSIZE, ...
                 matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, matWELST, matWEIDX, vecDVESYM, vecWDVESYM, matWVGRID, vecWDVEFLIP, valPRESTEPS, matWDVEGRID);
@@ -213,7 +212,7 @@ for valTIMESTEP = 1:valMAXTIME
         % Updating coefficient convergence history
         matCOEFF_HSTRY(:,:,valTIMESTEP + 1) = matCOEFF;
         
-        if flagGIF == 1 && valTIMESTEP > valPRESTEPS
+        if flgGIF == true && valTIMESTEP > valPRESTEPS
             hFig1 = fcnGIF(valTIMESTEP - valPRESTEPS, valNELE, matDVE, matVLST, matCENTER, matELST, matDVECT, matPLEX, matCOEFF, matUINF, matROTANG, ...
                 valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, vecWDVESURFACE, valWSIZE, valPRESTEPS, matWVGRID, valGIFNUM);
         end

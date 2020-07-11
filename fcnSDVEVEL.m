@@ -1,4 +1,4 @@
-function [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, vecBOUNDIND, ztol)
+function [q_ind] = fcnSDVEVEL(fpg, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecBOUNDIND, ztol)
 % T.D.K 2019-01-12 AC1886 OVER IOWA @ 35,000 FT
 
 len = length(fpg(:,1));
@@ -13,13 +13,6 @@ else
     tmp = [];
 end
 [q_ind] = fcnINDVEL(dvenum, dvetype, fpg, matCOEFF, matPLEX, matROTANG, matCENTER, [], tmp, ztol);
-
-% if any(vecDVESYM)
-%     idx = vecDVESYM(dvenum);
-%     q_sym = fcnINDVEL(dvenum(idx), dvetype(idx), [fpg(idx,1) -fpg(idx,2) fpg(idx,3)], matCOEFF, matPLEX, matROTANG, matCENTER, [], vecBOUNDIND(idx), ztol);
-%     q_sym = q_sym.*[1 -1 1];
-%     q_ind(idx,:) = q_ind(idx,:) + q_sym;
-% end
 
 q_ind = reshape(sum(permute(reshape(q_ind',3,[],valNELE),[3 1 2]),1),3,[],1)';
 

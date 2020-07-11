@@ -1,4 +1,4 @@
-function [vecWVMU, vecWEMU] = fcnWAKEMU(strATYPE, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE, valAZPERREV, valTIMESTEP)
+function [vecWVMU, vecWEMU] = fcnWAKEMU(flgSTEADY, vecWLE, matWVGRID, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, matCOEFF, matCENTER, matROTANG, vecWOTE)
 
 %% Spanwise circulation in the front vertices of newest wake row
 pts(:,:,1) = matWVLST(matWELST(vecWLE,1),:);
@@ -23,7 +23,7 @@ vecWVMU(matWELST(vecWOTE,1)) = 0;
 vecWVMU(matWELST(vecWOTE,2)) = 0;
 vecWEMU(vecWOTE) = 0;
 
-if (size(matWVGRID,1)) <= 2 || strcmpi(strATYPE{3},'STEADY')
+if (size(matWVGRID,1)) <= 2 || flgSTEADY == true
     vecWVMU(matWVGRID(2:end,:)) = repmat(vecWVMU(matWVGRID(1,:))', size(matWVGRID,1) - 1, 1);
     vecWEMU(matWEGRID(2:end,:)) = repmat(vecWEMU(matWEGRID(1,:))', size(matWEGRID,1) - 1, 1);
     vecWEMU(matWE2GRID) = repmat(vecWVMU(matWVGRID(1,:))', size(matWE2GRID,1), 1);

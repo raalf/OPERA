@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<VAP>
+	<settings>
+		<relax>TRUE</relax>
+		<steady>TRUE</steady>
+		<maxtime>30</maxtime>
+		<delta_time>0.002</delta_time>
+	</settings>
+
+	<conditions>
+		<density>1.225</density>
+
+		<speed>5</speed>
+
+		<alpha>0</alpha>
+		<beta>0</beta>
+		<roll>0</roll>
+		<fpa>0</fpa>
+		<track>0</track>
+
+		<ref_area>6.196633</ref_area>
+		<ref_span>9.63168</ref_span>
+	</conditions>
+
+	<wing>
+		<incidence>5</incidence>
+
+		<chordwise_elements>4</chordwise_elements>
+
+		<vehicle_x>0</vehicle_x>
+		<vehicle_y>0</vehicle_y>
+		<vehicle_z>0</vehicle_z>
+
+		<panel>
+			<spanwise_elements>8</spanwise_elements>
+			<section>
+				<wing_x>-0.1</wing_x>
+				<wing_y>-0.25</wing_y>
+				<wing_z>0.02</wing_z>
+				<chord>0.04</chord>
+				<twist>0</twist>
+				<airfoil>NACA 4412</airfoil>
+			</section>	
+			<section>
+				<wing_x>0.1</wing_x>
+				<wing_y>0</wing_y>
+				<wing_z>0.02</wing_z>
+				<chord>0.04</chord>
+				<twist>0</twist>
+				<airfoil>NACA 4412</airfoil>
+			</section>	
+		</panel>
+	</wing>
+
+	<rotor>
+		<rpm>3000</rpm>
+		<ref_diam>0.4572</ref_diam>
+		<rotation_direction>CCW</rotation_direction>
+
+		<veh_x_hub>0</veh_x_hub>
+		<veh_y_hub>0</veh_y_hub>
+		<veh_z_hub>0</veh_z_hub>
+
+		<veh_x_axis>0</veh_x_axis>
+		<veh_y_axis>0</veh_y_axis>
+		<veh_z_axis>1</veh_z_axis>
+
+		<blades>2</blades>
+
+		<chordwise_elements>5</chordwise_elements>
+
+		<panel>
+			<spanwise_elements>1</spanwise_elements>
+				<section>
+					<rotor_x>-0.011244</rotor_x>				
+					<rotor_y>0.034290</rotor_y>
+					<rotor_z>0</rotor_z>
+					<chord>0.025314</chord>
+					<twist>16.570000</twist>
+					<airfoil>TM_S1_18</airfoil>
+				</section>
+
+				<section>				
+					<rotor_x>-0.015550</rotor_x>				
+					<rotor_y>0.080010</rotor_y>
+					<rotor_z>0</rotor_z>
+					<chord>0.044301</chord>
+					<twist>20.047600</twist>
+					<airfoil>TM_S5_18</airfoil>
+				</section>
+
+				<section>							
+					<rotor_x>-0.014999</rotor_x>				
+					<rotor_y>0.125730</rotor_y>
+					<rotor_z>0</rotor_z>
+					<chord>0.040027</chord>
+					<twist>13.911800</twist>
+					<airfoil>TM_S9_18</airfoil>
+				</section>
+
+				<section>								
+					<rotor_x>-0.012640</rotor_x>				
+					<rotor_y>0.171450</rotor_y>
+					<rotor_z>0</rotor_z>
+					<chord>0.032684</chord>
+					<twist>12.100000</twist>
+					<airfoil>TM_S13_18</airfoil>
+				</section>
+
+				<section>								
+					<rotor_x>-0.009946</rotor_x>				
+					<rotor_y>0.205740</rotor_y>
+					<rotor_z>0</rotor_z>
+					<chord>0.024821</chord>
+					<twist>8.140000</twist>
+					<airfoil>TM_S16_18</airfoil>
+				</section>
+
+				<section>								
+					<rotor_x>0.002194</rotor_x>				
+					<rotor_y>0.228600</rotor_y>
+					<rotor_z>0</rotor_z>
+					<chord>0.009098</chord>
+					<twist>7.526000</twist>
+					<airfoil>TM_S18_18</airfoil>
+				</section>
+		</panel>
+	</rotor>
+</VAP>
+
+
+
+

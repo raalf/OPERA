@@ -1,56 +1,4 @@
-function [matPOINTS, matTEPOINTS, matLEPOINTS, vecULS, vecDVESYM, vecDVEWING, vecDVEFLIP] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE, vecWING)
-
-% This function has been taken from VAP2 and repurposed for OPERA. It takes panel corner points and discretizes
-% the panel into quadralateral DVEs, which I then subdivide into triangles to match STL format.
-
-%   V0 - before fixing spanwise interp
-%   V1 - fixed vertical panel (90deg dihedral)
-%      - Reprogrammed the DVE interpolation method
-%  1.1 - Preallocate the memory for point matrices, do you know how memory is accessed?
-%   V2 - Rework the Leading Edge Vector
-%      - Caculate the Yaw angle of the DVE by assuming yaw=0 to rotate the xsi vector
-%      - Rotate DVE normal vector by local roll, pitch, and yaw using 'glob_star_3D'
-%      - Comptue LE Sweep
-%      - Project TE to DVE, Rotate adn Comptue TE Sweep
-%   V3 - Function overhaul for VAP2.0
-%  3.5 - Modify non-planer VLST (Jan 6, 2017)
-%        old matNPVLST will be not called matNTVLST to specify it holds dve
-%        infomation of non-twisted wing
-%      - new matNPVLST will now hold non-planer dve coordinates of
-%        non-modified wing geometry specified in input file
-%
-% Fixed how DVEs matrix is converted from 2D grid to 1D array. 16/01/2016 (Alton)
-
-% INPUT:
-%   valPANELS - number of wing panels
-%   matGEOM - 2 x 5 x valPANELS matrix, with (x,y,z) coords of edge points, and chord and twist at each edge
-%   vecSYM - valPANELS x 1 vector of 0, 1, or 2 which denotes the panels with symmetry
-%   vecN - valPANELS x 1 vector of spanwise elements per DVE
-%   vecM - valPANELS x 1 vector of chordwise elements per DVE
-
-% OUTPUT: (ALL OUTPUT ANGLES ARE IN RADIAN)
-%   matCENTER - valNELE x 3 matrix of (x,y,z) locations of DVE control points
-%   vecDVEHVSPN - valNELE x 1 vector of DVE half spans
-%   vecDVEHVCRD - valNELE x 1 vector of DVE half chords
-%   vecDVELESWP - valNELE x 1 vector of DVE leading edge sweep (radians)
-%   vecDVEMCSWP - valNELE x 1 vector of DVE mid-chord sweep (radians)
-%   vecDVETESWP - valNELE x 1 vector of DVE trailing-edge sweep (radians)
-%   vecDVEROLL - valNELE x 1 vector of DVE roll angles (about x-axis) (radians)
-%   vecDVEPITCH - valNELE x 1 vector of DVE pitch angles (about y-axis) (radians)
-%   vecDVEYAW - valNELE x 1 vector of DVE yaw angles (about z-axis) (radians)
-%   vecDVEAREA - valNELE x 1 vector of DVE area
-%   vecDVENORM -  valNELE x 3 matrix of DVE normal vectors
-%   matVLST - ? x 3 list of unique vertices, columns are (x,y,z) values
-%   valNELE - total number of DVEs
-%   matDVE - matrix of which DVE uses which vertices from the above list
-%   matADJE - matADJE - ? x 3 adjacency matrix, where columns are: DVE | local edge | adjacent DVE
-%   vecDVESYM - valNELE x 1 vector of which DVEs have symmetry on which edge (0 for no symmetry, 2 for local edge 2, 4 for local edge 4)
-%   vecDVETIP - valNELE x 1 vector of which DVEs are at the wingtip. Similar format to vecDVESYM
-
-% FUNCTIONS USED:
-%   fcnPANELCORNERS
-%   fcnPANEL2DVE
-%   fcnGLOBSTAR
+function [matPOINTS, matTEPOINTS, matLEPOINTS, vecDVESURFACE, vecDVEFLIP, vecDVEWING, vecDVEROTOR] = fcnGENERATEDVES(valPANELS, matGEOM, vecN, vecM, strAIRFOIL, vecPANELWING, vecPANELROTOR)
 
 %% Preallocation
 valNELE = sum(vecM.*vecN);
@@ -59,7 +7,9 @@ P1          = nan(valNELE,3);
 P2          = nan(valNELE,3);
 P3          = nan(valNELE,3);
 P4          = nan(valNELE,3);
+vecDVESURFACE  = [];
 vecDVEWING  = [];
+vecDVEROTOR  = [];
 vecEnd      = cumsum(vecN.*vecM);
 
 %% Assign Wing to Panel
@@ -88,7 +38,6 @@ clear tempB tempC temp1
 points = [];
 matTEPOINTS = [];
 matLEPOINTS = [];
-vecDVESYM = logical([]);
 vecDVEFLIP = logical([]);
 
 for i = 1:valPANELS
@@ -104,17 +53,17 @@ for i = 1:valPANELS
     % For DVE generation. Twist angle is handled along with dihedral angle
     panel4corners = reshape(fcnPANELCORNERS(rLE,tLE,rchord,tchord,repsilon,tepsilon),3,4)';
     
-    if strcmpi(strATYPE{2}, 'PANEL') || size(strAIRFOIL,2) > 1
+    if size(strAIRFOIL,2) > 1
         % root
         airfoil(i,1).coord = dlmread(['airfoils/', strAIRFOIL{i,1}, '.dat'],'',1,0);
         airfoil(i,1).coord = airfoil(i,1).coord.*(1./max(airfoil(i,1).coord(:,1)));
-
+        
         [~,idx] = min(airfoil(i,1).coord(:,1));
-        airfoil(i,1).le_idx = idx;      
-
+        airfoil(i,1).le_idx = idx;
+        
         airfoil(i,2).coord = dlmread(['airfoils/', strAIRFOIL{i,2}, '.dat'],'',1,0);
         airfoil(i,2).coord = airfoil(i,2).coord.*(1./max(airfoil(i,2).coord(:,1)));
-
+        
         [~,idx] = min(airfoil(i,2).coord(:,1));
         airfoil(i,2).le_idx = idx;
     else
@@ -122,24 +71,15 @@ for i = 1:valPANELS
     end
     
     % fcnPANEL2DVE takes four corners of a panel and outputs vertices of non-planer DVEs
-    [~, LE_Left, LE_Right, TE_Left, TE_Right , tmpULS] = fcnPANEL2DVE(strATYPE, panel4corners, i, vecN, vecM, repsilon, tepsilon, rchord, tchord, airfoil, strSPACING, strPSPACE{i});
-    
-    if strcmpi(strATYPE{2}, 'PANEL')
-        vecM = vecM.*2;
-        vecEnd = vecEnd.*2;
-        valNELE = valNELE*2;
-    end
+    [~, LE_Left, LE_Right, TE_Left, TE_Right , tmpULS] = fcnPANEL2DVE(panel4corners, i, vecN, vecM, airfoil);
     
     % Saving the TE and LE points so we can define those edges later on
-    if vecPANELTE(i) == 1
-        temp_te(:,:,1) = permute(TE_Left(end,:,:), [2 3 1]);
-        temp_te(:,:,2) = permute(TE_Right(end,:,:), [2 3 1]);
-    end
+    temp_te(:,:,1) = permute(TE_Left(end,:,:), [2 3 1]);
+    temp_te(:,:,2) = permute(TE_Right(end,:,:), [2 3 1]);
     
-    if vecPANELLE(i) == 1
-        temp_le(:,:,1) = permute(LE_Left(1,:,:), [2 3 1]);
-        temp_le(:,:,2) = permute(LE_Right(1,:,:), [2 3 1]);
-    end
+    temp_le(:,:,1) = permute(LE_Left(1,:,:), [2 3 1]);
+    temp_le(:,:,2) = permute(LE_Right(1,:,:), [2 3 1]);
+    
     
     % WRITE RESULTS
     count = vecN(i)*vecM(i);
@@ -148,33 +88,24 @@ for i = 1:valPANELS
     
     vecDVEPANEL(idxStart:idxEnd,:) = repmat(i,count,1);
     
-    if vecSYM(i) == 1
-       vecDVESYM = [vecDVESYM; true(count*2, 1)]; 
-    end
-    
     % Write DVE WING Index
-    vecDVEWING = [vecDVEWING; repmat(panel2wing(i),count*2,1)];
+    vecDVESURFACE = [vecDVESURFACE; repmat(panel2wing(i),count*2,1)];
+    vecDVEWING = [vecDVEWING; repmat(vecPANELWING(i),count*2,1)];
+    vecDVEROTOR = [vecDVEROTOR; repmat(vecPANELROTOR(i),count*2,1)];
     
     % Write non-planer DVE coordinates
     P1(idxStart:idxEnd,:) = reshape(permute(LE_Left, [2 1 3]),count,3);
     P2(idxStart:idxEnd,:) = reshape(permute(LE_Right, [2 1 3]),count,3);
     P3(idxStart:idxEnd,:) = reshape(permute(TE_Right, [2 1 3]),count,3);
     P4(idxStart:idxEnd,:) = reshape(permute(TE_Left, [2 1 3]),count,3);
-%     vecULS(idxStart:idxEnd,:) = reshape(permute(tmpULS, [2 1 3]),count,1);
+    %     vecULS(idxStart:idxEnd,:) = reshape(permute(tmpULS, [2 1 3]),count,1);
     
     % Creating "triangles" from the quadrilaterals on this panel. This is done in a way that SHOULD keep the normals "upwards" and not mixed
-%     vecULS = reshape(repmat(vecULS,1,2,1)', [],1,1);
-    vecULS = [];
-    if strcmpi(strATYPE{2}, 'PANEL')
-        temp_points = cat(3, permute(reshape([P1(idxStart:idxEnd,:) P3(idxStart:idxEnd,:) P2(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
-        permute(reshape([P1(idxStart:idxEnd,:) P4(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]));
-    else
-        temp_points = cat(3, permute(reshape([P3(idxStart:idxEnd,:) P2(idxStart:idxEnd,:) P1(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
-        permute(reshape([P4(idxStart:idxEnd,:) P1(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]));    
-    end
+    temp_points = cat(3, permute(reshape([P3(idxStart:idxEnd,:) P2(idxStart:idxEnd,:) P1(idxStart:idxEnd,:)],[],3,3), [3 2 1]), ...
+        permute(reshape([P4(idxStart:idxEnd,:) P1(idxStart:idxEnd,:) P3(idxStart:idxEnd,:)],[],3,3), [3 2 1]));
     
     vecDVEFLIP = [vecDVEFLIP; true(length(idxStart:idxEnd),1); false(length(idxStart:idxEnd),1)];
-
+    
     points = cat(3, points, temp_points);
     
     matTEPOINTS = [matTEPOINTS; temp_te];

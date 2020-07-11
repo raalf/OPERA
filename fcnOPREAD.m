@@ -296,7 +296,7 @@ fclose(fp);
 % Adding collective pitch
 matGEOM(:,end,:) = matGEOM(:,end,:) + valCOLL;
 
-[matPOINTS, matTEPOINTS, matLEPOINTS, vecULS, vecDVESYM, vecDVESURFACE, vecDVEFLIP] = fcnGENERATEDVES(valPANELS, matGEOM, vecSYM, vecN, vecM, vecPANELTE, vecPANELLE, strATYPE, strAIRFOIL, strSPACING, strPSPACE, vecWING);
+[matPOINTS, matTEPOINTS, matLEPOINTS, vecDVESURFACE, vecDVEFLIP] = fcnGENERATEDVES(valPANELS, matGEOM, vecN, vecM, strAIRFOIL);
 
 
 end

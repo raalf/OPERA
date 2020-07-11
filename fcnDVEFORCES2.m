@@ -1,7 +1,7 @@
 function [matF_FS, matF_IF, matF_ID, matINTCIRC] = fcnDVEFORCES2(matVLST, matELST, matROTANG, ...
     matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
-    matWVLST, vecWLEDVE, matWELST, vecDVESYM, vecWDVESYM, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, ...
-    vecWVMU, matCENTER, matKINCON_P, matKINCON_DVE, matUINF_KK, matDVECT, valZTOL)
+    matWVLST, vecWLEDVE, matWELST, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, ...
+    vecWVMU, matCENTER, matKINCON_P, vecKINCON_DVE, matUINF_KK, matDVECT, valZTOL)
 
 %% Common params
 xi_1 = permute(matPLEX(1,1,:),[3 2 1]);
@@ -30,13 +30,13 @@ len_adj = abs(sqrt(sum(len_adj.^2,2))./(xi_3(vecTEDVE) - xi_1(vecTEDVE)));
 % surfaces. 9 unknowns for velocity across each element (3 per direction)
 % U_ES = (eta*v__xb + v__xa*xi + v__xc, eta*v__eb + v__ea*xi + v__ec, eta*v__zb + v__za*xi + v__zc)
 
-matF_FS = fcnDVEFORCE(idx_flp, valNELE, valDENSITY, matUINF_KK, matKINCON_DVE, matKINCON_P, matCENTER, matROTANG, A_1, A_2, B_1, B_2, C_2, xi_1, xi_3, C, D_LE, E, D_TE);
+matF_FS = fcnDVEFORCE(idx_flp, valNELE, valDENSITY, matUINF_KK, vecKINCON_DVE, matKINCON_P, matCENTER, matROTANG, A_1, A_2, B_1, B_2, C_2, xi_1, xi_3, C, D_LE, E, D_TE);
 
-tmp_w = fcnSDVEVEL(matKINCON_P, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESYM, [], 0) + ...
-    (fcnSDVEVEL(matKINCON_P + matDVECT(matKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 0) + ...
-    fcnSDVEVEL(matKINCON_P - matDVECT(matKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESYM, [], 0))./2;
+tmp_w = fcnSDVEVEL(matKINCON_P, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, [], 0) + ...
+    (fcnSDVEVEL(matKINCON_P + matDVECT(vecKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, [], 0) + ...
+    fcnSDVEVEL(matKINCON_P - matDVECT(vecKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, [], 0))./2;
 
-matF_IF = fcnDVEFORCE(idx_flp, valNELE, valDENSITY, tmp_w, matKINCON_DVE, matKINCON_P, matCENTER, matROTANG, A_1, A_2, B_1, B_2, C_2, xi_1, xi_3, C, D_LE, E, D_TE);
+matF_IF = fcnDVEFORCE(idx_flp, valNELE, valDENSITY, tmp_w, vecKINCON_DVE, matKINCON_P, matCENTER, matROTANG, A_1, A_2, B_1, B_2, C_2, xi_1, xi_3, C, D_LE, E, D_TE);
 
 %% Induced Drag
 % Induced velocities at wake leading edge DVEs (wind is 3 x 3 x num_dve)
@@ -82,8 +82,8 @@ for i = 1:valWSIZE
     
     fpg_og(:,:,i) = locations.*matWVLST(tmp_verts(1),:) + (1 - locations).*(matWVLST(tmp_verts(2),:));
     fpg_us(:,:,i) = locations.*vert_one + (1 - locations).*vert_two;
-    wind(:,:,i) = (fcnSDVEVEL(fpg_us(:,:,i) + tmpWDVECT(vecWLEDVE(i),:,3).*valZTOL, valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESYM, boundind, 0) + ...
-        fcnSDVEVEL(fpg_us(:,:,i) - tmpWDVECT(vecWLEDVE(i),:,3).*valZTOL, valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESYM, boundind, 0))./2;   
+    wind(:,:,i) = (fcnSDVEVEL(fpg_us(:,:,i) + tmpWDVECT(vecWLEDVE(i),:,3).*valZTOL, valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, boundind, 0) + ...
+        fcnSDVEVEL(fpg_us(:,:,i) - tmpWDVECT(vecWLEDVE(i),:,3).*valZTOL, valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, boundind, 0))./2;   
 end
 
 % fpg2 = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';

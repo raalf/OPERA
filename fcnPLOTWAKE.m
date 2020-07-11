@@ -1,4 +1,4 @@
-function [hFig1] = fcnPLOTWAKE(verbose, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, valPRESTEPS, matWVGRID, vecWDVESURFACE)
+function [hFig1] = fcnPLOTWAKE(verbose, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, matWVGRID, vecWDVESURFACE)
 
 set(0,'CurrentFigure',hFig1);
 
@@ -10,7 +10,7 @@ colormap parula
 %     plot3(matWVLST(matWVGRID(1:end-valPRESTEPS,j),1),matWVLST(matWVGRID(1:end-valPRESTEPS,j),2),matWVLST(matWVGRID(1:end-valPRESTEPS,j),3),'-b','LineWidth',2);
 % end
 
-plotDVE = [(valPRESTEPS.*valWSIZE.*2 + 1):valWNELE]';
+plotDVE = [1:valWNELE]';
 patch('Faces',matWDVE(plotDVE,:,1),'Vertices',matWVLST,'FaceVertexCData',col(plotDVE),'FaceColor','flat','EdgeAlpha',0.4,'FaceAlpha',0.4);
 
 if verbose == 1

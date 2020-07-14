@@ -1,4 +1,5 @@
-function [matPOINTS, matTEPOINTS, matLEPOINTS, vecDVESURFACE, vecDVEFLIP, vecDVEWING, vecDVEROTOR] = fcnGENERATEDVES(valPANELS, matGEOM, vecN, vecM, strAIRFOIL, vecPANELWING, vecPANELROTOR)
+function [matPOINTS, matTEPOINTS, matLEPOINTS, vecDVESURFACE, vecDVEFLIP, vecDVEWING, vecDVEROTOR, vecDVESDFLIP] ...
+    = fcnGENERATEDVES(valPANELS, matGEOM, vecN, vecM, strAIRFOIL, vecPANELWING, vecPANELROTOR, vecROTORFLIP)
 
 %% Preallocation
 valNELE = sum(vecM.*vecN);
@@ -39,6 +40,7 @@ points = [];
 matTEPOINTS = [];
 matLEPOINTS = [];
 vecDVEFLIP = logical([]);
+vecDVESDFLIP = logical([]);
 
 for i = 1:valPANELS
     temp_te = [];
@@ -106,16 +108,23 @@ for i = 1:valPANELS
     
     vecDVEFLIP = [vecDVEFLIP; true(length(idxStart:idxEnd),1); false(length(idxStart:idxEnd),1)];
     
+    if vecPANELROTOR(i) > 0 && vecROTORFLIP(vecPANELROTOR(i)) == true
+        vecDVESDFLIP = [vecDVESDFLIP; true(length(idxStart:idxEnd)*2,1)];
+    else
+        vecDVESDFLIP = [vecDVESDFLIP; false(length(idxStart:idxEnd)*2,1)];
+    end
+    
     points = cat(3, points, temp_points);
     
     matTEPOINTS = [matTEPOINTS; temp_te];
     matLEPOINTS = [matLEPOINTS; temp_le];
     
-    
     clear LE_Left LE_Mid LE_Right TE_Right TE_Left ...
         imLEL imLER imTER imTEL ...
         idxStart idxEnd count temp_le temp_te temp_points temp_points_sym
 end
+
+vecDVEFLIP(vecDVESDFLIP) = ~vecDVEFLIP(vecDVESDFLIP);
 
 verticeList = [reshape(permute(points,[2 1 3]),3,[],1)'];
 [matVLST,idxVLST,matDVE] = unique(verticeList,'rows');

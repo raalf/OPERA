@@ -1,5 +1,5 @@
 function [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, ...
-            matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA, matSPANDIR, vecDVECHORD] = fcnTRIANG(POINTS, vecDVEFLIP)
+            matPLEX, matDVECT, matVATT, matVNORM, matCENTER, matROTANG, matCONTROL, vecDVEAREA, matSPANDIR, vecDVECHORD] = fcnTRIANG(POINTS, vecDVEFLIP, vecDVESDFLIP)
 % This function reads the STL and creates the HDVE matrices.
 % Inputs:
 %   POINTS - n x 3 x 3 matrix, where columns are (x,y,z) and depth is vertex number
@@ -140,6 +140,7 @@ vecDVEAREA = 0.5.*sqrt(sum(cross(matVLST(matDVE(:,2),:) - matVLST(matDVE(:,1),:)
 matSPANDIR = repmat([0 1 0],valNELE,1);
 matSPANDIR = matSPANDIR - (dot(matSPANDIR, matDVECT(:,:,3),2)).*matDVECT(:,:,3);
 matSPANDIR = matSPANDIR./(sqrt(sum(matSPANDIR.^2,2)));
+matSPANDIR(vecDVESDFLIP,:) = matSPANDIR(vecDVESDFLIP,:).*-1;
 
 %% Chord
 xi_1 = permute(matPLEX(1,1,:),[3 2 1]);

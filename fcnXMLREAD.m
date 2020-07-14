@@ -1,7 +1,7 @@
 function [flgRELAX, flgSTEADY, valMAXTIME, valDELTIME, valDENSITY, valUINF, valALPHA, valBETA, ...
     valROLL, valFPA, valTRACK, valAREA, valSPAN, matPOINTS, matTEPOINTS, matLEPOINTS, ...
     vecDVESURFACE, vecDVEFLIP, valROTORS, valWINGS, vecROTORRPM, vecROTORDIAM, ...
-    vecROTORBLADES, matROTORHUB, matROTORAXIS, vecDVEWING, vecDVEROTOR] = fcnXMLREAD(filename)
+    vecROTORBLADES, matROTORHUB, matROTORAXIS, vecDVEWING, vecDVEROTOR, vecDVESDFLIP] = fcnXMLREAD(filename)
 
 inp = fcnXML2STRUCT(filename);
 VAP = inp.VAP;
@@ -105,9 +105,15 @@ for j = 1:valROTORS
     vecPANELS(k,1) = max(size(rot.panel));
     
     flip = 1;
-    try if strcmpi(rot.rotation_direction.Text,'CW'); flip = -1; end; end
-    vecROTORRPM(p,1) = vecROTORRPM(p,1)*flip;
+    vecROTORFLIP(p,1) = false;
+    try 
+        if strcmpi(rot.rotation_direction.Text,'CW') 
+            flip = -1; 
+            vecROTORFLIP(p,1) = true;
+        end
+    end
     
+    vecROTORRPM(p,1) = vecROTORRPM(p,1)*flip;
     for m = 1:vecPANELS(k,1)
         
         try pan = rot.panel{1,m}; catch; pan = rot.panel; end
@@ -163,7 +169,7 @@ valPANELS = size(matGEOM,3);
 
 
 %% Generate DVEs
-[matPOINTS, matTEPOINTS, matLEPOINTS, vecDVESURFACE, vecDVEFLIP, vecDVEWING, vecDVEROTOR] = fcnGENERATEDVES(valPANELS, matGEOM, vecN, vecM, cellAIRFOIL, vecPANELWING, vecPANELROTOR);
+[matPOINTS, matTEPOINTS, matLEPOINTS, vecDVESURFACE, vecDVEFLIP, vecDVEWING, vecDVEROTOR, vecDVESDFLIP] = fcnGENERATEDVES(valPANELS, matGEOM, vecN, vecM, cellAIRFOIL, vecPANELWING, vecPANELROTOR, vecROTORFLIP);
 
 end
 

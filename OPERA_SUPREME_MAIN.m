@@ -22,28 +22,30 @@ disp('========================================================================='
 
 %% Reading in geometry
 % filename = 'inputs/TMotor_Controlled.vap'
-filename = 'inputs/TMotor_Coarse2.vap'
+% filename = 'inputs/TMotor_Coarse2.vap'
+filename = 'inputs/QuadPlane.vap'
+% filename = 'inputs/QuadRotor.vap'
 
 [flgRELAX, flgSTEADY, valMAXTIME, valDELTIME, valDENSITY, valUINF, valALPHA, valBETA, ...
     valROLL, valFPA, valTRACK, valAREA, valSPAN, matPOINTS, matTEPOINTS, matLEPOINTS, ...
     vecDVESURFACE, vecDVEFLIP, valROTORS, valWINGS, vecROTORRPM, vecROTORDIAM, ...
-    vecROTORBLADES, matROTORHUB, matROTORAXIS, vecDVEWING, vecDVEROTOR] = fcnXMLREAD(filename);
+    vecROTORBLADES, matROTORHUB, matROTORAXIS, vecDVEWING, vecDVEROTOR, vecDVESDFLIP] = fcnXMLREAD(filename);
 
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, ...
-    matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD] = fcnTRIANG(matPOINTS, vecDVEFLIP);
+    matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD] = fcnTRIANG(matPOINTS, vecDVEFLIP, vecDVESDFLIP);
 
-flgGIF = true;
+flgGIF = true
 
 %% Preliminary Geometry Stuff
 % Duplicating rotor blades if need be
 if valROTORS > 0
     [valNELE, matVLST, matELST, matDVE, matCENTER, matPLEX, vecDVEAREA, ...
         matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, matDVECT, ...
-        matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR, vecDVEROTOR, vecDVEWING] ...
+        matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR, vecDVEROTOR, vecDVEWING, vecDVESDFLIP] ...
         = fcnREADYROTOR(valROTORS, valNELE, matVLST, matELST, matDVE, ...
         vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, matVATT, ...
         matTEPOINTS, matLEPOINTS, matSPANDIR, vecROTORBLADES, matROTORHUB, matROTORAXIS, ...
-        vecDVEWING, vecDVEROTOR);
+        vecDVEWING, vecDVEROTOR, vecDVESDFLIP);
 end
 
 % Generating leading and trailing edge information
@@ -73,7 +75,7 @@ if flgGIF == true
 end
 
 %% D-Matrix Creation
-matD = fcnDWING9(matEATT, matPLEX, valNELE, matELST, matVLST, matCENTER, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, matROTANG, matKINCON_P, vecKINCON_DVE);
+matD = fcnDWING9(matEATT, matPLEX, valNELE, matELST, matVLST, matCENTER, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, matROTANG, matKINCON_P, vecKINCON_DVE, vecDVESDFLIP);
 valDLEN = length(matD);
 
 %% Preparing to timestep
@@ -83,12 +85,12 @@ valZTOL = 1e-5; % Used to offset field points from surface sheets when necessary
 matWELST = []; matWDVE = []; valWNELE = []; matWEATT = []; matWEIDX = []; matWPLEX = []; matWDVECT = [];
 matWCENTER = []; matWAKEGEOM = []; matWCOEFF = []; matWVLST = []; matWROTANG = []; vecWVMU = []; vecWEMU = [];
 matWVGRID = []; matWEGRID = []; vecWDVEFLIP = logical([]); vecWLEDVE = []; vecWTEDVE = [];
-CL = nan(valMAXTIME,1); CDi = nan(valMAXTIME,1); CT = nan(valMAXTIME,1); e = nan(valMAXTIME,1);
+CL = nan(valMAXTIME,1); CDi = nan(valMAXTIME,1); CT = nan(valMAXTIME,valROTORS); e = nan(valMAXTIME,1);
 valWSIZE = length(vecTE); vecWDVESURFACE = []; matINTCIRC = nan(valNELE,valMAXTIME); vecTSITER = nan(valMAXTIME,2);
-vecRSQUARED = nan(valMAXTIME,2); matWDVEGRID = [];
+vecRSQUARED = nan(valMAXTIME,2); matWDVEGRID = []; vecWDVESDFLIP = logical([]);
 
 % Building wing resultant
-vecR = fcnRWING(flgSTEADY, valZTOL, valDLEN, 0, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, matKINCON_P, vecKINCON_DVE, matDVECT, []);
+vecR = fcnRWING(flgSTEADY, valZTOL, valDLEN, 0, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, matKINCON_P, vecKINCON_DVE, matDVECT, [], []);
 boolKINCON = false(size(matD,1),1);
 boolKINCON(end-(valNELE*4-1):end) = true;
 
@@ -112,10 +114,10 @@ for valTIMESTEP = 1:valMAXTIME
         [matWELST, matWVLST, matWDVE, valWNELE, matWEATT, matWEIDX, matWPLEX, ...
             matWDVECT, matWCENTER, matWCOEFF, matWROTANG, vecWLE, vecWTE, vecWLEDVE, vecWTEDVE, ...
             matWVGRID, vecWOTE, vecWOTEDVE, matWEGRID, matWE2GRID, vecWVMU, vecWEMU, vecWDVEFLIP, ...
-            vecWDVESURFACE, matWDVEGRID] = fcnCREATEWAKE2(valTIMESTEP, flgSTEADY, matNEWWAKE, matCOEFF, valWSIZE, ...
+            vecWDVESURFACE, matWDVEGRID, vecWDVESDFLIP] = fcnCREATEWAKE2(valTIMESTEP, flgSTEADY, matNEWWAKE, matCOEFF, valWSIZE, ...
             vecTEDVE, matCENTER, matROTANG, matWCOEFF, matWPLEX, matWVGRID, matWVLST, matWELST, matWEGRID, ...
             vecWVMU, vecWEMU, vecWDVEFLIP, matWCENTER, matWROTANG, matWDVECT, ...
-            matWDVE, matWEIDX, vecWLEDVE, matWEATT, vecDVESURFACE, vecWDVESURFACE, matWDVEGRID);
+            matWDVE, matWEIDX, vecWLEDVE, matWEATT, vecDVESURFACE, vecWDVESURFACE, matWDVEGRID, vecWDVESDFLIP, vecDVESDFLIP);
         
         [vecR, matCOEFF, vecVMU, vecEMU, matWCOEFF, vecWVMU, vecWEMU, vecTSITER(valTIMESTEP,1), vecRSQUARED] = ...
             fcnTSITER(matCOEFF, valDLEN, valTIMESTEP, matUINF_KK, valWNELE, ...
@@ -123,13 +125,13 @@ for valTIMESTEP = 1:valMAXTIME
             matDVECT, matD, vecR, valNELE, matVLST, matVATT, matCENTER, matROTANG, ...
             matDVE, matELST, matEIDX, flgSTEADY, vecWLE, matWVGRID, matWEGRID, matWE2GRID, ...
             vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, vecWOTE, matWDVE, matWEIDX, ...
-            matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valZTOL, vecRSQUARED);
+            matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valZTOL, vecRSQUARED, vecWDVESDFLIP);
         
         % Relaxing Wake
         if flgRELAX == true && valTIMESTEP > 2
             [matWELST, matWVLST, matWPLEX, matWDVECT, matWCENTER, matWROTANG] = ...
                 fcnRELAX8(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, ...
-                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, matWELST, matWVGRID, vecWDVEFLIP, matWDVEGRID);
+                matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, matWELST, matWVGRID, vecWDVEFLIP, matWDVEGRID, vecWDVESDFLIP, vecDVESDFLIP);
             
             matWCOEFF = fcnADJCOEFF(vecWVMU, vecWEMU, matWVLST, matWCENTER, matWROTANG, matWDVE, matWCOEFF, matWELST, matWEIDX, valWNELE);
             
@@ -150,15 +152,23 @@ for valTIMESTEP = 1:valMAXTIME
                 valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, vecWDVESURFACE, valWSIZE, matWVGRID, valGIFNUM);
         end
         
+%                 hold on
+%         %         scatter3(matKINCON_P(:,1), matKINCON_P(:,2), matKINCON_P(:,3), 'sm');
+%         %         quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matUINF(:,1), matUINF(:,2), matUINF(:,3));
+%         %         quiver3(matVLST(:,1), matVLST(:,2), matVLST(:,3), matVUINF(:,1), matVUINF(:,2), matVUINF(:,3));
+%         %         quiver3(matKINCON_P(:,1), matKINCON_P(:,2), matKINCON_P(:,3), matUINF_KK(:,1), matUINF_KK(:,2), matUINF_KK(:,3));
+%                 quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matSPANDIR(:,1), matSPANDIR(:,2), matSPANDIR(:,3));
+%                 hold off
+        
         %% Calculating Forces
         [matF_FS(:,:,valTIMESTEP), matF_IF(:,:,valTIMESTEP), matF_ID(:,:,valTIMESTEP), matINTCIRC(:,valTIMESTEP)] = ...
             fcnDVEFORCES2(matVLST, matELST, matROTANG, ...
             matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
             matWVLST, vecWLEDVE, matWELST, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, ...
-            vecWVMU, matCENTER, matKINCON_P, vecKINCON_DVE, matUINF_KK, matDVECT, valZTOL);
+            vecWVMU, matCENTER, matKINCON_P, vecKINCON_DVE, matUINF_KK, matDVECT, valZTOL, vecWDVESDFLIP, vecDVESDFLIP);
         
         [CL(valTIMESTEP), CDi(valTIMESTEP), e(valTIMESTEP), ~, ~, ~, ~, ~, CT(valTIMESTEP,:)] = fcnFORCES(valTIMESTEP, valWINGS, valROTORS, ...
-            matF_FS, matF_IF, matF_ID, matLIFT_DIR, matSIDE_DIR, matDRAG_DIR, valDENSITY, valAREA, valSPAN, vecROTORRPM, ...
+            matF_FS, matF_IF, matF_ID, matLIFT_DIR, matSIDE_DIR, matDRAG_DIR, valDENSITY, valAREA, valSPAN, valUINF, vecROTORRPM, ...
             vecROTORDIAM, matROTORAXIS, vecTSITER, vecRSQUARED, vecDVEROTOR, vecDVEWING);
         
         matSPANDIR_ALL(:,:,valTIMESTEP) = matSPANDIR;
@@ -170,8 +180,8 @@ for valTIMESTEP = 1:valMAXTIME
 end
 
 %% Apparent mass
-skip = 1;
-[CT_U, CL_U, matDGAMMADT, matF_NC] = fcnDGAMMADT(skip, valNELE, strATYPE, valDELTIME, matSPANDIR_ALL, matUINF_ALL, matF_FS, matF_IF, matF_ID, matINTCIRC, vecLIFT_DIR, vecSIDE_DIR, vecDRAG_DIR, valDENSITY, valAREA, valSPAN, valDIAM, valRPM);
+% skip = 1;
+% [CT_U, CL_U, matDGAMMADT, matF_NC] = fcnDGAMMADT(skip, valNELE, strATYPE, valDELTIME, matSPANDIR_ALL, matUINF_ALL, matF_FS, matF_IF, matF_ID, matINTCIRC, vecLIFT_DIR, vecSIDE_DIR, vecDRAG_DIR, valDENSITY, valAREA, valSPAN, valDIAM, valRPM);
 
 %% Save environment
 save(['run_',num2str(now),'.mat']);

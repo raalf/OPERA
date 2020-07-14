@@ -1,6 +1,6 @@
 function [matWELST, matWVLST, matWPLEX, matWDVECT, matWCENTER, matWROTANG] = ...
     fcnRELAX8(valTIMESTEP, valDELTIME, valNELE, matCOEFF, matPLEX, valWNELE, matWCOEFF, matWDVE, matWVLST, matWPLEX, ...
-    matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, matWELST, matWVGRID, vecWDVEFLIP, matWDVEGRID)
+    matROTANG, matWROTANG, matCENTER, matWCENTER, vecWLE, matWELST, matWVGRID, vecWDVEFLIP, matWDVEGRID, vecWDVESDFLIP, vecDVESDFLIP)
 
 %% Finding induced velocities at all wake vertices
 tmp2 = zeros(size(matWVLST));
@@ -13,7 +13,7 @@ for i = 1:sz:(valTIMESTEP)
         idx_rows = [i:i+sz]';
     end
     
-    q_ind = fcnSDVEVEL(matWCENTER(matWDVEGRID(idx_rows,:),:), valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, [], 0) + fcnSDVEVEL(matWCENTER(matWDVEGRID(idx_rows,:),:), valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, [], 0);
+    q_ind = fcnSDVEVEL(matWCENTER(matWDVEGRID(idx_rows,:),:), valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESDFLIP, [], 0) + fcnSDVEVEL(matWCENTER(matWDVEGRID(idx_rows,:),:), valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESDFLIP, [], 0);
     
     %     qx = scatteredInterpolant(matWCENTER(matWDVEGRID(idx_rows,:),1), matWCENTER(matWDVEGRID(idx_rows,:),2), matWCENTER(matWDVEGRID(idx_rows,:),3), q_ind(:,1), 'natural', 'nearest');
     %     qy = scatteredInterpolant(matWCENTER(matWDVEGRID(idx_rows,:),1), matWCENTER(matWDVEGRID(idx_rows,:),2), matWCENTER(matWDVEGRID(idx_rows,:),3), q_ind(:,2), 'natural', 'nearest');

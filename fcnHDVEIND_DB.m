@@ -1,4 +1,4 @@
-function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecBI, ztol, GPU)
+function [infl_loc] = fcnHDVEIND_DB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCONTROL, vecDVESDFLIP, vecBI, ztol, GPU)
 warning('on')
 
 if nargin < 9 || GPU == false
@@ -37,6 +37,7 @@ idx_on_element = y_m >= te_eta - margin & y_m <= le_eta + margin & x_m >= xi_lef
 
 % margin = 1e-4;
 idx_flp = xi_3 < xi_1; % Flipping influence of elements that need a good flippin
+% idx_flp(vecDVESDFLIP) = ~idx_flp(vecDVESDFLIP);
 if any(abs(xi_2 - xi_3) < margin & abs(xi_1 - xi_2) > margin)
     disp('Issue in element orientation in HDVEIND.');
 end
@@ -409,7 +410,7 @@ infl_loc(:,6,:) = J11;
 infl_loc(:,:,idx_flp) = -infl_loc(:,:,idx_flp);
 
 if any(vecBI)
-    infl_BI = fcnBOUNDIND(dvenum(vecBI), dvetype(vecBI), fpg(vecBI,:), matPLEX, matROTANG, matCONTROL, vecBI(vecBI), 0, GPU);
+    infl_BI = fcnBOUNDIND(dvenum(vecBI), dvetype(vecBI), fpg(vecBI,:), matPLEX, matROTANG, matCONTROL, vecDVESDFLIP, vecBI(vecBI), 0, GPU);
     infl_loc(:,:,vecBI) = infl_loc(:,:,vecBI) + infl_BI;
 end
 

@@ -14,7 +14,7 @@ for n = 1:valROTORS
     
     tmpC = matCENTER(idxDVEROTOR,:);
     tmpV = matVLST(matDVE(idxDVEROTOR,:),:);
-    idx_k = ismember(vecKINCON_DVE,find(vecDVEROTOR));
+    idx_k = ismember(vecKINCON_DVE,find(idxDVEROTOR));
     tmpK = matKINCON_P(idx_k,:);
     
     tmpC = tmpC - matROTORHUB(n,:);

@@ -1,9 +1,9 @@
 function [valNELE, matVLST, matELST, matDVE, matCENTER, matPLEX, vecDVEAREA, ...
     matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, matDVECT, ...
-    matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR, vecDVEROTOR, vecDVEWING] ...
+    matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR, vecDVEROTOR, vecDVEWING, vecDVESDFLIP] ...
     = fcnREADYROTOR(valROTORS, valNELE, matVLST, matELST, matDVE, ...
     vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, matVATT, ...
-    matTEPOINTS, matLEPOINTS, matSPANDIR, vecROTORBLADES, matROTORHUB, matROTORAXIS, vecDVEWING, vecDVEROTOR)
+    matTEPOINTS, matLEPOINTS, matSPANDIR, vecROTORBLADES, matROTORHUB, matROTORAXIS, vecDVEWING, vecDVEROTOR, vecDVESDFLIP)
 
 % matELST, matEIDX, matVATT <----------- fix
 
@@ -23,7 +23,7 @@ for n = 1:valROTORS
         POINTS(:,:,3) = (matVLST(matDVE(idxDVEBLADE,3),:) - matROTORHUB(n,:))*dcmBLADE + matROTORHUB(n,:);
         
         [~, tmpELST, tmpVLST, tmpDVE, ~, tmpEATT, tmpEIDX, ...
-            ~, ~, tmpVATT, ~, ~, ~, ~, ~, ~, ~] = fcnTRIANG(POINTS, vecDVEFLIP(idxDVEBLADE));
+            ~, ~, tmpVATT, ~, ~, ~, ~, ~, ~, ~] = fcnTRIANG(POINTS, vecDVEFLIP(idxDVEBLADE), vecDVESDFLIP(idxDVEBLADE));
         
         vcount = size(matVLST,1);
         dvecount = size(matDVE,1);
@@ -52,6 +52,7 @@ for n = 1:valROTORS
         vecDVEROTOR = [vecDVEROTOR; vecDVEROTOR(idxDVEBLADE)];
         vecDVESURFACE = [vecDVESURFACE; vecDVESURFACE(idxDVEBLADE)];
         vecDVEFLIP = [vecDVEFLIP; vecDVEFLIP(idxDVEBLADE)];
+        vecDVESDFLIP = [vecDVESDFLIP; vecDVESDFLIP(idxDVEBLADE)];
         vecDVEAREA = [vecDVEAREA; vecDVEAREA(idxDVEBLADE)];
     end
     

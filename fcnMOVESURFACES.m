@@ -10,14 +10,15 @@ translation = fcnUINFWING(valALPHA, valBETA).*valUINF.*valDELTIME;
 
 matKINCON_P = matKINCON_P - translation;
 matVLST = matVLST - translation;
-matROTORHUB = matROTORHUB - translation;
 
 %%
 for n = 1:valROTORS
+    matROTORHUB(n,:) = matROTORHUB(n,:) - translation;
+
     idxDVEROTOR = vecDVEROTOR == n;
     
     tmpV = matVLST(matDVE(idxDVEROTOR,:),:);
-    idx_k = ismember(vecKINCON_DVE,find(vecDVEROTOR));
+    idx_k = ismember(vecKINCON_DVE,find(idxDVEROTOR));
     tmpK = matKINCON_P(idx_k,:);
     
     tmpV = tmpV - matROTORHUB(n,:);

@@ -1,13 +1,13 @@
 function [CL, CDi, e, CY, CLf, CLi, CYf, CYi, CT] = fcnFORCES(valTIMESTEP, valWINGS, valROTORS, ...
-    matF_FS, matF_IF, matF_ID, matLIFT_DIR, matSIDE_DIR, matDRAG_DIR, valDENSITY, valAREA, valSPAN, vecROTORRPM, ...
-    vecROTORDIAM, matROTORAXIS, vecTSITER, vecRSQUARED, vecDVEROTOR, vecDVEWING)
+    matF_FS, matF_IF, matF_ID, matLIFT_DIR, matSIDE_DIR, matDRAG_DIR, valDENSITY, valAREA, valSPAN, valUINF, ... 
+    vecROTORRPM, vecROTORDIAM, matROTORAXIS, vecTSITER, vecRSQUARED, vecDVEROTOR, vecDVEWING)
 
 out_str = sprintf('Timestep: %d\t\t', valTIMESTEP);
 
 if valWINGS > 0
     idxwing = vecDVEWING > 0;
     [CL, CDi, e, CY, CLf, CLi, CYf, CYi] = fcnWFORCES(matF_FS(idxwing,:,valTIMESTEP), matF_IF(idxwing,:,valTIMESTEP), ...
-        matF_ID(idxwing,:,valTIMESTEP), matLIFT_DIR(idxwing,:), matSIDE_DIR(idxwing,:), matDRAG_DIR(idxwing,:), valDENSITY, valAREA, valSPAN);
+        matF_ID(idxwing,:,valTIMESTEP), matLIFT_DIR(idxwing,:), matSIDE_DIR(idxwing,:), matDRAG_DIR(idxwing,:), valDENSITY, valAREA, valSPAN, valUINF);
     
     out_str = [out_str, sprintf('CL = %0.5f\t\tCDi = %0.5f\t\te = %0.5f\t\t', CL, CDi, e)];
     

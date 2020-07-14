@@ -4,7 +4,7 @@ function [vecR, matCOEFF, vecVMU, vecEMU, matWCOEFF, vecWVMU, vecWEMU, valTSITER
     matDVECT, matD, vecR, valNELE, matVLST, matVATT, matCENTER, matROTANG, ...
     matDVE, matELST, matEIDX, flgSTEADY, vecWLE, matWVGRID, matWEGRID, matWE2GRID, ...
     vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, vecWOTE, matWDVE, matWEIDX, ...
-    matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valZTOL, vecRSQUARED)
+    matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valZTOL, vecRSQUARED, vecWDVESDFLIP)
 
 count = 0;
 delt = 1;
@@ -13,8 +13,9 @@ sigma = 1; % relaxation
 
 if valTIMESTEP > 1 && flgSTEADY == false
     idx = 1:(valWNELE - valWSIZE*2);
-    w_ind_ow = (fcnSDVEVEL(matKINCON_P + matDVECT(matKINCON_DVE,:,3).*valZTOL, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], 0) + ...
-        fcnSDVEVEL(matKINCON_P - matDVECT(matKINCON_DVE,:,3).*valZTOL, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], 0))./2;    
+    w_ind_ow = fcnSDVEVEL(matKINCON_P, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), vecWDVESDFLIP(idx,:), [], 0);
+%     w_ind_ow = (fcnSDVEVEL(matKINCON_P + matDVECT(matKINCON_DVE,:,3).*valZTOL, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], 0) + ...
+%         fcnSDVEVEL(matKINCON_P - matDVECT(matKINCON_DVE,:,3).*valZTOL, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], 0))./2;    
 end
 
 while ~isnan(delt) && delt >= 0.0001
@@ -23,9 +24,9 @@ while ~isnan(delt) && delt >= 0.0001
     
     if flgSTEADY == false
         idx = ((valWNELE - valWSIZE*2) + 1):valWNELE;
-        w_ind_in = (fcnSDVEVEL(matKINCON_P + matDVECT(matKINCON_DVE,:,3).*valZTOL, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], 0) + ...
-            fcnSDVEVEL(matKINCON_P - matDVECT(matKINCON_DVE,:,3).*valZTOL, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], 0))./2;
-        
+        w_ind_in = fcnSDVEVEL(matKINCON_P, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), vecWDVESDFLIP(idx,:), [], 0);
+%         w_ind_in = (fcnSDVEVEL(matKINCON_P + matDVECT(matKINCON_DVE,:,3).*valZTOL, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], 0) + ...
+%             fcnSDVEVEL(matKINCON_P - matDVECT(matKINCON_DVE,:,3).*valZTOL, length(idx), matWCOEFF(idx,:), matWPLEX(:,:,idx), matWROTANG(idx,:), matWCENTER(idx,:), [], 0))./2;
         if valTIMESTEP > 1
             w_ind_in = w_ind_in + w_ind_ow;
         end
@@ -33,7 +34,7 @@ while ~isnan(delt) && delt >= 0.0001
         w_ind_in = [];
     end
     
-    vecR = fcnRWING(flgSTEADY, valZTOL, valDLEN, valTIMESTEP, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, w_ind_in);
+    vecR = fcnRWING(flgSTEADY, valZTOL, valDLEN, valTIMESTEP, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, matKINCON_P, matKINCON_DVE, matDVECT, vecWDVESDFLIP, w_ind_in);
     
     matCOEFF_new = fcnSOLVED(matD, vecR, valNELE);
     matCOEFF = sigma.*(matCOEFF_new - matCOEFF) + matCOEFF;

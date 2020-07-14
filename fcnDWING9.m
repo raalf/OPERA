@@ -1,4 +1,4 @@
-function [D] = fcnDWING9(matEATT, matPLEX, valNELE, matELST, matVLST, matCENTER, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, matROTANG, matKINCON_P, vecKINCON_DVE)
+function [D] = fcnDWING9(matEATT, matPLEX, valNELE, matELST, matVLST, matCENTER, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, matROTANG, matKINCON_P, vecKINCON_DVE, vecDVESDFLIP)
 
 %% Circulation equations between elements
 % Evaluated at the mid-point of each edge which splits two HDVEs
@@ -67,7 +67,7 @@ dvetype = ones(size(dvenum));
 
 fpg = repmat(matKINCON_P,valNELE,1);
 
-[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER, [], 0);
+[infl_glob] = fcnHDVEINDGLOB(dvenum, dvetype, fpg, matPLEX, matROTANG, matCENTER, vecDVESDFLIP, [], 0);
 
 normals = repmat(matDVECT(vecKINCON_DVE,:,3),valNELE,1); % Repeated so we can dot all at once
 

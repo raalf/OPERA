@@ -1,4 +1,4 @@
-function [vecR] = fcnRWING(flgSTEADY, valZTOL, valDLEN, valTIMESTEP, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, matKINCON_P, vecKINCON_DVE, matDVECT, w_ind_in)
+function [vecR] = fcnRWING(flgSTEADY, valZTOL, valDLEN, valTIMESTEP, matUINF_KK, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, matKINCON_P, vecKINCON_DVE, matDVECT, vecWDVESDFLIP, w_ind_in)
 % Resultant
 % Kinematic resultant is the freestream (and wake-induced velocities summed) dotted with the
 % norm of the point we are influencing on, multiplied by 4*pi
@@ -14,9 +14,9 @@ if valTIMESTEP < 1
 elseif flgSTEADY == false && ~isempty(w_ind_in)
     vecR(end-(len-1):end) = (4*pi).*dot(matUINF_KK + w_ind_in, normals, 2);
 else
-    w_ind = (fcnSDVEVEL(matKINCON_P + matDVECT(vecKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, [], 0) + ...
-        fcnSDVEVEL(matKINCON_P - matDVECT(vecKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, [], 0))./2;
-       
+    %     w_ind = fcnSDVEVEL(matKINCON_P, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, [], 0);
+    w_ind = (fcnSDVEVEL(matKINCON_P + matDVECT(vecKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESDFLIP, [], 0) + ...
+        fcnSDVEVEL(matKINCON_P - matDVECT(vecKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESDFLIP, [], 0))./2;
     vecR(end-(len-1):end) = (4*pi).*dot(matUINF_KK + w_ind, normals, 2);
 end
 

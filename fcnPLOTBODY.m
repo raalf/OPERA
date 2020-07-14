@@ -9,23 +9,23 @@ hold on
 
 len = 0.01;
 if verbose == 1
-    for ii = 1:valNELE
-        str = sprintf('%d',ii);
-        text(matCENTER(ii,1) + len.*matDVECT(ii,1,3),matCENTER(ii,2) + len.*matDVECT(ii,2,3),matCENTER(ii,3) + len.*matDVECT(ii,3,3),str,'Color','k','FontSize',20);
-    end
-    
-    for ii = 1:length(matVLST(:,1))
-        str = sprintf('%d',ii);
-        text(matVLST(ii,1),matVLST(ii,2),matVLST(ii,3),str,'Color','r','FontSize',20);
-    end
-    
-    edge1 = matVLST(matELST(:,1),:);
-    edge2 = matVLST(matELST(:,2),:);
-    mid = (edge1+edge2)./2;
-    for ii = 1:length(mid)
-        str = sprintf('%d',ii);
-        text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',20);
-    end
+%     for ii = 1:valNELE
+%         str = sprintf('%d',ii);
+%         text(matCENTER(ii,1) + len.*matDVECT(ii,1,3),matCENTER(ii,2) + len.*matDVECT(ii,2,3),matCENTER(ii,3) + len.*matDVECT(ii,3,3),str,'Color','k','FontSize',20);
+%     end
+%     
+%     for ii = 1:length(matVLST(:,1))
+%         str = sprintf('%d',ii);
+%         text(matVLST(ii,1),matVLST(ii,2),matVLST(ii,3),str,'Color','r','FontSize',20);
+%     end
+%     
+%     edge1 = matVLST(matELST(:,1),:);
+%     edge2 = matVLST(matELST(:,2),:);
+%     mid = (edge1+edge2)./2;
+%     for ii = 1:length(mid)
+%         str = sprintf('%d',ii);
+%         text(mid(ii,1),mid(ii,2),mid(ii,3),str,'Color','b','FontSize',20);
+%     end
 
 
     len = length(matCENTER(:,1));

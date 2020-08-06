@@ -25,6 +25,7 @@ disp('========================================================================='
 % filename = 'inputs/TMotor_Coarse2.vap'
 filename = 'inputs/QuadPlane.vap'
 % filename = 'inputs/QuadRotor.vap'
+filename = 'inputs/WIPP.vap'
 
 [flgRELAX, flgSTEADY, valMAXTIME, valDELTIME, valDENSITY, valUINF, valALPHA, valBETA, ...
     valROLL, valFPA, valTRACK, valAREA, valSPAN, matPOINTS, matTEPOINTS, matLEPOINTS, ...
@@ -47,6 +48,7 @@ if valROTORS > 0
         matTEPOINTS, matLEPOINTS, matSPANDIR, vecROTORBLADES, matROTORHUB, matROTORAXIS, ...
         vecDVEWING, vecDVEROTOR, vecDVESDFLIP);
 end
+% hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl');
 
 % Generating leading and trailing edge information
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matELST, vecCHORD, vecSPAN] = fcnLETEGEN(matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS);
@@ -99,7 +101,7 @@ matCOEFF = fcnSOLVED(matD, vecR, valNELE);
 [vecVMU, vecEMU] = fcnVEMU(matVLST, matVATT, matCENTER, matROTANG, matCOEFF, matELST, matEATT, vecTE);
 matCOEFF_HSTRY(:,:,1) = matCOEFF;
 
-% hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl');
+hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl');
 
 %% Timestep to solution
 for valTIMESTEP = 1:valMAXTIME

@@ -14,12 +14,24 @@ for n = 1:valROTORS
     idx_le = ismember(matLEPOINTS(:,:,1), matVLST(idxVLSTBLADE,:), 'rows') & ismember(matLEPOINTS(:,:,2), matVLST(idxVLSTBLADE,:), 'rows');
     idx_te = ismember(matTEPOINTS(:,:,1), matVLST(idxVLSTBLADE,:), 'rows') & ismember(matTEPOINTS(:,:,2), matVLST(idxVLSTBLADE,:), 'rows');
     
+    % transformation of rotor from hub plane to xy plane
+    dcmXY2HUB = quat2dcm(fcnAXANG2QUAT(vrrotvec([0 0 1], matROTORAXIS(n,:))));
+       
+    % First, rotate the rotor into the proper rotor axis (it should be in
+    % oriented [0,0,1] at this point)
+    matVLST(idxVLSTBLADE,:)   = matVLST(idxVLSTBLADE,:) - matROTORHUB(n,:);
+    matVLST(idxVLSTBLADE,:)   = matVLST(idxVLSTBLADE,:) * dcmXY2HUB;
+    matVLST(idxVLSTBLADE,:)   = matVLST(idxVLSTBLADE,:) + matROTORHUB(n,:);
+    
+    matLEPOINTS(idx_le,:,1) = (matLEPOINTS(idx_le,:,1) - matROTORHUB(n,:))*dcmXY2HUB + matROTORHUB(n,:);
+    matLEPOINTS(idx_le,:,2) = (matLEPOINTS(idx_le,:,2) - matROTORHUB(n,:))*dcmXY2HUB + matROTORHUB(n,:);
+    matTEPOINTS(idx_te,:,1) = (matTEPOINTS(idx_te,:,1) - matROTORHUB(n,:))*dcmXY2HUB + matROTORHUB(n,:);
+    matTEPOINTS(idx_te,:,2) = (matTEPOINTS(idx_te,:,2) - matROTORHUB(n,:))*dcmXY2HUB + matROTORHUB(n,:);
+
+    
     for j = 1:vecROTORBLADES(n)-1
         radBLADE = 2*pi/vecROTORBLADES(n)*j; % radian
         dcmBLADE = angle2dcm(radBLADE,0,0, 'ZXY');
-        
-        % transformation of rotor from hub plane to xy plane
-        dcmXY2HUB = quat2dcm(fcnAXANG2QUAT(vrrotvec([0 0 1], matROTORAXIS(n,:))));
         
         % This is transforming the original single-bladed rotor into hub
         % local, where we will duplicate the blade, then rotate back to the
@@ -67,21 +79,11 @@ for n = 1:valROTORS
         
         vecDVEWING = [vecDVEWING; vecDVEWING(idxDVEBLADE)];
         vecDVEROTOR = [vecDVEROTOR; vecDVEROTOR(idxDVEBLADE)];
-        vecDVESURFACE = [vecDVESURFACE; vecDVESURFACE(idxDVEBLADE)];
+        vecDVESURFACE = [vecDVESURFACE; vecDVESURFACE(idxDVEBLADE).*0 + max(vecDVESURFACE) + 1];
         vecDVEFLIP = [vecDVEFLIP; vecDVEFLIP(idxDVEBLADE)];
         vecDVESDFLIP = [vecDVESDFLIP; vecDVESDFLIP(idxDVEBLADE)];
         vecDVEAREA = [vecDVEAREA; vecDVEAREA(idxDVEBLADE)];
     end
-    
-%     % Rotate rotor to axis
-%     idxDVEROTOR = vecDVEROTOR == n;
-%     idxVLSTROTOR = unique(matDVE(idxDVEROTOR,:));
-%     matVLST(idxVLSTROTOR,:)   = matVLST(idxVLSTROTOR,:)  - matROTORHUB(n,:);
-%     
-%     % Transform rotor from xy plane to hub plane
-%     dcmROTORHUB = quat2dcm(fcnAXANG2QUAT(vrrotvec([0 0 1], matROTORAXIS(n,:))));
-%     matVLST(idxVLSTROTOR,:)   = matVLST(idxVLSTROTOR,:)  * dcmROTORHUB;
-%     matVLST(idxVLSTROTOR,:)   = matVLST(idxVLSTROTOR,:) + matROTORHUB(n,:);
 end
 
 matCENTER = (matVLST(matDVE(:,1),:) + matVLST(matDVE(:,2),:) + matVLST(matDVE(:,3),:))./3;

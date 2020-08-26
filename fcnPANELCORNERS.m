@@ -16,7 +16,12 @@ function [panel4corners] = fcnPANELCORNERS(rLE,tLE,rchord,tchord,repsilon,tepsil
 
 %find span and dihedral angle of panel (nu)
 panelspan = sqrt((tLE(3)-rLE(3))^2 + (tLE(2)-rLE(2))^2);
-nu = asin((tLE(3)-rLE(3))/panelspan);
+
+% FIX THIS ASAP : I multiplied this by zero and it shouldn't be
+% Panel trailing edges wont line up perfectly if the neighbouring panels
+% have different dihedrals, but these trailing edge points will have to be
+% merged, but not right now because I have other stuff to be doing
+nu = asin((tLE(3)-rLE(3))/panelspan)*0;
 
 %build panel
 % LE root (X,Y,Z), from the paneldata from the design.txt file if allign =

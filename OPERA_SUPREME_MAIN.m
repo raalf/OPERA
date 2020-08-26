@@ -21,11 +21,8 @@ disp(' \______/  \______/ |__/      |__/  |__/|________/|__/     |__/|________/ 
 disp('=========================================================================');
 
 %% Reading in geometry
-% filename = 'inputs/TMotor_Controlled.vap'
-% filename = 'inputs/TMotor_Coarse2.vap'
-filename = 'inputs/QuadPlane.vap'
-% filename = 'inputs/QuadRotor.vap'
-filename = 'inputs/WIPP.vap'
+filename = 'inputs/TMotor_Coarse2.vap'
+% filename = 'inputs/WIPP_FINAL_Coarse.vap'
 
 [flgRELAX, flgSTEADY, valMAXTIME, valDELTIME, valDENSITY, valUINF, valALPHA, valBETA, ...
     valROLL, valFPA, valTRACK, valAREA, valSPAN, matPOINTS, matTEPOINTS, matLEPOINTS, ...
@@ -35,7 +32,11 @@ filename = 'inputs/WIPP.vap'
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, ...
     matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD] = fcnTRIANG(matPOINTS, vecDVEFLIP, vecDVESDFLIP);
 
-flgGIF = true
+flgGIF = false;
+
+% valUINF = Vs(jjj)
+% vecROTORRPM = sign(vecROTORRPM).*repmat(RPMs(jjj), length(vecROTORRPM), 1)
+% valALPHA = Alphas(jjjj)
 
 %% Preliminary Geometry Stuff
 % Duplicating rotor blades if need be
@@ -101,7 +102,6 @@ matCOEFF = fcnSOLVED(matD, vecR, valNELE);
 [vecVMU, vecEMU] = fcnVEMU(matVLST, matVATT, matCENTER, matROTANG, matCOEFF, matELST, matEATT, vecTE);
 matCOEFF_HSTRY(:,:,1) = matCOEFF;
 
-hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl');
 
 %% Timestep to solution
 for valTIMESTEP = 1:valMAXTIME
@@ -153,14 +153,6 @@ for valTIMESTEP = 1:valMAXTIME
             hFig1 = fcnGIF(valTIMESTEP, valNELE, matDVE, matVLST, matCENTER, matELST, matDVECT, matPLEX, matCOEFF, matUINF, matROTANG, ...
                 valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, vecWDVESURFACE, valWSIZE, matWVGRID, valGIFNUM);
         end
-        
-%                 hold on
-%         %         scatter3(matKINCON_P(:,1), matKINCON_P(:,2), matKINCON_P(:,3), 'sm');
-%         %         quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matUINF(:,1), matUINF(:,2), matUINF(:,3));
-%         %         quiver3(matVLST(:,1), matVLST(:,2), matVLST(:,3), matVUINF(:,1), matVUINF(:,2), matVUINF(:,3));
-%         %         quiver3(matKINCON_P(:,1), matKINCON_P(:,2), matKINCON_P(:,3), matUINF_KK(:,1), matUINF_KK(:,2), matUINF_KK(:,3));
-%                 quiver3(matCENTER(:,1), matCENTER(:,2), matCENTER(:,3), matSPANDIR(:,1), matSPANDIR(:,2), matSPANDIR(:,3));
-%                 hold off
         
         %% Calculating Forces
         [matF_FS(:,:,valTIMESTEP), matF_IF(:,:,valTIMESTEP), matF_ID(:,:,valTIMESTEP), matINTCIRC(:,valTIMESTEP)] = ...

@@ -5,7 +5,7 @@ hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, m
 hFig1 = fcnPLOTWAKE(0, hFig1, matWDVE, valWNELE, matWVLST, matWELST, matWDVECT, matWCENTER, valWSIZE, matWVGRID, vecWDVESURFACE);
 view([-17 29]);
 % title(['Azimuth location: ', num2str(pos)]);
-
+axis off
 frame = getframe(hFig1);
 im = frame2im(frame);
 [imind,cm] = rgb2ind(im,256);

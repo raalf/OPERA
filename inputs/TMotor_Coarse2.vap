@@ -2,18 +2,18 @@
 
 <VAP>
 	<settings>
-		<relax>FALSE</relax>
+		<relax>TRUE</relax>
 		<steady>FALSE</steady>
-		<maxtime>30</maxtime>
+		<maxtime>200</maxtime>
 		<delta_time>0.001</delta_time>
 	</settings>
 
 	<conditions>
 		<density>1.225</density>
 
-		<speed>-15.1748915433025</speed>
+		<speed>-15</speed>
 
-		<alpha>15</alpha>
+		<alpha>0</alpha>
 		<beta>0</beta>
 		<roll>0</roll>
 		<fpa>0</fpa>
@@ -36,7 +36,7 @@
 		<veh_y_axis>0</veh_y_axis>
 		<veh_z_axis>1</veh_z_axis>
 
-		<blades>1</blades>
+		<blades>2</blades>
 
 		<chordwise_elements>5</chordwise_elements>
 

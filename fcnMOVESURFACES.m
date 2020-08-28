@@ -1,6 +1,6 @@
-function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matUINF_KK, matPLEX, matDVECT, matROTANG, matSPANDIR, matKINCON_P, matROTORHUB] = ...
+function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matUINF_KK, matPLEX, matDVECT, matROTANG, matSPANDIR, matKINCON_P, matROTORHUB, matROTORAXIS] = ...
     fcnMOVESURFACES(valNELE, valUINF, valROTORS, valALPHA, valBETA, vecROTORRPM, valDELTIME, matROTORHUB, matVLST, matELST, vecTE, matDVE, ...
-    vecDVEFLIP, matSPANDIR, matKINCON_P, vecDVEROTOR, vecKINCON_DVE, matROTORAXIS)
+    vecDVEFLIP, matSPANDIR, matKINCON_P, vecDVEROTOR, vecKINCON_DVE, matROTORAXIS, valROTSTART, vecROTRATE, valTIMESTEP)
 
 % Old trailing edge vertices
 old_te = matVLST(matELST(vecTE,:),:);
@@ -11,7 +11,7 @@ translation = fcnUINFWING(valALPHA, valBETA).*valUINF.*valDELTIME;
 matKINCON_P = matKINCON_P - translation;
 matVLST = matVLST - translation;
 
-%%
+%% Rotation of the rotors about the hub
 for n = 1:valROTORS
     matROTORHUB(n,:) = matROTORHUB(n,:) - translation;
 
@@ -38,6 +38,12 @@ for n = 1:valROTORS
     tmpV = tmpV*dcmROTORSTEP;
     tmpK = tmpK*dcmROTORSTEP;
     tmpSD = tmpSD*dcmROTORSTEP;
+        
+    if valTIMESTEP > valROTSTART    
+        tmpDCM = angle2dcm(vecROTRATE(3)*0*valDELTIME, vecROTRATE(2)*valDELTIME, vecROTRATE(1)*valDELTIME);
+        matROTORAXIS(n,:) = matROTORAXIS(n,:)*tmpDCM;
+        dcmXY2HUB = quat2dcm(fcnAXANG2QUAT(vrrotvec([0 0 1], matROTORAXIS(n,:))));   
+    end
     
     % Transform rotor back to hub
     tmpV = tmpV*dcmXY2HUB;
@@ -73,7 +79,7 @@ matNEWWAKE(:,:,1) = [old_te(1:end/2,:); old_te((end/2)+1:end,:)];
 
 %% New speeds
 [matUINF, matVUINF, matUINF_KK] = fcnUINF(valUINF, valALPHA, valBETA, valNELE, valROTORS, matVLST, matKINCON_P, ...
-    vecROTORRPM, vecDVEROTOR, matCENTER, matDVE, matROTORHUB, matROTORAXIS, vecKINCON_DVE);
+    vecROTORRPM, vecDVEROTOR, matCENTER, matDVE, matROTORHUB, matROTORAXIS, vecKINCON_DVE, valROTSTART, vecROTRATE, valTIMESTEP);
 
 end
 

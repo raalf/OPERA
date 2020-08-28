@@ -21,7 +21,7 @@ disp(' \______/  \______/ |__/      |__/  |__/|________/|__/     |__/|________/ 
 disp('=========================================================================');
 
 %% Reading in geometry
-filename = 'inputs/TMotor_Coarse2.vap'
+filename = 'inputs/TMotor_Coarse3.vap'
 % filename = 'inputs/WIPP_FINAL_Coarse.vap'
 
 [flgRELAX, flgSTEADY, valMAXTIME, valDELTIME, valDENSITY, valUINF, valALPHA, valBETA, ...
@@ -32,11 +32,15 @@ filename = 'inputs/TMotor_Coarse2.vap'
 [TR, matELST, matVLST, matDVE, valNELE, matEATT, matEIDX, matPLEX, matDVECT, matVATT, ~, ...
     matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD] = fcnTRIANG(matPOINTS, vecDVEFLIP, vecDVESDFLIP);
 
-flgGIF = false;
+flgGIF = true;
 
 % valUINF = Vs(jjj)
 % vecROTORRPM = sign(vecROTORRPM).*repmat(RPMs(jjj), length(vecROTORRPM), 1)
 % valALPHA = Alphas(jjjj)
+
+% Rolling
+valROTSTART = 120 % Starting timestep
+vecROTRATE = [0.5 0 0] % [roll, pitch, yaw] rad/s
 
 %% Preliminary Geometry Stuff
 % Duplicating rotor blades if need be
@@ -48,6 +52,7 @@ if valROTORS > 0
         vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, matVATT, ...
         matTEPOINTS, matLEPOINTS, matSPANDIR, vecROTORBLADES, matROTORHUB, matROTORAXIS, ...
         vecDVEWING, vecDVEROTOR, vecDVESDFLIP);
+    vecJ = abs(valUINF)./((vecROTORRPM.*(pi/30)).*(vecROTORDIAM/2));
 end
 % hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl');
 
@@ -59,7 +64,7 @@ end
 
 % DVE velocities
 [matUINF, matVUINF, matUINF_KK] = fcnUINF(valUINF, valALPHA, valBETA, valNELE, valROTORS, matVLST, matKINCON_P, ...
-    vecROTORRPM, vecDVEROTOR, matCENTER, matDVE, matROTORHUB, matROTORAXIS, vecKINCON_DVE);
+    vecROTORRPM, vecDVEROTOR, matCENTER, matDVE, matROTORHUB, matROTORAXIS, vecKINCON_DVE, valROTSTART, vecROTRATE, 0);
 
 % Force directions
 matDRAG_DIR = matUINF./sqrt(sum(matUINF(1,:).^2,2));
@@ -102,14 +107,13 @@ matCOEFF = fcnSOLVED(matD, vecR, valNELE);
 [vecVMU, vecEMU] = fcnVEMU(matVLST, matVATT, matCENTER, matROTANG, matCOEFF, matELST, matEATT, vecTE);
 matCOEFF_HSTRY(:,:,1) = matCOEFF;
 
-
 %% Timestep to solution
 for valTIMESTEP = 1:valMAXTIME
     tic
     
-    [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matUINF_KK, matPLEX, matDVECT, matROTANG, matSPANDIR, matKINCON_P, matROTORHUB] = ...
+    [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matUINF_KK, matPLEX, matDVECT, matROTANG, matSPANDIR, matKINCON_P, matROTORHUB, matROTORAXIS] = ...
         fcnMOVESURFACES(valNELE, valUINF, valROTORS, valALPHA, valBETA, vecROTORRPM, valDELTIME, matROTORHUB, matVLST, matELST, vecTE, matDVE, ...
-        vecDVEFLIP, matSPANDIR, matKINCON_P, vecDVEROTOR, vecKINCON_DVE, matROTORAXIS);
+        vecDVEFLIP, matSPANDIR, matKINCON_P, vecDVEROTOR, vecKINCON_DVE, matROTORAXIS, valROTSTART, vecROTRATE, valTIMESTEP);
     
     % Generating new wake elements
     if any(vecTE)
@@ -143,7 +147,7 @@ for valTIMESTEP = 1:valMAXTIME
                 matDVECT, matD, vecR, valNELE, matVLST, matVATT, matCENTER, matROTANG, ...
                 matDVE, matELST, matEIDX, flgSTEADY, vecWLE, matWVGRID, matWEGRID, matWE2GRID, ...
                 vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, vecWOTE, matWDVE, matWEIDX, ...
-                matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valZTOL, vecRSQUARED);
+                matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valZTOL, vecRSQUARED, vecWDVESDFLIP);
         end
         
         % Updating coefficient convergence history
@@ -153,6 +157,7 @@ for valTIMESTEP = 1:valMAXTIME
             hFig1 = fcnGIF(valTIMESTEP, valNELE, matDVE, matVLST, matCENTER, matELST, matDVECT, matPLEX, matCOEFF, matUINF, matROTANG, ...
                 valWNELE, matWDVE, matWVLST, matWCENTER, matWELST, matWDVECT, vecWDVESURFACE, valWSIZE, matWVGRID, valGIFNUM);
         end
+        
         
         %% Calculating Forces
         [matF_FS(:,:,valTIMESTEP), matF_IF(:,:,valTIMESTEP), matF_ID(:,:,valTIMESTEP), matINTCIRC(:,valTIMESTEP)] = ...

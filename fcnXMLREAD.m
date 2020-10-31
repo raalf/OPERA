@@ -32,6 +32,7 @@ vecROTORDIAM = [];
 vecROTORBLADES = [];
 matROTORHUB = []; 
 matROTORAXIS = [];
+vecROTORFLIP = [];
 
 %% Loading in wings and rotors
 

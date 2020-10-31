@@ -23,6 +23,8 @@ disp('========================================================================='
 %% Reading in geometry
 filename = 'inputs/TMotor_Coarse2.vap'
 % filename = 'inputs/WIPP_FINAL_Coarse.vap'
+% filename = 'inputs/ellipse.vap'
+% filename = 'inputs/QuadRotor.vap'
 
 [flgRELAX, flgSTEADY, valMAXTIME, valDELTIME, valDENSITY, valUINF, valALPHA, valBETA, ...
     valROLL, valFPA, valTRACK, valAREA, valSPAN, matPOINTS, matTEPOINTS, matLEPOINTS, ...
@@ -121,6 +123,8 @@ for valTIMESTEP = 1:valMAXTIME
             vecWVMU, vecWEMU, vecWDVEFLIP, matWCENTER, matWROTANG, matWDVECT, ...
             matWDVE, matWEIDX, vecWLEDVE, matWEATT, vecDVESURFACE, vecWDVESURFACE, matWDVEGRID, vecWDVESDFLIP, vecDVESDFLIP);
         
+%         matD = fcnDWING9(matEATT, matPLEX, valNELE, matELST, matVLST, matCENTER, matDVECT, vecTE, vecLE, vecLEDVE, vecTEDVE, matROTANG, matKINCON_P, vecKINCON_DVE, vecDVESDFLIP);
+        
         [vecR, matCOEFF, vecVMU, vecEMU, matWCOEFF, vecWVMU, vecWEMU, vecTSITER(valTIMESTEP,1), vecRSQUARED] = ...
             fcnTSITER(matCOEFF, valDLEN, valTIMESTEP, matUINF_KK, valWNELE, ...
             matWCOEFF, matWPLEX, valWSIZE, matWROTANG, matWCENTER, matKINCON_P, vecKINCON_DVE, ...
@@ -143,7 +147,7 @@ for valTIMESTEP = 1:valMAXTIME
                 matDVECT, matD, vecR, valNELE, matVLST, matVATT, matCENTER, matROTANG, ...
                 matDVE, matELST, matEIDX, flgSTEADY, vecWLE, matWVGRID, matWEGRID, matWE2GRID, ...
                 vecWVMU, vecWEMU, matWELST, matWVLST, vecTEDVE, vecWOTE, matWDVE, matWEIDX, ...
-                matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valZTOL, vecRSQUARED);
+                matEATT, boolKINCON, vecTE, vecVMU, vecEMU, valZTOL, vecRSQUARED, vecWDVESDFLIP);
         end
         
         % Updating coefficient convergence history
@@ -171,6 +175,7 @@ for valTIMESTEP = 1:valMAXTIME
     end
     
     vecTSTIME(valTIMESTEP) = toc;
+    save(['timesteps/timestep_', num2str(valTIMESTEP), '.mat']);
 end
 
 %% Apparent mass

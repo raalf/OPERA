@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<VAP>
+	<settings>
+		<relax>FALSE</relax>
+		<steady>FALSE</steady>
+		<maxtime>60</maxtime>
+		<delta_time>0.1</delta_time>
+	</settings>
+
+	<conditions>
+		<density>1.225</density>
+
+		<speed>1</speed>
+
+		<alpha>0</alpha>
+		<beta>0</beta>
+		<roll>0</roll>
+		<fpa>0</fpa>
+		<track>0</track>
+
+		<ref_area>20</ref_area>
+		<ref_span>20</ref_span>
+	</conditions>
+
+	<wing>
+		<incidence>0</incidence>
+
+		<chordwise_elements>10</chordwise_elements>
+
+		<vehicle_x>0</vehicle_x>
+		<vehicle_y>0</vehicle_y>
+		<vehicle_z>0</vehicle_z>
+
+		<panel>
+			<spanwise_elements>15</spanwise_elements>
+			<section>
+				<wing_x>0</wing_x>
+				<wing_y>-10</wing_y>
+				<wing_z>0</wing_z>
+				<chord>1</chord>
+				<twist>0</twist>
+				<airfoil>NACA 0015</airfoil>
+			</section>	
+			<section>
+				<wing_x>0</wing_x>
+				<wing_y>10</wing_y>
+				<wing_z>0</wing_z>
+				<chord>1</chord>
+				<twist>0</twist>
+				<airfoil>NACA 0015</airfoil>
+			</section>	
+		</panel>
+	</wing>
+
+</VAP>
+
+
+
+

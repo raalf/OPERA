@@ -1,13 +1,14 @@
 function [valNELE, matVLST, matELST, matDVE, matCENTER, matPLEX, vecDVEAREA, ...
     matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, matDVECT, ...
-    matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR, vecDVEROTOR, vecDVEWING, vecDVESDFLIP] ...
+    matROTANG, matVATT, matTEPOINTS, matLEPOINTS, matSPANDIR, vecDVEROTOR, vecDVEWING, vecDVESDFLIP, matROTORTRANS, vecDVECHORD] ...
     = fcnREADYROTOR(valROTORS, valNELE, matVLST, matELST, matDVE, ...
     vecDVEAREA, matEATT, matEIDX, vecDVESURFACE, vecDVEFLIP, matVATT, ...
-    matTEPOINTS, matLEPOINTS, matSPANDIR, vecROTORBLADES, matROTORHUB, matROTORAXIS, vecDVEWING, vecDVEROTOR, vecDVESDFLIP)
+    matTEPOINTS, matLEPOINTS, matSPANDIR, vecROTORBLADES, matROTORHUB, matROTORAXIS, vecDVEWING, vecDVEROTOR, vecDVESDFLIP, vecDVECHORD)
 
 % matELST, matEIDX, matVATT <----------- fix
 
 for n = 1:valROTORS
+    
     idxDVEBLADE = find(vecDVEROTOR == n);
     [idxVLSTBLADE,~,~] = unique(matDVE(idxDVEBLADE,:));
     
@@ -16,6 +17,9 @@ for n = 1:valROTORS
     
     % transformation of rotor from hub plane to xy plane
     dcmXY2HUB = quat2dcm(fcnAXANG2QUAT(vrrotvec([0 0 1], matROTORAXIS(n,:))));
+    matROTORTRANS(n,:,1) = [1 0 0]*dcmXY2HUB;
+    matROTORTRANS(n,:,2) = [0 1 0]*dcmXY2HUB;
+    matROTORTRANS(n,:,3) = [0 0 1]*dcmXY2HUB;
        
     % First, rotate the rotor into the proper rotor axis (it should be in
     % oriented [0,0,1] at this point)
@@ -83,6 +87,7 @@ for n = 1:valROTORS
         vecDVEFLIP = [vecDVEFLIP; vecDVEFLIP(idxDVEBLADE)];
         vecDVESDFLIP = [vecDVESDFLIP; vecDVESDFLIP(idxDVEBLADE)];
         vecDVEAREA = [vecDVEAREA; vecDVEAREA(idxDVEBLADE)];
+        vecDVECHORD = [vecDVECHORD; vecDVECHORD(idxDVEBLADE)];
     end
 end
 

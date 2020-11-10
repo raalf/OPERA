@@ -2,9 +2,9 @@
 
 <VAP>
 	<settings>
-		<relax>TRUE</relax>
+		<relax>FALSE</relax>
 		<steady>FALSE</steady>
-		<maxtime>200</maxtime>
+		<maxtime>220</maxtime>
 		<delta_time>0.001</delta_time>
 	</settings>
 
@@ -13,7 +13,7 @@
 
 		<speed>6</speed>
 
-		<alpha>-15</alpha>
+		<alpha>0</alpha>
 		<beta>0</beta>
 		<roll>0</roll>
 		<fpa>0</fpa>
@@ -28,8 +28,8 @@
 		<ref_diam>0.4572</ref_diam>
 		<rotation_direction>CCW</rotation_direction>
 
-		<veh_x_hub>0</veh_x_hub>
-		<veh_y_hub>0</veh_y_hub>
+		<veh_x_hub>0.25</veh_x_hub>
+		<veh_y_hub>0.25</veh_y_hub>
 		<veh_z_hub>0</veh_z_hub>
 
 		<veh_x_axis>0</veh_x_axis>

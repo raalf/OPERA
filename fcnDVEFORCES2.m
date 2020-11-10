@@ -1,7 +1,7 @@
-function [matF_FS, matF_IF, matF_ID, matINTCIRC] = fcnDVEFORCES2(matVLST, matELST, matROTANG, ...
+function [matF_FS, matF_IF, matF_ID, matF_NC, matINTCIRC, matKINCON_V] = fcnDVEFORCES2(matVLST, matELST, matROTANG, ...
     matCOEFF, vecTEDVE, valDENSITY, valNELE, matSPANDIR, vecTE, matPLEX, matWCENTER, valWNELE, matWCOEFF, matWPLEX, matWROTANG, ...
     matWVLST, vecWLEDVE, matWELST, valWSIZE, matWDVE, vecWDVEFLIP, matWEIDX, vecWEMU, ...
-    vecWVMU, matCENTER, matKINCON_P, vecKINCON_DVE, matUINF_KK, matDVECT, valZTOL, vecWDVESDFLIP, vecDVESDFLIP)
+    vecWVMU, matCENTER, matKINCON_P, vecKINCON_DVE, matUINF_KK, matDVECT, valZTOL, vecWDVESDFLIP, vecDVESDFLIP, valDELTIME, matCOEFF_HSTRY, valTIMESTEP, vecDVECHORD)
 
 %% Common params
 xi_1 = permute(matPLEX(1,1,:),[3 2 1]);
@@ -36,6 +36,8 @@ matF_FS = fcnDVEFORCE(idx_flp, valNELE, valDENSITY, matUINF_KK, vecKINCON_DVE, m
 tmp_w = fcnSDVEVEL(matKINCON_P, valNELE, matCOEFF, matPLEX, matROTANG, matCENTER, vecDVESDFLIP, [], 0) + ...
     (fcnSDVEVEL(matKINCON_P + matDVECT(vecKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESDFLIP, [], 0) + ...
     fcnSDVEVEL(matKINCON_P - matDVECT(vecKINCON_DVE,:,3).*valZTOL, valWNELE, matWCOEFF, matWPLEX, matWROTANG, matWCENTER, vecWDVESDFLIP, [], 0))./2;
+
+matKINCON_V = matUINF_KK + tmp_w;
 
 matF_IF = fcnDVEFORCE(idx_flp, valNELE, valDENSITY, tmp_w, vecKINCON_DVE, matKINCON_P, matCENTER, matROTANG, A_1, A_2, B_1, B_2, C_2, xi_1, xi_3, C, D_LE, E, D_TE);
 
@@ -84,7 +86,7 @@ for i = 1:valWSIZE
     fpg_og(:,:,i) = locations.*matWVLST(tmp_verts(1),:) + (1 - locations).*(matWVLST(tmp_verts(2),:));
     fpg_us(:,:,i) = locations.*vert_one + (1 - locations).*vert_two;
     wind(:,:,i) = (fcnSDVEVEL(fpg_us(:,:,i) + tmpWDVECT(vecWLEDVE(i),:,3).*valZTOL, valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESDFLIP, boundind, 0) + ...
-        fcnSDVEVEL(fpg_us(:,:,i) - tmpWDVECT(vecWLEDVE(i),:,3).*valZTOL, valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESDFLIP, boundind, 0))./2;   
+        fcnSDVEVEL(fpg_us(:,:,i) - tmpWDVECT(vecWLEDVE(i),:,3).*valZTOL, valWNELE, tmpWCOEFF, tmpWPLEX, tmpWROTANG, tmpWCENTER, vecWDVESDFLIP, boundind, 0))./2;
 end
 
 % fpg2 = reshape(permute(fpg_og, [2 1 3]), size(fpg_og, 2), [])';
@@ -120,35 +122,9 @@ tmp = fcnINTCIRC(xi_1, xi_3, C, D_LE, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3);
 tmp(~idx_flp) = -tmp(~idx_flp);
 matINTCIRC = tmp;
 
-end
+%%
+matF_NC = zeros(size(matF_FS));
 
-function [v_xa, v_xb, v_xc, v_ea, v_eb, v_ec, v_za, v_zb, v_zc] = fcnVMAP(valNELE, u, matKINCON_DVE, matKINCON_P, matCENTER, matROTANG)
-% points and their velocities
-kk_loc = fcnGLOBSTAR(matKINCON_P - matCENTER(matKINCON_DVE,:), matROTANG(matKINCON_DVE,:));
-uinf_loc = fcnGLOBSTAR(u, matROTANG(matKINCON_DVE,:));
-
-v_xa = nan(valNELE,1); v_xb = nan(valNELE,1); v_xc = nan(valNELE,1);
-v_ea = nan(valNELE,1); v_eb = nan(valNELE,1); v_ec = nan(valNELE,1);
-v_za = nan(valNELE,1); v_zb = nan(valNELE,1); v_zc = nan(valNELE,1);
-for i = 1:valNELE
-    idx = matKINCON_DVE == i;
-    
-    pts = kk_loc(idx,:);
-    pts(:,3) = 1;
-    vs = uinf_loc(idx,:);
-    
-    vmap_fs = pts \ vs;
-    
-    v_xa(i,1) = vmap_fs(1,1);
-    v_xb(i,1) = vmap_fs(2,1);
-    v_xc(i,1) = vmap_fs(3,1);
-    v_ea(i,1) = vmap_fs(1,2);
-    v_eb(i,1) = vmap_fs(2,2);
-    v_ec(i,1) = vmap_fs(3,2);
-    v_za(i,1) = vmap_fs(1,3);
-    v_zb(i,1) = vmap_fs(2,3);
-    v_zc(i,1) = vmap_fs(3,3);
-end
 end
 
 function f_out = fcnDVEFORCE(idx_flp, valNELE, valDENSITY, u, matKINCON_DVE, matKINCON_P, matCENTER, matROTANG, A_1, A_2, B_1, B_2, C_2, xi_1, xi_3, C, D_LE, E, D_TE)
@@ -248,10 +224,6 @@ f_out(idx_flp,:) = f_out(idx_flp,:).*-1;
 f_out = fcnSTARGLOB(f_out, matROTANG);
 
 end
-
-
-
-
 
 
 

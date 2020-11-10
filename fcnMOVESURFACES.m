@@ -1,6 +1,6 @@
-function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matUINF_KK, matPLEX, matDVECT, matROTANG, matSPANDIR, matKINCON_P, matROTORHUB, matROTORAXIS] = ...
+function [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matUINF_KK, matPLEX, matDVECT, matROTANG, matSPANDIR, matKINCON_P, matROTORHUB, matROTORAXIS, matROTORTRANS, vecVEHORIG] = ...
     fcnMOVESURFACES(valNELE, valUINF, valROTORS, valALPHA, valBETA, vecROTORRPM, valDELTIME, matROTORHUB, matVLST, matELST, vecTE, matDVE, ...
-    vecDVEFLIP, matSPANDIR, matKINCON_P, vecDVEROTOR, vecKINCON_DVE, matROTORAXIS, valROTSTART, vecROTRATE, valTIMESTEP)
+    vecDVEFLIP, matSPANDIR, matKINCON_P, vecDVEROTOR, vecKINCON_DVE, matROTORAXIS, valROTSTART, vecROTRATE, valTIMESTEP, matROTORTRANS, vecVEHORIG)
 
 % Old trailing edge vertices
 old_te = matVLST(matELST(vecTE,:),:);
@@ -10,11 +10,12 @@ translation = fcnUINFWING(valALPHA, valBETA).*valUINF.*valDELTIME;
 
 matKINCON_P = matKINCON_P - translation;
 matVLST = matVLST - translation;
+vecVEHORIG = vecVEHORIG - translation;
 
 %% Rotation of the rotors about the hub
 for n = 1:valROTORS
     matROTORHUB(n,:) = matROTORHUB(n,:) - translation;
-
+    
     idxDVEROTOR = vecDVEROTOR == n;
     
     tmpV = matVLST(matDVE(idxDVEROTOR,:),:);
@@ -23,7 +24,7 @@ for n = 1:valROTORS
     
     tmpV = tmpV - matROTORHUB(n,:);
     tmpK = tmpK - matROTORHUB(n,:);
-
+    
     % transform rotor from hub plane to xy plane
     dcmXY2HUB = quat2dcm(fcnAXANG2QUAT(vrrotvec([0 0 1], matROTORAXIS(n,:))));
     tmpV = tmpV/dcmXY2HUB;
@@ -38,12 +39,6 @@ for n = 1:valROTORS
     tmpV = tmpV*dcmROTORSTEP;
     tmpK = tmpK*dcmROTORSTEP;
     tmpSD = tmpSD*dcmROTORSTEP;
-        
-    if valTIMESTEP > valROTSTART    
-        tmpDCM = angle2dcm(vecROTRATE(3)*0*valDELTIME, vecROTRATE(2)*valDELTIME, vecROTRATE(1)*valDELTIME);
-        matROTORAXIS(n,:) = matROTORAXIS(n,:)*tmpDCM;
-        dcmXY2HUB = quat2dcm(fcnAXANG2QUAT(vrrotvec([0 0 1], matROTORAXIS(n,:))));   
-    end
     
     % Transform rotor back to hub
     tmpV = tmpV*dcmXY2HUB;
@@ -55,7 +50,29 @@ for n = 1:valROTORS
     
     matVLST(matDVE(idxDVEROTOR,:),:) = tmpV;
     matKINCON_P(idx_k,:) = tmpK;
-    matSPANDIR(idxDVEROTOR,:) = tmpSD;    
+    matSPANDIR(idxDVEROTOR,:) = tmpSD;
+end
+
+%% Rotation of rotor about vehicle center
+if valTIMESTEP > valROTSTART
+    if valROTORS > 1
+       % this is quick-fix section that uses the rotor axis as the vehicle
+       % axis
+        disp('no no no not good not good') 
+    end
+    
+    tmpDCM = angle2dcm(vecROTRATE(3)*0*valDELTIME, vecROTRATE(2)*valDELTIME, vecROTRATE(1)*valDELTIME);
+    matROTORAXIS(n,:) = matROTORAXIS(n,:)*tmpDCM;
+    dcmROTVEH = quat2dcm(fcnAXANG2QUAT(vrrotvec([0 0 1], matROTORAXIS(n,:))));
+
+    for jj = 1:3
+        matROTORTRANS(1,:,jj) = matROTORTRANS(1,:,jj)*tmpDCM;
+    end
+        
+    matVLST = ((((matVLST - vecVEHORIG)/dcmROTVEH)*tmpDCM)*dcmROTVEH) + vecVEHORIG;
+    matKINCON_P = ((((matKINCON_P - vecVEHORIG)/dcmROTVEH)*tmpDCM)*dcmROTVEH) + vecVEHORIG;
+    matROTORHUB = ((((matROTORHUB - vecVEHORIG)/dcmROTVEH)*tmpDCM)*dcmROTVEH) + vecVEHORIG;
+    matSPANDIR = ((matSPANDIR/dcmROTVEH)*tmpDCM)*dcmROTVEH;
 end
 
 %% Updating geometry

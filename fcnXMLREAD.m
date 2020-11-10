@@ -1,7 +1,7 @@
 function [flgRELAX, flgSTEADY, valMAXTIME, valDELTIME, valDENSITY, valUINF, valALPHA, valBETA, ...
     valROLL, valFPA, valTRACK, valAREA, valSPAN, matPOINTS, matTEPOINTS, matLEPOINTS, ...
     vecDVESURFACE, vecDVEFLIP, valROTORS, valWINGS, vecROTORRPM, vecROTORDIAM, ...
-    vecROTORBLADES, matROTORHUB, matROTORAXIS, vecDVEWING, vecDVEROTOR, vecDVESDFLIP] = fcnXMLREAD(filename)
+    vecROTORBLADES, matROTORHUB, matROTORAXIS, vecDVEWING, vecDVEROTOR, vecDVESDFLIP, vecVEHORIG] = fcnXMLREAD(filename)
 
 inp = fcnXML2STRUCT(filename);
 VAP = inp.VAP;
@@ -27,6 +27,7 @@ valSPAN = str2double(VAP.conditions.ref_span.Text);
 
 
 %%
+vecVEHORIG = [0 0 0];
 vecROTORRPM = [];
 vecROTORDIAM = [];
 vecROTORBLADES = [];
@@ -167,7 +168,6 @@ for i = 1:valPANELS
 end
 
 valPANELS = size(matGEOM,3);
-
 
 %% Generate DVEs
 [matPOINTS, matTEPOINTS, matLEPOINTS, vecDVESURFACE, vecDVEFLIP, vecDVEWING, vecDVEROTOR, vecDVESDFLIP] = fcnGENERATEDVES(valPANELS, matGEOM, vecN, vecM, cellAIRFOIL, vecPANELWING, vecPANELROTOR, vecROTORFLIP);

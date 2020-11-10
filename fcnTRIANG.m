@@ -154,7 +154,7 @@ eta_3 = permute(matPLEX(3,2,:),[3 2 1]);
 D_LE = eta_2 - ((xi_2.*(eta_3 - eta_2))./(xi_3 - xi_2));
 D_TE = eta_1 - ((xi_1.*(eta_3 - eta_1))./(xi_3 - xi_1));
 
-vecDVECHORD = abs(D_LE - D_TE);
+vecDVECHORD = vecDVEAREA./(abs(xi_3 - xi_1));
 
 end
 

@@ -39,15 +39,17 @@ valALPHA = SEQ_ALPHAS(jjj)
 valUINF = SEQ_VS(jjjj)
 
 % Rolling
+% valROTSTART = 0 % Starting timestep
+% vecROTRATE = [50 0 0] % [roll, pitch, yaw] rad/s
 valROTSTART = 120; % Starting timestep
-vecROTRATE = [0 SEQ_RATES(jjjjj) 0] % [roll, pitch, yaw] rad/s
-% valROTSTART = 500; % Starting timestep
-% vecROTRATE = [5 0 0]; % [roll, pitch, yaw] rad/s
+vecROTRATE = [SEQ_RATES(jjjjj) 0 0] % [roll, pitch, yaw] rad/s
 
 % valGUSTAMP = 0.053.*valUINF;
 % valGUSTL = 100;
 % valGUSTMODE = 3;
 % valGUSTSTART = 1;
+
+% disp('HUB TRANSLATION APPROXIMATION EVALUATION in fcnUINF')
 
 %% Preliminary Geometry Stuff
 % Duplicating rotor blades if need be
@@ -73,7 +75,7 @@ end
 
 % DVE velocities
 [matUINF, matVUINF, matUINF_KK] = fcnUINF(valUINF, valALPHA, valBETA, valNELE, valROTORS, matVLST, matKINCON_P, ...
-    vecROTORRPM, vecDVEROTOR, matCENTER, matDVE, matROTORHUB, matROTORAXIS, vecKINCON_DVE, valROTSTART, vecROTRATE, 0);
+    vecROTORRPM, vecDVEROTOR, matCENTER, matDVE, matROTORHUB, matROTORAXIS, vecKINCON_DVE, valROTSTART, vecROTRATE, 0, vecVEHORIG);
 
 % Force directions
 matDRAG_DIR = matUINF./sqrt(sum(matUINF(1,:).^2,2));
@@ -119,7 +121,6 @@ matCOEFF = fcnSOLVED(matD, vecR, valNELE);
 %% Timestep to solution
 for valTIMESTEP = 1:valMAXTIME
     tic
-    
     [matVLST, matCENTER, matNEWWAKE, matUINF, matVUINF, matUINF_KK, matPLEX, matDVECT, matROTANG, matSPANDIR, matKINCON_P, matROTORHUB, matROTORAXIS, matROTORTRANS, vecVEHORIG] = ...
         fcnMOVESURFACES(valNELE, valUINF, valROTORS, valALPHA, valBETA, vecROTORRPM, valDELTIME, matROTORHUB, matVLST, matELST, vecTE, matDVE, ...
         vecDVEFLIP, matSPANDIR, matKINCON_P, vecDVEROTOR, vecKINCON_DVE, matROTORAXIS, valROTSTART, vecROTRATE, valTIMESTEP, matROTORTRANS, vecVEHORIG);

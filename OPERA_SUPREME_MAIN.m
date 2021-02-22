@@ -1,4 +1,4 @@
-clear
+% clear
 
 %% Header
 disp('=========================================================================');
@@ -21,9 +21,9 @@ disp(' \______/  \______/ |__/      |__/  |__/|________/|__/     |__/|________/ 
 disp('=========================================================================');
 
 %% Reading in geometry
-filename = 'inputs/TMotor_Coarse2.vap'
+% filename = 'inputs/TMotor_Coarse2.vap'
 % filename = 'inputs/WIPP_FINAL_Coarse.vap'
-% filename = 'inputs/ellipse.vap'
+filename = 'inputs/ellipse.vap'
 % filename = 'inputs/QuadRotor.vap'
 
 [flgRELAX, flgSTEADY, valMAXTIME, valDELTIME, valDENSITY, valUINF, valALPHA, valBETA, ...
@@ -35,10 +35,6 @@ filename = 'inputs/TMotor_Coarse2.vap'
     matCENTER, matROTANG, ~, vecDVEAREA, matSPANDIR, vecDVECHORD] = fcnTRIANG(matPOINTS, vecDVEFLIP, vecDVESDFLIP);
 
 flgGIF = false;
-
-% valUINF = Vs(jjj)
-% vecROTORRPM = sign(vecROTORRPM).*repmat(RPMs(jjj), length(vecROTORRPM), 1)
-% valALPHA = Alphas(jjjj)
 
 %% Preliminary Geometry Stuff
 % Duplicating rotor blades if need be

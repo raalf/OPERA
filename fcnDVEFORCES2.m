@@ -115,7 +115,8 @@ w_out = fcnKJW(xi_1(vecTEDVE), xi_3(vecTEDVE), eta_1(vecTEDVE), eta_3(vecTEDVE),
 F = fcnSTARGLOB([u_out v_out w_out], matROTANG(vecTEDVE,:));
 
 % Splitting special force into lift and side forces
-matF_ID(vecTEDVE,:) = F./len_adj;
+% matF_ID(vecTEDVE,:) = F./len_adj;
+matF_ID(vecTEDVE,:) = F;
 
 %% Integrated circulation
 tmp = fcnINTCIRC(xi_1, xi_3, C, D_LE, E, D_TE, A_1, A_2, B_1, B_2, C_2, C_3);

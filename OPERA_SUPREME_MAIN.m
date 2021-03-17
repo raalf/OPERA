@@ -65,7 +65,7 @@ if valROTORS > 0
 else
     matROTORTRANS = [];
 end
-% hFig1 = fcnPLOTBODY(0, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl');
+% hFig1 = fcnPLOTBODY(1, matDVE, valNELE, matVLST, matELST, matDVECT, matCENTER, matPLEX, [], [], matROTANG, [], 'opengl');
 
 % Generating leading and trailing edge information
 [vecLE, vecLEDVE, vecTE, vecTEDVE, matELST, vecCHORD, vecSPAN] = fcnLETEGEN(matVLST, matELST, matEATT, matLEPOINTS, matTEPOINTS);

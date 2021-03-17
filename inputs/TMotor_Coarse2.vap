@@ -2,7 +2,7 @@
 
 <VAP>
 	<settings>
-		<relax>FALSE</relax>
+		<relax>TRUE</relax>
 		<steady>FALSE</steady>
 		<maxtime>220</maxtime>
 		<delta_time>0.001</delta_time>
@@ -22,7 +22,7 @@
 		<ref_area>6.196633</ref_area>
 		<ref_span>9.63168</ref_span>
 	</conditions>
-	
+
 	<rotor>
 		<rpm>3000</rpm>
 		<ref_diam>0.4572</ref_diam>
